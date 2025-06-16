@@ -289,7 +289,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, MainControl, true);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, MainControl, true);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Split, MainControl, true);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener), true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener, true);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, OnChangeInventory, true);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, OnChangeInventory, true);
       storage = market.GetComponent<StorageComponent>();
@@ -330,7 +330,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, MainControl);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, MainControl);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Split, MainControl);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
       buttonTrade.onClick.RemoveListener(Accept);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionRight, OnChangeInventory);
@@ -541,7 +541,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
       if (joystick)
       {
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Trade, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Trade, WithoutJoystickCancelListener);
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, MainControl, true);
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, MainControl, true);
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Split, MainControl, true);
@@ -550,7 +550,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
       else
       {
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Trade, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Trade, WithoutJoystickCancelListener);
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, MainControl);
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, MainControl);
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Split, MainControl);

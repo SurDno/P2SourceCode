@@ -23,7 +23,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((RainEffect) target2).queue = queue;
+    public void CopyTo(object target2) => ((RainEffect_Generated) target2).queue = queue;
 
     public void DataWrite(IDataWriter writer)
     {

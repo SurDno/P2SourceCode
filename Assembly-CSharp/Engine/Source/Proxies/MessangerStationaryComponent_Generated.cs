@@ -27,7 +27,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((MessangerStationaryComponent) target2).spawnpointKindEnum = spawnpointKindEnum;
+      ((MessangerStationaryComponent_Generated) target2).spawnpointKindEnum = spawnpointKindEnum;
     }
 
     public void DataWrite(IDataWriter writer)

@@ -149,7 +149,7 @@ namespace SRDebugger
       ClosePanel = 7,
       OpenPanel = 8,
       TogglePanel = 9,
-      ToggleDockedProfiler = 11, // 0x0000000B
+      ToggleDockedProfiler = 11,
     }
 
     [Serializable]

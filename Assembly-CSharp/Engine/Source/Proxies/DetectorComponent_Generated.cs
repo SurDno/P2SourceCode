@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((DetectorComponent) target2).isEnabled = isEnabled;
+    public void CopyTo(object target2) => ((DetectorComponent_Generated) target2).isEnabled = isEnabled;
 
     public void DataWrite(IDataWriter writer)
     {

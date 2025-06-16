@@ -197,7 +197,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, MedicineNavigation);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, MedicineNavigation);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, AdministerHealing);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
       buttonUse.OpenEndEvent += OnUseButtonEnd;
       if (symptomTemplates == null)
         symptomTemplates = new IEntitySerializable[7]
@@ -242,11 +242,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       SubscribeToParameters(false);
       buttonUse.OpenEndEvent -= OnUseButtonEnd;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Heal, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Heal, WithoutJoystickCancelListener);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, MedicineNavigation);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, MedicineNavigation);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AdministerHealing);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel,CancelListener);
       if (selectedStorable != null)
       {
         selectedStorable.HoldSelected(false);
@@ -303,7 +303,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       HandleHealingHintsVisibility(joystick);
       if (joystick)
       {
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Heal, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Heal, WithoutJoystickCancelListener);
         if (IsHealingEnded)
           return;
         if (SliderItems.Count == 0)
@@ -336,7 +336,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       else
       {
         buttonUse.GamepadEndHold();
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Heal, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Heal, WithoutJoystickCancelListener);
         if (selectedStorable != null)
         {
           selectedStorable?.SetSelected(false);

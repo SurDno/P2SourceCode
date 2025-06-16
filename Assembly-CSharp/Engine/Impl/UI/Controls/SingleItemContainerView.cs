@@ -25,16 +25,16 @@ namespace Engine.Impl.UI.Controls
     {
       if (buttonClosed != null)
       {
-        buttonClosed.SelectEvent += new Action(((ContainerView) this).FireSelectEvent);
-        buttonClosed.DeselectEvent += new Action(((ContainerView) this).FireDeselectEvent);
-        buttonClosed.OpenBeginEvent += new Action(((ContainerView) this).FireOpenBeginEvent);
-        buttonClosed.OpenEndEvent += new Action<bool>(((ContainerView) this).FireOpenEndEvent);
+        buttonClosed.SelectEvent += FireSelectEvent;
+        buttonClosed.DeselectEvent += FireDeselectEvent;
+        buttonClosed.OpenBeginEvent += FireOpenBeginEvent;
+        buttonClosed.OpenEndEvent += FireOpenEndEvent;
       }
       if (!(storableView != null))
         return;
-      storableView.SelectEvent += new Action<IStorableComponent>(((ContainerView) this).FireItemSelectEventEvent);
-      storableView.DeselectEvent += new Action<IStorableComponent>(((ContainerView) this).FireItemDeselectEventEvent);
-      storableView.InteractEvent += new Action<IStorableComponent>(((ContainerView) this).FireItemInteractEventEvent);
+      storableView.SelectEvent += FireItemSelectEventEvent;
+      storableView.DeselectEvent += FireItemDeselectEventEvent;
+      storableView.InteractEvent += FireItemInteractEventEvent;
     }
 
     private void UpdateStorable()

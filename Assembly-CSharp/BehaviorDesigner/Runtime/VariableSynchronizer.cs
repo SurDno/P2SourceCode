@@ -225,10 +225,12 @@ namespace BehaviorDesigner.Runtime
         }
       }
     }
-
+    
     private static Func<object> CreateGetDelegate(object instance, MethodInfo method)
     {
-      return ((Expression<Func<object>>) (() => Expression.Call(instance, method))).Compile();
+      ConstantExpression constantExpression = Expression.Constant(instance);
+      MethodCallExpression methodCallExpression = Expression.Call(constantExpression, method);
+      return Expression.Lambda<Func<object>>(Expression.TypeAs(methodCallExpression, typeof(object)), Array.Empty<ParameterExpression>()).Compile();
     }
 
     private static Action<object> CreateSetDelegate(object instance, MethodInfo method)

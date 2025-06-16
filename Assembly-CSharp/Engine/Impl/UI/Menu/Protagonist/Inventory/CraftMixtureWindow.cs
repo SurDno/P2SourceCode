@@ -41,13 +41,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void CraftWindowSubscribe()
     {
       base.CraftWindowSubscribe();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, ConsoleController);
     }
 
     protected override void CraftWindowUnsubscribe()
     {
       base.CraftWindowUnsubscribe();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, ConsoleController);
     }
 
     protected override void OnEnable()
@@ -63,7 +63,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnDisable()
     {
       DisableCraftButtons();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftMixture, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftMixture, WithoutJoystickCancelListener);
       CraftWindowUnsubscribe();
       base.OnDisable();
     }
@@ -73,7 +73,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.OnJoystick(joystick);
       if (!joystick)
       {
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.CraftMixture, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.CraftMixture, WithoutJoystickCancelListener);
         foreach (ItemSelector ingredientSelector in ingredientSelectors)
           ingredientSelector.SetSelection(false);
         PredictCraftRecipe();
@@ -84,7 +84,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
       else
       {
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftMixture, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftMixture, WithoutJoystickCancelListener);
         PredictCraftRecipe();
         Text componentInChildren3 = ingredientSelectors[0].GetComponentInChildren<Text>();
         componentInChildren3.transform.localPosition = new Vector3(componentInChildren3.transform.localPosition.x, 0.0f);

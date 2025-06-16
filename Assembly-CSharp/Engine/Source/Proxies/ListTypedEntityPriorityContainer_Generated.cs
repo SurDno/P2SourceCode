@@ -29,7 +29,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo(((PriorityContainer<List<Typed<IEntity>>>) target2).items, items);
+      CloneableObjectUtility.CopyListTo(((ListTypedEntityPriorityContainer_Generated) target2).items, items);
     }
 
     public void DataWrite(IDataWriter writer)

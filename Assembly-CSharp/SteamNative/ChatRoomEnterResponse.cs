@@ -11,7 +11,7 @@
     Limited = 7,
     ClanDisabled = 8,
     CommunityBan = 9,
-    MemberBlockedYou = 10, // 0x0000000A
-    YouBlockedMember = 11, // 0x0000000B
+    MemberBlockedYou = 10,
+    YouBlockedMember = 11,
   }
 }

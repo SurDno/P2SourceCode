@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((RegisterComponent) target2).tag = tag;
+    public void CopyTo(object target2) => ((RegisterComponent_Generated) target2).tag = tag;
 
     public void DataWrite(IDataWriter writer)
     {

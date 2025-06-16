@@ -76,7 +76,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnEnable()
     {
       base.OnEnable();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener), true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       actors.Clear();
       actors.Add(Actor);
@@ -89,8 +89,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnDisable()
     {
       DestroyContainers();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Inventory, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Inventory, WithoutJoystickCancelListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       base.OnDisable();
     }
@@ -99,9 +99,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       base.OnJoystick(joystick);
       if (joystick)
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Inventory, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Inventory, WithoutJoystickCancelListener);
       else
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Inventory, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Inventory, WithoutJoystickCancelListener);
     }
 
     private void CreateContainers()

@@ -388,7 +388,7 @@ public class RandomTable
     0.1955f,
     0.2136f,
     0.2835f,
-    506f / (481f * Math.E),
+    0.387f,
     0.182f,
     0.8346f,
     0.9489f,

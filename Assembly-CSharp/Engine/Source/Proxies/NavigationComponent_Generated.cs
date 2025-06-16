@@ -28,7 +28,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((NavigationComponent) target2).isEnabled = isEnabled;
+      ((NavigationComponent_Generated) target2).isEnabled = isEnabled;
     }
 
     public void DataWrite(IDataWriter writer)

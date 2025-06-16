@@ -42,12 +42,12 @@ namespace FlowCanvas.Nodes
       Variable<T> variable = bb.GetVariable<T>(name);
       if (operation != 0)
       {
-        if (typeof (T) == typeof (float))
-          variable.value = (T) (ValueType) OperationTools.Operate((float) (object) variable.value, (float) (object) value, operation);
-        else if (typeof (T) == typeof (int))
-          variable.value = (T) (ValueType) OperationTools.Operate((int) (object) variable.value, (int) (object) value, operation);
-        else if (typeof (T) == typeof (Vector3))
-          variable.value = (T) (ValueType) OperationTools.Operate((Vector3) (object) variable.value, (Vector3) (object) value, operation);
+        if (typeof(T) == typeof(float))
+          variable.value = (T)(object)OperationTools.Operate((float)(object)variable.value, (float)(object)value, operation);
+        else if (typeof(T) == typeof(int))
+          variable.value = (T)(object)OperationTools.Operate((int)(object)variable.value, (int)(object)value, operation);
+        else if (typeof(T) == typeof(Vector3))
+          variable.value = (T)(object)OperationTools.Operate((Vector3)(object)variable.value, (Vector3)(object)value, operation);
         else
           variable.value = value;
       }

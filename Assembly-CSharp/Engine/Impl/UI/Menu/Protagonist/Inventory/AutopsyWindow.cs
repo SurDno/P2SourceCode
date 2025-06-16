@@ -118,7 +118,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, SwapScalpels);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, SwapScalpels);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Context, DrainListener);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
       actors.Clear();
       actors.Add(Actor);
       Build2();
@@ -131,7 +131,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Autopsy, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Autopsy, WithoutJoystickCancelListener);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickLeft, SwapScalpels);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickRight, SwapScalpels);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, NavigateOrgans);
@@ -139,7 +139,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickUp, NavigateOrgans);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, NavigateOrgans);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, DrainListener);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, SelectFromInventory);
       foreach (ContainerTarget containerTarget in containerTargets)
         containerTarget.View.Container = null;
@@ -335,7 +335,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.OnJoystick(joystick);
       if (joystick)
       {
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Autopsy, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Autopsy, WithoutJoystickCancelListener);
         instrumentDamageItem.transform.localPosition = new Vector3(instrumentDamageItem.transform.localPosition.x, -83f);
         instrumentTitleText.transform.localPosition = new Vector3(instrumentTitleText.transform.localPosition.x, -115.5f);
         instrumentErrorText.transform.localPosition = new Vector3(instrumentErrorText.transform.localPosition.x, -285f);
@@ -345,7 +345,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       else
       {
         buttonDrain.GamepadEndHold();
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Autopsy, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Autopsy, WithoutJoystickCancelListener);
         instrumentDamageItem.transform.localPosition = new Vector3(instrumentDamageItem.transform.localPosition.x, -485.5f);
         instrumentTitleText.transform.localPosition = new Vector3(instrumentTitleText.transform.localPosition.x, -453f);
         instrumentErrorText.transform.localPosition = new Vector3(instrumentErrorText.transform.localPosition.x, -453f);
@@ -479,9 +479,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         {
           containerTarget.View.SelectEvent += OnContainerSelect;
           containerTarget.View.DeselectEvent += OnContainerDeselect;
-          containerTarget.View.OpenEndEvent += ((BaseInventoryWindow<AutopsyWindow>) this).OpenEnd;
-          containerTarget.View.OpenBeginEvent += ((BaseInventoryWindow<AutopsyWindow>) this).OpenBegin;
-          containerTarget.View.ItemInteractEvent += new Action<IStorableComponent>(((BaseInventoryWindow<AutopsyWindow>) this).InteractItem);
+          containerTarget.View.OpenEndEvent += OpenEnd;
+          containerTarget.View.OpenBeginEvent += OpenBegin;
+          containerTarget.View.ItemInteractEvent += InteractItem;
         }
       }
       buttonDrain.OpenBeginEvent += DrainBegin;

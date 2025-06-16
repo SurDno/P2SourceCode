@@ -7,6 +7,6 @@
     Sketchfab = 2,
     EnvironmentMap_HorizontalCross = 3,
     EnvironmentMap_LatLong = 4,
-    ReservedMax = 255, // 0x000000FF
+    ReservedMax = 255,
   }
 }

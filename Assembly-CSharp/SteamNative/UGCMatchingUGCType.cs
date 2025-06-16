@@ -2,7 +2,7 @@
 {
   internal enum UGCMatchingUGCType
   {
-    All = -1, // 0xFFFFFFFF
+    All = -1,
     Items = 0,
     Items_Mtx = 1,
     Items_ReadyToUse = 2,
@@ -13,8 +13,8 @@
     AllGuides = 7,
     WebGuides = 8,
     IntegratedGuides = 9,
-    UsableInGame = 10, // 0x0000000A
-    ControllerBindings = 11, // 0x0000000B
-    GameManagedItems = 12, // 0x0000000C
+    UsableInGame = 10,
+    ControllerBindings = 11,
+    GameManagedItems = 12,
   }
 }

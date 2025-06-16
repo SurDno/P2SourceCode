@@ -18,14 +18,14 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
     protected override void OnDisable()
     {
       PlayerUtility.ShowPlayerHands(true);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
       base.OnDisable();
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener), true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
       PlayerUtility.ShowPlayerHands(false);
     }
 

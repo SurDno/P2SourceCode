@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((DifficultyFloatOperation) target2).name = name;
+    public void CopyTo(object target2) => ((DifficultyFloatOperation_Generated) target2).name = name;
 
     public void DataWrite(IDataWriter writer)
     {

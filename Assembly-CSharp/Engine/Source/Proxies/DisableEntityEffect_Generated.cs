@@ -23,7 +23,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((DisableEntityEffect) target2).queue = queue;
+    public void CopyTo(object target2) => ((DisableEntityEffect_Generated) target2).queue = queue;
 
     public void DataWrite(IDataWriter writer)
     {

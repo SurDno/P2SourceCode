@@ -749,8 +749,8 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     CursorService.Instance.Free = CursorService.Instance.Visible = true;
     InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
     PlayerUtility.ShowPlayerHands(false);
-    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener), true);
+    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
+    ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
     ServiceLocator.GetService<NotificationService>().RemoveNotify(NotificationEnum.Map);
     SoundUtility.PlayAudioClip2D(windowOpenSound, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     hasCustomMarkerView.Visible = service.CustomMarker != null;
@@ -774,9 +774,9 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
     PlayerUtility.ShowPlayerHands(true);
     InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Map, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener));
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Map, WithoutJoystickCancelListener);
+    ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
     Clear();
     ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, MoveOnNodes);
     ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, MoveOnNodes);
@@ -1004,11 +1004,11 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     }
     if (joystick)
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Map, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Map, WithoutJoystickCancelListener);
       SelectNode();
     }
     else
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Map, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Map, WithoutJoystickCancelListener);
   }
 
   public void ShowInfo(MapItemView itemView)

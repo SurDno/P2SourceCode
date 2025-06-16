@@ -78,9 +78,9 @@ namespace ParadoxNotion.Serialization.FullSerializer
         return fsResult.Fail("Unable to find member \"" + name + "\"");
       }
       object result = null;
-      fsResult fsResult = Serializer.TryDeserialize(data1, typeof (T), overrideConverterType, ref result);
+      fsResult success = Serializer.TryDeserialize(data1, typeof (T), overrideConverterType, ref result);
       value = (T) result;
-      return fsResult;
+      return success;
     }
   }
 }

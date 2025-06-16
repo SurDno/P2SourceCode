@@ -26,7 +26,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.FillListTo(((AbilitiesComponent) target2).resourceAbilities, resourceAbilities);
+      CloneableObjectUtility.FillListTo(((AbilitiesComponent_Generated) target2).resourceAbilities, resourceAbilities);
     }
 
     public void DataWrite(IDataWriter writer)

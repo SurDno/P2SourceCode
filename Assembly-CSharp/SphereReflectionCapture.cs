@@ -111,13 +111,13 @@ public class SphereReflectionCapture : MonoBehaviour
 
   public enum TextureSize
   {
-    Square16 = 16, // 0x00000010
-    Square32 = 32, // 0x00000020
-    Square64 = 64, // 0x00000040
-    Square128 = 128, // 0x00000080
-    Square256 = 256, // 0x00000100
-    Square512 = 512, // 0x00000200
-    Square1024 = 1024, // 0x00000400
-    Square2048 = 2048, // 0x00000800
+    Square16 = 16,
+    Square32 = 32,
+    Square64 = 64,
+    Square128 = 128,
+    Square256 = 256,
+    Square512 = 512,
+    Square1024 = 1024,
+    Square2048 = 2048,
   }
 }

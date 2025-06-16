@@ -122,7 +122,7 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.AddListener(GameActionType.Cancel, CancelListener);
       service.AddListener(GameActionType.RStickRight, NextLockPick);
       service.AddListener(GameActionType.RStickLeft, PreviousLockPick);
       service.AddListener(GameActionType.LTrigger, BumpLeft, true);
@@ -195,7 +195,7 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
       Clear();
       ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.RemoveListener(GameActionType.Cancel, CancelListener);
       service.RemoveListener(GameActionType.RStickRight, NextLockPick);
       service.RemoveListener(GameActionType.RStickLeft, PreviousLockPick);
       service.RemoveListener(GameActionType.LTrigger, BumpLeft);

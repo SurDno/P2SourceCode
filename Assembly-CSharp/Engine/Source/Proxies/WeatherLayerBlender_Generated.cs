@@ -15,6 +15,6 @@ namespace Engine.Source.Proxies
       return ServiceCache.Factory.Instantiate(this);
     }
 
-    public void CopyTo(object target2) => ((EngineObject) target2).name = name;
+    public void CopyTo(object target2) => ((WeatherLayerBlender_Generated) target2).name = name;
   }
 }

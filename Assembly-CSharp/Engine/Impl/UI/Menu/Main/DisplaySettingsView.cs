@@ -158,7 +158,7 @@ namespace Engine.Impl.UI.Menu.Main
       fieldOfViewView?.RevertVisibleValue();
       InstanceByRequest<ScreenGameSettings>.Instance.OnApply += ResetSliders;
       graphicsGameSettings.OnApply += ResetSliders;
-      InputService.Instance.onJoystickUsedChanged += new Action<bool>(((SettingsView) this).OnJoystick);
+      InputService.Instance.onJoystickUsedChanged += OnJoystick;
       OnJoystick(InputService.Instance.JoystickUsed);
     }
 
@@ -169,7 +169,7 @@ namespace Engine.Impl.UI.Menu.Main
         Revert();
       InstanceByRequest<ScreenGameSettings>.Instance.OnApply -= ResetSliders;
       graphicsGameSettings.OnApply -= ResetSliders;
-      InputService.Instance.onJoystickUsedChanged -= new Action<bool>(((SettingsView) this).OnJoystick);
+      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
     }
 
     protected override void OnJoystick(bool isUsed)

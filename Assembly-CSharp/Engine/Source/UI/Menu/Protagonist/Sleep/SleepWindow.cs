@@ -58,7 +58,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Sleep
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.AddListener(GameActionType.Cancel, CancelListener);
       service.AddListener(GameActionType.Submit, ControllerListener);
       service.AddListener(GameActionType.LStickLeft, ControllerListener);
       service.AddListener(GameActionType.LStickRight, ControllerListener);
@@ -74,9 +74,9 @@ namespace Engine.Source.UI.Menu.Protagonist.Sleep
       controlPanel.SetActive(joystick);
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       if (joystick)
-        service.RemoveListener(GameActionType.Sleep, new GameActionHandle(((UIWindow) this).CancelListener));
+        service.RemoveListener(GameActionType.Sleep, CancelListener);
       else
-        service.AddListener(GameActionType.Sleep, new GameActionHandle(((UIWindow) this).CancelListener));
+        service.AddListener(GameActionType.Sleep, CancelListener);
     }
 
     private bool ControllerListener(GameActionType type, bool down)
@@ -105,8 +105,8 @@ namespace Engine.Source.UI.Menu.Protagonist.Sleep
         Wakeup();
       ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      service.RemoveListener(GameActionType.Sleep, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.RemoveListener(GameActionType.Cancel, CancelListener);
+      service.RemoveListener(GameActionType.Sleep, CancelListener);
       service.RemoveListener(GameActionType.Submit, ControllerListener);
       service.RemoveListener(GameActionType.LStickLeft, ControllerListener);
       service.RemoveListener(GameActionType.LStickRight, ControllerListener);

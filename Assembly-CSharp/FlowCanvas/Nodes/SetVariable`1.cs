@@ -45,11 +45,11 @@ namespace FlowCanvas.Nodes
       if (operation != 0)
       {
         if (typeof (T) == typeof (float))
-          targetVariable.value = (T) (ValueType) OperationTools.Operate((float) (object) targetVariable.value, (float) (object) value, operation);
+          targetVariable.value = (T) (object) OperationTools.Operate((float) (object) targetVariable.value, (float) (object) value, operation);
         else if (typeof (T) == typeof (int))
-          targetVariable.value = (T) (ValueType) OperationTools.Operate((int) (object) targetVariable.value, (int) (object) value, operation);
+          targetVariable.value = (T) (object) OperationTools.Operate((int) (object) targetVariable.value, (int) (object) value, operation);
         else if (typeof (T) == typeof (Vector3))
-          targetVariable.value = (T) (ValueType) OperationTools.Operate((Vector3) (object) targetVariable.value, (Vector3) (object) value, operation);
+          targetVariable.value = (T) (object) OperationTools.Operate((Vector3) (object) targetVariable.value, (Vector3) (object) value, operation);
         else
           targetVariable.value = value;
       }

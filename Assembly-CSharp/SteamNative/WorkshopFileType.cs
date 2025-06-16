@@ -13,12 +13,12 @@
     Software = 7,
     Concept = 8,
     WebGuide = 9,
-    IntegratedGuide = 10, // 0x0000000A
-    Merch = 11, // 0x0000000B
-    ControllerBinding = 12, // 0x0000000C
-    SteamworksAccessInvite = 13, // 0x0000000D
-    SteamVideo = 14, // 0x0000000E
-    GameManagedItem = 15, // 0x0000000F
-    Max = 16, // 0x00000010
+    IntegratedGuide = 10,
+    Merch = 11,
+    ControllerBinding = 12,
+    SteamworksAccessInvite = 13,
+    SteamVideo = 14,
+    GameManagedItem = 15,
+    Max = 16,
   }
 }

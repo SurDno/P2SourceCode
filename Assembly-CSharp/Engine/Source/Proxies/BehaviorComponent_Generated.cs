@@ -26,7 +26,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((BehaviorComponent) target2).behaviorTreeResource = behaviorTreeResource;
+      ((BehaviorComponent_Generated) target2).behaviorTreeResource = behaviorTreeResource;
     }
 
     public void DataWrite(IDataWriter writer)

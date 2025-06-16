@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.FillListTo(((TagsComponent) target2).tags, tags);
+      CloneableObjectUtility.FillListTo(((TagsComponent_Generated) target2).tags, tags);
     }
 
     public void DataWrite(IDataWriter writer)

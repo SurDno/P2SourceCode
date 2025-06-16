@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((BehaviorTreeAbilityController) target2).name = name;
+      ((BehaviorTreeAbilityController_Generated) target2).name = name;
     }
 
     public void DataWrite(IDataWriter writer)

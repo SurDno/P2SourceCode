@@ -19,32 +19,33 @@ namespace Facepunch.Steamworks
 
     internal unsafe bool TryLoad(SteamUtils utils)
     {
-      if (IsLoaded)
-        return true;
-      uint pnWidth = 0;
-      uint pnHeight = 0;
-      if (!utils.GetImageSize(Id, out pnWidth, out pnHeight))
-      {
-        IsError = true;
-        return true;
-      }
-      byte[] numArray = new byte[(int) pnWidth * (int) pnHeight * 4];
-      fixed (byte* pubDest = numArray)
-      {
-        if (!utils.GetImageRGBA(Id, (IntPtr) pubDest, numArray.Length))
-        {
-          IsError = true;
-          return true;
-        }
-        // ISSUE: __unpin statement
-        __unpin(pubDest);
-        Width = (int) pnWidth;
-        Height = (int) pnHeight;
-        Data = numArray;
-        IsLoaded = true;
-        IsError = false;
-        return true;
-      }
+	    if (IsLoaded)
+		    return true;
+
+	    uint pnWidth = 0;
+	    uint pnHeight = 0;
+	    if (!utils.GetImageSize(Id, out pnWidth, out pnHeight))
+	    {
+		    IsError = true;
+		    return true;
+	    }
+
+	    byte[] numArray = new byte[(int)pnWidth * (int)pnHeight * 4];
+	    fixed (byte* pubDest = numArray) 
+	    {
+		    if (!utils.GetImageRGBA(Id, (IntPtr)pubDest, numArray.Length)) 
+		    {
+			    IsError = true;
+			    return true;
+		    }
+	    }
+
+	    Width = (int)pnWidth;
+	    Height = (int)pnHeight;
+	    Data = numArray;
+	    IsLoaded = true;
+	    IsError = false;
+	    return true;
     }
 
     public Color GetPixel(int x, int y)

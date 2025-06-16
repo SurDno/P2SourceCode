@@ -281,7 +281,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       Unsubscribe();
       UnsubscribeNavigation();
       CraftWindowSubscribe();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
       CurrentMode = Modes.Craft;
       foreach (ItemSelector ingredientSelector in ingredientSelectors)
         ingredientSelector.ChangeItemEvent += OnSelectorItemChange;
@@ -297,7 +297,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void OnDisable()
     {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
       CraftWindowUnsubscribe();
       foreach (ItemSelector ingredientSelector in ingredientSelectors)
         ingredientSelector.ChangeItemEvent -= OnSelectorItemChange;
@@ -316,7 +316,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected enum SelectedSelector
     {
-      None = -1, // 0xFFFFFFFF
+      None = -1,
       Top = 0,
       Bottom = 1,
     }

@@ -31,100 +31,79 @@ namespace PLVirtualMachine.Dynamic.Components
     {
     }
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
+    public void InitialiseEvent(DynamicEvent target) {
       string name = target.Name;
-      // ISSUE: reference to a compiler-generated method
-      switch (\u003CPrivateImplementationDetails\u003E.ComputeStringHash(name))
-      {
-        case 311972042:
-          if (!(name == "OnCommonConsoleEvent"))
-            break;
+
+      switch (name) {
+        case "OnCommonConsoleEvent":
           OnCommonConsoleEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
-        case 462744480:
-          if (!(name == "OnRegionLoadedOnce"))
-            break;
+
+        case "OnRegionLoadedOnce":
           OnRegionLoadedOnce += p1 => target.RaiseFromEngineImpl(p1);
           break;
-        case 856205441:
-          if (!(name == "OnTimer"))
-            break;
+
+        case "OnTimer":
           OnTimer += p1 => target.RaiseFromEngineImpl(p1);
           break;
-        case 896158278:
-          if (!(name == "OnLoadGame"))
-            break;
+
+        case "OnLoadGame":
           OnLoadGame += () => target.RaiseFromEngineImpl();
           break;
-        case 995394406:
-          if (!(name == "OnStartGame"))
-            break;
+
+        case "OnStartGame":
           OnStartGame += () => target.RaiseFromEngineImpl();
           break;
-        case 1566732495:
-          if (!(name == "OnTemplateEntityLogicEvent"))
-            break;
+
+        case "OnTemplateEntityLogicEvent":
           OnTemplateEntityLogicEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
-        case 2206040734:
-          if (!(name == "NeedCreateDropBagEvent"))
-            break;
+
+        case "NeedCreateDropBagEvent":
           NeedCreateDropBagEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
-        case 2488324245:
-          if (!(name == "NeedDeleteDropBagEvent"))
-            break;
+
+        case "NeedDeleteDropBagEvent":
           NeedDeleteDropBagEvent += p1 => target.RaiseFromEngineImpl(p1);
           break;
-        case 2596678185:
-          if (!(name == "OnEndStateSleep"))
-            break;
+
+        case "OnEndStateSleep":
           OnEndStateSleep += p1 => target.RaiseFromEngineImpl(p1);
           break;
-        case 2852118553:
-          if (!(name == "OnRegionLoaded"))
-            break;
+
+        case "OnRegionLoaded":
           OnRegionLoaded += p1 => target.RaiseFromEngineImpl(p1);
           break;
-        case 2866581911:
-          if (!(name == "OnRegionReputationChangedEvent"))
-            break;
+
+        case "OnRegionReputationChangedEvent":
           OnRegionReputationChangedEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
-        case 2894496429:
-          if (!(name == "OnEntityLogicEvent"))
-            break;
+
+        case "OnEntityLogicEvent":
           OnEntityLogicEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
-        case 3108488871:
-          if (!(name == "OnGameModeChanged"))
-            break;
+
+        case "OnGameModeChanged":
           OnGameModeChanged += () => target.RaiseFromEngineImpl();
           break;
-        case 3544009596:
-          if (!(name == "OnRegionDiseaseLevelChangedEvent"))
-            break;
+
+        case "OnRegionDiseaseLevelChangedEvent":
           OnRegionDiseaseLevelChangedEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
-        case 3566377774:
-          if (!(name == "OnFurnitureLoadedOnce"))
-            break;
+
+        case "OnFurnitureLoadedOnce":
           OnFurnitureLoadedOnce += (p1, p2, p3, p4) => target.RaiseFromEngineImpl(p1, p2, p3, p4);
           break;
-        case 3807770123:
-          if (!(name == "OnEndCutsceneEvent"))
-            break;
+
+        case "OnEndCutsceneEvent":
           OnEndCutsceneEvent += () => target.RaiseFromEngineImpl();
           break;
-        case 4042290315:
-          if (!(name == "OnFurnitureLoaded"))
-            break;
+
+        case "OnFurnitureLoaded":
           OnFurnitureLoaded += (p1, p2, p3, p4) => target.RaiseFromEngineImpl(p1, p2, p3, p4);
           break;
-        case 4200346183:
-          if (!(name == "OnValueLogicEvent"))
-            break;
+
+        case "OnValueLogicEvent":
           OnValueLogicEvent += (p1, p2) => target.RaiseFromEngineImpl(p1, p2);
           break;
       }
@@ -547,14 +526,9 @@ namespace PLVirtualMachine.Dynamic.Components
         for (int index = 0; index < entityListByRootInfo.Count; ++index)
         {
           VMEntity vmEntity = entityListByRootInfo[index];
-          switch (vmEntity)
+          if (vmEntity != null && vmEntity != null)
           {
-            case null:
-            case null:
-              continue;
-            default:
-              ExpressionUtility.ProcessAction(action, methodExecInitiator, vmEntity.GetFSM());
-              continue;
+            ExpressionUtility.ProcessAction(action, methodExecInitiator, vmEntity.GetFSM());
           }
         }
       }

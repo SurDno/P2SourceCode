@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo(((PolyOperation<float>) target2).values, values);
+      CloneableObjectUtility.CopyListTo(((PlusFloatPolyOperation_Generated) target2).values, values);
     }
 
     public void DataWrite(IDataWriter writer)

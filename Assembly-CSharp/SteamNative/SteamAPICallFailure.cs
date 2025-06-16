@@ -2,7 +2,7 @@
 {
   internal enum SteamAPICallFailure
   {
-    None = -1, // 0xFFFFFFFF
+    None = -1,
     SteamGone = 0,
     NetworkFailure = 1,
     InvalidHandle = 2,

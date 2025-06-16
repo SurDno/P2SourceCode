@@ -25,7 +25,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((LocationComponent) target2).locationType = locationType;
+      ((LocationComponent_Generated) target2).locationType = locationType;
     }
 
     public void DataWrite(IDataWriter writer)

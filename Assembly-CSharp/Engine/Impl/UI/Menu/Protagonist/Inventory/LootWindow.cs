@@ -123,7 +123,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.OnEnable();
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, OnChangeInventory);
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
       inventories = new List<ContainerResizableWindow>(GetComponentsInChildren<ContainerResizableWindow>());
       actors.Clear();
       actors.Add(Actor);
@@ -146,12 +146,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       CheckLivingNpc(false);
       CheckEmpty();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Loot, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Loot, WithoutJoystickCancelListener);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.BumperSelectionRight, OnChangeInventory);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, MainControl);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, new GameActionHandle(((BaseInventoryWindow<LootWindow>) this).DragListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Context, DragListener);
       CurrentMode = Modes.None;
       Color color = inventories[1].GetComponentInChildren<Image>().color with
       {
@@ -169,8 +169,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       service.AddListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
       service.AddListener(GameActionType.BumperSelectionRight, OnChangeInventory);
       service.AddListener(GameActionType.Submit, MainControl);
-      service.RemoveListener(GameActionType.Submit, new GameActionHandle(((BaseInventoryWindow<LootWindow>) this).ContextListener));
-      service.AddListener(GameActionType.Context, new GameActionHandle(((BaseInventoryWindow<LootWindow>) this).DragListener));
+      service.RemoveListener(GameActionType.Submit, ContextListener);
+      service.AddListener(GameActionType.Context, DragListener);
     }
 
     protected override void Unsubscribe()
@@ -180,7 +180,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       service.RemoveListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
       service.RemoveListener(GameActionType.BumperSelectionRight, OnChangeInventory);
       service.RemoveListener(GameActionType.Submit, MainControl);
-      service.RemoveListener(GameActionType.Context, new GameActionHandle(((BaseInventoryWindow<LootWindow>) this).DragListener));
+      service.RemoveListener(GameActionType.Context, DragListener);
     }
 
     private Modes CurrentMode
@@ -316,7 +316,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         if (selectedContainer != null)
           ShowClosedContainerInfo(selectedContainer.InventoryContainer);
         SetSelectedContainer();
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Loot, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Loot, WithoutJoystickCancelListener);
         if (!(currentInventory != null))
           return;
         currentInventory.SetActive(true);
@@ -324,7 +324,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       else
       {
         SetSelectedContainer();
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Loot, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Loot, WithoutJoystickCancelListener);
         inventories[0].SetActive(false);
         inventories[1].SetActive(false);
       }

@@ -27,7 +27,7 @@ public class AmplifyColorBase : MonoBehaviour
   public bool UseVolumes;
   public float ExitVolumeBlendTime = 1f;
   public Transform TriggerVolumeProxy;
-  public LayerMask VolumeCollisionMask = (LayerMask) -1;
+  public LayerMask VolumeCollisionMask = -1;
   private Camera ownerCamera;
   private Shader shaderBase;
   private Shader shaderBlend;

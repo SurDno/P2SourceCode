@@ -88,7 +88,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnDisable()
     {
       DisableCraftButtons();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftBrewery, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftBrewery, WithoutJoystickCancelListener);
       currentBrewingSlotIndex = -1;
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, NavigateOnSlots);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickDown, NavigateOnSlots);
@@ -109,7 +109,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       slotNavigation.SetActive(joystick);
       if (!joystick)
       {
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.CraftBrewery, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.CraftBrewery, WithoutJoystickCancelListener);
         foreach (ItemSelector ingredientSelector in ingredientSelectors)
           ingredientSelector.SetSelection(false);
         PreviousMode = CurrentMode;
@@ -119,7 +119,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
       else
       {
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftBrewery, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.CraftBrewery, WithoutJoystickCancelListener);
         if (PreviousMode != 0)
           CurrentMode = PreviousMode;
         else
@@ -420,7 +420,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         brewingSlotAnchor.Initialize(brewingSlotPrefab);
         brewingSlotAnchor.CraftEvent += Craft;
-        brewingSlotAnchor.TakeEvent += new Action<IStorableComponent>(((SelectableInventoryWindow) this).OnItemClick);
+        brewingSlotAnchor.TakeEvent += OnItemClick;
       }
       base.Initialize();
     }

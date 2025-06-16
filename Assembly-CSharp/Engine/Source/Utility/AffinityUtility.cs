@@ -1,90 +1,102 @@
-﻿rt("Affinity")]
+﻿using System;
+using System.Runtime.InteropServices;
+using Engine.Source.Settings.External;
+using UnityEngine;
+
+namespace Engine.Source.Utility
+{
+  public static class AffinityUtility
+  {
+    [DllImport("Affinity")]
+    private static extern bool GetAffinity(ref long value);
+
+    [DllImport("Affinity")]
     private static extern bool SetAffinity(long value);
 
     public static void ComputeAffinity()
     {
       try
       {
-        Debug.Log((object) "ComputeAffinity , try compute");
+        Debug.Log("ComputeAffinity , try compute");
         int affinity = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.Affinity;
         switch (affinity)
         {
           case -1:
-            Debug.Log((object) "ComputeAffinity , not requred");
+            Debug.Log("ComputeAffinity , not requred");
             break;
           case 0:
-            Debug.Log((object) "ComputeAffinity , try disable ht");
+            Debug.Log("ComputeAffinity , try disable ht");
             int numberOfCores = SystemInfoUtility.NumberOfCores;
             int logicalProcessors1 = SystemInfoUtility.NumberOfLogicalProcessors;
-            Debug.Log((object) ("ComputeAffinity , NumberOfCores : " + numberOfCores));
-            Debug.Log((object) ("ComputeAffinity , NumberOfLogicalProcessors : " + logicalProcessors1));
+            Debug.Log("ComputeAffinity , NumberOfCores : " + numberOfCores);
+            Debug.Log("ComputeAffinity , NumberOfLogicalProcessors : " + logicalProcessors1);
             if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MinAffinityCount > logicalProcessors1)
             {
-              Debug.Log((object) ("ComputeAffinity , min : " + (object) ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MinAffinityCount + " > current : " + logicalProcessors1));
+              Debug.Log("ComputeAffinity , min : " + ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MinAffinityCount + " > current : " + logicalProcessors1);
               break;
             }
             long num1 = 0;
-            if (!AffinityUtility.GetAffinity(ref num1))
+            if (!GetAffinity(ref num1))
             {
-              Debug.LogError((object) "ComputeAffinity , Error invoke : GetAffinity");
+              Debug.LogError("ComputeAffinity , Error invoke : GetAffinity");
               break;
             }
-            Debug.Log((object) ("ComputeAffinity , current value : " + AffinityUtility.ToBinary(num1, logicalProcessors1)));
+            Debug.Log("ComputeAffinity , current value : " + ToBinary(num1, logicalProcessors1));
             if (numberOfCores == logicalProcessors1)
             {
-              Debug.Log((object) "ComputeAffinity , no ht detected");
+              Debug.Log("ComputeAffinity , no ht detected");
               break;
             }
             if (numberOfCores * 2 == logicalProcessors1)
             {
-              Debug.Log((object) "ComputeAffinity , try compute x2");
+              Debug.Log("ComputeAffinity , try compute x2");
               for (long index = 0; index < numberOfCores; ++index)
               {
                 long num2 = index * 2L + 1L;
                 num1 &= ~(1 << (int) num2);
               }
-              if (!AffinityUtility.SetAffinity(num1))
+              if (!SetAffinity(num1))
               {
-                Debug.LogError((object) "ComputeAffinity , Error invoke : SetAffinity");
+                Debug.LogError("ComputeAffinity , Error invoke : SetAffinity");
                 break;
               }
-              if (!AffinityUtility.GetAffinity(ref num1))
+              if (!GetAffinity(ref num1))
               {
-                Debug.LogError((object) "ComputeAffinity , Error invoke : GetAffinity");
+                Debug.LogError("ComputeAffinity , Error invoke : GetAffinity");
                 break;
               }
-              Debug.Log((object) ("ComputeAffinity , new value : " + AffinityUtility.ToBinary(num1, logicalProcessors1)));
+              Debug.Log("ComputeAffinity , new value : " + ToBinary(num1, logicalProcessors1));
               break;
             }
-            Debug.Log((object) "ComputeAffinity , is not support");
+            Debug.Log("ComputeAffinity , is not support");
             break;
           default:
             if (affinity > 0)
             {
-              Debug.Log((object) ("ComputeAffinity , try set value : " + affinity));
+              Debug.Log("ComputeAffinity , try set value : " + affinity);
               int logicalProcessors2 = SystemInfoUtility.NumberOfLogicalProcessors;
               long num3 = 0;
-              if (!AffinityUtility.GetAffinity(ref num3))
+              if (!GetAffinity(ref num3))
               {
-                Debug.LogError((object) "ComputeAffinity , Error invoke : GetAffinity");
+                Debug.LogError("ComputeAffinity , Error invoke : GetAffinity");
                 break;
               }
-              Debug.Log((object) ("ComputeAffinity , current value : " + AffinityUtility.ToBinary(num3, logicalProcessors2)));
+              Debug.Log("ComputeAffinity , current value : " + ToBinary(num3, logicalProcessors2));
               long num4 = affinity;
-              if (!AffinityUtility.SetAffinity(num4))
+              if (!SetAffinity(num4))
               {
-                Debug.LogError((object) "ComputeAffinity , Error invoke : SetAffinity");
+                Debug.LogError("ComputeAffinity , Error invoke : SetAffinity");
                 break;
               }
-              if (!AffinityUtility.GetAffinity(ref num4))
+              if (!GetAffinity(ref num4))
               {
-                Debug.LogError((object) "ComputeAffinity , Error invoke : GetAffinity");
+                Debug.LogError("ComputeAffinity , Error invoke : GetAffinity");
                 break;
               }
-              Debug.Log((object) ("ComputeAffinity , new value : " + AffinityUtility.ToBinary(num4, logicalProcessors2)));
+              Debug.Log("ComputeAffinity , new value : " + ToBinary(num4, logicalProcessors2));
               break;
             }
-            Debug.Log((object) "ComputeAffinity , wrong value");
+            Debug.Log("ComputeAffinity , wrong value");
             break;
         }
       }

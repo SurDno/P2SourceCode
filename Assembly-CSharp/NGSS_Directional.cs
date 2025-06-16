@@ -183,10 +183,10 @@ public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
 
   public enum ShadowsResolution
   {
-    Low = 1024, // 0x00000400
-    Med = 2048, // 0x00000800
-    High = 4096, // 0x00001000
-    Ultra = 8192, // 0x00002000
-    Mega = 16384, // 0x00004000
+    Low = 1024,
+    Med = 2048,
+    High = 4096,
+    Ultra = 8192,
+    Mega = 16384,
   }
 }

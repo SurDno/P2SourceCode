@@ -126,14 +126,14 @@ namespace Engine.Source.UI.Menu.Main
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel,CancelListener);
     }
 
     protected override void OnDisable()
     {
       ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
       Clear();
       base.OnDisable();
     }

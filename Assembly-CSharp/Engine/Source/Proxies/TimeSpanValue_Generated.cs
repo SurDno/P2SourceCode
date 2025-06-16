@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((ConstValue<TimeSpan>) target2).value = value;
+    public void CopyTo(object target2) => ((TimeSpanValue_Generated) target2).value = value;
 
     public void DataWrite(IDataWriter writer)
     {

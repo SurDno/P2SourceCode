@@ -407,7 +407,7 @@ namespace Rain
       UV1 = 1,
       UV2 = 2,
       UV3 = 3,
-      None = 255, // 0xFF
+      None = 255,
     }
   }
 }

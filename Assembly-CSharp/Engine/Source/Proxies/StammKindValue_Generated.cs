@@ -23,7 +23,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((ConstValue<StammKind>) target2).value = value;
+    public void CopyTo(object target2) => ((StammKindValue_Generated) target2).value = value;
 
     public void DataWrite(IDataWriter writer)
     {

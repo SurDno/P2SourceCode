@@ -94,7 +94,7 @@ namespace Engine.Impl.UI.Menu.Main
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       if (buttons == null)
         buttons = GetComponentsInChildren<Button>();
@@ -110,7 +110,7 @@ namespace Engine.Impl.UI.Menu.Main
     {
       if (exitConfirmationInstance != null)
         exitConfirmationInstance.Hide();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
       CursorService.Instance.Free = CursorService.Instance.Visible = false;
       PlayerUtility.ShowPlayerHands(true);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;

@@ -23,7 +23,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((AbilityValue<Vector2>) target2).value = value;
+    public void CopyTo(object target2) => ((Vector2AbilityValue_Generated) target2).value = value;
 
     public void DataWrite(IDataWriter writer)
     {

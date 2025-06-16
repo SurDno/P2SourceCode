@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((ForceCollectMemoryStrategy) target2).disableGC = disableGC;
+      ((ForceCollectMemoryStrategy_Generated) target2).disableGC = disableGC;
     }
 
     public void DataWrite(IDataWriter writer)

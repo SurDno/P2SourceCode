@@ -39,9 +39,9 @@ public class SplittedItemView : ItemView
     {
       if (!(nestedView == null))
       {
-        nestedView.DeselectEvent += new Action<IStorableComponent>(((ItemView) this).FireDeselectEvent);
-        nestedView.SelectEvent += new Action<IStorableComponent>(((ItemView) this).FireSelectEvent);
-        nestedView.InteractEvent += new Action<IStorableComponent>(((ItemView) this).FireInteractEvent);
+        nestedView.DeselectEvent += FireDeselectEvent;
+        nestedView.SelectEvent += FireSelectEvent;
+        nestedView.InteractEvent += FireInteractEvent;
       }
     }
   }

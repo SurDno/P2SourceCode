@@ -7,12 +7,12 @@ namespace Engine.Source.Commons.Abilities
   {
     ItemPlayer = 1,
     ItemNpc = 2,
-    Item = ItemNpc | ItemPlayer, // 0x00000003
+    Item = ItemNpc | ItemPlayer,
     SelfPlayer = 4,
     SelfNpc = 8,
-    Self = SelfNpc | SelfPlayer, // 0x0000000C
-    TargetPlayer = 16, // 0x00000010
-    TargetNpc = 32, // 0x00000020
-    Target = TargetNpc | TargetPlayer, // 0x00000030
+    Self = SelfNpc | SelfPlayer,
+    TargetPlayer = 16,
+    TargetNpc = 32,
+    Target = TargetNpc | TargetPlayer,
   }
 }

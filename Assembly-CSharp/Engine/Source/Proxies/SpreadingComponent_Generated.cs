@@ -25,7 +25,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((SpreadingComponent) target2).diseasedState = diseasedState;
+      ((SpreadingComponent_Generated) target2).diseasedState = diseasedState;
     }
 
     public void DataWrite(IDataWriter writer)

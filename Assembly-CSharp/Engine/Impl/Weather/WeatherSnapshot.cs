@@ -72,7 +72,7 @@ namespace Engine.Impl.Weather
     [DataWriteProxy]
     [CopyableProxy(MemberEnum.OnlyCopy)]
     [Inspected]
-    protected Rain rain = ProxyFactory.Create<Rain>();
+    protected Element.Rain rain = ProxyFactory.Create<Element.Rain>();
     [DataReadProxy(MemberEnum.OnlyCopy)]
     [DataWriteProxy()]
     [CopyableProxy(MemberEnum.OnlyCopy)]
@@ -99,7 +99,7 @@ namespace Engine.Impl.Weather
 
     public Wind Wind => wind;
 
-    public Rain Rain => rain;
+    public Element.Rain Rain => rain;
 
     public FallingLeaves FallingLeaves => fallingLeaves;
 

@@ -82,7 +82,7 @@ public class JoystickLayoutSwitcher
 
   public enum KeyLayouts
   {
-    None = -1, // 0xFFFFFFFF
+    None = -1,
     One = 0,
     Two = 1,
     Three = 2,

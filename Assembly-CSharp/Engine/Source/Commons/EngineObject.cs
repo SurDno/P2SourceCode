@@ -97,10 +97,10 @@ namespace Engine.Source.Commons
       IsTemplate = 2,
       DontSave = 4,
       IsPlayer = 8,
-      IsEnabledInHierarchy = 16, // 0x00000010
-      IsAdded = 32, // 0x00000020
-      IsEnabled = 64, // 0x00000040
-      IsAttached = 128, // 0x00000080
+      IsEnabledInHierarchy = 16,
+      IsAdded = 32,
+      IsEnabled = 64,
+      IsAttached = 128,
     }
   }
 }

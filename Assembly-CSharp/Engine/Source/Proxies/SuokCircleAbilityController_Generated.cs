@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((SuokCircleAbilityController) target2).state = state;
+      ((SuokCircleAbilityController_Generated) target2).state = state;
     }
 
     public void DataWrite(IDataWriter writer)

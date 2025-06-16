@@ -771,8 +771,8 @@ namespace UnityStandardAssets.CinematicEffects
 
     public enum ColorGradingPrecision
     {
-      Normal = 16, // 0x00000010
-      High = 32, // 0x00000020
+      Normal = 16,
+      High = 32,
     }
 
     [Serializable]

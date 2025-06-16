@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((DefaultAbilityController) target2).active = active;
+    public void CopyTo(object target2) => ((DefaultAbilityController_Generated) target2).active = active;
 
     public void DataWrite(IDataWriter writer)
     {

@@ -23,8 +23,8 @@ namespace UnityEngine.PostProcessing
     {
       Lowest = 3,
       Low = 6,
-      Medium = 10, // 0x0000000A
-      High = 16, // 0x00000010
+      Medium = 10,
+      High = 16,
     }
 
     [Serializable]

@@ -6,8 +6,8 @@ namespace Engine.Common.Components.Parameters
   public enum PriorityParameterEnum
   {
     None = 0,
-    Default = 100, // 0x00000064
-    RandomQuest = 200, // 0x000000C8
-    Quest = 300, // 0x0000012C
+    Default = 100,
+    RandomQuest = 200,
+    Quest = 300,
   }
 }

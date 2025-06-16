@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo(((SelectorComponent) target2).presets, presets);
+      CloneableObjectUtility.CopyListTo(((SelectorComponent_Generated) target2).presets, presets);
     }
 
     public void DataWrite(IDataWriter writer)

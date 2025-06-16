@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo(((SequenceMemoryStrategy) target2).items, items);
+      CloneableObjectUtility.CopyListTo(((SequenceMemoryStrategy_Generated) target2).items, items);
     }
 
     public void DataWrite(IDataWriter writer)

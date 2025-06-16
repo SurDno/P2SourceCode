@@ -1,9 +1,9 @@
 ﻿public enum MapPlaceholderKind
 {
   Region = 0,
-  Building = 16, // 0x00000010
-  ShopBuilding = 17, // 0x00000011
-  SpecialBuilding = 18, // 0x00000012
-  Marker = 32, // 0x00000020
-  Player = 48, // 0x00000030
+  Building = 16,
+  ShopBuilding = 17,
+  SpecialBuilding = 18,
+  Marker = 32,
+  Player = 48,
 }

@@ -269,7 +269,7 @@ namespace Facepunch.Steamworks
         {
           if (Filter != null && !Filter.Test(info))
             return;
-          Server server = ServerList.Server.FromSteam(client, info);
+          Server server = Server.FromSteam(client, info);
           Responded.Add(server);
           Action<Server> onServerResponded = OnServerResponded;
           if (onServerResponded == null)
@@ -277,7 +277,7 @@ namespace Facepunch.Steamworks
           onServerResponded(server);
         }
         else
-          Unresponsive.Add(ServerList.Server.FromSteam(client, info));
+          Unresponsive.Add(Server.FromSteam(client, info));
       }
 
       public void Dispose()

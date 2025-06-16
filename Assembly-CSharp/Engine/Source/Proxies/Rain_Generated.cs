@@ -7,8 +7,8 @@ using Scripts.Tools.Serializations.Converters;
 
 namespace Engine.Source.Proxies
 {
-  [FactoryProxy(typeof (Rain))]
-  public class Rain_Generated : Rain, ICloneable, ICopyable, ISerializeDataWrite, ISerializeDataRead
+  [FactoryProxy(typeof (Impl.Weather.Element.Rain))]
+  public class Rain_Generated : Impl.Weather.Element.Rain, ICloneable, ICopyable, ISerializeDataWrite, ISerializeDataRead
   {
     public object Clone()
     {

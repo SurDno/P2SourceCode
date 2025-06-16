@@ -26,7 +26,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((OutdoorCrowdComponent) target2).data = data;
+    public void CopyTo(object target2) => ((OutdoorCrowdComponent_Generated) target2).data = data;
 
     public void DataWrite(IDataWriter writer)
     {

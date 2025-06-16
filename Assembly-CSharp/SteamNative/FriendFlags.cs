@@ -7,12 +7,12 @@
     FriendshipRequested = 2,
     Immediate = 4,
     ClanMember = 8,
-    OnGameServer = 16, // 0x00000010
-    RequestingFriendship = 128, // 0x00000080
-    RequestingInfo = 256, // 0x00000100
-    Ignored = 512, // 0x00000200
-    IgnoredFriend = 1024, // 0x00000400
-    ChatMember = 4096, // 0x00001000
-    All = 65535, // 0x0000FFFF
+    OnGameServer = 16,
+    RequestingFriendship = 128,
+    RequestingInfo = 256,
+    Ignored = 512,
+    IgnoredFriend = 1024,
+    ChatMember = 4096,
+    All = 65535,
   }
 }

@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((InventoryComponent) target2).containerResource = containerResource;
+      ((InventoryComponent_Generated) target2).containerResource = containerResource;
     }
 
     public void DataWrite(IDataWriter writer)

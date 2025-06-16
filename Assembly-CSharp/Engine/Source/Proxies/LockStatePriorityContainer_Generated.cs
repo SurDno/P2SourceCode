@@ -27,7 +27,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.CopyListTo(((PriorityContainer<LockState>) target2).items, items);
+      CloneableObjectUtility.CopyListTo(((LockStatePriorityContainer_Generated) target2).items, items);
     }
 
     public void DataWrite(IDataWriter writer)

@@ -42,7 +42,7 @@ namespace ParadoxNotion.Serialization
     public static T Deserialize<T>(
       string serializedState,
       List<Object> objectReferences = null,
-      T deserialized = null)
+      object deserialized = null)
     {
       return (T) Deserialize(typeof (T), serializedState, objectReferences, deserialized);
     }

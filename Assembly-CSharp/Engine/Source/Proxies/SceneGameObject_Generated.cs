@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((SceneGameObject) target2).id = id;
+    public void CopyTo(object target2) => ((SceneGameObject_Generated) target2).id = id;
 
     public void DataWrite(IDataWriter writer)
     {

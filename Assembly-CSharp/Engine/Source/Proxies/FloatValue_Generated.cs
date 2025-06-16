@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((ConstValue<float>) target2).value = value;
+    public void CopyTo(object target2) => ((FloatValue_Generated) target2).value = value;
 
     public void DataWrite(IDataWriter writer)
     {

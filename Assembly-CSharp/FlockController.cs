@@ -59,7 +59,7 @@ public class FlockController : MonoBehaviour, IUpdatable
   [Space]
   [Header("Avoidance")]
   public bool _birdAvoid;
-  public LayerMask _avoidanceMask = (LayerMask) -1;
+  public LayerMask _avoidanceMask = -1;
   public int _birdAvoidHorizontalForce = 1000;
   public float _birdAvoidDistanceMin = 5f;
   public float _birdAvoidDistanceMax = 4.5f;

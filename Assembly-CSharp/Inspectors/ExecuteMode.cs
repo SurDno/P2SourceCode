@@ -8,6 +8,6 @@ namespace Inspectors
     None = 0,
     Runtime = 1,
     Edit = 2,
-    EditAndRuntime = Edit | Runtime, // 0x00000003
+    EditAndRuntime = Edit | Runtime,
   }
 }

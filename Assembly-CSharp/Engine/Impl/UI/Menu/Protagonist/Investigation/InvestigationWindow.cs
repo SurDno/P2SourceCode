@@ -50,7 +50,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Investigation
       lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
       PlayerUtility.ShowPlayerHands(false);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       Clear();
@@ -71,7 +71,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Investigation
     {
       Clear();
       ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
       PlayerUtility.ShowPlayerHands(true);
       base.OnDisable();

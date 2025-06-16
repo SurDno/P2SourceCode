@@ -6,6 +6,6 @@
     Left = 2,
     Disconnected = 4,
     Kicked = 8,
-    Banned = 16, // 0x00000010
+    Banned = 16,
   }
 }

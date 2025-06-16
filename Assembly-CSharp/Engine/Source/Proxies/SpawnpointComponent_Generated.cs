@@ -23,7 +23,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((SpawnpointComponent) target2).type = type;
+    public void CopyTo(object target2) => ((SpawnpointComponent_Generated) target2).type = type;
 
     public void DataWrite(IDataWriter writer)
     {

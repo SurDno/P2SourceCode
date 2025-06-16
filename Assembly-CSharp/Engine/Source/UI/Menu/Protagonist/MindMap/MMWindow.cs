@@ -330,8 +330,8 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       PlayerUtility.ShowPlayerHands(false);
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener), true);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
       CollectMapNodes();
       OpenPage(LastPage);
       ScaleValue = 0.0f;
@@ -376,11 +376,11 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       }
       if (joystick)
       {
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MindMap, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MindMap, WithoutJoystickCancelListener);
         SelectNode();
       }
       else
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.MindMap, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
+        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.MindMap, WithoutJoystickCancelListener);
     }
 
     private bool MoveOnNodes(GameActionType type, bool down) => false;
@@ -544,9 +544,9 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
       PlayerUtility.ShowPlayerHands(true);
       InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MindMap, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.MindMap, WithoutJoystickCancelListener);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
       CloseOpenedPage();
       mapNodes.Clear();
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.RStickUp, MoveOnNodes);
@@ -703,7 +703,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     private enum NodeMoveDirection
     {
-      None = -1, // 0xFFFFFFFF
+      None = -1,
       Up = 0,
       Down = 1,
       Left = 2,

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using TriangleNet.Data;
@@ -125,17 +124,11 @@ namespace TriangleNet.IO
         }
         int num2 = 0;
         writer.WriteLine("{0}", mesh.holes.Count);
-        foreach (Point hole in mesh.holes)
-        {
+				foreach (Point point in mesh.holes)
+				{
           StreamWriter streamWriter = writer;
-          // ISSUE: variable of a boxed type
-          __Boxed<int> local = (ValueType) num2++;
-          double num3 = hole.X;
-          string str1 = num3.ToString(nfi);
-          num3 = hole.Y;
-          string str2 = num3.ToString(nfi);
-          streamWriter.WriteLine("{0} {1} {2}", (object) local, str1, str2);
-        }
+					streamWriter.WriteLine("{0} {1} {2}", num2++, point.X.ToString(nfi), point.Y.ToString(nfi));
+				}
         if (mesh.regions.Count <= 0)
           return;
         int num4 = 0;

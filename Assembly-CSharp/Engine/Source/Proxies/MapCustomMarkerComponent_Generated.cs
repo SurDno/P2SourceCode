@@ -27,7 +27,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((MapCustomMarkerComponent) target2).isEnabled = isEnabled;
+      ((MapCustomMarkerComponent_Generated) target2).isEnabled = isEnabled;
     }
 
     public void DataWrite(IDataWriter writer)

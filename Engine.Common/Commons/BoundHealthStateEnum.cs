@@ -10,8 +10,8 @@ namespace Engine.Common.Commons
     Danger = 2,
     Diseased = 3,
     Dead = 4,
-    __ServiceStates = 1024, // 0x00000400
-    TutorialPain = 1025, // 0x00000401
-    TutorialDiagnostics = 1026, // 0x00000402
+    __ServiceStates = 1024,
+    TutorialPain = 1025,
+    TutorialDiagnostics = 1026,
   }
 }

@@ -23,7 +23,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((BuildingComponent) target2).building = building;
+    public void CopyTo(object target2) => ((BuildingComponent_Generated) target2).building = building;
 
     public void DataWrite(IDataWriter writer)
     {

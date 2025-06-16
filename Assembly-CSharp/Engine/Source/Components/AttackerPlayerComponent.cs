@@ -415,7 +415,7 @@ namespace Engine.Source.Components
 
     public enum Slots
     {
-      WeaponNone = -1, // 0xFFFFFFFF
+      WeaponNone = -1,
       WeaponHands = 0,
       WeaponPrimary = 1,
       WeaponSecondary = 2,

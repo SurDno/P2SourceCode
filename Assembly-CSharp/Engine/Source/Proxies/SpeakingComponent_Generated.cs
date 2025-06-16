@@ -25,7 +25,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((SpeakingComponent) target2).isEnabled = isEnabled;
+    public void CopyTo(object target2) => ((SpeakingComponent_Generated) target2).isEnabled = isEnabled;
 
     public void DataWrite(IDataWriter writer)
     {

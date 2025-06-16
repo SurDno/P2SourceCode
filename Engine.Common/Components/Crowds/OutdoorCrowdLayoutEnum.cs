@@ -15,14 +15,14 @@ namespace Engine.Common.Components.Crowds
     Day_6 = 7,
     Day_7 = 8,
     Day_8 = 9,
-    Day_9 = 10, // 0x0000000A
-    Day_10 = 11, // 0x0000000B
-    Day_11 = 12, // 0x0000000C
-    Day_12 = 13, // 0x0000000D
-    __Quests = 256, // 0x00000100
-    EpicQuest_12 = 257, // 0x00000101
-    Day_3_TheWalk = 258, // 0x00000102
-    __MarbleNest = 512, // 0x00000200
-    Day_MN = 513, // 0x00000201
+    Day_9 = 10,
+    Day_10 = 11,
+    Day_11 = 12,
+    Day_12 = 13,
+    __Quests = 256,
+    EpicQuest_12 = 257,
+    Day_3_TheWalk = 258,
+    __MarbleNest = 512,
+    Day_MN = 513,
   }
 }

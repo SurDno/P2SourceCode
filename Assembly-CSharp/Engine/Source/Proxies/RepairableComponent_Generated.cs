@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((RepairableComponent) target2).settings = settings;
+    public void CopyTo(object target2) => ((RepairableComponent_Generated) target2).settings = settings;
 
     public void DataWrite(IDataWriter writer)
     {

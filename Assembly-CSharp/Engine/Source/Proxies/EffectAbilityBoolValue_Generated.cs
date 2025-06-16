@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((EffectAbilityValue<bool>) target2).valueName = valueName;
+      ((EffectAbilityBoolValue_Generated) target2).valueName = valueName;
     }
 
     public void DataWrite(IDataWriter writer)

@@ -18,7 +18,7 @@ namespace UnityEngine.AI
     [SerializeField]
     private Vector3 m_Center = new Vector3(0.0f, 2f, 0.0f);
     [SerializeField]
-    private LayerMask m_LayerMask = (LayerMask) -1;
+    private LayerMask m_LayerMask = -1;
     [SerializeField]
     private NavMeshCollectGeometry m_UseGeometry = NavMeshCollectGeometry.RenderMeshes;
     [SerializeField]

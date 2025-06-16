@@ -21,9 +21,12 @@ namespace SRF.Service
 
     public static T GetService<T>() where T : class
     {
-      if (!(GetServiceInternal(typeof (T)) is T serviceInternal) && !_hasQuit)
-        Debug.LogWarning("Service {0} not found. (HasQuit: {1})".Fmt(typeof (T).Name, _hasQuit));
-      return serviceInternal;
+      T t = GetServiceInternal(typeof(T)) as T;
+      if (t == null && !_hasQuit)
+      {
+        Debug.LogWarning("Service {0} not found. (HasQuit: {1})".Fmt(typeof(T).Name, _hasQuit));
+      }
+      return t;
     }
 
     public static object GetService(Type t)
@@ -33,7 +36,7 @@ namespace SRF.Service
         Debug.LogWarning("Service {0} not found. (HasQuit: {1})".Fmt(t.Name, _hasQuit));
       return serviceInternal;
     }
-
+    
     private static object GetServiceInternal(Type t)
     {
       if (_hasQuit || !Application.isPlaying)

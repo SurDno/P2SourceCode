@@ -195,8 +195,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.OnEnable();
       CurrentMode = Modes.None;
       CurrentSelector = SelectedSelector.None;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, ConsoleController);
       SelectorButtons = new List<Button>(itemSelector.GetComponentsInChildren<Button>());
       if (itemSelector.Item == null)
         return;
@@ -206,8 +206,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnDisable()
     {
       Target = null;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickLeft, ConsoleController);
+      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickRight, ConsoleController);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, RepairController);
       UnsubscribeNavigation();
       SelectorButtons.Clear();

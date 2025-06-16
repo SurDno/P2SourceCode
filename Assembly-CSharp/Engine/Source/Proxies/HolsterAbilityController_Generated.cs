@@ -25,7 +25,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((HolsterAbilityController) target2).weaponKind = weaponKind;
+      ((HolsterAbilityController_Generated) target2).weaponKind = weaponKind;
     }
 
     public void DataWrite(IDataWriter writer)

@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((UnaryOperation<bool>) target2).value = CloneableObjectUtility.Clone(value);
+      ((NotBoolOperation_Generated) target2).value = CloneableObjectUtility.Clone(value);
     }
 
     public void DataWrite(IDataWriter writer)

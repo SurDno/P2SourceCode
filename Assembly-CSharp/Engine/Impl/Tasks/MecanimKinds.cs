@@ -149,21 +149,21 @@
       GameObject = 6,
       Gate = 7,
       Info = 8,
-      Market = 10, // 0x0000000A
-      Milestone = 11, // 0x0000000B
-      Model = 12, // 0x0000000C
-      Movable = 13, // 0x0000000D
-      Region = 14, // 0x0000000E
-      Speaking = 15, // 0x0000000F
-      Storable = 16, // 0x00000010
-      Storage = 17, // 0x00000011
-      TaskManager = 18, // 0x00000012
-      Trade = 19, // 0x00000013
-      AttackerPlayer = 20, // 0x00000014
-      Klubok = 21, // 0x00000015
-      AttackerSanitar = 22, // 0x00000016
-      AttackerSoldier = 23, // 0x00000017
-      AttackerDiseased = 24, // 0x00000018
+      Market = 10,
+      Milestone = 11,
+      Model = 12,
+      Movable = 13,
+      Region = 14,
+      Speaking = 15,
+      Storable = 16,
+      Storage = 17,
+      TaskManager = 18,
+      Trade = 19,
+      AttackerPlayer = 20,
+      Klubok = 21,
+      AttackerSanitar = 22,
+      AttackerSoldier = 23,
+      AttackerDiseased = 24,
     }
 
     public enum InfoStateKind

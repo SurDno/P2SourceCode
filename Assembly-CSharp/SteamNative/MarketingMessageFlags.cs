@@ -7,6 +7,6 @@
     PlatformWindows = 2,
     PlatformMac = 4,
     PlatformLinux = 8,
-    PlatformRestrictions = 14, // 0x0000000E
+    PlatformRestrictions = 14,
   }
 }

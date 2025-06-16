@@ -123,9 +123,9 @@ namespace Engine.Source.Proxies
       else
         Logger.AddError("Type : " + TypeUtility.GetTypeName(wind.GetType()) + " is not " + typeof (ISerializeDataRead).Name);
       IDataReader child11 = reader.GetChild("Rain");
-      Rain rain = this.rain;
+      Impl.Weather.Element.Rain rain = this.rain;
       if (rain is ISerializeDataRead serializeDataRead11)
-        serializeDataRead11.DataRead(child11, typeof (Rain));
+        serializeDataRead11.DataRead(child11, typeof (Impl.Weather.Element.Rain));
       else
         Logger.AddError("Type : " + TypeUtility.GetTypeName(rain.GetType()) + " is not " + typeof (ISerializeDataRead).Name);
       IDataReader child12 = reader.GetChild("FallingLeaves");

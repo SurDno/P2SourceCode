@@ -7,20 +7,20 @@
     FreeLicense = 2,
     RegionRestricted = 4,
     LowViolence = 8,
-    InvalidPlatform = 16, // 0x00000010
-    SharedLicense = 32, // 0x00000020
-    FreeWeekend = 64, // 0x00000040
-    RetailLicense = 128, // 0x00000080
-    LicenseLocked = 256, // 0x00000100
-    LicensePending = 512, // 0x00000200
-    LicenseExpired = 1024, // 0x00000400
-    LicensePermanent = 2048, // 0x00000800
-    LicenseRecurring = 4096, // 0x00001000
-    LicenseCanceled = 8192, // 0x00002000
-    AutoGrant = 16384, // 0x00004000
-    PendingGift = 32768, // 0x00008000
-    RentalNotActivated = 65536, // 0x00010000
-    Rental = 131072, // 0x00020000
-    SiteLicense = 262144, // 0x00040000
+    InvalidPlatform = 16,
+    SharedLicense = 32,
+    FreeWeekend = 64,
+    RetailLicense = 128,
+    LicenseLocked = 256,
+    LicensePending = 512,
+    LicenseExpired = 1024,
+    LicensePermanent = 2048,
+    LicenseRecurring = 4096,
+    LicenseCanceled = 8192,
+    AutoGrant = 16384,
+    PendingGift = 32768,
+    RentalNotActivated = 65536,
+    Rental = 131072,
+    SiteLicense = 262144,
   }
 }

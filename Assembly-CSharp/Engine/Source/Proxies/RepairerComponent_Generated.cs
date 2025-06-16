@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      CloneableObjectUtility.FillListTo(((RepairerComponent) target2).repairableGroups, repairableGroups);
+      CloneableObjectUtility.FillListTo(((RepairerComponent_Generated) target2).repairableGroups, repairableGroups);
     }
 
     public void DataWrite(IDataWriter writer)

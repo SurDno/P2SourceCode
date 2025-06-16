@@ -150,7 +150,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     {
       Road = 1,
       RadAndFootpath = 2,
-      All = 100, // 0x00000064
+      All = 100,
     }
   }
 }

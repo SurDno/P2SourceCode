@@ -173,7 +173,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       HideMainNavigationPanel();
       tipsPannelController?.ShowPannel("Move");
       service.AddListener(GameActionType.Cancel, DragCancel);
-      service.RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.RemoveListener(GameActionType.Cancel, CancelListener);
     }
 
     protected virtual void OnDragEnd()
@@ -182,7 +182,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       tipsPannelController?.HidePannel("Move");
       ShowMainNavigationPanel();
       service.RemoveListener(GameActionType.Cancel, DragCancel);
-      service.AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.AddListener(GameActionType.Cancel, CancelListener);
       splitEnabled = false;
     }
 
@@ -2187,7 +2187,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected virtual void Subscribe()
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.AddListener(GameActionType.Cancel,CancelListener);
       service.AddListener(GameActionType.Split, SplitListener);
       service.AddListener(GameActionType.Submit, ContextListener);
       service.AddListener(GameActionType.Context, DragListener);
@@ -2285,7 +2285,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected virtual void Unsubscribe()
     {
       GameActionService service = ServiceLocator.GetService<GameActionService>();
-      service.RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
+      service.RemoveListener(GameActionType.Cancel, CancelListener);
       service.RemoveListener(GameActionType.Split, SplitListener);
       service.RemoveListener(GameActionType.Submit, ContextListener);
       service.RemoveListener(GameActionType.Context, DragListener);
@@ -2644,8 +2644,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected enum Navigation
     {
-      None = -2, // 0xFFFFFFFE
-      CellClosest = -1, // 0xFFFFFFFF
+      None = -2,
+      CellClosest = -1,
       CellUp = 0,
       CellDown = 1,
       CellRight = 2,

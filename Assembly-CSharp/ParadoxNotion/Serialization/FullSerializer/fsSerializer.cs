@@ -337,9 +337,9 @@ namespace ParadoxNotion.Serialization.FullSerializer
         Invoke_OnAfterSerialize(processors, storageType, instance, ref data);
         return fsResult.Success;
       }
-      fsResult fsResult = InternalSerialize_1_ProcessCycles(storageType, overrideConverterType, instance, out data);
+      fsResult fsResult2 = InternalSerialize_1_ProcessCycles(storageType, overrideConverterType, instance, out data);
       Invoke_OnAfterSerialize(processors, storageType, instance, ref data);
-      return fsResult;
+      return fsResult2;
     }
 
     private fsResult InternalSerialize_1_ProcessCycles(
@@ -360,11 +360,11 @@ namespace ParadoxNotion.Serialization.FullSerializer
           return fsResult.Success;
         }
         _references.MarkSerialized(instance);
-        fsResult fsResult = InternalSerialize_2_Inheritance(storageType, overrideConverterType, instance, out data);
-        if (fsResult.Failed)
-          return fsResult;
+        fsResult fsResult2 = InternalSerialize_2_Inheritance(storageType, overrideConverterType, instance, out data);
+        if (fsResult2.Failed)
+          return fsResult2;
         _lazyReferenceWriter.WriteDefinition(_references.GetReferenceId(instance), data);
-        return fsResult;
+        return fsResult2;
       }
       finally
       {

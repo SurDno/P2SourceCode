@@ -22,7 +22,7 @@ namespace Engine.Source.Proxies
       return instance;
     }
 
-    public void CopyTo(object target2) => ((PlayerJumpAbilityController) target2).jump = jump;
+    public void CopyTo(object target2) => ((PlayerJumpAbilityController_Generated) target2).jump = jump;
 
     public void DataWrite(IDataWriter writer)
     {

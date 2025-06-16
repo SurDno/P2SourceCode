@@ -24,7 +24,7 @@ namespace Engine.Source.Proxies
 
     public void CopyTo(object target2)
     {
-      ((NPCShotAbilityProjectile) target2).blocked = blocked;
+      ((NPCShotAbilityProjectile_Generated) target2).blocked = blocked;
     }
 
     public void DataWrite(IDataWriter writer)

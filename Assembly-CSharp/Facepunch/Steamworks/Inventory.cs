@@ -151,7 +151,7 @@ namespace Facepunch.Steamworks
     {
       if (dataLength == -1)
         dataLength = data.Length;
-      SteamInventoryResult_t pOutResultHandle = (SteamInventoryResult_t) -1;
+      SteamInventoryResult_t pOutResultHandle = -1;
       fixed (byte* pBuffer = data)
       {
         if (!inventory.DeserializeResult(ref pOutResultHandle, (IntPtr) pBuffer, (uint) dataLength, false) || pOutResultHandle == -1)
@@ -164,7 +164,7 @@ namespace Facepunch.Steamworks
 
     public Result CraftItem(Item[] list, Definition target)
     {
-      SteamInventoryResult_t pResultHandle = (SteamInventoryResult_t) -1;
+      SteamInventoryResult_t pResultHandle = -1;
       SteamItemDef_t[] pArrayGenerate = new SteamItemDef_t[1]
       {
         new SteamItemDef_t { Value = target.Id }
@@ -177,7 +177,7 @@ namespace Facepunch.Steamworks
 
     public Result CraftItem(Item.Amount[] list, Definition target)
     {
-      SteamInventoryResult_t pResultHandle = (SteamInventoryResult_t) -1;
+      SteamInventoryResult_t pResultHandle = -1;
       SteamItemDef_t[] pArrayGenerate = new SteamItemDef_t[1]
       {
         new SteamItemDef_t { Value = target.Id }
@@ -190,19 +190,19 @@ namespace Facepunch.Steamworks
 
     public Result SplitStack(Item item, int quantity = 1)
     {
-      SteamInventoryResult_t pResultHandle = (SteamInventoryResult_t) -1;
+      SteamInventoryResult_t pResultHandle = -1;
       return !inventory.TransferItemQuantity(ref pResultHandle, item.Id, (uint) quantity, ulong.MaxValue) ? null : new Result(this, pResultHandle, true);
     }
 
     public Result Stack(Item source, Item dest, int quantity = 1)
     {
-      SteamInventoryResult_t pResultHandle = (SteamInventoryResult_t) -1;
+      SteamInventoryResult_t pResultHandle = -1;
       return !inventory.TransferItemQuantity(ref pResultHandle, source.Id, (uint) quantity, dest.Id) ? null : new Result(this, pResultHandle, true);
     }
 
     public Result GenerateItem(Definition target, int amount)
     {
-      SteamInventoryResult_t pResultHandle = (SteamInventoryResult_t) -1;
+      SteamInventoryResult_t pResultHandle = -1;
       SteamItemDef_t[] pArrayItemDefs = new SteamItemDef_t[1]
       {
         new SteamItemDef_t { Value = target.Id }
@@ -535,7 +535,7 @@ namespace Facepunch.Steamworks
       public void Dispose()
       {
         inventory.inventory.DestroyResult(Handle);
-        Handle = (SteamInventoryResult_t) -1;
+        Handle = -1;
         inventory = null;
       }
     }

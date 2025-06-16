@@ -421,23 +421,25 @@ namespace RootMotion.Dynamics
         return;
       base.GroundTarget(layers);
     }
-
+    
     private void OnDrawGizmosSelected()
     {
-      for (int index1 = 0; index1 < groupOverrides.Length; ++index1)
+      for (int i = 0; i < groupOverrides.Length; i++)
       {
-        groupOverrides[index1].name = string.Empty;
-        if (groupOverrides[index1].groups.Length != 0)
+        groupOverrides[i].name = string.Empty;
+        if (groupOverrides[i].groups.Length != 0)
         {
-          for (int index2 = 0; index2 < groupOverrides[index1].groups.Length; ++index2)
+          for (int j = 0; j < groupOverrides[i].groups.Length; j++)
           {
-            if (index2 > 0)
+            if (j > 0)
             {
-              // ISSUE: explicit reference operation
-              ^ref groupOverrides[index1].name += ", ";
+              MusclePropsGroup[] array = groupOverrides;
+              int num = i;
+              array[num].name += ", ";
             }
-            // ISSUE: explicit reference operation
-            ^ref groupOverrides[index1].name += groupOverrides[index1].groups[index2].ToString();
+            MusclePropsGroup[] array2 = groupOverrides;
+            int num2 = i;
+            array2[num2].name += groupOverrides[i].groups[j].ToString();
           }
         }
       }
