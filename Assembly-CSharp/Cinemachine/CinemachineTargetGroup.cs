@@ -1,14 +1,7 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Cinemachine.CinemachineTargetGroup
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cinemachine.Utility;
+﻿using Cinemachine.Utility;
 using System;
 using UnityEngine;
 
-#nullable disable
 namespace Cinemachine
 {
   [DocumentationSorting(19f, DocumentationSortingAttribute.Level.UserRef)]

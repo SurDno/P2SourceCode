@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Engine.Source.Services.CameraServices.FlyCameraController
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Settings;
 using Engine.Source.Settings.External;
@@ -12,7 +6,6 @@ using Engine.Source.Utility;
 using InputServices;
 using UnityEngine;
 
-#nullable disable
 namespace Engine.Source.Services.CameraServices
 {
   public class FlyCameraController : ICameraController

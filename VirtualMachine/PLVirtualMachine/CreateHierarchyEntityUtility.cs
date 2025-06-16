@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.CreateHierarchyEntityUtility
-// Assembly: VirtualMachine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4141C12C-9CB3-4BEE-B86E-276A0762C9CD
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll
-
-using Cofe.Loggers;
+﻿using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Services;
 using PLVirtualMachine.Common;
@@ -12,7 +6,6 @@ using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.Objects;
 
-#nullable disable
 namespace PLVirtualMachine
 {
   public static class CreateHierarchyEntityUtility

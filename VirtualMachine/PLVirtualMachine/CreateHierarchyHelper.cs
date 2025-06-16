@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.CreateHierarchyHelper
-// Assembly: VirtualMachine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4141C12C-9CB3-4BEE-B86E-276A0762C9CD
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll
-
-using Cofe.Loggers;
+﻿using Cofe.Loggers;
 using Engine.Common;
 using Engine.Common.Binders;
 using Engine.Common.MindMap;
@@ -17,7 +11,6 @@ using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
 using System;
 
-#nullable disable
 namespace PLVirtualMachine
 {
   public static class CreateHierarchyHelper

@@ -1,15 +1,8 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Facepunch.Steamworks.Voice
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using SteamNative;
+﻿using SteamNative;
 using System;
 using System.Diagnostics;
 using System.IO;
 
-#nullable disable
 namespace Facepunch.Steamworks
 {
   public class Voice

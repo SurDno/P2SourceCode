@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: BehaviorDesigner.Runtime.Tasks.POISequenceGroupAnswer
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cofe.Proxies;
+﻿using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -15,7 +9,6 @@ using Engine.Source.BehaviorNodes;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-#nullable disable
 namespace BehaviorDesigner.Runtime.Tasks
 {
   [TaskDescription("The sequence task is similar to an \"and\" operation. It will return failure as soon as one of its child tasks return failure. If a child task returns success then it will sequentially run the next task. If all child tasks return success then it will return success.")]

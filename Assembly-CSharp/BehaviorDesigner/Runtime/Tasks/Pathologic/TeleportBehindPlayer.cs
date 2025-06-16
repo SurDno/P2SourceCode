@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: BehaviorDesigner.Runtime.Tasks.Pathologic.TeleportBehindPlayer
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cofe.Proxies;
+﻿using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -21,7 +15,6 @@ using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 using UnityEngine.AI;
 
-#nullable disable
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
   [TaskDescription("Find Point Behind Player")]

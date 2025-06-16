@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Engine.Source.Services.CombatService
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using BehaviorDesigner.Runtime;
+﻿using BehaviorDesigner.Runtime;
 using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Common.Commons;
@@ -17,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-#nullable disable
 namespace Engine.Source.Services
 {
   [RuntimeService(new System.Type[] {typeof (CombatService), typeof (ICombatService)})]

@@ -1,16 +1,9 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: NpcStateMoveFollowTeleportStationary
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Behaviours.Components;
+﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common.Components.MessangerStationary;
 using Inspectors;
 using UnityEngine;
 
-#nullable disable
 public class NpcStateMoveFollowTeleportStationary : INpcState
 {
   private bool inited;

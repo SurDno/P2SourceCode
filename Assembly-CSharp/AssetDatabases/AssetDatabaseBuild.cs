@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: AssetDatabases.AssetDatabaseBuild
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cofe.Utility;
+﻿using Cofe.Utility;
 using Engine.Common.Comparers;
 using Scripts.AssetDatabaseService;
 using System;
@@ -13,7 +7,6 @@ using System.Reflection;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-#nullable disable
 namespace AssetDatabases
 {
   public class AssetDatabaseBuild : IAssetDatabase

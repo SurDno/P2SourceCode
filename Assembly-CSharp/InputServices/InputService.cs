@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: InputServices.InputService
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cofe.Utility;
+﻿using Cofe.Utility;
 using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
@@ -15,7 +9,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-#nullable disable
 namespace InputServices
 {
   public class InputService : IUpdatable

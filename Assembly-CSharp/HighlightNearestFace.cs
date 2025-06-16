@@ -1,13 +1,6 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: HighlightNearestFace
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using ProBuilder2.Common;
+﻿using ProBuilder2.Common;
 using UnityEngine;
 
-#nullable disable
 public class HighlightNearestFace : MonoBehaviour
 {
   public float travel = 50f;

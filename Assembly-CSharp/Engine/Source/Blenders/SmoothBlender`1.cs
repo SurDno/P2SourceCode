@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Engine.Source.Blenders.SmoothBlender`1
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Common.Blenders;
 using Engine.Common.Commons.Cloneable;
 using Engine.Common.Services;
@@ -14,7 +8,6 @@ using Inspectors;
 using System;
 using UnityEngine;
 
-#nullable disable
 namespace Engine.Source.Blenders
 {
   public abstract class SmoothBlender<T> : EngineObject, ISmoothBlender<T>, IUpdatable where T : class, IObject, IBlendable<T>

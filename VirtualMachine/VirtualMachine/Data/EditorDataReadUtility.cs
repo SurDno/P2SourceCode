@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: VirtualMachine.Data.EditorDataReadUtility
-// Assembly: VirtualMachine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4141C12C-9CB3-4BEE-B86E-276A0762C9CD
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll
-
-using Cofe.Loggers;
+﻿using Cofe.Loggers;
 using Cofe.Serializations.Converters;
 using Cofe.Utility;
 using Engine.Common.Comparers;
@@ -16,7 +10,6 @@ using System.Collections.Generic;
 using System.Xml;
 using VirtualMachine.Common.Data;
 
-#nullable disable
 namespace VirtualMachine.Data
 {
   public static class EditorDataReadUtility

@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: RepairingCostView
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Common.Components;
 using Engine.Source.Components;
 using Engine.Source.Components.Repairing;
@@ -14,7 +8,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-#nullable disable
 public class RepairingCostView : MonoBehaviour
 {
   [SerializeField]

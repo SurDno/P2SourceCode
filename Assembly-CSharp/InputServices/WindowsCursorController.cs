@@ -1,28 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: InputServices.WindowsCursorController
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Common;
-using Engine.Source.Commons;
-using Inspectors;
-using System;
-using System.Runtime.InteropServices;
-using UnityEngine;
-
-#nullable disable
-namespace InputServices
-{
-  public class WindowsCursorController : ICursorController, IUpdatable
-  {
-    private bool visible = true;
-    private bool free = true;
-
-    [DllImport("User32.dll")]
-    public static extern long SetCursorPos(int x, int y);
-
-    [DllImport("user32.dll")]
+﻿
     [return: MarshalAs(UnmanagedType.Bool)]
     public static extern bool GetCursorPos(out WindowsCursorController.POINT lpPoint);
 

@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.Dynamic.Components.Storage
-// Assembly: VirtualMachine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4141C12C-9CB3-4BEE-B86E-276A0762C9CD
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll
-
-using Cofe.Loggers;
+﻿using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common;
@@ -20,7 +14,6 @@ using PLVirtualMachine.Objects;
 using System;
 using System.Xml;
 
-#nullable disable
 namespace PLVirtualMachine.Dynamic.Components
 {
   [FactoryProxy(typeof (VMStorage))]

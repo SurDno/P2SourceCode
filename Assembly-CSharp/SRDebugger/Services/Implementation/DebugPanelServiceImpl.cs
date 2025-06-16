@@ -1,17 +1,10 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: SRDebugger.Services.Implementation.DebugPanelServiceImpl
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using InputServices;
+﻿using InputServices;
 using SRDebugger.Internal;
 using SRDebugger.UI;
 using SRF;
 using System;
 using UnityEngine;
 
-#nullable disable
 namespace SRDebugger.Services.Implementation
 {
   [SRF.Service.Service(typeof (IDebugPanelService))]

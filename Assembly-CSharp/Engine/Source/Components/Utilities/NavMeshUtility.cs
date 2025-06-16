@@ -1,15 +1,8 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Engine.Source.Components.Utilities.NavMeshUtility
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Source.Services.Gizmos;
+﻿using Engine.Source.Services.Gizmos;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 
-#nullable disable
 namespace Engine.Source.Components.Utilities
 {
   public static class NavMeshUtility

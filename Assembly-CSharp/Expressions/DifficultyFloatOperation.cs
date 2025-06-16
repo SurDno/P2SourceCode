@@ -1,17 +1,10 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Expressions.DifficultyFloatOperation
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cofe.Utility;
+﻿using Cofe.Utility;
 using Engine.Common.Generator;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Difficulties;
 using Inspectors;
 
-#nullable disable
 namespace Expressions
 {
   [TypeName(TypeName = "[difficulty(name)] : float", MenuItem = "difficulty(name)/float")]

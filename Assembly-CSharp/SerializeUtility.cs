@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: SerializeUtility
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cofe.Proxies;
+﻿using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
@@ -16,7 +10,6 @@ using System.Text;
 using System.Xml;
 using UnityEngine;
 
-#nullable disable
 public static class SerializeUtility
 {
   public const string RootNodeName = "Object";

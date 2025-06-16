@@ -1,17 +1,10 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.GameLogic.VMFunction
-// Assembly: VirtualMachine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4141C12C-9CB3-4BEE-B86E-276A0762C9CD
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll
-
-using PLVirtualMachine.Base;
+﻿using PLVirtualMachine.Base;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.Objects;
 using System.Collections.Generic;
 
-#nullable disable
 namespace PLVirtualMachine.GameLogic
 {
   public class VMFunction : BaseFunction

@@ -1,17 +1,10 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.Dynamic.RaisedEventInfo
-// Assembly: VirtualMachine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4141C12C-9CB3-4BEE-B86E-276A0762C9CD
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll
-
-using Cofe.Loggers;
+﻿using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Xml;
 
-#nullable disable
 namespace PLVirtualMachine.Dynamic
 {
   public class RaisedEventInfo : ISerializeStateSave, IDynamicLoadSerializable

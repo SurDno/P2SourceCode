@@ -1,13 +1,6 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: RootMotion.FinalIK.InteractionTrigger
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using System;
+﻿using System;
 using UnityEngine;
 
-#nullable disable
 namespace RootMotion.FinalIK
 {
   [HelpURL("https://www.youtube.com/watch?v=-TDZpNjt2mk&index=15&list=PLVxSIA1OaTOu8Nos3CalXbJ2DrKnntMv6")]

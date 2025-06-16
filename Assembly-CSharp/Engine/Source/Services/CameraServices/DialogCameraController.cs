@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Engine.Source.Services.CameraServices.DialogCameraController
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Behaviours.Components;
+﻿using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Settings;
@@ -12,7 +6,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 
-#nullable disable
 namespace Engine.Source.Services.CameraServices
 {
   public class DialogCameraController : ICameraController

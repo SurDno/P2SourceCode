@@ -1,15 +1,8 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Cinemachine.CinemachineOrbitalTransposer
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Cinemachine.Utility;
+﻿using Cinemachine.Utility;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-#nullable disable
 namespace Cinemachine
 {
   [DocumentationSorting(6f, DocumentationSortingAttribute.Level.UserRef)]

@@ -1,16 +1,9 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.Common.BaseRef
-// Assembly: VirtualMachine.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: FE3F54BA-1089-4F0E-B049-A4D27F3D2E73
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.Common.dll
-
-using Engine.Common.Comparers;
+﻿using Engine.Common.Comparers;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 using System;
 using System.Collections.Generic;
 
-#nullable disable
 namespace PLVirtualMachine.Common
 {
   public abstract class BaseRef : IRef, IVariable, INamed, IVMStringSerializable

@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.GameLogic.VMGameAction
-// Assembly: VirtualMachine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4141C12C-9CB3-4BEE-B86E-276A0762C9CD
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll
-
-using Cofe.Loggers;
+﻿using Cofe.Loggers;
 using Engine.Common.Commons;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
@@ -15,7 +9,6 @@ using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
 
-#nullable disable
 namespace PLVirtualMachine.GameLogic
 {
   [TypeData(EDataType.TAction)]

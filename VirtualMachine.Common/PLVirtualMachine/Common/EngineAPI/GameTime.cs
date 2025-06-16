@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: PLVirtualMachine.Common.EngineAPI.GameTime
-// Assembly: VirtualMachine.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: FE3F54BA-1089-4F0E-B049-A4D27F3D2E73
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.Common.dll
-
-using Cofe.Loggers;
+﻿using Cofe.Loggers;
 using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
@@ -12,7 +6,6 @@ using System;
 using System.Globalization;
 using System.Xml;
 
-#nullable disable
 namespace PLVirtualMachine.Common.EngineAPI
 {
   [VMType("GameTime")]

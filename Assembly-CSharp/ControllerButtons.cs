@@ -1,11 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: ControllerButtons
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-#nullable disable
-public static class ControllerButtons
+﻿public static class ControllerButtons
 {
   public const string Left_LeftStick = "Left LeftStick";
   public const string Right_LeftStick = "Right LeftStick";

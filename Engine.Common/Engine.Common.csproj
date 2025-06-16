@@ -219,7 +219,6 @@
     <Compile Include="Blenders\ISmoothBlender`1.cs" />
     <Compile Include="Binders\EnumTypeAttribute.cs" />
     <Compile Include="Binders\SampleAttribute.cs" />
-    <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

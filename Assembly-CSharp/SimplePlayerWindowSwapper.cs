@@ -1,10 +1,4 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: SimplePlayerWindowSwapper
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Common.Commons;
+﻿using Engine.Common.Commons;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Menu;
@@ -12,7 +6,6 @@ using Engine.Source.UI;
 using InputServices;
 using System;
 
-#nullable disable
 public class SimplePlayerWindowSwapper
 {
   private static IWindow lastOpenedPlayerWindow = (IWindow) null;

@@ -1,14 +1,7 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Engine.Common.Utility.XmlUtility
-// Assembly: Engine.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 3568A167-18A7-4983-8BC2-C25824901591
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Engine.Common.dll
-
-using Cofe.Utility;
+﻿using Cofe.Utility;
 using System.IO;
 using System.Xml;
 
-#nullable disable
 namespace Engine.Common.Utility
 {
   public static class XmlUtility

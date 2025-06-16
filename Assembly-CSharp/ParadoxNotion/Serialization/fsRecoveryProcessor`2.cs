@@ -1,16 +1,9 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: ParadoxNotion.Serialization.fsRecoveryProcessor`2
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using ParadoxNotion.Serialization.FullSerializer;
+﻿using ParadoxNotion.Serialization.FullSerializer;
 using ParadoxNotion.Serialization.FullSerializer.Internal;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-#nullable disable
 namespace ParadoxNotion.Serialization
 {
   public class fsRecoveryProcessor<TCanProcess, TMissing> : fsObjectProcessor where TMissing : TCanProcess, IMissingRecoverable

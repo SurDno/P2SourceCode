@@ -1,13 +1,6 @@
-﻿// Decompiled with JetBrains decompiler
-// Type: Engine.Source.Commons.Parameters.StubParameter`1
-// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
-// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
-
-using Engine.Common.Components.Parameters;
+﻿using Engine.Common.Components.Parameters;
 using Inspectors;
 
-#nullable disable
 namespace Engine.Source.Commons.Parameters
 {
   public class StubParameter<T> : IParameter<T>, IParameter, IComputeParameter where T : struct
