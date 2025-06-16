@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -8,9 +9,9 @@ namespace Engine.Source.Services.Consoles.Binds
 
     private void Update()
     {
-      if (!((UnityEngine.Object) this.gameObject != (UnityEngine.Object) null))
+      if (!(gameObject != null))
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+      Destroy(gameObject);
     }
   }
 }

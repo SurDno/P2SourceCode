@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class ItemEntityView : EntityView
 {
@@ -16,7 +17,7 @@ public class ItemEntityView : EntityView
       if (entity == value)
         return;
       entity = value;
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.Storable = entity?.GetComponent<StorableComponent>();
     }

@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   [AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Behaviours/BehaviourTemplate")]
   public class BehaviourTemplate : BehaviourBase
@@ -38,13 +40,13 @@
 
     protected override void OnMuscleHitBehaviour(MuscleHit hit)
     {
-      if (this.enabled)
+      if (enabled)
         ;
     }
 
     protected override void OnMuscleCollisionBehaviour(MuscleCollision m)
     {
-      if (this.enabled)
+      if (enabled)
         ;
     }
   }

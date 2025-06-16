@@ -4,6 +4,7 @@ using Engine.Common.Components.Regions;
 using Engine.Common.Services;
 using Engine.Common.Types;
 using Engine.Impl.Services;
+using UnityEngine;
 
 namespace Engine.Source.Components.Regions
 {
@@ -26,7 +27,7 @@ namespace Engine.Source.Components.Regions
       RegionComponent regionByName = GetRegionByName(name);
       if (regionByName == null)
       {
-        Debug.LogWarning((object) ("Region not found, name = " + name + " , position : " + (object) position));
+        Debug.LogWarning("Region not found, name = " + name + " , position : " + position);
         regionByName = GetRegionByName(ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName);
       }
       return regionByName;
@@ -50,9 +51,9 @@ namespace Engine.Source.Components.Regions
     public static void AddRegion(RegionEnum name, RegionComponent region)
     {
       if (name == RegionEnum.None)
-        Debug.LogError((object) ("Region type : " + name + " , region : " + region.Owner.GetInfo()));
+        Debug.LogError("Region type : " + name + " , region : " + region.Owner.GetInfo());
       if (regions.ContainsKey(name))
-        Debug.LogError((object) ("Region type : " + name + " , already exist, current : " + regions[name].Owner.GetInfo() + " , new : " + region.Owner.GetInfo()));
+        Debug.LogError("Region type : " + name + " , already exist, current : " + regions[name].Owner.GetInfo() + " , new : " + region.Owner.GetInfo());
       else
         regions.Add(name, region);
     }

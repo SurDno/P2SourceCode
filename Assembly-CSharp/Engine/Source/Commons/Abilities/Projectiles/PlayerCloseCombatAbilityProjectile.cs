@@ -8,6 +8,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Projectiles
 {
@@ -64,7 +65,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
       DetectorUtility.GetCandidats(ServiceLocator.GetService<DetectorService>().Detectablies, self.GetComponent<DetectorComponent>(), self.GetComponent<ILocationItemComponent>(), radius, target =>
       {
         Vector3 vector3 = gameObject.transform.InverseTransformDirection(target.GameObject.transform.position - gameObject.transform.position);
-        if ((double) vector3.z > radius || (double) vector3.z < 0.0 || (double) Mathf.Abs(vector3.x) > maximumXOffset)
+        if (vector3.z > (double) radius || vector3.z < 0.0 || Mathf.Abs(vector3.x) > (double) maximumXOffset)
           return;
         IEntity owner = target.Detectable.Owner;
         if (owner == null)
@@ -129,9 +130,9 @@ namespace Engine.Source.Commons.Abilities.Projectiles
         return true;
       GameObject gameObject1 = ((IEntityView) self)?.GameObject;
       GameObject gameObject2 = ((IEntityView) target)?.GameObject;
-      if ((UnityEngine.Object) gameObject1 == (UnityEngine.Object) null || (UnityEngine.Object) gameObject2 == (UnityEngine.Object) null)
+      if (gameObject1 == null || gameObject2 == null)
         return false;
-      bool flag = (double) Vector3.Dot((gameObject1.transform.position - gameObject2.transform.position).normalized, -gameObject2.transform.forward) > 0.0;
+      bool flag = Vector3.Dot((gameObject1.transform.position - gameObject2.transform.position).normalized, -gameObject2.transform.forward) > 0.0;
       if (orientation == HitOrientationTypeEnum.Back)
         return flag;
       return orientation != HitOrientationTypeEnum.Front || !flag;
@@ -146,11 +147,11 @@ namespace Engine.Source.Commons.Abilities.Projectiles
       Vector3 position3 = ((IEntityView) self).Position;
       Vector3 vector3_1 = position3;
       Vector3? nullable1 = position1;
-      Vector3 vector3_2 = (nullable1.HasValue ? new Vector3?(vector3_1 - nullable1.GetValueOrDefault()) : new Vector3?()).Value;
-      double magnitude1 = (double) vector3_2.magnitude;
+      Vector3 vector3_2 = (nullable1.HasValue ? vector3_1 - nullable1.GetValueOrDefault() : new Vector3?()).Value;
+      double magnitude1 = vector3_2.magnitude;
       vector3_2 = position3;
       Vector3? nullable2 = position2;
-      double magnitude2 = (double) (nullable2.HasValue ? new Vector3?(vector3_2 - nullable2.GetValueOrDefault()) : new Vector3?()).Value.magnitude;
+      double magnitude2 = (nullable2.HasValue ? vector3_2 - nullable2.GetValueOrDefault() : new Vector3?()).Value.magnitude;
       return magnitude1 < magnitude2 ? -1 : 1;
     }
   }

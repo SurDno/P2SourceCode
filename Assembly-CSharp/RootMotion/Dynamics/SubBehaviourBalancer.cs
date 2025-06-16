@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -56,7 +57,7 @@ namespace RootMotion.Dynamics
         cop = Vector3.zero;
         foreach (Transform copPoint in copPoints)
           cop += copPoint.position;
-        cop /= (float) copPoints.Length;
+        cop /= copPoints.Length;
       }
       cop += settings.copOffset;
       com = PhysXTools.GetCenterOfMass(rigidbodies);
@@ -66,7 +67,7 @@ namespace RootMotion.Dynamics
       Vector3 v = (PhysXTools.GetFromToAcceleration(dirVel, -Physics.gravity) - Ibody.angularVelocity) / Time.fixedDeltaTime;
       PhysXTools.ScaleByInertia(ref v, Ibody.rotation, Ibody.inertiaTensor * settings.IMlp);
       Vector3 vector3 = Vector3.ClampMagnitude(v, settings.maxTorqueMag);
-      if ((UnityEngine.Object) pressureSensor == (UnityEngine.Object) null || !pressureSensor.enabled || pressureSensor.inContact)
+      if (pressureSensor == null || !pressureSensor.enabled || pressureSensor.inContact)
       {
         Ibody.AddTorque(vector3 * settings.torqueMlp, ForceMode.Force);
         joint.targetAngularVelocity = Quaternion.Inverse(toJointSpace) * Quaternion.Inverse(joint.transform.rotation) * vector3;

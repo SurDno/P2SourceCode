@@ -9,7 +9,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyTo(FallingLeaves fallingLeaves)
     {
       LeafManager fallingLeaves1 = ServiceLocator.GetService<EnvironmentService>().FallingLeaves;
-      if ((Object) fallingLeaves1 == (Object) null)
+      if (fallingLeaves1 == null)
         return;
       fallingLeaves.PoolCapacity = fallingLeaves1.poolCapacity;
       fallingLeaves.Radius = fallingLeaves1.radius;
@@ -21,7 +21,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyFrom(FallingLeaves fallingLeaves)
     {
       LeafManager fallingLeaves1 = ServiceLocator.GetService<EnvironmentService>().FallingLeaves;
-      if ((Object) fallingLeaves1 == (Object) null)
+      if (fallingLeaves1 == null)
         return;
       fallingLeaves1.poolCapacity = fallingLeaves.PoolCapacity;
       fallingLeaves1.radius = fallingLeaves.Radius;

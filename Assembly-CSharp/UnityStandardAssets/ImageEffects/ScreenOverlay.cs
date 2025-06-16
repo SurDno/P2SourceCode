@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -7,9 +9,9 @@
   {
     public OverlayBlendMode blendMode = OverlayBlendMode.Overlay;
     public float intensity = 1f;
-    public Texture2D texture = (Texture2D) null;
-    public Shader overlayShader = (Shader) null;
-    private Material overlayMaterial = (Material) null;
+    public Texture2D texture;
+    public Shader overlayShader;
+    private Material overlayMaterial;
 
     public override bool CheckResources()
     {
@@ -24,14 +26,14 @@
     {
       if (!CheckResources())
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
         overlayMaterial.SetVector("_UV_Transform", new Vector4(1f, 0.0f, 0.0f, 1f));
         overlayMaterial.SetFloat("_Intensity", intensity);
-        overlayMaterial.SetTexture("_Overlay", (Texture) texture);
-        Graphics.Blit((Texture) source, destination, overlayMaterial, (int) blendMode);
+        overlayMaterial.SetTexture("_Overlay", texture);
+        Graphics.Blit(source, destination, overlayMaterial, (int) blendMode);
       }
     }
 

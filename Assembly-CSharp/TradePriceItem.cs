@@ -1,4 +1,7 @@
-﻿public class TradePriceItem : MonoBehaviour
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+public class TradePriceItem : MonoBehaviour
 {
   [SerializeField]
   private Image coinImage;
@@ -13,9 +16,9 @@
 
   public void SetCount(int count, int change)
   {
-    if ((Object) coinsCountText != (Object) null)
+    if (coinsCountText != null)
       coinsCountText.text = count.ToString();
-    if (!((Object) coinsChangeText != (Object) null))
+    if (!(coinsChangeText != null))
       return;
     coinsChangeText.gameObject.SetActive(change != 0);
     if (change != 0)

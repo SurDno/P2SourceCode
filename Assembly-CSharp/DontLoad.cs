@@ -2,6 +2,7 @@
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 public class DontLoad : MonoBehaviour, IEntityAttachable
 {

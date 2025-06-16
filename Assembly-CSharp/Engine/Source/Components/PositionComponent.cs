@@ -2,6 +2,7 @@
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {

@@ -1,4 +1,5 @@
 ﻿using Engine.Source.Commons;
+using UnityEngine;
 
 public class HerbWind : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class HerbWind : MonoBehaviour
   private float bendAngle = 5f;
   [Space]
   [SerializeField]
-  private ParticleSystem particles = (ParticleSystem) null;
+  private ParticleSystem particles;
   [SerializeField]
   private Vector2 speed = Vector2.one;
   [SerializeField]
@@ -32,7 +33,7 @@ public class HerbWind : MonoBehaviour
       if (active == value)
         return;
       active = value;
-      if ((Object) particles == (Object) null)
+      if (particles == null)
         return;
       particles.emission.enabled = active;
     }
@@ -42,7 +43,7 @@ public class HerbWind : MonoBehaviour
 
   private void Update()
   {
-    Active = (double) Vector3.Distance(this.transform.position, EngineApplication.PlayerPosition) < maxPlayerDistance;
+    Active = Vector3.Distance(transform.position, EngineApplication.PlayerPosition) < (double) maxPlayerDistance;
     if (!Active)
       return;
     timeToChange -= Time.deltaTime;
@@ -54,21 +55,21 @@ public class HerbWind : MonoBehaviour
       targetWind = Random.insideUnitCircle;
     }
     currentWind = Vector2.SmoothDamp(currentWind, targetWind, ref windChangeVelocity, smoothness, float.MaxValue, Time.deltaTime);
-    this.transform.eulerAngles = new Vector3(currentWind.y * bendAngle, 0.0f, -currentWind.x * bendAngle);
+    transform.eulerAngles = new Vector3(currentWind.y * bendAngle, 0.0f, -currentWind.x * bendAngle);
     UpdateParticles();
   }
 
   private void UpdateParticles()
   {
-    if ((Object) particles == (Object) null)
+    if (particles == null)
       return;
     float magnitude = currentWind.magnitude;
     particles.emission.rateOverTime = new ParticleSystem.MinMaxCurve(Mathf.Lerp(emissionRateRange.x, emissionRateRange.y, magnitude));
     ParticleSystem.VelocityOverLifetimeModule velocityOverLifetime = particles.velocityOverLifetime with
     {
-      x = (ParticleSystem.MinMaxCurve) (currentWind.x * speed.x),
-      y = (ParticleSystem.MinMaxCurve) (magnitude * speed.y),
-      z = (ParticleSystem.MinMaxCurve) (currentWind.y * speed.x)
+      x = currentWind.x * speed.x,
+      y = magnitude * speed.y,
+      z = currentWind.y * speed.x
     };
   }
 }

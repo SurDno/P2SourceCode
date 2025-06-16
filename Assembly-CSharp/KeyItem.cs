@@ -1,5 +1,7 @@
 ﻿using System;
 using Engine.Source.Services.Inputs;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class KeyItem : MonoBehaviour
 {
@@ -14,9 +16,9 @@ public class KeyItem : MonoBehaviour
 
   public ActionGroup Bind { get; set; }
 
-  public void SetText(string text) => this.GetComponent<Text>().text = text;
+  public void SetText(string text) => GetComponent<Text>().text = text;
 
-  public void SetReadonly() => this.GetComponent<Text>().color = readonlyColor;
+  public void SetReadonly() => GetComponent<Text>().color = readonlyColor;
 
   public bool Selection
   {
@@ -24,7 +26,7 @@ public class KeyItem : MonoBehaviour
     set
     {
       selction = value;
-      this.GetComponent<Text>().color = selction ? activeColor : baseColor;
+      GetComponent<Text>().color = selction ? activeColor : baseColor;
     }
   }
 

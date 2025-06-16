@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public class BodyTilt : OffsetModifier
   {
@@ -16,16 +18,16 @@
     protected override void Start()
     {
       base.Start();
-      lastForward = this.transform.forward;
+      lastForward = transform.forward;
     }
 
     protected override void OnModifyOffset()
     {
-      Quaternion rotation = Quaternion.FromToRotation(lastForward, this.transform.forward);
+      Quaternion rotation = Quaternion.FromToRotation(lastForward, transform.forward);
       float angle = 0.0f;
       Vector3 axis = Vector3.zero;
       rotation.ToAngleAxis(out angle, out axis);
-      if ((double) axis.y > 0.0)
+      if (axis.y > 0.0)
         angle = -angle;
       tiltAngle = Mathf.Lerp(tiltAngle, Mathf.Clamp(angle * (tiltSensitivity * 0.01f) / deltaTime, -1f, 1f), deltaTime * tiltSpeed);
       float weight = Mathf.Abs(tiltAngle) / 1f;
@@ -33,7 +35,7 @@
         poseRight.Apply(ik.solver, weight);
       else
         poseLeft.Apply(ik.solver, weight);
-      lastForward = this.transform.forward;
+      lastForward = transform.forward;
     }
   }
 }

@@ -5,6 +5,7 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -64,7 +65,7 @@ namespace Engine.Source.Commons
     public virtual void Dispose()
     {
       if (IsDisposed)
-        Debug.LogError((object) ("Object already disposed : " + this.GetInfo()));
+        Debug.LogError("Object already disposed : " + this.GetInfo());
       else
         IsDisposed = true;
     }

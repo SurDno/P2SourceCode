@@ -5,6 +5,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -20,12 +21,12 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) owner == (UnityEngine.Object) null)
+      if (owner == null)
       {
         owner = gameObject.GetComponentNonAlloc<NPCEnemy>();
-        if ((UnityEngine.Object) owner == (UnityEngine.Object) null)
+        if (owner == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component", gameObject);
           return TaskStatus.Failure;
         }
       }

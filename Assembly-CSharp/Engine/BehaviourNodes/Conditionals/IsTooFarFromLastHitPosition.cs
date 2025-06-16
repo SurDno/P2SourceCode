@@ -9,6 +9,7 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -38,7 +39,7 @@ namespace Engine.BehaviourNodes.Conditionals
 
     public override TaskStatus OnUpdate()
     {
-      return owner == null ? TaskStatus.Failure : ((double) (owner.LastGotHitPosition - gameObject.transform.position).magnitude > Distance ? TaskStatus.Success : TaskStatus.Failure);
+      return owner == null ? TaskStatus.Failure : ((owner.LastGotHitPosition - gameObject.transform.position).magnitude > (double) Distance ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)

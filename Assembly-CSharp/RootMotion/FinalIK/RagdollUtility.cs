@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -32,7 +33,7 @@ namespace RootMotion.FinalIK
     {
       if (isRagdoll)
         return;
-      this.StopAllCoroutines();
+      StopAllCoroutines();
       enableRagdollFlag = true;
     }
 
@@ -41,24 +42,24 @@ namespace RootMotion.FinalIK
       if (!isRagdoll)
         return;
       StoreLocalState();
-      this.StopAllCoroutines();
-      this.StartCoroutine(DisableRagdollSmooth());
+      StopAllCoroutines();
+      StartCoroutine(DisableRagdollSmooth());
     }
 
     public void Start()
     {
-      animator = this.GetComponent<Animator>();
-      allIKComponents = this.GetComponentsInChildren<IK>();
+      animator = GetComponent<Animator>();
+      allIKComponents = GetComponentsInChildren<IK>();
       disabledIKComponents = new bool[allIKComponents.Length];
       fixTransforms = new bool[allIKComponents.Length];
-      if ((UnityEngine.Object) ik != (UnityEngine.Object) null)
+      if (ik != null)
         ik.GetIKSolver().OnPostUpdate += AfterLastIK;
-      Rigidbody[] componentsInChildren1 = this.GetComponentsInChildren<Rigidbody>();
-      int num = (UnityEngine.Object) componentsInChildren1[0].gameObject == (UnityEngine.Object) this.gameObject ? 1 : 0;
+      Rigidbody[] componentsInChildren1 = GetComponentsInChildren<Rigidbody>();
+      int num = componentsInChildren1[0].gameObject == gameObject ? 1 : 0;
       rigidbones = new Rigidbone[num == 0 ? componentsInChildren1.Length : componentsInChildren1.Length - 1];
       for (int index = 0; index < rigidbones.Length; ++index)
         rigidbones[index] = new Rigidbone(componentsInChildren1[index + num]);
-      Transform[] componentsInChildren2 = this.GetComponentsInChildren<Transform>();
+      Transform[] componentsInChildren2 = GetComponentsInChildren<Transform>();
       children = new Child[componentsInChildren2.Length - 1];
       for (int index = 0; index < children.Length; ++index)
         children[index] = new Child(componentsInChildren2[index + 1]);
@@ -223,7 +224,7 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+        if (ik == null)
           return false;
         if (ik.enabled && ik.GetIKSolver().IKPositionWeight > 0.0)
           return true;
@@ -250,7 +251,7 @@ namespace RootMotion.FinalIK
 
     private void OnDestroy()
     {
-      if (!((UnityEngine.Object) ik != (UnityEngine.Object) null))
+      if (!(ik != null))
         return;
       ik.GetIKSolver().OnPostUpdate -= AfterLastIK;
     }
@@ -275,10 +276,10 @@ namespace RootMotion.FinalIK
         t = r.transform;
         joint = t.GetComponent<Joint>();
         collider = t.GetComponent<Collider>();
-        if ((UnityEngine.Object) joint != (UnityEngine.Object) null)
+        if (joint != null)
         {
           c = joint.connectedBody;
-          updateAnchor = (UnityEngine.Object) c != (UnityEngine.Object) null;
+          updateAnchor = c != null;
         }
         lastPosition = t.position;
         lastRotation = t.rotation;

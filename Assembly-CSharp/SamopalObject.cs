@@ -1,4 +1,8 @@
-﻿public class SamopalObject : MonoBehaviour
+﻿using Engine.Source.Audio;
+using UnityEngine;
+using UnityEngine.Audio;
+
+public class SamopalObject : MonoBehaviour
 {
   public GameObject AimPoint;
   public ParticleBurster ShotEffect;
@@ -18,9 +22,9 @@
 
   private void Start()
   {
-    if ((Object) FireBeginAudio != (Object) null)
+    if (FireBeginAudio != null)
       FireBeginAudio.PlayAndCheck();
-    if (!((Object) FireLoopAudio != (Object) null))
+    if (!(FireLoopAudio != null))
       return;
     FireLoopAudio.PlayAndCheck();
   }
@@ -35,16 +39,16 @@
 
   public void Shoot()
   {
-    if ((Object) FireLoopAudio != (Object) null)
+    if (FireLoopAudio != null)
       FireLoopAudio.PlayAndCheck();
-    if ((Object) FireShootAudio != (Object) null)
+    if (FireShootAudio != null)
       FireShootAudio.PlayAndCheck();
     needShot = true;
   }
 
   public void Stop()
   {
-    if (!((Object) FireLoopAudio != (Object) null))
+    if (!(FireLoopAudio != null))
       return;
     FireLoopAudio.PlayAndCheck();
   }

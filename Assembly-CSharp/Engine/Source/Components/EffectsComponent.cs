@@ -9,6 +9,7 @@ using Engine.Source.Commons;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Commons.Parameters;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {

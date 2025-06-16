@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -33,7 +34,7 @@ namespace Cinemachine
     private Transform m_previousLookAtTarget;
     private Transform m_previousFollowTarget;
     private bool mSlaveStatusUpdated;
-    private CinemachineVirtualCameraBase m_parentVcam = null;
+    private CinemachineVirtualCameraBase m_parentVcam;
     private int m_QueuePriority = int.MaxValue;
 
     public int ValidatingStreamVersion
@@ -67,12 +68,12 @@ namespace Cinemachine
       if (OnPostPipelineStage != null)
         OnPostPipelineStage(vcam, stage, ref newState, deltaTime);
       CinemachineVirtualCameraBase parentCamera = ParentCamera as CinemachineVirtualCameraBase;
-      if (!((UnityEngine.Object) parentCamera != (UnityEngine.Object) null))
+      if (!(parentCamera != null))
         return;
       parentCamera.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
     }
 
-    public string Name => this.name;
+    public string Name => name;
 
     public virtual string Description => "";
 
@@ -84,7 +85,7 @@ namespace Cinemachine
 
     public GameObject VirtualCameraGameObject
     {
-      get => (UnityEngine.Object) this == (UnityEngine.Object) null ? (GameObject) null : this.gameObject;
+      get => this == null ? null : gameObject;
     }
 
     public abstract CameraState State { get; }
@@ -111,12 +112,12 @@ namespace Cinemachine
     {
       get
       {
-        if ((UnityEngine.Object) LookAt != (UnityEngine.Object) m_previousLookAtTarget)
+        if (LookAt != m_previousLookAtTarget)
         {
           m_previousLookAtTarget = LookAt;
           m_previousStateIsValid = false;
         }
-        if ((UnityEngine.Object) Follow != (UnityEngine.Object) m_previousFollowTarget)
+        if (Follow != m_previousFollowTarget)
         {
           m_previousFollowTarget = Follow;
           m_previousStateIsValid = false;
@@ -133,7 +134,7 @@ namespace Cinemachine
       Vector3 worldUp,
       float deltaTime)
     {
-      if (this.gameObject.activeInHierarchy)
+      if (gameObject.activeInHierarchy)
         return;
       PreviousStateIsValid = false;
     }
@@ -156,13 +157,13 @@ namespace Cinemachine
 
     protected virtual void OnEnable()
     {
-      CinemachineVirtualCameraBase[] components = this.GetComponents<CinemachineVirtualCameraBase>();
+      CinemachineVirtualCameraBase[] components = GetComponents<CinemachineVirtualCameraBase>();
       for (int index = 0; index < components.Length; ++index)
       {
-        if (components[index].enabled && (UnityEngine.Object) components[index] != (UnityEngine.Object) this)
+        if (components[index].enabled && components[index] != this)
         {
-          Debug.LogError((object) (Name + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling " + this.GetType().Name + "."));
-          this.enabled = false;
+          Debug.LogError(Name + " has multiple CinemachineVirtualCameraBase-derived components.  Disabling " + GetType().Name + ".");
+          enabled = false;
         }
       }
       UpdateSlaveStatus();
@@ -189,8 +190,8 @@ namespace Cinemachine
     {
       mSlaveStatusUpdated = true;
       m_parentVcam = null;
-      Transform parent = this.transform.parent;
-      if (!((UnityEngine.Object) parent != (UnityEngine.Object) null))
+      Transform parent = transform.parent;
+      if (!(parent != null))
         return;
       m_parentVcam = parent.GetComponent<CinemachineVirtualCameraBase>();
     }
@@ -198,7 +199,7 @@ namespace Cinemachine
     protected Transform ResolveLookAt(Transform localLookAt)
     {
       Transform transform = localLookAt;
-      if ((UnityEngine.Object) transform == (UnityEngine.Object) null && ParentCamera != null)
+      if (transform == null && ParentCamera != null)
         transform = ParentCamera.LookAt;
       return transform;
     }
@@ -206,7 +207,7 @@ namespace Cinemachine
     protected Transform ResolveFollow(Transform localFollow)
     {
       Transform transform = localFollow;
-      if ((UnityEngine.Object) transform == (UnityEngine.Object) null && ParentCamera != null)
+      if (transform == null && ParentCamera != null)
         transform = ParentCamera.Follow;
       return transform;
     }
@@ -216,14 +217,14 @@ namespace Cinemachine
       m_QueuePriority = int.MaxValue;
       CinemachineCore.Instance.RemoveActiveCamera(this);
       CinemachineCore.Instance.RemoveChildCamera(this);
-      if ((UnityEngine.Object) m_parentVcam == (UnityEngine.Object) null)
+      if (m_parentVcam == null)
       {
-        if (!this.isActiveAndEnabled)
+        if (!isActiveAndEnabled)
           return;
         CinemachineCore.Instance.AddActiveCamera(this);
         m_QueuePriority = m_Priority;
       }
-      else if (this.isActiveAndEnabled)
+      else if (isActiveAndEnabled)
         CinemachineCore.Instance.AddChildCamera(this);
     }
 

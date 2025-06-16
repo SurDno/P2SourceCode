@@ -1,16 +1,19 @@
 ﻿using System;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Controls
 {
   public class HoldableButton2 : Selectable
   {
     [SerializeField]
-    private ProgressViewBase progressView = null;
+    private ProgressViewBase progressView;
     [SerializeField]
-    private HideableView holdView = null;
+    private HideableView holdView;
     [SerializeField]
-    private EventView cancelView = null;
+    private EventView cancelView;
     private float currentHoldTime = -1f;
 
     public float HoldTime { get; set; } = 2f;
@@ -29,7 +32,7 @@ namespace Engine.Source.UI.Controls
       set
       {
         currentHoldTime = value;
-        if (!((UnityEngine.Object) progressView != (UnityEngine.Object) null))
+        if (!(progressView != null))
           return;
         progressView.Progress = currentHoldTime >= 0.0 && currentHoldTime <= (double) HoldTime ? currentHoldTime / HoldTime : 0.0f;
       }
@@ -41,9 +44,9 @@ namespace Engine.Source.UI.Controls
       Action<bool> openEndEvent = OpenEndEvent;
       if (openEndEvent != null)
         openEndEvent(false);
-      if ((UnityEngine.Object) holdView != (UnityEngine.Object) null)
+      if (holdView != null)
         holdView.Visible = false;
-      if (!((UnityEngine.Object) cancelView != (UnityEngine.Object) null))
+      if (!(cancelView != null))
         return;
       cancelView.Invoke();
     }
@@ -61,7 +64,7 @@ namespace Engine.Source.UI.Controls
       Action<bool> openEndEvent = OpenEndEvent;
       if (openEndEvent != null)
         openEndEvent(true);
-      if (!((UnityEngine.Object) holdView != (UnityEngine.Object) null))
+      if (!(holdView != null))
         return;
       holdView.Visible = false;
     }
@@ -83,7 +86,7 @@ namespace Engine.Source.UI.Controls
     public override void OnPointerDown(PointerEventData eventData)
     {
       base.OnPointerDown(eventData);
-      if (!this.IsActive() || !this.IsInteractable() || eventData.button != 0)
+      if (!IsActive() || !IsInteractable() || eventData.button != 0)
         return;
       StartHold();
     }
@@ -113,7 +116,7 @@ namespace Engine.Source.UI.Controls
       Action openBeginEvent = OpenBeginEvent;
       if (openBeginEvent != null)
         openBeginEvent();
-      if (!((UnityEngine.Object) holdView != (UnityEngine.Object) null))
+      if (!(holdView != null))
         return;
       holdView.Visible = true;
     }
@@ -122,7 +125,7 @@ namespace Engine.Source.UI.Controls
     {
       if (!IsTimerRunning())
         return;
-      if (!this.IsInteractable())
+      if (!IsInteractable())
       {
         Cancel();
       }

@@ -1,5 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using InputServices;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -8,7 +11,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private TextMeshProUGUI textMeshProComponent;
     [SerializeField]
-    private UnityEngine.UI.Text textComponent;
+    private Text textComponent;
 
     public override void SkipAnimation()
     {
@@ -16,13 +19,13 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyStringValue()
     {
-      if ((Object) textMeshProComponent == (Object) null)
-        textMeshProComponent = this.gameObject?.GetComponentInChildren<TextMeshProUGUI>();
-      if ((Object) textComponent == (Object) null)
-        textComponent = this.gameObject?.GetComponentInChildren<UnityEngine.UI.Text>();
-      if ((Object) textMeshProComponent != (Object) null)
+      if (textMeshProComponent == null)
+        textMeshProComponent = gameObject?.GetComponentInChildren<TextMeshProUGUI>();
+      if (textComponent == null)
+        textComponent = gameObject?.GetComponentInChildren<Text>();
+      if (textMeshProComponent != null)
       {
-        if ((Object) textComponent != (Object) null)
+        if (textComponent != null)
           textComponent.gameObject?.SetActive(false);
         string input = StringValue;
         Regex regex = new Regex("(?<tag>(<b><color(.*?)>)(?<value>((.*?)))(</color></b>))");
@@ -41,7 +44,7 @@ namespace Engine.Impl.UI.Controls
       }
       else
       {
-        if (!((Object) textComponent != (Object) null))
+        if (!(textComponent != null))
           return;
         textComponent.gameObject?.SetActive(true);
         textComponent.text = StringValue;

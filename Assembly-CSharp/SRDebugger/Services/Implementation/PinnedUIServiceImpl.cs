@@ -1,6 +1,7 @@
 ﻿using SRDebugger.UI.Other;
 using SRF;
 using SRF.Service;
+using UnityEngine;
 
 namespace SRDebugger.Services.Implementation
 {
@@ -11,10 +12,10 @@ namespace SRDebugger.Services.Implementation
 
     public bool IsProfilerPinned
     {
-      get => !((Object) _uiRoot == (Object) null) && _uiRoot.Profiler.activeSelf;
+      get => !(_uiRoot == null) && _uiRoot.Profiler.activeSelf;
       set
       {
-        if ((Object) _uiRoot == (Object) null)
+        if (_uiRoot == null)
           Load();
         _uiRoot.Profiler.SetActive(value);
       }
@@ -29,13 +30,13 @@ namespace SRDebugger.Services.Implementation
     private void Load()
     {
       PinnedUIRoot prefab = Resources.Load<PinnedUIRoot>("SRDebugger/UI/Prefabs/PinnedUI");
-      if ((Object) prefab == (Object) null)
+      if (prefab == null)
       {
-        Debug.LogError((object) "[SRDebugger.PinnedUI] Error loading ui prefab");
+        Debug.LogError("[SRDebugger.PinnedUI] Error loading ui prefab");
       }
       else
       {
-        PinnedUIRoot pinnedUiRoot = SRInstantiate.Instantiate<PinnedUIRoot>(prefab);
+        PinnedUIRoot pinnedUiRoot = SRInstantiate.Instantiate(prefab);
         pinnedUiRoot.CachedTransform.SetParent(CachedTransform, false);
         _uiRoot = pinnedUiRoot;
         UpdateAnchors();

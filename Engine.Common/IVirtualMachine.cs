@@ -1,7 +1,7 @@
-﻿using Cofe.Serializations.Data;
-using System;
+﻿using System;
 using System.Collections;
 using System.Xml;
+using Cofe.Serializations.Data;
 
 namespace Engine.Common
 {

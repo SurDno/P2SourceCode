@@ -222,7 +222,7 @@ namespace PLVirtualMachine.Dynamic
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("SaveLoad error: cannot register mindmap object guid={0}, error: {1}", mmObj.StaticGuid, ex.ToString()));
+        Logger.AddError(string.Format("SaveLoad error: cannot register mindmap object guid={0}, error: {1}", mmObj.StaticGuid, ex));
         return new Guid();
       }
     }

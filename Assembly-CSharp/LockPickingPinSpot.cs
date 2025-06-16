@@ -1,4 +1,6 @@
-﻿public class LockPickingPinSpot : MonoBehaviour
+﻿using UnityEngine;
+
+public class LockPickingPinSpot : MonoBehaviour
 {
   [Header("Settings")]
   [SerializeField]
@@ -6,9 +8,9 @@
   [SerializeField]
   private float sizeMapping = 10f;
   [SerializeField]
-  private float border = 0.0f;
+  private float border;
   [SerializeField]
-  private RectTransform image = (RectTransform) null;
+  private RectTransform image;
   [Header("State")]
   [SerializeField]
   private float size = 0.1f;
@@ -24,7 +26,7 @@
     RectTransform transform = (RectTransform) this.transform;
     float z = Mathf.Lerp(rotationRange.x, rotationRange.y, position);
     transform.localEulerAngles = new Vector3(0.0f, 0.0f, z);
-    if (!((Object) image != (Object) null))
+    if (!(image != null))
       return;
     image.sizeDelta = image.sizeDelta with
     {

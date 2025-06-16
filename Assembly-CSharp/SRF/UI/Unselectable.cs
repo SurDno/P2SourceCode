@@ -1,4 +1,7 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+
+namespace SRF.UI
 {
   [AddComponentMenu("SRF/UI/Unselectable")]
   public sealed class Unselectable : SRMonoBehaviour, ISelectHandler, IEventSystemHandler
@@ -11,8 +14,8 @@
     {
       if (!_suspectedSelected)
         return;
-      if ((Object) EventSystem.current.currentSelectedGameObject == (Object) CachedGameObject)
-        EventSystem.current.SetSelectedGameObject((GameObject) null);
+      if (EventSystem.current.currentSelectedGameObject == CachedGameObject)
+        EventSystem.current.SetSelectedGameObject(null);
       _suspectedSelected = false;
     }
   }

@@ -10,7 +10,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyTo(Day day)
     {
       TOD_Sky tod = ServiceLocator.GetService<EnvironmentService>().Tod;
-      if ((Object) tod == (Object) null)
+      if (tod == null)
         return;
       GradientUtility.Copy(tod.Day.SunColor, day.SunColor);
       GradientUtility.Copy(tod.Day.LightColor, day.LightColor);
@@ -33,7 +33,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyFrom(Day day)
     {
       TOD_Sky tod = ServiceLocator.GetService<EnvironmentService>().Tod;
-      if ((Object) tod == (Object) null)
+      if (tod == null)
         return;
       GradientUtility.Copy(day.SunColor, tod.Day.SunColor);
       GradientUtility.Copy(day.LightColor, tod.Day.LightColor);

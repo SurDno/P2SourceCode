@@ -8,6 +8,9 @@ using Engine.Source.UI;
 using Engine.Source.UI.Menu.Main;
 using InputServices;
 using Scripts.Data;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -34,20 +37,20 @@ namespace Engine.Impl.UI.Menu.Main
     [SerializeField]
     private Image selectedLine;
     private int currentIndex;
-    private Button[] buttons = (Button[]) null;
+    private Button[] buttons;
 
     public override void Initialize()
     {
-      RegisterLayer((IStartWindow) this);
+      RegisterLayer<IStartWindow>(this);
       if (!BuildSettingsUtility.IsDataExist("MarbleNest"))
         newMarbleNestGameButton.gameObject.SetActive(false);
-      continueButton.onClick.AddListener(new UnityAction(ContinueGame));
-      newGameButton.onClick.AddListener(new UnityAction(NewGame));
-      newMarbleNestGameButton.onClick.AddListener(new UnityAction(NewMarbleNestGame));
-      loadGameButton.onClick.AddListener(new UnityAction(OpenLoadGameWindow));
-      settingsButton.onClick.AddListener(new UnityAction(OpenSettingsWindow));
-      creditsButton.onClick.AddListener(new UnityAction(OpenCreditsWindow));
-      exitButton.onClick.AddListener(new UnityAction(ExitGame));
+      continueButton.onClick.AddListener(ContinueGame);
+      newGameButton.onClick.AddListener(NewGame);
+      newMarbleNestGameButton.onClick.AddListener(NewMarbleNestGame);
+      loadGameButton.onClick.AddListener(OpenLoadGameWindow);
+      settingsButton.onClick.AddListener(OpenSettingsWindow);
+      creditsButton.onClick.AddListener(OpenCreditsWindow);
+      exitButton.onClick.AddListener(ExitGame);
       base.Initialize();
     }
 
@@ -55,7 +58,7 @@ namespace Engine.Impl.UI.Menu.Main
     {
       string lastSaveName = ServiceLocator.GetService<ProfilesService>().GetLastSaveName();
       if (!ProfilesUtility.IsSaveExist(lastSaveName))
-        Debug.LogError((object) ("Save name not found : " + lastSaveName));
+        Debug.LogError("Save name not found : " + lastSaveName);
       else
         CoroutineService.Instance.Route(LoadGameUtility.StartGameWithSave(lastSaveName));
     }
@@ -95,7 +98,7 @@ namespace Engine.Impl.UI.Menu.Main
       UpdateContinueButton();
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       currentIndex = 0;
-      buttons = this.GetComponentsInChildren<Button>();
+      buttons = GetComponentsInChildren<Button>();
       service.AddListener(GameActionType.Forward, ChangeSelectedItem);
       service.AddListener(GameActionType.Backward, ChangeSelectedItem);
       service.AddListener(GameActionType.LStickDown, ChangeSelectedItem);
@@ -133,7 +136,7 @@ namespace Engine.Impl.UI.Menu.Main
       }
       if (!(type == GameActionType.Submit & down))
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(buttons[currentIndex].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute(buttons[currentIndex].gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       return true;
     }
 
@@ -151,7 +154,7 @@ namespace Engine.Impl.UI.Menu.Main
     {
       base.OnJoystick(joystick);
       helpPanel.SetActive(joystick);
-      EventSystem.current.SetSelectedGameObject((GameObject) null);
+      EventSystem.current.SetSelectedGameObject(null);
       if (joystick)
       {
         if (currentIndex != 0)
@@ -165,8 +168,8 @@ namespace Engine.Impl.UI.Menu.Main
     private void SetSelectionLine()
     {
       GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
-      Text component = (Object) selectedGameObject != (Object) null ? selectedGameObject.GetComponent<Text>() : (Text) null;
-      bool flag = (Object) component != (Object) null && InputService.Instance.JoystickUsed;
+      Text component = selectedGameObject != null ? selectedGameObject.GetComponent<Text>() : null;
+      bool flag = component != null && InputService.Instance.JoystickUsed;
       selectedLine.enabled = flag;
       if (!flag)
         return;
@@ -178,7 +181,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void UpdateContinueButton()
     {
-      if (!((Object) continueButton != (Object) null))
+      if (!(continueButton != null))
         return;
       continueButton.gameObject.SetActive(ProfilesUtility.IsSaveExist(ServiceLocator.GetService<ProfilesService>().GetLastSaveName()));
     }

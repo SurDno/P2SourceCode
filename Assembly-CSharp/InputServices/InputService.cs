@@ -6,6 +6,8 @@ using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace InputServices
 {
@@ -59,7 +61,7 @@ namespace InputServices
         _joystickUsed = value;
         ICursorController instance = CursorService.Instance;
         Vector2 position = instance.Position;
-        Vector2 vector2 = (value ? Vector2.zero : new Vector2((float) Screen.width, (float) Screen.height) * 0.5f) - position;
+        Vector2 vector2 = (value ? Vector2.zero : new Vector2(Screen.width, Screen.height) * 0.5f) - position;
         instance.Move(vector2.x, vector2.y);
         BaseInputModule currentInputModule = EventSystem.current.currentInputModule;
         currentInputModule.DeactivateModule();

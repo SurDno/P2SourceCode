@@ -1,4 +1,5 @@
 ﻿using Engine.Source.UI.Menu.Main;
+using UnityEngine;
 
 public class UIRoot : MonoBehaviour
 {
@@ -21,13 +22,13 @@ public class UIRoot : MonoBehaviour
   public void Initialize()
   {
     Transform transform = root?.transform;
-    if ((Object) transform == (Object) null)
+    if (transform == null)
       transform = this.transform;
     foreach (GameObject prefab in prefabs)
     {
-      if (!((Object) prefab == (Object) null))
+      if (!(prefab == null))
       {
-        GameObject gameObject = Object.Instantiate<GameObject>(prefab, transform, false);
+        GameObject gameObject = Instantiate(prefab, transform, false);
         gameObject.SetActive(false);
         gameObject.name = prefab.name;
       }

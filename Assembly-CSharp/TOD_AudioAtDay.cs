@@ -1,4 +1,6 @@
-﻿[RequireComponent(typeof (AudioSource))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (AudioSource))]
 public class TOD_AudioAtDay : MonoBehaviour
 {
   public float fadeTime = 1f;
@@ -8,7 +10,7 @@ public class TOD_AudioAtDay : MonoBehaviour
 
   protected void Start()
   {
-    audioComponent = this.GetComponent<AudioSource>();
+    audioComponent = GetComponent<AudioSource>();
     audioVolume = audioComponent.volume;
     audioComponent.enabled = TOD_Sky.Instance.IsDay;
   }
@@ -17,6 +19,6 @@ public class TOD_AudioAtDay : MonoBehaviour
   {
     lerpTime = Mathf.Clamp01(lerpTime + (TOD_Sky.Instance.IsDay ? 1f : -1f) * Time.deltaTime / fadeTime);
     audioComponent.volume = Mathf.Lerp(0.0f, audioVolume, lerpTime);
-    audioComponent.enabled = (double) audioComponent.volume > 0.0;
+    audioComponent.enabled = audioComponent.volume > 0.0;
   }
 }

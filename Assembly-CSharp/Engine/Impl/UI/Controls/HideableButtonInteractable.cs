@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableButtonInteractable : HideableView
   {
@@ -7,7 +10,7 @@
 
     protected override void ApplyVisibility()
     {
-      if (!((Object) button != (Object) null))
+      if (!(button != null))
         return;
       button.interactable = Visible;
     }

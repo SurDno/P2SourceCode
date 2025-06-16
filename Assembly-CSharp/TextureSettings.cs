@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(menuName = "Data/Texture Settings")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(menuName = "Data/Texture Settings")]
 public class TextureSettings : ScriptableObject
 {
   [SerializeField]

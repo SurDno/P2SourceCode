@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -30,9 +31,9 @@ namespace AmplifyColor
     }
 
     public VolumeEffectComponentFlags(Component c)
-      : this(string.Concat(((object) c).GetType()))
+      : this(string.Concat(c.GetType()))
     {
-      foreach (FieldInfo field in ((object) c).GetType().GetFields())
+      foreach (FieldInfo field in c.GetType().GetFields())
       {
         if (VolumeEffectField.IsValidType(field.FieldType.FullName))
           componentFields.Add(new VolumeEffectFieldFlags(field));
@@ -51,7 +52,7 @@ namespace AmplifyColor
 
     public void UpdateComponentFlags(Component c)
     {
-      foreach (FieldInfo field in ((object) c).GetType().GetFields())
+      foreach (FieldInfo field in c.GetType().GetFields())
       {
         FieldInfo pi = field;
         if (!componentFields.Exists(s => s.fieldName == pi.Name) && VolumeEffectField.IsValidType(pi.FieldType.FullName))

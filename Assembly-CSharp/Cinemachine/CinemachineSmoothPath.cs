@@ -1,5 +1,6 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -108,12 +109,12 @@ namespace Cinemachine
         pos = GetBoundingIndices(pos, out indexA, out indexB);
         position = indexA != indexB ? SplineHelpers.Bezier3(pos - indexA, m_Waypoints[indexA].position, m_ControlPoints1[indexA].position, m_ControlPoints2[indexA].position, m_Waypoints[indexB].position) : m_Waypoints[indexA].position;
       }
-      return this.transform.TransformPoint(position);
+      return transform.TransformPoint(position);
     }
 
     public override Vector3 EvaluateTangent(float pos)
     {
-      Vector3 direction = this.transform.rotation * Vector3.forward;
+      Vector3 direction = transform.rotation * Vector3.forward;
       if (m_Waypoints.Length > 1)
       {
         UpdateControlPoints();
@@ -124,12 +125,12 @@ namespace Cinemachine
           --indexA;
         direction = SplineHelpers.BezierTangent3(pos - indexA, m_Waypoints[indexA].position, m_ControlPoints1[indexA].position, m_ControlPoints2[indexA].position, m_Waypoints[indexB].position);
       }
-      return this.transform.TransformDirection(direction);
+      return transform.TransformDirection(direction);
     }
 
     public override Quaternion EvaluateOrientation(float pos)
     {
-      Quaternion orientation = this.transform.rotation;
+      Quaternion orientation = transform.rotation;
       if (m_Waypoints.Length != 0)
       {
         int indexA;
@@ -148,7 +149,7 @@ namespace Cinemachine
         Vector3 tangent = EvaluateTangent(pos);
         if (!tangent.AlmostZero())
         {
-          Vector3 upwards = this.transform.rotation * Vector3.up;
+          Vector3 upwards = transform.rotation * Vector3.up;
           orientation = Quaternion.LookRotation(tangent, upwards) * Quaternion.AngleAxis(angle, Vector3.forward);
         }
       }

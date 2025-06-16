@@ -7,6 +7,8 @@ using AssetDatabases;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace Engine.Source.Services.Templates
 {
@@ -27,7 +29,7 @@ namespace Engine.Source.Services.Templates
       foreach (string asset in assets)
       {
         ++progressService.Progress;
-        if (time + (double) delay < (double) Time.realtimeSinceStartup)
+        if (time + (double) delay < Time.realtimeSinceStartup)
         {
           time = Time.realtimeSinceStartup;
           progressService.Update(nameof (RuntimeTemplateLoader), asset);
@@ -67,7 +69,7 @@ namespace Engine.Source.Services.Templates
         obj = null;
       }
       sw.Stop();
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (RuntimeTemplateLoader)).Append(" : ").Append(nameof (Load)).Append(" , elapsed : ").Append(sw.Elapsed).Append(" , created : ").Append(created));
+      Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (RuntimeTemplateLoader)).Append(" : ").Append(nameof (Load)).Append(" , elapsed : ").Append(sw.Elapsed).Append(" , created : ").Append(created));
     }
   }
 }

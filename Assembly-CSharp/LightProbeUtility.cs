@@ -1,4 +1,7 @@
-﻿public static class LightProbeUtility
+﻿using UnityEngine;
+using UnityEngine.Rendering;
+
+public static class LightProbeUtility
 {
   private static int[] _idSHA = new int[3]
   {

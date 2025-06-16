@@ -8,6 +8,9 @@ using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -84,20 +87,20 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private bool IsEnemyRunningAway()
     {
-      return (double) owner.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(transform.forward, (owner.Enemy.transform.position - owner.transform.position).normalized) > 0.25;
+      return owner.Enemy.Velocity.magnitude >= 0.5 && Vector3.Dot(transform.forward, (owner.Enemy.transform.position - owner.transform.position).normalized) > 0.25;
     }
 
     private void NextRuinBlockTime()
     {
-      if ((double) UnityEngine.Random.value < zeroRuinBlockProbability.Value)
+      if (Random.value < (double) zeroRuinBlockProbability.Value)
         ruinBlockTime = 0.0f;
       else
-        ruinBlockTime = UnityEngine.Random.Range(ruinBlockMinTime.Value, ruinBlockMaxTime.Value);
+        ruinBlockTime = Random.Range(ruinBlockMinTime.Value, ruinBlockMaxTime.Value);
     }
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner.Enemy == null)
         return TaskStatus.Failure;
       if (owner.IsReacting || owner.IsDodge || owner.IsQuickBlock || owner.IsStagger || knockDowns.Value && owner.Enemy is PlayerEnemy && UpdatePlayerKnockDdown(owner.Enemy as PlayerEnemy, deltaTime))
         return TaskStatus.Running;
@@ -110,7 +113,7 @@ namespace BehaviorDesigner.Runtime.Tasks
         {
           firstAttack = false;
           if (owner.AttackCooldownTimeLeft <= 0.0)
-            owner.AttackCooldownTimeLeft = UnityEngine.Random.value * 0.5f;
+            owner.AttackCooldownTimeLeft = Random.value * 0.5f;
         }
         bool flag = EnemyIsAttacking();
         if (ruinBlocks.Value && owner.Enemy is PlayerEnemy && owner.AttackCooldownTimeLeft <= 0.0 && !flag && owner.Enemy.BlockNormalizedTime > (double) ruinBlockTime && !owner.IsPushing && !owner.IsReacting && !owner.IsAttacking)
@@ -166,7 +169,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       Vector3 vector3 = player.transform.position - owner.transform.position;
       float magnitude = vector3.magnitude;
       Vector3 lhs = vector3 / magnitude;
-      if (magnitude > 5.0 || (double) Vector3.Dot(lhs, player.transform.forward) < 0.0 || magnitude >= 2.5)
+      if (magnitude > 5.0 || Vector3.Dot(lhs, player.transform.forward) < 0.0 || magnitude >= 2.5)
         return false;
       owner.TriggerAction(WeaponActionEnum.KnockDown);
       playerKnockdownCooldownLeft = description.KnockDownCooldownTime;
@@ -179,7 +182,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       waitDuration = attackTime.Value;
       NextRuinBlockTime();
       firstAttack = true;
-      if (!(bool) (UnityEngine.Object) owner)
+      if (!(bool) (Object) owner)
         return;
       owner.WasPunchedEvent += Owner_WasPunchedEvent;
       owner.WasPunchedToStaggerEvent += Owner_WasPunchedEvent;
@@ -197,14 +200,14 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private void Owner_WasPunchedEvent(EnemyBase enemy)
     {
-      if (owner.IsAttacking || !((UnityEngine.Object) enemy == (UnityEngine.Object) owner.Enemy) || counterAttacksProbability.Value <= (double) UnityEngine.Random.value)
+      if (owner.IsAttacking || !(enemy == owner.Enemy) || counterAttacksProbability.Value <= (double) Random.value)
         return;
       owner.AttackCooldownTimeLeft = 0.0f;
     }
 
     public override void OnEnd()
     {
-      if ((bool) (UnityEngine.Object) owner.Enemy)
+      if ((bool) (Object) owner.Enemy)
       {
         owner.Enemy.WasPunchedEvent -= Owner_WasPunchedEvent;
         owner.WasPunchedToStaggerEvent -= Owner_WasPunchedEvent;
@@ -218,7 +221,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       if (!(owner.Enemy is NPCEnemy))
         return false;
       NPCEnemy enemy = owner.Enemy as NPCEnemy;
-      return enemy.IsAttacking && (UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) owner;
+      return enemy.IsAttacking && enemy.Enemy == owner;
     }
 
     public new void DataWrite(IDataWriter writer)
@@ -238,7 +241,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       BehaviorTreeDataWriteUtility.WriteShared(writer, "CounterAttacksProbability", counterAttacksProbability);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "KnockDowns", knockDowns);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "AttackCooldownTime", attackCooldownTime);
-      BehaviorTreeDataWriteUtility.WriteUnity<FollowDescription>(writer, "Description", description);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Description", description);
     }
 
     public new void DataRead(IDataReader reader, Type type)
@@ -258,7 +261,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       counterAttacksProbability = BehaviorTreeDataReadUtility.ReadShared(reader, "CounterAttacksProbability", counterAttacksProbability);
       knockDowns = BehaviorTreeDataReadUtility.ReadShared(reader, "KnockDowns", knockDowns);
       attackCooldownTime = BehaviorTreeDataReadUtility.ReadShared(reader, "AttackCooldownTime", attackCooldownTime);
-      description = BehaviorTreeDataReadUtility.ReadUnity<FollowDescription>(reader, "Description", description);
+      description = BehaviorTreeDataReadUtility.ReadUnity(reader, "Description", description);
     }
   }
 }

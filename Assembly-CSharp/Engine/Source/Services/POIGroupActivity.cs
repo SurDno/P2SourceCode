@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -17,7 +18,7 @@ namespace Engine.Source.Services
       set
       {
         activityObject = value;
-        if (!((Object) activityObject != (Object) null))
+        if (!(activityObject != null))
           return;
         isDialog = activityObject.IsDialogActivity;
       }

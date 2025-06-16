@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -47,7 +48,7 @@ namespace RootMotion.FinalIK
 
       public void Reset()
       {
-        if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
+        if (transform == null)
           return;
         lazyPoint = transform.position;
         lastPosition = transform.position;
@@ -56,7 +57,7 @@ namespace RootMotion.FinalIK
 
       public void Update(IKSolverFullBodyBiped solver, float weight, float deltaTime)
       {
-        if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
+        if (transform == null)
           return;
         if (firstUpdate)
         {

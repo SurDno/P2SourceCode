@@ -14,6 +14,7 @@ using Engine.Source.Services;
 using Engine.Source.Services.Saves;
 using Inspectors;
 using Scripts.Data;
+using UnityEngine;
 
 namespace Engine.Impl.Services
 {
@@ -111,10 +112,10 @@ namespace Engine.Impl.Services
       }
       else
       {
-        Delta = TimeSpan.FromSeconds((double) Time.deltaTime * GameTimeFactor);
+        Delta = TimeSpan.FromSeconds(Time.deltaTime * (double) GameTimeFactor);
         absoluteGameTime += Delta;
-        solarTime += TimeSpan.FromSeconds((double) Time.deltaTime * SolarTimeFactor);
-        realTime += TimeSpan.FromSeconds((double) Time.deltaTime);
+        solarTime += TimeSpan.FromSeconds(Time.deltaTime * (double) SolarTimeFactor);
+        realTime += TimeSpan.FromSeconds(Time.deltaTime);
         ComputeDemo();
       }
     }

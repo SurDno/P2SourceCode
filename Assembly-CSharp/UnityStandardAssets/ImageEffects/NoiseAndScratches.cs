@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -34,14 +36,14 @@
     protected void Start()
     {
       if (!SystemInfo.supportsImageEffects)
-        this.enabled = false;
-      else if ((Object) shaderRGB == (Object) null || (Object) shaderYUV == (Object) null)
+        enabled = false;
+      else if (shaderRGB == null || shaderYUV == null)
       {
-        Debug.Log((object) "Noise shaders are not set up! Disabling noise effect.");
-        this.enabled = false;
+        Debug.Log("Noise shaders are not set up! Disabling noise effect.");
+        enabled = false;
       }
       else if (!shaderRGB.isSupported)
-        this.enabled = false;
+        enabled = false;
       else if (!shaderYUV.isSupported)
         rgbFallback = true;
     }
@@ -50,12 +52,12 @@
     {
       get
       {
-        if ((Object) m_MaterialRGB == (Object) null)
+        if (m_MaterialRGB == null)
         {
           m_MaterialRGB = new Material(shaderRGB);
           m_MaterialRGB.hideFlags = HideFlags.HideAndDontSave;
         }
-        if ((Object) m_MaterialYUV == (Object) null && !rgbFallback)
+        if (m_MaterialYUV == null && !rgbFallback)
         {
           m_MaterialYUV = new Material(shaderYUV);
           m_MaterialYUV.hideFlags = HideFlags.HideAndDontSave;
@@ -67,10 +69,10 @@
     protected void OnDisable()
     {
       if ((bool) (Object) m_MaterialRGB)
-        Object.DestroyImmediate((Object) m_MaterialRGB);
+        DestroyImmediate(m_MaterialRGB);
       if (!(bool) (Object) m_MaterialYUV)
         return;
-      Object.DestroyImmediate((Object) m_MaterialYUV);
+      DestroyImmediate(m_MaterialYUV);
     }
 
     private void SanitizeParameters()
@@ -98,10 +100,10 @@
       material.SetTexture("_GrainTex", grainTexture);
       material.SetTexture("_ScratchTex", scratchTexture);
       float num = 1f / grainSize;
-      material.SetVector("_GrainOffsetScale", new Vector4(Random.value, Random.value, (float) Screen.width / (float) grainTexture.width * num, (float) Screen.height / (float) grainTexture.height * num));
-      material.SetVector("_ScratchOffsetScale", new Vector4(scratchX + Random.value * scratchJitter, scratchY + Random.value * scratchJitter, (float) Screen.width / (float) scratchTexture.width, (float) Screen.height / (float) scratchTexture.height));
+      material.SetVector("_GrainOffsetScale", new Vector4(Random.value, Random.value, Screen.width / (float) grainTexture.width * num, Screen.height / (float) grainTexture.height * num));
+      material.SetVector("_ScratchOffsetScale", new Vector4(scratchX + Random.value * scratchJitter, scratchY + Random.value * scratchJitter, Screen.width / (float) scratchTexture.width, Screen.height / (float) scratchTexture.height));
       material.SetVector("_Intensity", new Vector4(Random.Range(grainIntensityMin, grainIntensityMax), Random.Range(scratchIntensityMin, scratchIntensityMax), 0.0f, 0.0f));
-      Graphics.Blit((Texture) source, destination, material);
+      Graphics.Blit(source, destination, material);
     }
   }
 }

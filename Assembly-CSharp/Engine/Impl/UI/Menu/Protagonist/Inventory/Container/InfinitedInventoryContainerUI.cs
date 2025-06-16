@@ -5,6 +5,10 @@ using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 {
@@ -13,21 +17,21 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
   {
     [SerializeField]
     [FormerlySerializedAs("_ScrollBarHorizontal")]
-    private Scrollbar scrollBarHorizontal = (Scrollbar) null;
+    private Scrollbar scrollBarHorizontal;
     [SerializeField]
     [FormerlySerializedAs("_ScrollBarVertical")]
-    private Scrollbar scrollBarVertical = (Scrollbar) null;
+    private Scrollbar scrollBarVertical;
 
     public static InfinitedInventoryContainerUI Instantiate(
       IInventoryComponent container,
       InventoryCellStyle style,
       GameObject prefab)
     {
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Instantiate(prefab);
       gameObject.name = "[Container] " + container.Owner.Name;
       InfinitedInventoryContainerUI component1 = gameObject.GetComponent<InfinitedInventoryContainerUI>();
       component1.InventoryContainer = container;
-      component1.Transform.localPosition = (Vector3) container.GetPosition().To();
+      component1.Transform.localPosition = container.GetPosition().To();
       if (container.GetGrid() is InventoryGridInfinited)
       {
         InventoryGridInfinited grid = (InventoryGridInfinited) container.GetGrid();
@@ -49,9 +53,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
         component1.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, outerSize.y);
         component2.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, outerSize.x);
         component2.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, outerSize.y);
-        if ((UnityEngine.Object) style.OutlinePrefab != (UnityEngine.Object) null)
+        if (style.OutlinePrefab != null)
         {
-          RectTransform component3 = UnityEngine.Object.Instantiate<GameObject>(style.OutlinePrefab).GetComponent<RectTransform>();
+          RectTransform component3 = Instantiate(style.OutlinePrefab).GetComponent<RectTransform>();
           component3.sizeDelta = new Vector2(outerSize.x + style.OutlineOffset.x * 2f, outerSize.y + style.OutlineOffset.y * 2f);
           component3.SetParent(component1.grid.transform, false);
         }
@@ -65,7 +69,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
             break;
         }
       }
-      if ((UnityEngine.Object) component1.button != (UnityEngine.Object) null)
+      if (component1.button != null)
       {
         component1.button.OpenBeginEvent += new Action(((InventoryContainerUI) component1).FireOpenBegin);
         component1.button.OpenEndEvent += new Action<bool>(((InventoryContainerUI) component1).FireOpenEnd);

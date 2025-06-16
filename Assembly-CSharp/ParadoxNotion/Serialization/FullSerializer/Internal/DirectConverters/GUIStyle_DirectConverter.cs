@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -7,7 +8,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
   {
     protected override fsResult DoSerialize(GUIStyle model, Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + SerializeMember<GUIStyleState>(serialized, null, "active", model.active) + SerializeMember<TextAnchor>(serialized, null, "alignment", model.alignment) + SerializeMember<RectOffset>(serialized, null, "border", model.border) + SerializeMember<TextClipping>(serialized, null, "clipping", model.clipping) + SerializeMember<Vector2>(serialized, null, "contentOffset", model.contentOffset) + SerializeMember<float>(serialized, null, "fixedHeight", model.fixedHeight) + SerializeMember<float>(serialized, null, "fixedWidth", model.fixedWidth) + SerializeMember<GUIStyleState>(serialized, null, "focused", model.focused) + SerializeMember<Font>(serialized, null, "font", model.font) + SerializeMember<int>(serialized, null, "fontSize", model.fontSize) + SerializeMember<FontStyle>(serialized, null, "fontStyle", model.fontStyle) + SerializeMember<GUIStyleState>(serialized, null, "hover", model.hover) + SerializeMember<ImagePosition>(serialized, null, "imagePosition", model.imagePosition) + SerializeMember<RectOffset>(serialized, null, "margin", model.margin) + SerializeMember<string>(serialized, null, "name", model.name) + SerializeMember<GUIStyleState>(serialized, null, "normal", model.normal) + SerializeMember<GUIStyleState>(serialized, null, "onActive", model.onActive) + SerializeMember<GUIStyleState>(serialized, null, "onFocused", model.onFocused) + SerializeMember<GUIStyleState>(serialized, null, "onHover", model.onHover) + SerializeMember<GUIStyleState>(serialized, null, "onNormal", model.onNormal) + SerializeMember<RectOffset>(serialized, null, "overflow", model.overflow) + SerializeMember<RectOffset>(serialized, null, "padding", model.padding) + SerializeMember<bool>(serialized, null, "richText", model.richText) + SerializeMember<bool>(serialized, null, "stretchHeight", model.stretchHeight) + SerializeMember<bool>(serialized, null, "stretchWidth", model.stretchWidth) + SerializeMember<bool>(serialized, null, "wordWrap", model.wordWrap);
+      return fsResult.Success + SerializeMember(serialized, null, "active", model.active) + SerializeMember(serialized, null, "alignment", model.alignment) + SerializeMember(serialized, null, "border", model.border) + SerializeMember(serialized, null, "clipping", model.clipping) + SerializeMember(serialized, null, "contentOffset", model.contentOffset) + SerializeMember(serialized, null, "fixedHeight", model.fixedHeight) + SerializeMember(serialized, null, "fixedWidth", model.fixedWidth) + SerializeMember(serialized, null, "focused", model.focused) + SerializeMember(serialized, null, "font", model.font) + SerializeMember(serialized, null, "fontSize", model.fontSize) + SerializeMember(serialized, null, "fontStyle", model.fontStyle) + SerializeMember(serialized, null, "hover", model.hover) + SerializeMember(serialized, null, "imagePosition", model.imagePosition) + SerializeMember(serialized, null, "margin", model.margin) + SerializeMember(serialized, null, "name", model.name) + SerializeMember(serialized, null, "normal", model.normal) + SerializeMember(serialized, null, "onActive", model.onActive) + SerializeMember(serialized, null, "onFocused", model.onFocused) + SerializeMember(serialized, null, "onHover", model.onHover) + SerializeMember(serialized, null, "onNormal", model.onNormal) + SerializeMember(serialized, null, "overflow", model.overflow) + SerializeMember(serialized, null, "padding", model.padding) + SerializeMember(serialized, null, "richText", model.richText) + SerializeMember(serialized, null, "stretchHeight", model.stretchHeight) + SerializeMember(serialized, null, "stretchWidth", model.stretchWidth) + SerializeMember(serialized, null, "wordWrap", model.wordWrap);
     }
 
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref GUIStyle model)
@@ -96,7 +97,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new GUIStyle();
+      return new GUIStyle();
     }
   }
 }

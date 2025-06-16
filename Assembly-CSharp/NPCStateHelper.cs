@@ -3,10 +3,12 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Settings.External;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NPCStateHelper
 {
-  private static LipSyncComponent previousSpeaker = null;
+  private static LipSyncComponent previousSpeaker;
 
   public static void SayIdleReplic(IEntity Owner)
   {
@@ -16,7 +18,7 @@ public class NPCStateHelper
     if (component1 == null || component2 == null)
       return;
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-    if (player != null && (previousSpeaker == null || previousSpeaker.IsDisposed || !previousSpeaker.IsPlaying) && (double) (((IEntityView) player).GameObject.transform.position - gameObject.transform.position).magnitude <= ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsMaxRangeToPlayer)
+    if (player != null && (previousSpeaker == null || previousSpeaker.IsDisposed || !previousSpeaker.IsPlaying) && (((IEntityView) player).GameObject.transform.position - gameObject.transform.position).magnitude <= (double) ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsMaxRangeToPlayer)
     {
       previousSpeaker = component2;
       component2.Play3D(component1.InitialPhrases.Random(), ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsDistanceMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsDistanceMax, true);

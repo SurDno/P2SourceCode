@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class DynamicResolution
 {
@@ -6,7 +7,7 @@ public class DynamicResolution
   private List<Camera> cameras = new List<Camera>();
   private int lastFrame;
   private float scale = 1f;
-  private RenderTexture targetTexture = (RenderTexture) null;
+  private RenderTexture targetTexture;
 
   public static DynamicResolution Instance
   {
@@ -23,10 +24,10 @@ public class DynamicResolution
   private void DestroyTexture()
   {
     for (int index = 0; index < cameras.Count; ++index)
-      cameras[index].targetTexture = (RenderTexture) null;
+      cameras[index].targetTexture = null;
     targetTexture.Release();
-    Object.Destroy((Object) targetTexture);
-    targetTexture = (RenderTexture) null;
+    Object.Destroy(targetTexture);
+    targetTexture = null;
   }
 
   public RenderTexture GetTargetTexture()
@@ -36,21 +37,21 @@ public class DynamicResolution
     lastFrame = Time.frameCount;
     if (scale == 1.0)
     {
-      if ((Object) targetTexture != (Object) null)
+      if (targetTexture != null)
         DestroyTexture();
       return targetTexture;
     }
     if (Screen.width < 1 || Screen.height < 1)
       return targetTexture;
-    int width = Mathf.RoundToInt((float) ((double) Screen.width * scale / 2.0)) * 2;
+    int width = Mathf.RoundToInt((float) (Screen.width * (double) scale / 2.0)) * 2;
     if (width < 1)
       width = 1;
-    int height = Mathf.RoundToInt((float) ((double) Screen.height * scale / 2.0)) * 2;
+    int height = Mathf.RoundToInt((float) (Screen.height * (double) scale / 2.0)) * 2;
     if (height < 1)
       height = 1;
-    if ((Object) targetTexture != (Object) null && (targetTexture.width != width || targetTexture.height != height))
+    if (targetTexture != null && (targetTexture.width != width || targetTexture.height != height))
       DestroyTexture();
-    if ((Object) targetTexture == (Object) null)
+    if (targetTexture == null)
       targetTexture = new RenderTexture(width, height, 32, RenderTextureFormat.DefaultHDR);
     return targetTexture;
   }
@@ -58,7 +59,7 @@ public class DynamicResolution
   public void RemoveCamera(Camera camera)
   {
     cameras.Remove(camera);
-    if (cameras.Count != 0 || !((Object) targetTexture != (Object) null))
+    if (cameras.Count != 0 || !(targetTexture != null))
       return;
     DestroyTexture();
   }

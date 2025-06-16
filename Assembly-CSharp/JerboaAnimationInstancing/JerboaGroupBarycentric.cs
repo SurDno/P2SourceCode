@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using Engine.Source.Audio;
 using Engine.Source.Commons;
+using UnityEngine;
+using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 namespace JerboaAnimationInstancing
 {
@@ -33,7 +37,7 @@ namespace JerboaAnimationInstancing
     {
       set
       {
-        if (!((UnityEngine.Object) audioSource != (UnityEngine.Object) null))
+        if (!(audioSource != null))
           return;
         audioSource.clip = value;
       }
@@ -56,7 +60,7 @@ namespace JerboaAnimationInstancing
     {
       if (!initialized)
         return;
-      agent = this.gameObject.GetComponent<NavMeshAgent>();
+      agent = gameObject.GetComponent<NavMeshAgent>();
       agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
       agent.autoBraking = true;
       agent.stoppingDistance = 0.2f;
@@ -69,7 +73,7 @@ namespace JerboaAnimationInstancing
       groupRayDistance = jerboaManager.GroupRayDistance;
       groupRayDistanceSquared = groupRayDistance * groupRayDistance;
       groupWalkNavigationMask = jerboaManager.GroupWalkNavigationMask;
-      audioSource = this.GetComponent<AudioSource>();
+      audioSource = GetComponent<AudioSource>();
       audioSource.outputAudioMixerGroup = jerboaManager.AudioMixerGroup;
       PrepareRays();
       agent.areaMask = groupWalkNavigationMask;
@@ -77,10 +81,10 @@ namespace JerboaAnimationInstancing
 
     public void SetRandomPosition(JerboaInstanceDescription instance)
     {
-      instance.GroupTriangleIndex = UnityEngine.Random.Range(0, groupRayCount);
+      instance.GroupTriangleIndex = Random.Range(0, groupRayCount);
       instance.GroupTriangleIndexNext = (instance.GroupTriangleIndex + 1) % groupRayCount;
-      instance.GroupBarycentricA = UnityEngine.Random.value;
-      instance.GroupBarycentricB = UnityEngine.Random.value;
+      instance.GroupBarycentricA = Random.value;
+      instance.GroupBarycentricB = Random.value;
       if (instance.GroupBarycentricA + (double) instance.GroupBarycentricB <= 1.0)
         return;
       float groupBarycentricA = instance.GroupBarycentricA;
@@ -91,11 +95,11 @@ namespace JerboaAnimationInstancing
     public Vector3 GetWorldPosition(JerboaInstanceDescription position)
     {
       int groupTriangleIndex = position.GroupTriangleIndex;
-      Vector3 position1 = this.transform.position;
-      Vector3 vector3_1 = this.transform.position + raysInWorldSpace[position.GroupTriangleIndex] * rayDistances[position.GroupTriangleIndex];
-      Vector3 vector3_2 = this.transform.position + raysInWorldSpace[position.GroupTriangleIndexNext] * rayDistances[position.GroupTriangleIndexNext];
-      float num1 = UnityEngine.Random.value;
-      float num2 = UnityEngine.Random.value;
+      Vector3 position1 = transform.position;
+      Vector3 vector3_1 = transform.position + raysInWorldSpace[position.GroupTriangleIndex] * rayDistances[position.GroupTriangleIndex];
+      Vector3 vector3_2 = transform.position + raysInWorldSpace[position.GroupTriangleIndexNext] * rayDistances[position.GroupTriangleIndexNext];
+      float num1 = Random.value;
+      float num2 = Random.value;
       return position1 + (vector3_1 - position1) * position.GroupBarycentricA + (vector3_2 - position1) * position.GroupBarycentricB;
     }
 
@@ -116,7 +120,7 @@ namespace JerboaAnimationInstancing
       SetRandomPosition(instance);
       instances.Add(instance);
       instance.Position = GetWorldPosition(instance);
-      instance.Rotation = Quaternion.Euler(new Vector3(0.0f, UnityEngine.Random.Range(0.0f, 360f), 0.0f));
+      instance.Rotation = Quaternion.Euler(new Vector3(0.0f, Random.Range(0.0f, 360f), 0.0f));
       instance.Group = this;
     }
 
@@ -124,20 +128,20 @@ namespace JerboaAnimationInstancing
     {
       if (!Aloud)
       {
-        AudioClip = (AudioClip) null;
+        AudioClip = null;
       }
       else
       {
         float num1 = 0.0f;
         foreach (JerboaInstanceDescription instance in instances)
         {
-          if ((double) (instance.Position - this.transform.position).sqrMagnitude < 4.0)
+          if ((instance.Position - transform.position).sqrMagnitude < 4.0)
             ++num1;
         }
         float num2 = jerboaManager.Weight * jerboaManager.Quality;
         float num3 = num1 * num2;
         if (num3 < 7.5)
-          AudioClip = (AudioClip) null;
+          AudioClip = null;
         else if (num3 < 15.0)
           AudioClip = jerboaManager.GetJerboaAudioclip(0);
         else if (num3 < 25.0)
@@ -149,7 +153,7 @@ namespace JerboaAnimationInstancing
 
     private void UpdateSounds()
     {
-      if ((UnityEngine.Object) audioSource == (UnityEngine.Object) null || (UnityEngine.Object) audioSource.clip == (UnityEngine.Object) null)
+      if (audioSource == null || audioSource.clip == null)
         return;
       volume = !Aloud ? Mathf.MoveTowards(volume, 0.0f, Time.deltaTime / 2f) : Mathf.MoveTowards(volume, 1f, Time.deltaTime / 2f);
       audioSource.volume = volume;
@@ -168,7 +172,7 @@ namespace JerboaAnimationInstancing
 
     private void UpdateAudioSourceEnable()
     {
-      bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
+      bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
       if (audioSource.enabled == flag)
         return;
       audioSource.enabled = flag;
@@ -178,7 +182,7 @@ namespace JerboaAnimationInstancing
     {
       UpdateRaysLazy();
       UpdateSounds();
-      if ((double) UnityEngine.Random.value < (double) Time.deltaTime / 1.0)
+      if (Random.value < Time.deltaTime / 1.0)
         UpdateSoundClips();
       if (agent.isOnNavMesh && !agent.hasPath && !agent.pathPending)
         TryCreateRandomPath(agent);
@@ -191,14 +195,14 @@ namespace JerboaAnimationInstancing
         float sqrMagnitude = forward.sqrMagnitude;
         if (sqrMagnitude > (double) groupRayDistanceSquared)
         {
-          if ((double) UnityEngine.Random.value < num2)
+          if (Random.value < (double) num2)
           {
             instance.Respawn();
           }
           else
           {
             Quaternion to = Quaternion.LookRotation(forward);
-            instance.Rotation = Quaternion.RotateTowards(instance.Rotation, to, (float) (40.0 * (double) Time.deltaTime / 0.10000000149011612));
+            instance.Rotation = Quaternion.RotateTowards(instance.Rotation, to, (float) (40.0 * Time.deltaTime / 0.10000000149011612));
           }
         }
         else if (sqrMagnitude > 4.0)
@@ -212,7 +216,7 @@ namespace JerboaAnimationInstancing
 
     private void TryCreateRandomPath(NavMeshAgent agent)
     {
-      Vector2 insideUnitCircle = UnityEngine.Random.insideUnitCircle;
+      Vector2 insideUnitCircle = Random.insideUnitCircle;
       NavMeshHit hit;
       if (!NavMesh.SamplePosition(agent.gameObject.transform.position + new Vector3(insideUnitCircle.x, 0.0f, insideUnitCircle.y) * pathSampleRadius, out hit, 2f, groupWalkNavigationMask))
         return;
@@ -221,7 +225,7 @@ namespace JerboaAnimationInstancing
 
     public bool TryGroupTeleport(Vector3 center, float radius)
     {
-      float f = UnityEngine.Random.Range(0.0f, 6.28318548f);
+      float f = Random.Range(0.0f, 6.28318548f);
       NavMeshHit hit;
       if (!NavMesh.SamplePosition(center + new Vector3(Mathf.Sin(f), 0.0f, Mathf.Cos(f)) * radius, out hit, 3f, groupWalkNavigationMask))
         return false;
@@ -235,7 +239,7 @@ namespace JerboaAnimationInstancing
       for (int index = 0; index < groupRayCount; ++index)
       {
         NavMeshHit hit;
-        rayDistances[index] = !NavMesh.Raycast(this.transform.position, this.transform.position + raysInWorldSpace[index] * groupRayDistance, out hit, groupWalkNavigationMask) ? groupRayDistance : hit.distance;
+        rayDistances[index] = !NavMesh.Raycast(transform.position, transform.position + raysInWorldSpace[index] * groupRayDistance, out hit, groupWalkNavigationMask) ? groupRayDistance : hit.distance;
       }
     }
 
@@ -243,7 +247,7 @@ namespace JerboaAnimationInstancing
     {
       lastRayIndex = (lastRayIndex + 1) % groupRayCount;
       NavMeshHit hit;
-      if (NavMesh.Raycast(this.transform.position, this.transform.position + raysInWorldSpace[lastRayIndex] * groupRayDistance, out hit, groupWalkNavigationMask))
+      if (NavMesh.Raycast(transform.position, transform.position + raysInWorldSpace[lastRayIndex] * groupRayDistance, out hit, groupWalkNavigationMask))
         rayDistances[lastRayIndex] = hit.distance;
       else
         rayDistances[lastRayIndex] = groupRayDistance;
@@ -254,7 +258,7 @@ namespace JerboaAnimationInstancing
       Gizmos.color = Color.red;
       for (int index = 0; index < raysInWorldSpace.Length; ++index)
       {
-        Vector3 from = this.transform.position + 0.5f * Vector3.up;
+        Vector3 from = transform.position + 0.5f * Vector3.up;
         Gizmos.DrawLine(from, from + raysInWorldSpace[index] * rayDistances[index]);
       }
     }

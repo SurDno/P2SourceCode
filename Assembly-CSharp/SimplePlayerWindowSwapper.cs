@@ -8,10 +8,10 @@ using InputServices;
 
 public class SimplePlayerWindowSwapper
 {
-  private static IWindow lastOpenedPlayerWindow = null;
-  private static Type lastOpenedPlayerWindowType = null;
-  private static Type bufferedPlayerWindowType = null;
-  private static IWindow bufferedPlayerWindow = null;
+  private static IWindow lastOpenedPlayerWindow;
+  private static Type lastOpenedPlayerWindowType;
+  private static Type bufferedPlayerWindowType;
+  private static IWindow bufferedPlayerWindow;
   private static bool isSessionStateSubscribed;
 
   public static IWindow LastOpenedPlayerWindow

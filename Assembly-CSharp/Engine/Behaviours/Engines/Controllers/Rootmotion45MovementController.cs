@@ -1,6 +1,8 @@
 ﻿using System;
 using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -30,7 +32,7 @@ namespace Engine.Behaviours.Engines.Controllers
       set
       {
         isPaused = value;
-        if (!((UnityEngine.Object) animator != (UnityEngine.Object) null) || !animator.gameObject.activeSelf)
+        if (!(animator != null) || !animator.gameObject.activeSelf)
           return;
         if (isPaused)
           animator.SetFloat("Mecanim.Speed", 0.0f);
@@ -53,20 +55,20 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       this.gameObject = gameObject;
       pivot = gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " doesn't contain " + typeof (Pivot).Name + " unity component."), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + " doesn't contain " + typeof (Pivot).Name + " unity component.", gameObject);
       }
       else
       {
         animator = pivot.GetAnimator();
-        if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+        if (animator == null)
           return;
         rootmotion45 = animator.gameObject.GetComponent<Rootmotion45>();
         agent = pivot.GetAgent();
-        if ((UnityEngine.Object) agent == (UnityEngine.Object) null)
+        if (agent == null)
         {
-          Debug.LogError((object) (gameObject.name + " doesn't contain " + typeof (NavMeshAgent).Name + " unity component."), (UnityEngine.Object) gameObject);
+          Debug.LogError(gameObject.name + " doesn't contain " + typeof (NavMeshAgent).Name + " unity component.", gameObject);
         }
         else
         {
@@ -87,9 +89,9 @@ namespace Engine.Behaviours.Engines.Controllers
 
     public void StartMovement(Vector3 direction, EngineBehavior.GaitType gait)
     {
-      if ((UnityEngine.Object) rootmotion45 == (UnityEngine.Object) null)
+      if (rootmotion45 == null)
       {
-        Debug.LogError((object) ("StartMovement " + gameObject.name + " doesn't contain " + typeof (Rootmotion45).Name + " unity component."), (UnityEngine.Object) gameObject);
+        Debug.LogError("StartMovement " + gameObject.name + " doesn't contain " + typeof (Rootmotion45).Name + " unity component.", gameObject);
       }
       else
       {
@@ -257,13 +259,13 @@ namespace Engine.Behaviours.Engines.Controllers
 
     private void SetAgentSpeed(NavMeshAgent agent, EngineBehavior.GaitType gait)
     {
-      if ((UnityEngine.Object) agent == (UnityEngine.Object) null)
-        Debug.LogWarning((object) ("gameobject " + (object) gameObject + " doesn`t have nav mesh agent!"));
-      else if ((UnityEngine.Object) rootmotion45 == (UnityEngine.Object) null)
-        Debug.LogWarning((object) ("gameobject " + (object) gameObject + " doesn`t have rootmotion45!"));
+      if (agent == null)
+        Debug.LogWarning("gameobject " + gameObject + " doesn`t have nav mesh agent!");
+      else if (rootmotion45 == null)
+        Debug.LogWarning("gameobject " + gameObject + " doesn`t have rootmotion45!");
       else if (gait == EngineBehavior.GaitType.Walk)
       {
-        if ((double) agent.speed == rootmotion45.WalkSpeed)
+        if (agent.speed == (double) rootmotion45.WalkSpeed)
           return;
         agent.speed = rootmotion45.WalkSpeed;
       }
@@ -271,7 +273,7 @@ namespace Engine.Behaviours.Engines.Controllers
       {
         if (gait != EngineBehavior.GaitType.Run)
           throw new NotSupportedException();
-        if ((double) agent.speed == rootmotion45.RunSpeed)
+        if (agent.speed == (double) rootmotion45.RunSpeed)
           return;
         agent.speed = rootmotion45.RunSpeed;
       }
@@ -292,9 +294,9 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       AnimatorState45 animatorState = AnimatorState45.GetAnimatorState(animator);
       animatorState.ControlMovableState = AnimatorState45.MovableState45.Rotate;
-      animatorState.MovableAngleStart = (double) Mathf.Abs(angle) > 5.0 ? angle : 0.0f;
+      animatorState.MovableAngleStart = Mathf.Abs(angle) > 5.0 ? angle : 0.0f;
       animatorState.MovableSpeed = 0.0f;
-      return (double) Mathf.Abs(angle) < 10.0;
+      return Mathf.Abs(angle) < 10.0;
     }
 
     private float CalculateRotationDeltaAngle(

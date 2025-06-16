@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Source.Connections;
 using Engine.Source.Services;
+using UnityEngine.Serialization;
 
 [Serializable]
 public class NPCSoundBankCrySettings

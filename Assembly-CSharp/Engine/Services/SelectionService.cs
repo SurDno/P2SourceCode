@@ -1,5 +1,6 @@
 ﻿using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Services
 {
@@ -14,7 +15,7 @@ namespace Engine.Services
     public void SetSelection(int index, object selection)
     {
       if (index < 0 || index >= selections.Length)
-        Debug.LogWarning((object) "Selection index out of range");
+        Debug.LogWarning("Selection index out of range");
       else
         selections[index] = selection;
     }
@@ -23,7 +24,7 @@ namespace Engine.Services
     {
       if (index >= 0 && index < selections.Length)
         return selections[index];
-      Debug.LogWarning((object) "Selection index out of range");
+      Debug.LogWarning("Selection index out of range");
       return null;
     }
   }

@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SelectWithPointer : 
     MonoBehaviour,
@@ -8,15 +11,15 @@
   {
     public void OnPointerEnter(PointerEventData eventData)
     {
-      EventSystem.current.SetSelectedGameObject(this.gameObject, (BaseEventData) eventData);
+      EventSystem.current.SetSelectedGameObject(gameObject, eventData);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
       EventSystem current = EventSystem.current;
-      if (!((Object) current.currentSelectedGameObject == (Object) this.gameObject))
+      if (!(current.currentSelectedGameObject == gameObject))
         return;
-      current.SetSelectedGameObject((GameObject) null, (BaseEventData) eventData);
+      current.SetSelectedGameObject(null, eventData);
     }
   }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using JetBrains.Annotations;
+using UnityEngine.Profiling;
+using Object = UnityEngine.Object;
 
 namespace UnityHeapCrawler
 {
@@ -22,8 +25,8 @@ namespace UnityHeapCrawler
       ++typeStats.Count;
       typeStats.SelfSize += item.SelfSize;
       typeStats.TotalSize += item.TotalSize;
-      UnityEngine.Object o = item.Object as UnityEngine.Object;
-      if (!(o != (UnityEngine.Object) null))
+      Object o = item.Object as Object;
+      if (!(o != null))
         return;
       typeStats.NativeSize += Profiler.GetRuntimeMemorySizeLong(o);
     }

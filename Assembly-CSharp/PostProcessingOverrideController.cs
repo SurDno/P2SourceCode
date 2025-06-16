@@ -1,4 +1,5 @@
-﻿using UnityEngine.PostProcessing;
+﻿using UnityEngine;
+using UnityEngine.PostProcessing;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (PostProcessingBehaviour))]
@@ -20,36 +21,36 @@ public class PostProcessingOverrideController : MonoBehaviour
   private void ApplyTo(PostProcessingProfile source, PostProcessingProfile target)
   {
     ResetTargetProfile(source, target);
-    if (!((Object) stackOverride != (Object) null))
+    if (!(stackOverride != null))
       return;
     stackOverride.ApplyTo(source, target);
   }
 
   private void LateUpdate()
   {
-    if ((Object) overrideProfile == (Object) null)
+    if (overrideProfile == null)
       return;
     ApplyTo(baseProfile, overrideProfile);
   }
 
   private void OnDisable()
   {
-    if ((Object) overrideProfile == (Object) null)
+    if (overrideProfile == null)
       return;
     postProcessingBehaviour.profile = baseProfile;
     if (Application.isPlaying)
-      Object.Destroy((Object) overrideProfile);
+      Destroy(overrideProfile);
     else
-      Object.DestroyImmediate((Object) overrideProfile);
+      DestroyImmediate(overrideProfile);
     overrideProfile = null;
   }
 
   private void OnEnable()
   {
-    postProcessingBehaviour = this.GetComponent<PostProcessingBehaviour>();
-    if ((Object) postProcessingBehaviour == (Object) null || (Object) baseProfile == (Object) null)
+    postProcessingBehaviour = GetComponent<PostProcessingBehaviour>();
+    if (postProcessingBehaviour == null || baseProfile == null)
       return;
-    overrideProfile = Object.Instantiate<PostProcessingProfile>(baseProfile);
+    overrideProfile = Instantiate(baseProfile);
     overrideProfile.name = baseProfile.name + "_Override";
     overrideProfile.hideFlags = HideFlags.HideAndDontSave;
     postProcessingBehaviour.profile = overrideProfile;

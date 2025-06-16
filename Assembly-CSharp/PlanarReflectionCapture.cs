@@ -1,4 +1,4 @@
-﻿using System;
+﻿using UnityEngine;
 using UnityStandardAssets.ImageEffects;
 
 [ExecuteInEditMode]
@@ -7,17 +7,17 @@ public class PlanarReflectionCapture : MonoBehaviour
 {
   public LayerMask HeightCollidersLayer;
   public Condition UpdateCondition = Condition.Always;
-  public float DefaultPlaneHeight = 0.0f;
+  public float DefaultPlaneHeight;
   public bool ReflectWorld = true;
   [Space]
-  public LayerMask WorldLayers = (LayerMask) 1;
-  public LayerMask SkyLayers = (LayerMask) 1;
+  public LayerMask WorldLayers = 1;
+  public LayerMask SkyLayers = 1;
   public float SkyFarClip = 500f;
   [Space]
   public float RelativeResolution = 0.75f;
   public float RelativeWorldCullingDistance = 0.75f;
   public float RelativeLodBias = 0.25f;
-  public float RelativeShadowDistance = 0.0f;
+  public float RelativeShadowDistance;
   [Space]
   public bool ReplicateGlobalFog = true;
   private Camera currentCamera;
@@ -30,17 +30,17 @@ public class PlanarReflectionCapture : MonoBehaviour
 
   private static void CalculateReflectionMatrix(ref Matrix4x4 reflectionMat, Vector4 plane)
   {
-    reflectionMat.m00 = (float) (1.0 - 2.0 * (double) plane[0] * (double) plane[0]);
+    reflectionMat.m00 = (float) (1.0 - 2.0 * plane[0] * plane[0]);
     reflectionMat.m01 = -2f * plane[0] * plane[1];
     reflectionMat.m02 = -2f * plane[0] * plane[2];
     reflectionMat.m03 = -2f * plane[3] * plane[0];
     reflectionMat.m10 = -2f * plane[1] * plane[0];
-    reflectionMat.m11 = (float) (1.0 - 2.0 * (double) plane[1] * (double) plane[1]);
+    reflectionMat.m11 = (float) (1.0 - 2.0 * plane[1] * plane[1]);
     reflectionMat.m12 = -2f * plane[1] * plane[2];
     reflectionMat.m13 = -2f * plane[3] * plane[1];
     reflectionMat.m20 = -2f * plane[2] * plane[0];
     reflectionMat.m21 = -2f * plane[2] * plane[1];
-    reflectionMat.m22 = (float) (1.0 - 2.0 * (double) plane[2] * (double) plane[2]);
+    reflectionMat.m22 = (float) (1.0 - 2.0 * plane[2] * plane[2]);
     reflectionMat.m23 = -2f * plane[3] * plane[2];
     reflectionMat.m30 = 0.0f;
     reflectionMat.m31 = 0.0f;
@@ -58,39 +58,34 @@ public class PlanarReflectionCapture : MonoBehaviour
 
   private bool CheckObjects()
   {
-    if ((UnityEngine.Object) currentCamera == (UnityEngine.Object) null)
+    if (currentCamera == null)
     {
-      currentCamera = this.GetComponent<Camera>();
-      if ((UnityEngine.Object) currentCamera == (UnityEngine.Object) null)
+      currentCamera = GetComponent<Camera>();
+      if (currentCamera == null)
       {
-        Debug.LogWarning((object) "PlanarReflectionCapture: Camera component not found");
+        Debug.LogWarning("PlanarReflectionCapture: Camera component not found");
         return false;
       }
     }
-    int width = Mathf.RoundToInt((float) currentCamera.pixelWidth * RelativeResolution);
-    int height = Mathf.RoundToInt((float) currentCamera.pixelHeight * RelativeResolution);
-    if (!(bool) (UnityEngine.Object) reflectionTexture || reflectionTexture.width != width || reflectionTexture.height != height)
+    int width = Mathf.RoundToInt(currentCamera.pixelWidth * RelativeResolution);
+    int height = Mathf.RoundToInt(currentCamera.pixelHeight * RelativeResolution);
+    if (!(bool) (Object) reflectionTexture || reflectionTexture.width != width || reflectionTexture.height != height)
     {
-      if ((bool) (UnityEngine.Object) reflectionTexture)
+      if ((bool) (Object) reflectionTexture)
       {
         reflectionTexture.Release();
         if (Application.isPlaying)
-          UnityEngine.Object.Destroy((UnityEngine.Object) reflectionTexture);
+          Destroy(reflectionTexture);
         else
-          UnityEngine.Object.DestroyImmediate((UnityEngine.Object) reflectionTexture);
+          DestroyImmediate(reflectionTexture);
       }
       reflectionTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGBHalf, RenderTextureReadWrite.Linear);
       reflectionTexture.name = "Planar Reflection";
       reflectionTexture.hideFlags = HideFlags.HideAndDontSave;
     }
-    if (!(bool) (UnityEngine.Object) reflectionCamera)
+    if (!(bool) (Object) reflectionCamera)
     {
-      GameObject gameObject = new GameObject("Planar Reflection Camera", new Type[3]
-      {
-        typeof (Camera),
-        typeof (GlobalFogNonopaque),
-        typeof (GlobalFog)
-      });
+      GameObject gameObject = new GameObject("Planar Reflection Camera", typeof (Camera), typeof (GlobalFogNonopaque), typeof (GlobalFog));
       gameObject.hideFlags = HideFlags.HideAndDontSave;
       reflectionCamera = gameObject.GetComponent<Camera>();
       reflectionCamera.enabled = false;
@@ -108,43 +103,43 @@ public class PlanarReflectionCapture : MonoBehaviour
 
   private void OnDisable()
   {
-    currentCamera = (Camera) null;
-    if ((bool) (UnityEngine.Object) reflectionCamera)
+    currentCamera = null;
+    if ((bool) (Object) reflectionCamera)
     {
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) reflectionCamera.gameObject);
-      reflectionCamera = (Camera) null;
+      DestroyImmediate(reflectionCamera.gameObject);
+      reflectionCamera = null;
     }
     skyReflectionFog = null;
     worldReflectionFog = null;
-    if (!(bool) (UnityEngine.Object) reflectionTexture)
+    if (!(bool) (Object) reflectionTexture)
       return;
     reflectionTexture.Release();
     if (Application.isPlaying)
-      UnityEngine.Object.Destroy((UnityEngine.Object) reflectionTexture);
+      Destroy(reflectionTexture);
     else
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) reflectionTexture);
-    reflectionTexture = (RenderTexture) null;
-    Shader.SetGlobalTexture("_PlanarReflection", (Texture) null);
+      DestroyImmediate(reflectionTexture);
+    reflectionTexture = null;
+    Shader.SetGlobalTexture("_PlanarReflection", null);
   }
 
   private void OnPreCull()
   {
     if (!CheckObjects())
     {
-      this.enabled = false;
+      enabled = false;
     }
     else
     {
       bool flag1 = UpdateCondition == Condition.Always;
       float num = DefaultPlaneHeight;
       RaycastHit hitInfo;
-      if (Physics.Raycast(this.transform.position, Vector3.down, out hitInfo, 100f, (int) HeightCollidersLayer, QueryTriggerInteraction.Collide))
+      if (Physics.Raycast(transform.position, Vector3.down, out hitInfo, 100f, HeightCollidersLayer, QueryTriggerInteraction.Collide))
       {
         if (UpdateCondition == Condition.OnHit)
           flag1 = true;
         num = hitInfo.point.y;
       }
-      if (!flag1 || (double) this.transform.position.y <= num)
+      if (!flag1 || transform.position.y <= (double) num)
         return;
       reflectionCamera.CopyFrom(currentCamera);
       reflectionCamera.targetTexture = reflectionTexture;
@@ -156,7 +151,7 @@ public class PlanarReflectionCapture : MonoBehaviour
       QualitySettings.lodBias = lodBias * RelativeLodBias;
       float shadowDistance = QualitySettings.shadowDistance;
       QualitySettings.shadowDistance = shadowDistance * RelativeShadowDistance;
-      Vector3 position = this.transform.position;
+      Vector3 position = transform.position;
       position.y = num * 2f - position.y;
       reflectionCamera.transform.position = position;
       Vector3 eulerAngles = currentCamera.transform.eulerAngles;
@@ -166,10 +161,10 @@ public class PlanarReflectionCapture : MonoBehaviour
       if (ReplicateGlobalFog)
       {
         globalFog = currentCamera.GetComponent<GlobalFog>();
-        flag2 = (UnityEngine.Object) globalFog != (UnityEngine.Object) null && globalFog.enabled;
+        flag2 = globalFog != null && globalFog.enabled;
       }
       reflectionCamera.clearFlags = CameraClearFlags.Skybox;
-      reflectionCamera.cullingMask = (int) SkyLayers;
+      reflectionCamera.cullingMask = SkyLayers;
       reflectionCamera.farClipPlane = SkyFarClip;
       reflectionCamera.layerCullDistances = skyCullDistances;
       if (flag2 && !ReflectWorld)
@@ -189,7 +184,7 @@ public class PlanarReflectionCapture : MonoBehaviour
       if (ReflectWorld)
       {
         reflectionCamera.clearFlags = CameraClearFlags.Depth;
-        reflectionCamera.cullingMask = (int) WorldLayers;
+        reflectionCamera.cullingMask = WorldLayers;
         reflectionCamera.farClipPlane = currentCamera.farClipPlane * RelativeWorldCullingDistance;
         SetCullingDistances(currentCamera.layerCullDistances, worldCullDistances, RelativeWorldCullingDistance);
         reflectionCamera.layerCullDistances = worldCullDistances;
@@ -208,7 +203,7 @@ public class PlanarReflectionCapture : MonoBehaviour
           worldReflectionFog.enabled = false;
         reflectionCamera.Render();
       }
-      Shader.SetGlobalTexture("_PlanarReflectionTex", (Texture) reflectionTexture);
+      Shader.SetGlobalTexture("_PlanarReflectionTex", reflectionTexture);
       QualitySettings.lodBias = lodBias;
       QualitySettings.shadowDistance = shadowDistance;
     }

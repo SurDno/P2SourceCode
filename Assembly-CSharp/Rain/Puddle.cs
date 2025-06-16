@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Rain
 {
@@ -8,7 +10,7 @@ namespace Rain
   {
     private const CameraEvent RenderTime = CameraEvent.BeforeReflections;
     public Material material;
-    private Ripple rippleListRoot = null;
+    private Ripple rippleListRoot;
     private CommandBuffer _ldrBuffer;
     private List<Camera> _ldrCameras;
     private CommandBuffer _hdrBuffer;
@@ -19,20 +21,20 @@ namespace Rain
     {
       Wetness = float.NaN;
       RainManager instance = RainManager.Instance;
-      if ((Object) instance == (Object) null || instance.puddleWetness <= 0.0 || (Object) material == (Object) null)
+      if (instance == null || instance.puddleWetness <= 0.0 || material == null)
         return false;
       Texture2D mainTexture = material.mainTexture as Texture2D;
-      if ((Object) mainTexture == (Object) null)
+      if (mainTexture == null)
         return false;
       Color pixelBilinear = mainTexture.GetPixelBilinear(Hit.textureCoord.x, Hit.textureCoord.y);
       Color color1 = material.GetColor("_MainMask");
-      PuddleCutter component = this.GetComponent<PuddleCutter>();
-      if ((Object) component != (Object) null)
+      PuddleCutter component = GetComponent<PuddleCutter>();
+      if (component != null)
         color1 *= component.ColorMask;
       Color color2 = material.GetColor("_WorldMask");
       float num1 = material.GetFloat("_MaxSize");
       float num2 = material.GetFloat("_AuraSize");
-      float num3 = 1f - (float) ((1.0 - (double) pixelBilinear.r) * (double) color1.r + (1.0 - (double) pixelBilinear.g) * (double) color1.g + (1.0 - (double) pixelBilinear.b) * (double) color1.b + (1.0 - (double) pixelBilinear.a) * (double) color1.a) + (float) (((double) color2.r + (double) color2.g + (double) color2.b + (double) color2.a) * 0.5);
+      float num3 = 1f - (float) ((1.0 - pixelBilinear.r) * color1.r + (1.0 - pixelBilinear.g) * color1.g + (1.0 - pixelBilinear.b) * color1.b + (1.0 - pixelBilinear.a) * color1.a) + (float) ((color2.r + (double) color2.g + color2.b + color2.a) * 0.5);
       Wetness = num1 * instance.puddleWetness - num3;
       Wetness /= num2;
       return true;
@@ -42,23 +44,23 @@ namespace Rain
     {
       RainManager instance = RainManager.Instance;
       RaycastHit hitInfo;
-      if ((Object) instance == (Object) null || instance.puddleWetness <= 0.0 || !Physics.Raycast(ray, out hitInfo, maxDistance, (int) instance.puddleLayers))
+      if (instance == null || instance.puddleWetness <= 0.0 || !Physics.Raycast(ray, out hitInfo, maxDistance, instance.puddleLayers))
         return null;
       Puddle component1 = hitInfo.collider.GetComponent<Puddle>();
-      if ((Object) component1 == (Object) null)
+      if (component1 == null)
         return null;
       Material material = component1.material;
-      if ((Object) material == (Object) null)
+      if (material == null)
         return null;
       Color pixelBilinear = (material.mainTexture as Texture2D).GetPixelBilinear(hitInfo.textureCoord.x, hitInfo.textureCoord.y);
       Color color1 = material.GetColor("_MainMask");
       PuddleCutter component2 = component1.GetComponent<PuddleCutter>();
-      if ((Object) component2 != (Object) null)
+      if (component2 != null)
         color1 *= component2.ColorMask;
       Color color2 = material.GetColor("_WorldMask");
       float num1 = material.GetFloat("_MaxSize");
       float num2 = material.GetFloat("_AuraSize");
-      float num3 = 1f - (float) ((1.0 - (double) pixelBilinear.r) * (double) color1.r + (1.0 - (double) pixelBilinear.g) * (double) color1.g + (1.0 - (double) pixelBilinear.b) * (double) color1.b + (1.0 - (double) pixelBilinear.a) * (double) color1.a) + (float) (((double) color2.r + (double) color2.g + (double) color2.b + (double) color2.a) * 0.5);
+      float num3 = 1f - (float) ((1.0 - pixelBilinear.r) * color1.r + (1.0 - pixelBilinear.g) * color1.g + (1.0 - pixelBilinear.b) * color1.b + (1.0 - pixelBilinear.a) * color1.a) + (float) ((color2.r + (double) color2.g + color2.b + color2.a) * 0.5);
       float wetness = (num1 * instance.puddleWetness - num3) / num2;
       return new Hit(component1, hitInfo.point, wetness);
     }
@@ -67,8 +69,8 @@ namespace Rain
     {
       get
       {
-        if ((Object) _meshRenderer == (Object) null)
-          _meshRenderer = this.GetComponent<MeshRenderer>();
+        if (_meshRenderer == null)
+          _meshRenderer = GetComponent<MeshRenderer>();
         return _meshRenderer;
       }
     }
@@ -119,25 +121,25 @@ namespace Rain
     private CommandBuffer CreateBuffer(bool hdr)
     {
       if (!(bool) (Object) material)
-        return (CommandBuffer) null;
+        return null;
       CommandBuffer buffer = new CommandBuffer();
-      buffer.name = "Decal " + this.name;
+      buffer.name = "Decal " + name;
       RenderTargetIdentifier[] colors = new RenderTargetIdentifier[4]
       {
-        (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer0,
-        (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer1,
-        (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer2,
-        (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer3
+        BuiltinRenderTextureType.GBuffer0,
+        BuiltinRenderTextureType.GBuffer1,
+        BuiltinRenderTextureType.GBuffer2,
+        BuiltinRenderTextureType.GBuffer3
       };
       if (hdr)
-        colors[3] = (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget;
-      buffer.SetRenderTarget(colors, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
-      buffer.DrawRenderer((Renderer) meshRenderer, material, 0, 0);
+        colors[3] = BuiltinRenderTextureType.CameraTarget;
+      buffer.SetRenderTarget(colors, BuiltinRenderTextureType.CameraTarget);
+      buffer.DrawRenderer(meshRenderer, material, 0, 0);
       if (rippleListRoot != null)
       {
-        buffer.SetRenderTarget((RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer2);
+        buffer.SetRenderTarget(BuiltinRenderTextureType.GBuffer2);
         for (Ripple ripple = rippleListRoot; ripple != null; ripple = ripple.nextNode)
-          buffer.DrawRenderer((Renderer) meshRenderer, ripple.material, 0, 1);
+          buffer.DrawRenderer(meshRenderer, ripple.material, 0, 1);
       }
       return buffer;
     }
@@ -152,8 +154,8 @@ namespace Rain
             ldrCamera.RemoveCommandBuffer(CameraEvent.BeforeReflections, _ldrBuffer);
         }
       }
-      _ldrBuffer = (CommandBuffer) null;
-      _ldrCameras = (List<Camera>) null;
+      _ldrBuffer = null;
+      _ldrCameras = null;
       if (_hdrBuffer != null)
       {
         foreach (Camera hdrCamera in _hdrCameras)
@@ -162,8 +164,8 @@ namespace Rain
             hdrCamera.RemoveCommandBuffer(CameraEvent.BeforeReflections, _hdrBuffer);
         }
       }
-      _hdrBuffer = (CommandBuffer) null;
-      _hdrCameras = (List<Camera>) null;
+      _hdrBuffer = null;
+      _hdrCameras = null;
     }
 
     private void OnBecameInvisible() => DestroyBuffers();
@@ -172,7 +174,7 @@ namespace Rain
 
     private void OnWillRenderObject()
     {
-      if (!this.enabled || (Object) RainManager.Instance == (Object) null || RainManager.Instance.puddleWetness <= 0.0 || Camera.current.actualRenderingPath != RenderingPath.DeferredShading)
+      if (!enabled || RainManager.Instance == null || RainManager.Instance.puddleWetness <= 0.0 || Camera.current.actualRenderingPath != RenderingPath.DeferredShading)
         return;
       AssignBuffer(Camera.current);
     }

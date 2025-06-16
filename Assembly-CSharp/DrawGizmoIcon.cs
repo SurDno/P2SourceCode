@@ -1,4 +1,6 @@
-﻿public class DrawGizmoIcon : MonoBehaviour
+﻿using UnityEngine;
+
+public class DrawGizmoIcon : MonoBehaviour
 {
   [SerializeField]
   private string textureName;
@@ -7,6 +9,6 @@
 
   private void OnDrawGizmos()
   {
-    Gizmos.DrawIcon(this.transform.position + offset, textureName);
+    Gizmos.DrawIcon(transform.position + offset, textureName);
   }
 }

@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -70,7 +71,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       }
       else
       {
-        if (components.Length <= 1 || !((UnityEngine.Object) behavior == (UnityEngine.Object) null))
+        if (components.Length <= 1 || !(behavior == null))
           return;
         behavior = components[0];
       }
@@ -78,7 +79,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
+      if (behavior == null)
         return TaskStatus.Failure;
       behavior.DisableBehavior(pauseBehavior.Value);
       return TaskStatus.Success;

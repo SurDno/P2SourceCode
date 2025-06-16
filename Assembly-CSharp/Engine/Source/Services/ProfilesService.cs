@@ -6,6 +6,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Services.Profiles;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -26,7 +27,7 @@ namespace Engine.Source.Services
       CustomProfileData customProfileData = Current.Data.FirstOrDefaultNoAlloc(o => o.Name == name);
       if (customProfileData == null)
         return "";
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(customProfileData.Name).Append(" : ").Append(customProfileData.Value));
+      Debug.Log(ObjectInfoUtility.GetStream().Append(customProfileData.Name).Append(" : ").Append(customProfileData.Value));
       return customProfileData.Value;
     }
 

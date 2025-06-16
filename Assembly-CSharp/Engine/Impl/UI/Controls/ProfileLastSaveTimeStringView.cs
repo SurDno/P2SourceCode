@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Source.Services.Profiles;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -12,14 +13,14 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
+      if (!(view != null))
         return;
       view.SkipAnimation();
     }
 
     protected override void ApplyStringValue()
     {
-      if (!((UnityEngine.Object) view != (UnityEngine.Object) null) || !Application.isPlaying)
+      if (!(view != null) || !Application.isPlaying)
         return;
       string lastSave = ProfilesUtility.GetLastSave(StringValue);
       if (lastSave != "")

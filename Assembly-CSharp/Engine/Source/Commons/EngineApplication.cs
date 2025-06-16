@@ -11,7 +11,12 @@ using InputServices;
 using Inspectors;
 using SRDebugger.Services;
 using SRF.Service;
+using UnityEngine;
+using UnityEngine.AI;
 using UnityEngine.Analytics;
+using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
+using ThreadPriority = UnityEngine.ThreadPriority;
 
 namespace Engine.Source.Commons
 {
@@ -99,27 +104,27 @@ namespace Engine.Source.Commons
       IsInitialized = !IsInitialized ? true : throw new Exception();
       MainThread = Thread.CurrentThread;
       yield return MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.ApplicationStart);
-      UnityEngine.Debug.Log((object) ("Build Version : " + Application.version));
-      UnityEngine.Debug.Log((object) ("Build Time : " + ScriptableObjectInstance<BuildData>.Instance.Time));
-      UnityEngine.Debug.Log((object) ("Build Label : " + ScriptableObjectInstance<BuildData>.Instance.Label));
-      UnityEngine.Debug.Log((object) ("Unity Version : " + Application.unityVersion));
-      UnityEngine.Debug.Log((object) ("User Id : " + AnalyticsSessionInfo.userId));
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(nameof (EngineApplication)).Append(" : ").Append(MethodBase.GetCurrentMethod().Name).Append(" , scene : ").Append(SceneManager.GetActiveScene().path));
+      Debug.Log("Build Version : " + Application.version);
+      Debug.Log("Build Time : " + ScriptableObjectInstance<BuildData>.Instance.Time);
+      Debug.Log("Build Label : " + ScriptableObjectInstance<BuildData>.Instance.Label);
+      Debug.Log("Unity Version : " + Application.unityVersion);
+      Debug.Log("User Id : " + AnalyticsSessionInfo.userId);
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(nameof (EngineApplication)).Append(" : ").Append(MethodBase.GetCurrentMethod().Name).Append(" , scene : ").Append(SceneManager.GetActiveScene().path));
       Application.targetFrameRate = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.TargetFrameRate;
       GCSettings.LatencyMode = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.LatencyMode;
       NavMesh.pathfindingIterationsPerFrame = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PathfindingIterationsPerFrame;
-      Application.backgroundLoadingPriority = UnityEngine.ThreadPriority.Low;
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(nameof (EngineApplication)).Append(" : ").Append(MethodBase.GetCurrentMethod().Name).Append(" , current folder : '").Append(Environment.CurrentDirectory));
+      Application.backgroundLoadingPriority = ThreadPriority.Low;
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(nameof (EngineApplication)).Append(" : ").Append(MethodBase.GetCurrentMethod().Name).Append(" , current folder : '").Append(Environment.CurrentDirectory));
       SRDebugger.Settings.Instance.IsEnabled = false;
       ISystemInformationService systemInformationService = SRServiceManager.GetService<ISystemInformationService>();
       if (systemInformationService != null)
       {
-        systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Version", (object) Application.version));
+        systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Version", Application.version));
         systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Branch", ScriptableObjectInstance<BuildData>.Instance.Branch));
         systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Time", ScriptableObjectInstance<BuildData>.Instance.Time));
         systemInformationService.AddInfo(typeof (BuildData).Name, Info.Create("Label", () => InstanceByRequest<LabelService>.Instance.Label));
       }
-      if (UnityEngine.Debug.isDebugBuild)
+      if (Debug.isDebugBuild)
         SRDebug.Init();
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
       MainMenuSetup.SetupMainMenuSettings();
@@ -127,7 +132,7 @@ namespace Engine.Source.Commons
       sw.Restart();
       yield return InitialiseServices.Initialise();
       sw.Stop();
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append("  ").Append("InitialiseServices").Append(" , elapsed : ").Append(sw.Elapsed));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append("  ").Append("InitialiseServices").Append(" , elapsed : ").Append(sw.Elapsed));
       IsPaused = true;
       Action onInitialized = OnInitialized;
       if (onInitialized != null)

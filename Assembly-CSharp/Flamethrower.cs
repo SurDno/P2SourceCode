@@ -1,15 +1,16 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class Flamethrower : MonoBehaviour
 {
   [Header("Physics")]
   public float EventBufferingTime = 0.25f;
   [Header("Audio")]
-  public AudioSource AudioSource = (AudioSource) null;
-  public AudioClip StartClip = (AudioClip) null;
-  public AudioClip EndClip = (AudioClip) null;
+  public AudioSource AudioSource;
+  public AudioClip StartClip;
+  public AudioClip EndClip;
   [Header("State")]
-  public bool Fire = false;
+  public bool Fire;
   private bool currentFire;
   private ParticleSystem[] particleSystems;
   private HashSet<IFlamable> movableSet0;
@@ -31,21 +32,21 @@ public class Flamethrower : MonoBehaviour
 
   private void Awake()
   {
-    particleSystems = this.GetComponentsInChildren<ParticleSystem>();
+    particleSystems = GetComponentsInChildren<ParticleSystem>();
     for (int index = 0; index < particleSystems.Length; ++index)
     {
       ParticleSystem.CollisionModule collision = particleSystems[index].collision;
       if (collision.enabled && collision.sendCollisionMessages)
       {
         ref ParticleSystem.CollisionModule local = ref collision;
-        local.collidesWith = (LayerMask) ((int) local.collidesWith | (int) ScriptableObjectInstance<GameSettingsData>.Instance.FlamethrowerLayer);
+        local.collidesWith = local.collidesWith | ScriptableObjectInstance<GameSettingsData>.Instance.FlamethrowerLayer;
       }
     }
     movableSet0 = new HashSet<IFlamable>();
     movableSet1 = new HashSet<IFlamable>();
     movableSetSwapped = false;
     movableSetSwapTime = Time.time;
-    audioLoopDelay = (Object) StartClip != (Object) null ? StartClip.length : 0.0f;
+    audioLoopDelay = StartClip != null ? StartClip.length : 0.0f;
     TurnParticles(currentFire);
   }
 
@@ -60,7 +61,7 @@ public class Flamethrower : MonoBehaviour
 
   private void TurnAudio(bool enabled)
   {
-    if (!((Object) AudioSource != (Object) null))
+    if (!(AudioSource != null))
       return;
     if (enabled)
     {

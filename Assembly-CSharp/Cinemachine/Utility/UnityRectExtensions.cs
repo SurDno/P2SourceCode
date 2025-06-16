@@ -1,4 +1,6 @@
-﻿namespace Cinemachine.Utility
+﻿using UnityEngine;
+
+namespace Cinemachine.Utility
 {
   public static class UnityRectExtensions
   {

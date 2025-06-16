@@ -17,6 +17,7 @@ using Engine.Source.Commons.Parameters;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components.Maps
 {
@@ -208,7 +209,7 @@ namespace Engine.Source.Components.Maps
     {
       if (node == null)
       {
-        Debug.LogError((object) ("Trying to add a null node to map item : " + Owner.GetInfo()));
+        Debug.LogError("Trying to add a null node to map item : " + Owner.GetInfo());
       }
       else
       {

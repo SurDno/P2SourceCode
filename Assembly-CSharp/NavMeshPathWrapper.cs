@@ -1,4 +1,5 @@
 ﻿using Inspectors;
+using UnityEngine.AI;
 
 public class NavMeshPathWrapper
 {

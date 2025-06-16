@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressImage : ProgressView
   {
@@ -11,7 +14,7 @@
 
     protected override void ApplyProgress()
     {
-      if (!((Object) image != (Object) null))
+      if (!(image != null))
         return;
       image.fillAmount = Progress;
     }

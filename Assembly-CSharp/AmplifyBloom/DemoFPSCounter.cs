@@ -1,4 +1,7 @@
-﻿namespace AmplifyBloom
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace AmplifyBloom
 {
   public class DemoFPSCounter : MonoBehaviour
   {
@@ -12,7 +15,7 @@
 
     private void Start()
     {
-      m_fpsText = this.GetComponent<Text>();
+      m_fpsText = GetComponent<Text>();
       m_timeleft = UpdateInterval;
     }
 

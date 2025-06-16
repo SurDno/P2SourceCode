@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace SRF.UI
 {
@@ -20,18 +21,18 @@ namespace SRF.UI
         {
           case Modes.EnableAbove:
             if (entry.ThresholdHeight > 0.0)
-              flag = (double) rect.height >= entry.ThresholdHeight & flag;
+              flag = rect.height >= (double) entry.ThresholdHeight & flag;
             if (entry.ThresholdWidth > 0.0)
             {
-              flag = (double) rect.width >= entry.ThresholdWidth & flag;
+              flag = rect.width >= (double) entry.ThresholdWidth & flag;
             }
             break;
           case Modes.EnableBelow:
             if (entry.ThresholdHeight > 0.0)
-              flag = (double) rect.height <= entry.ThresholdHeight & flag;
+              flag = rect.height <= (double) entry.ThresholdHeight & flag;
             if (entry.ThresholdWidth > 0.0)
             {
-              flag = (double) rect.width <= entry.ThresholdWidth & flag;
+              flag = rect.width <= (double) entry.ThresholdWidth & flag;
             }
             break;
           default:
@@ -42,7 +43,7 @@ namespace SRF.UI
           for (int index2 = 0; index2 < entry.GameObjects.Length; ++index2)
           {
             GameObject gameObject = entry.GameObjects[index2];
-            if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+            if (gameObject != null)
               gameObject.SetActive(flag);
           }
         }
@@ -51,7 +52,7 @@ namespace SRF.UI
           for (int index3 = 0; index3 < entry.Components.Length; ++index3)
           {
             Behaviour component = entry.Components[index3];
-            if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+            if (component != null)
               component.enabled = flag;
           }
         }

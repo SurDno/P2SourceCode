@@ -1,4 +1,8 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   [DisallowMultipleComponent]
   [ExecuteInEditMode]
@@ -6,13 +10,13 @@
   {
     [SerializeField]
     [FormerlySerializedAs("_Background")]
-    private RawImage background = (RawImage) null;
+    private RawImage background;
     [SerializeField]
     [FormerlySerializedAs("_Progress")]
     private float progress;
     [SerializeField]
     [FormerlySerializedAs("_ProgressSlider")]
-    private RawImage progressSlider = (RawImage) null;
+    private RawImage progressSlider;
 
     public override float Progress
     {
@@ -24,10 +28,10 @@
           progress = 1f;
         else if (progress < 0.0)
           progress = 0.0f;
-        if ((Object) background == (Object) null)
+        if (background == null)
           return;
         RectTransform component = background.gameObject.GetComponent<RectTransform>();
-        if ((Object) progressSlider == (Object) null)
+        if (progressSlider == null)
           return;
         progressSlider.gameObject.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, (component.rect.width - 2f) * progress);
       }
@@ -35,10 +39,10 @@
 
     public Color Background
     {
-      get => (Object) background == (Object) null ? Color.black : background.color;
+      get => background == null ? Color.black : background.color;
       set
       {
-        if ((Object) background == (Object) null)
+        if (background == null)
           return;
         background.color = value;
       }
@@ -46,10 +50,10 @@
 
     public Color Foreground
     {
-      get => (Object) progressSlider == (Object) null ? Color.red : progressSlider.color;
+      get => progressSlider == null ? Color.red : progressSlider.color;
       set
       {
-        if ((Object) progressSlider == (Object) null)
+        if (progressSlider == null)
           return;
         progressSlider.color = value;
       }

@@ -1,7 +1,10 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+using UnityEngine.Profiling;
+
+[ExecuteInEditMode]
 public class TerrainHole : MonoBehaviour
 {
-  private static TerrainHole lastHole = null;
+  private static TerrainHole lastHole;
   private static float lastSqrDistance = float.MaxValue;
   private static int terrainCutPropertyId;
   private static int terrainCutMatrixPropertyId;
@@ -38,28 +41,28 @@ public class TerrainHole : MonoBehaviour
 
   private void OnPreCullEvent2(Camera camera)
   {
-    float sqrMagnitude = (this.transform.position - camera.transform.position).sqrMagnitude;
-    if ((Object) lastHole == (Object) this)
+    float sqrMagnitude = (transform.position - camera.transform.position).sqrMagnitude;
+    if (lastHole == this)
     {
       lastSqrDistance = sqrMagnitude;
     }
     else
     {
-      if (!((Object) lastHole == (Object) null) && sqrMagnitude >= (double) lastSqrDistance)
+      if (!(lastHole == null) && sqrMagnitude >= (double) lastSqrDistance)
         return;
       Shader.SetGlobalInt(TerrainCutPropertyId, 1);
-      Shader.SetGlobalMatrix(TerrainCutMatrixPropertyId, this.transform.worldToLocalMatrix);
+      Shader.SetGlobalMatrix(TerrainCutMatrixPropertyId, transform.worldToLocalMatrix);
       lastHole = this;
       lastSqrDistance = sqrMagnitude;
     }
   }
 
-  private void OnEnable() => Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
+  private void OnEnable() => Camera.onPreCull += OnPreCullEvent;
 
   private void OnDisable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
-    if (!((Object) lastHole == (Object) this))
+    Camera.onPreCull -= OnPreCullEvent;
+    if (!(lastHole == this))
       return;
     ResetCurrent();
     Shader.SetGlobalInt(TerrainCutPropertyId, 0);
@@ -67,7 +70,7 @@ public class TerrainHole : MonoBehaviour
 
   private void OnDrawGizmosSelected()
   {
-    Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+    Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
     Vector3 from = localToWorldMatrix.MultiplyPoint3x4(new Vector3(-1f, -1f, -1f));
     Vector3 vector3_1 = localToWorldMatrix.MultiplyPoint3x4(new Vector3(-1f, -1f, 1f));
     Vector3 vector3_2 = localToWorldMatrix.MultiplyPoint3x4(new Vector3(-1f, 1f, -1f));

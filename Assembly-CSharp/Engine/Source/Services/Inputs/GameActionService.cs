@@ -13,6 +13,7 @@ using InputServices;
 using Inspectors;
 using SRDebugger.Services;
 using SRF.Service;
+using UnityEngine;
 
 namespace Engine.Source.Services.Inputs
 {
@@ -122,7 +123,7 @@ namespace Engine.Source.Services.Inputs
       foreach (ActionGroup bind1 in binds)
       {
         ActionGroup bind = bind1;
-        if (bind.Context != ActionGroupContext.Debug && !source.Any((Func<KeyValuePair<string, KeyCode>, bool>) (x => x.Key == bind.Name && x.Value == bind.Key)) && !JoystickLayoutSwitcher.Instance.Groups.Any(x => x.Name == bind.Name && x.Key == bind.Key))
+        if (bind.Context != ActionGroupContext.Debug && !source.Any(x => x.Key == bind.Name && x.Value == bind.Key) && !JoystickLayoutSwitcher.Instance.Groups.Any(x => x.Name == bind.Name && x.Key == bind.Key))
           source.Add(new KeyValuePair<string, KeyCode>(bind.Name, bind.Key));
       }
       InstanceByRequest<InputGameSetting>.Instance.KeySettings.Value = source;

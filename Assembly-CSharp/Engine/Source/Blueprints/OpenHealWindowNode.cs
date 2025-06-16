@@ -1,5 +1,4 @@
-﻿using System;
-using Engine.Common.Components;
+﻿using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Source.Services.Utilities;
 using Engine.Source.UI;
@@ -23,11 +22,11 @@ namespace Engine.Source.Blueprints
         IStorageComponent target = targetInput.value;
         if (target == null)
           return;
-        UIServiceUtility.PushWindow(output, (Action<IHealingWindow>) (window =>
+        UIServiceUtility.PushWindow<IHealingWindow>(output, window =>
         {
           window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
           window.Target = target;
-        }));
+        });
       });
       targetInput = AddValueInput<IStorageComponent>("Storage");
     }

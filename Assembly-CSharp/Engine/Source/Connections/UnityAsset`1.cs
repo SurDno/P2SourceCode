@@ -1,9 +1,10 @@
 ﻿using System;
 using Inspectors;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Connections
 {
-  public struct UnityAsset<T> : IUnityAsset where T : UnityEngine.Object
+  public struct UnityAsset<T> : IUnityAsset where T : Object
   {
     private Guid id;
 

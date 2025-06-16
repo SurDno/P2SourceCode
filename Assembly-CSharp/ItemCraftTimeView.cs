@@ -4,6 +4,8 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemCraftTimeView : ItemView
 {
@@ -47,7 +49,7 @@ public class ItemCraftTimeView : ItemView
 
   private void UpdateText()
   {
-    if ((UnityEngine.Object) text == (UnityEngine.Object) null)
+    if (text == null)
       return;
     text.text = GetTimerString(storable);
   }
@@ -65,7 +67,7 @@ public class ItemCraftTimeView : ItemView
         {
           TimeSpan timeSpan = craftTimeParameter.Value;
           timerString = string.Format("{0:D2}:{1:D2}", timeSpan.Hours, timeSpan.Minutes);
-          if ((UnityEngine.Object) busyStatus != (UnityEngine.Object) null)
+          if (busyStatus != null)
             busyStatus.Visible = true;
           if (IsItemReady)
             IsItemReady = false;
@@ -73,7 +75,7 @@ public class ItemCraftTimeView : ItemView
         else
         {
           timerString = string.Empty;
-          if ((UnityEngine.Object) busyStatus != (UnityEngine.Object) null)
+          if (busyStatus != null)
             busyStatus.Visible = false;
           IsItemReady = true;
           Action onItemReady = OnItemReady;
@@ -85,7 +87,7 @@ public class ItemCraftTimeView : ItemView
     else
     {
       timerString = string.Empty;
-      if ((UnityEngine.Object) busyStatus != (UnityEngine.Object) null)
+      if (busyStatus != null)
         busyStatus.Visible = false;
       IsItemReady = false;
     }

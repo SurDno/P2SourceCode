@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -20,20 +21,20 @@ namespace RootMotion.FinalIK
 
     public void Hit(Collider collider, Vector3 force, Vector3 point)
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+      if (ik == null)
       {
-        Debug.LogError((object) "No IK assigned in HitReaction");
+        Debug.LogError("No IK assigned in HitReaction");
       }
       else
       {
         foreach (PositionOffset positionOffset in positionOffsets)
         {
-          if ((UnityEngine.Object) positionOffset.collider == (UnityEngine.Object) collider)
+          if (positionOffset.collider == collider)
             positionOffset.Hit(force, offsetCurves, point);
         }
         foreach (RotationOffset rotationOffset in rotationOffsets)
         {
-          if ((UnityEngine.Object) rotationOffset.collider == (UnityEngine.Object) collider)
+          if (rotationOffset.collider == collider)
             rotationOffset.Hit(force, offsetCurves, point);
         }
       }
@@ -67,7 +68,7 @@ namespace RootMotion.FinalIK
           length = GetLength(curves);
         if (length <= 0.0)
         {
-          Debug.LogError((object) "Hit Point WeightCurve length is zero.");
+          Debug.LogError("Hit Point WeightCurve length is zero.");
         }
         else
         {
@@ -172,15 +173,15 @@ namespace RootMotion.FinalIK
 
       protected override void OnApply(VRIK ik, AnimationCurve[] curves, float weight)
       {
-        if ((UnityEngine.Object) collider == (UnityEngine.Object) null)
+        if (collider == null)
         {
-          Debug.LogError((object) "No collider assigned for a HitPointBone in the HitReaction component.");
+          Debug.LogError("No collider assigned for a HitPointBone in the HitReaction component.");
         }
         else
         {
-          if ((UnityEngine.Object) rigidbody == (UnityEngine.Object) null)
+          if (rigidbody == null)
             rigidbody = collider.GetComponent<Rigidbody>();
-          if (!((UnityEngine.Object) rigidbody != (UnityEngine.Object) null))
+          if (!(rigidbody != null))
             return;
           Vector3 axis = Vector3.Cross(force, point - rigidbody.worldCenterOfMass);
           Quaternion offset = Quaternion.AngleAxis(curves[curveIndex].Evaluate(timer) * weight, axis);

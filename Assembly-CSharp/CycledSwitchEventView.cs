@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class CycledSwitchEventView : EventView
 {
@@ -9,7 +10,7 @@ public class CycledSwitchEventView : EventView
   private bool IsItemAvailable(int index)
   {
     HideableView availableCheck = items[index].availableCheck;
-    return (UnityEngine.Object) availableCheck == (UnityEngine.Object) null || availableCheck.Visible;
+    return availableCheck == null || availableCheck.Visible;
   }
 
   public override void Invoke()
@@ -22,7 +23,7 @@ public class CycledSwitchEventView : EventView
       if (IsItemAvailable(index2))
       {
         HideableView activeCheck = items[index2].activeCheck;
-        if ((UnityEngine.Object) activeCheck != (UnityEngine.Object) null && activeCheck.Visible)
+        if (activeCheck != null && activeCheck.Visible)
         {
           index1 = index2;
           break;

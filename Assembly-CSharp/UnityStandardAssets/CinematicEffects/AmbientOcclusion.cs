@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -83,7 +85,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) _aoShader == (UnityEngine.Object) null)
+        if (_aoShader == null)
           _aoShader = Shader.Find("Hidden/Image Effects/Cinematic/AmbientOcclusion");
         return _aoShader;
       }
@@ -93,7 +95,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) _aoMaterial == (UnityEngine.Object) null)
+        if (_aoMaterial == null)
           _aoMaterial = ImageEffectHelper.CheckShaderAndCreateMaterial(aoShader);
         return _aoMaterial;
       }
@@ -112,7 +114,7 @@ namespace UnityStandardAssets.CinematicEffects
       }
     }
 
-    private Camera targetCamera => this.GetComponent<Camera>();
+    private Camera targetCamera => GetComponent<Camera>();
 
     private PropertyObserver propertyObserver { get; set; }
 
@@ -130,31 +132,31 @@ namespace UnityStandardAssets.CinematicEffects
       Material aoMaterial = this.aoMaterial;
       int id1 = Shader.PropertyToID("_OcclusionTexture");
       aoCommands.GetTemporaryRT(id1, pixelWidth / num, pixelHeight / num, 0, filter, aoTextureFormat, readWrite);
-      aoCommands.Blit((Texture) null, (RenderTargetIdentifier) id1, aoMaterial, 2);
+      aoCommands.Blit(null, id1, aoMaterial, 2);
       int id2 = Shader.PropertyToID("_OcclusionBlurTexture");
       aoCommands.GetTemporaryRT(id2, pixelWidth, pixelHeight, 0, filter, aoTextureFormat, readWrite);
-      aoCommands.SetGlobalVector("_BlurVector", (Vector4) (Vector2.right * 2f));
-      aoCommands.Blit((RenderTargetIdentifier) id1, (RenderTargetIdentifier) id2, aoMaterial, 4);
+      aoCommands.SetGlobalVector("_BlurVector", Vector2.right * 2f);
+      aoCommands.Blit(id1, id2, aoMaterial, 4);
       aoCommands.ReleaseTemporaryRT(id1);
       aoCommands.GetTemporaryRT(id1, pixelWidth, pixelHeight, 0, filter, aoTextureFormat, readWrite);
-      aoCommands.SetGlobalVector("_BlurVector", (Vector4) (Vector2.up * 2f * num));
-      aoCommands.Blit((RenderTargetIdentifier) id2, (RenderTargetIdentifier) id1, aoMaterial, 4);
+      aoCommands.SetGlobalVector("_BlurVector", Vector2.up * 2f * num);
+      aoCommands.Blit(id2, id1, aoMaterial, 4);
       aoCommands.ReleaseTemporaryRT(id2);
       aoCommands.GetTemporaryRT(id2, pixelWidth, pixelHeight, 0, filter, aoTextureFormat, readWrite);
-      aoCommands.SetGlobalVector("_BlurVector", (Vector4) (Vector2.right * (float) num));
-      aoCommands.Blit((RenderTargetIdentifier) id1, (RenderTargetIdentifier) id2, aoMaterial, 6);
+      aoCommands.SetGlobalVector("_BlurVector", Vector2.right * num);
+      aoCommands.Blit(id1, id2, aoMaterial, 6);
       aoCommands.ReleaseTemporaryRT(id1);
       aoCommands.GetTemporaryRT(id1, pixelWidth, pixelHeight, 0, filter, aoTextureFormat, readWrite);
-      aoCommands.SetGlobalVector("_BlurVector", (Vector4) (Vector2.up * (float) num));
-      aoCommands.Blit((RenderTargetIdentifier) id2, (RenderTargetIdentifier) id1, aoMaterial, 6);
+      aoCommands.SetGlobalVector("_BlurVector", Vector2.up * num);
+      aoCommands.Blit(id2, id1, aoMaterial, 6);
       aoCommands.ReleaseTemporaryRT(id2);
       RenderTargetIdentifier[] colors = new RenderTargetIdentifier[2]
       {
-        (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer0,
-        (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget
+        BuiltinRenderTextureType.GBuffer0,
+        BuiltinRenderTextureType.CameraTarget
       };
-      aoCommands.SetRenderTarget(colors, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
-      aoCommands.SetGlobalTexture("_OcclusionTexture", (RenderTargetIdentifier) id1);
+      aoCommands.SetRenderTarget(colors, BuiltinRenderTextureType.CameraTarget);
+      aoCommands.SetGlobalTexture("_OcclusionTexture", id1);
       aoCommands.DrawMesh(quadMesh, Matrix4x4.identity, aoMaterial, 0, 8);
       aoCommands.ReleaseTemporaryRT(id1);
     }
@@ -169,28 +171,28 @@ namespace UnityStandardAssets.CinematicEffects
       bool flag = settings.occlusionSource == OcclusionSource.GBuffer;
       Material aoMaterial = this.aoMaterial;
       RenderTexture temporary1 = RenderTexture.GetTemporary(width / num, height / num, 0, aoTextureFormat, readWrite);
-      Graphics.Blit((Texture) null, temporary1, aoMaterial, (int) occlusionSource);
+      Graphics.Blit(null, temporary1, aoMaterial, (int) occlusionSource);
       RenderTexture temporary2 = RenderTexture.GetTemporary(width, height, 0, aoTextureFormat, readWrite);
-      aoMaterial.SetVector("_BlurVector", (Vector4) (Vector2.right * 2f));
-      Graphics.Blit((Texture) temporary1, temporary2, aoMaterial, flag ? 4 : 3);
+      aoMaterial.SetVector("_BlurVector", Vector2.right * 2f);
+      Graphics.Blit(temporary1, temporary2, aoMaterial, flag ? 4 : 3);
       RenderTexture.ReleaseTemporary(temporary1);
       RenderTexture temporary3 = RenderTexture.GetTemporary(width, height, 0, aoTextureFormat, readWrite);
-      aoMaterial.SetVector("_BlurVector", (Vector4) (Vector2.up * 2f * num));
-      Graphics.Blit((Texture) temporary2, temporary3, aoMaterial, flag ? 4 : 3);
+      aoMaterial.SetVector("_BlurVector", Vector2.up * 2f * num);
+      Graphics.Blit(temporary2, temporary3, aoMaterial, flag ? 4 : 3);
       RenderTexture.ReleaseTemporary(temporary2);
       RenderTexture temporary4 = RenderTexture.GetTemporary(width, height, 0, aoTextureFormat, readWrite);
-      aoMaterial.SetVector("_BlurVector", (Vector4) (Vector2.right * (float) num));
-      Graphics.Blit((Texture) temporary3, temporary4, aoMaterial, flag ? 6 : 5);
+      aoMaterial.SetVector("_BlurVector", Vector2.right * num);
+      Graphics.Blit(temporary3, temporary4, aoMaterial, flag ? 6 : 5);
       RenderTexture.ReleaseTemporary(temporary3);
       RenderTexture temporary5 = RenderTexture.GetTemporary(width, height, 0, aoTextureFormat, readWrite);
-      aoMaterial.SetVector("_BlurVector", (Vector4) (Vector2.up * (float) num));
-      Graphics.Blit((Texture) temporary4, temporary5, aoMaterial, flag ? 6 : 5);
+      aoMaterial.SetVector("_BlurVector", Vector2.up * num);
+      Graphics.Blit(temporary4, temporary5, aoMaterial, flag ? 6 : 5);
       RenderTexture.ReleaseTemporary(temporary4);
-      aoMaterial.SetTexture("_OcclusionTexture", (Texture) temporary5);
+      aoMaterial.SetTexture("_OcclusionTexture", temporary5);
       if (!settings.debug)
-        Graphics.Blit((Texture) source, destination, aoMaterial, 7);
+        Graphics.Blit(source, destination, aoMaterial, 7);
       else
-        Graphics.Blit((Texture) source, destination, aoMaterial, 9);
+        Graphics.Blit(source, destination, aoMaterial, 9);
       RenderTexture.ReleaseTemporary(temporary5);
     }
 
@@ -205,9 +207,9 @@ namespace UnityStandardAssets.CinematicEffects
 
     private void OnEnable()
     {
-      if (!ImageEffectHelper.IsSupported(aoShader, true, false, (MonoBehaviour) this))
+      if (!ImageEffectHelper.IsSupported(aoShader, true, false, this))
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
@@ -223,12 +225,12 @@ namespace UnityStandardAssets.CinematicEffects
 
     private void OnDisable()
     {
-      if ((UnityEngine.Object) _aoMaterial != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) _aoMaterial);
-      _aoMaterial = (Material) null;
+      if (_aoMaterial != null)
+        DestroyImmediate(_aoMaterial);
+      _aoMaterial = null;
       if (_aoCommands != null)
         targetCamera.RemoveCommandBuffer(CameraEvent.BeforeReflections, _aoCommands);
-      _aoCommands = (CommandBuffer) null;
+      _aoCommands = null;
     }
 
     private void Update()
@@ -254,7 +256,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       if (ambientOnly)
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {

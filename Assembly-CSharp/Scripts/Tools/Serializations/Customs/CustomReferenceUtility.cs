@@ -7,6 +7,7 @@ using Engine.Common;
 using Engine.Common.MindMap;
 using Engine.Common.Services;
 using Engine.Source.Services;
+using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Customs
 {
@@ -17,12 +18,12 @@ namespace Scripts.Tools.Serializations.Customs
       switch (value)
       {
         case null:
-          Debug.LogError((object) ("Value is null , name : " + name));
+          Debug.LogError("Value is null , name : " + name);
           break;
         case IEntity entity:
           if (entity.IsDisposed)
           {
-            Debug.LogError((object) ("Entity is disposed : " + entity.Id));
+            Debug.LogError("Entity is disposed : " + entity.Id);
             break;
           }
           writer.Begin(name, null, true);
@@ -33,7 +34,7 @@ namespace Scripts.Tools.Serializations.Customs
         case IComponent component:
           if (component.IsDisposed)
           {
-            Debug.LogError((object) ("Component is disposed , type : " + component.GetType().Name));
+            Debug.LogError("Component is disposed , type : " + component.GetType().Name);
             break;
           }
           writer.Begin(name, null, true);
@@ -51,7 +52,7 @@ namespace Scripts.Tools.Serializations.Customs
           writer.End(name, true);
           break;
         default:
-          Debug.LogError((object) ("Type not supported , name : " + name + " , type : " + value.GetType().Name));
+          Debug.LogError("Type not supported , name : " + name + " , type : " + value.GetType().Name);
           break;
       }
     }
@@ -62,7 +63,7 @@ namespace Scripts.Tools.Serializations.Customs
       Guid objectId = DefaultConverter.ParseGuid(str);
       if (objectId == Guid.Empty)
       {
-        Debug.LogError((object) ("Error id , data : " + str + " , context : " + reader.GetContext()));
+        Debug.LogError("Error id , data : " + str + " , context : " + reader.GetContext());
         return null;
       }
       if (TypeUtility.IsAssignableFrom(typeof (IEntity), type))
@@ -72,13 +73,13 @@ namespace Scripts.Tools.Serializations.Customs
           IObject template = ServiceLocator.GetService<ITemplateService>().GetTemplate(type, objectId);
           if (template != null)
             return template;
-          Debug.LogError((object) ("Template not found , id : " + objectId + " , context : " + reader.GetContext()));
+          Debug.LogError("Template not found , id : " + objectId + " , context : " + reader.GetContext());
           return null;
         }
         IEntity entity = ServiceLocator.GetService<ISimulation>().Get(objectId);
         if (entity != null)
           return entity;
-        Debug.LogError((object) ("Entity not found , id : " + objectId + " , context : " + reader.GetContext()));
+        Debug.LogError("Entity not found , id : " + objectId + " , context : " + reader.GetContext());
         return null;
       }
       if (TypeUtility.IsAssignableFrom(typeof (IComponent), type))
@@ -86,13 +87,13 @@ namespace Scripts.Tools.Serializations.Customs
         IEntity entity = ServiceLocator.GetService<ISimulation>().Get(objectId);
         if (entity == null)
         {
-          Debug.LogError((object) ("Entity not found , id : " + objectId + " , context : " + reader.GetContext()));
+          Debug.LogError("Entity not found , id : " + objectId + " , context : " + reader.GetContext());
           return null;
         }
         IComponent component = entity.GetComponent(type);
         if (component != null)
           return component;
-        Debug.LogError((object) ("Component not found , id : " + objectId + " , type : " + type.Name + " , context : " + reader.GetContext()));
+        Debug.LogError("Component not found , id : " + objectId + " , type : " + type.Name + " , context : " + reader.GetContext());
         return null;
       }
       if (TypeUtility.IsAssignableFrom(typeof (IObject), type))
@@ -100,7 +101,7 @@ namespace Scripts.Tools.Serializations.Customs
         IObject template = ServiceLocator.GetService<ITemplateService>().GetTemplate(type, objectId);
         if (template != null)
           return template;
-        Debug.LogError((object) ("Template not found , id : " + objectId + " , context : " + reader.GetContext()));
+        Debug.LogError("Template not found , id : " + objectId + " , context : " + reader.GetContext());
         return null;
       }
       if (TypeUtility.IsAssignableFrom(typeof (IMMNode), type))
@@ -108,10 +109,10 @@ namespace Scripts.Tools.Serializations.Customs
         IMMNode mmNode = ServiceLocator.GetService<MMService>().Pages.SelectMany(o => o.Nodes).FirstOrDefault(o => o.Id == objectId);
         if (mmNode != null)
           return mmNode;
-        Debug.LogError((object) ("Node not found , id : " + objectId + " , context : " + reader.GetContext()));
+        Debug.LogError("Node not found , id : " + objectId + " , context : " + reader.GetContext());
         return null;
       }
-      Debug.LogError((object) ("Type not supported , id : " + objectId + " , type : " + type.Name + " , context : " + reader.GetContext()));
+      Debug.LogError("Type not supported , id : " + objectId + " , type : " + type.Name + " , context : " + reader.GetContext());
       return null;
     }
 

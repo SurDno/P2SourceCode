@@ -1,27 +1,29 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableCouple : HideableView
   {
     [SerializeField]
-    private HideableView positiveView = null;
+    private HideableView positiveView;
     [SerializeField]
-    private HideableView negativeView = null;
+    private HideableView negativeView;
 
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      if ((Object) positiveView != (Object) null)
+      if (positiveView != null)
         positiveView.SkipAnimation();
-      if (!((Object) negativeView != (Object) null))
+      if (!(negativeView != null))
         return;
       negativeView.SkipAnimation();
     }
 
     protected override void ApplyVisibility()
     {
-      if ((Object) positiveView != (Object) null)
+      if (positiveView != null)
         positiveView.Visible = Visible;
-      if (!((Object) negativeView != (Object) null))
+      if (!(negativeView != null))
         return;
       negativeView.Visible = !Visible;
     }

@@ -4,6 +4,9 @@ using Engine.Common.Components;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Controls;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 {
@@ -12,30 +15,30 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
     protected Dictionary<Cell, InventoryCellUI> cells = new Dictionary<Cell, InventoryCellUI>();
     [SerializeField]
     [FormerlySerializedAs("_Content")]
-    protected UIControl content = null;
+    protected UIControl content;
     [SerializeField]
     [FormerlySerializedAs("_Grid")]
-    protected UIControl grid = null;
+    protected UIControl grid;
     [SerializeField]
     [FormerlySerializedAs("_ImageBackground")]
-    protected Image imageBackground = (Image) null;
+    protected Image imageBackground;
     [SerializeField]
-    protected Image imageForeground = (Image) null;
+    protected Image imageForeground;
     [SerializeField]
     protected Color iconAvailiableColor;
     [SerializeField]
     protected Color iconNotAvailiableColor;
     [SerializeField]
-    protected Image imageIcon = (Image) null;
+    protected Image imageIcon;
     [SerializeField]
-    protected Image imageDisease = (Image) null;
+    protected Image imageDisease;
     [SerializeField]
-    protected Image imageLock = (Image) null;
+    protected Image imageLock;
     [SerializeField]
     protected HoldableButton2 button;
     [SerializeField]
     [FormerlySerializedAs("_Storables")]
-    protected UIControl storables = null;
+    protected UIControl storables;
     [SerializeField]
     private bool clickEnabled = true;
 

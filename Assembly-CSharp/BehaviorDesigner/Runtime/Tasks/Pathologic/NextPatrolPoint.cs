@@ -10,6 +10,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -54,7 +55,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnStart()
     {
       inited = false;
-      if ((UnityEngine.Object) PatrolTransform.Value != (UnityEngine.Object) null)
+      if (PatrolTransform.Value != null)
       {
         patrolPath = PatrolTransform.Value.GetComponent<PatrolPath>();
       }
@@ -63,29 +64,29 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
         IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
         if (owner == null)
         {
-          Debug.LogWarningFormat("{0} has no entity", (object) gameObject.name);
+          Debug.LogWarningFormat("{0} has no entity", gameObject.name);
           return;
         }
         IEntity setupPoint = owner.GetComponent<NavigationComponent>().SetupPoint;
         if (setupPoint != null)
           patrolPath = ((IEntityView) setupPoint).GameObject?.GetComponent<PatrolPath>();
-        if ((UnityEngine.Object) patrolPath == (UnityEngine.Object) null)
+        if (patrolPath == null)
         {
           CrowdItemComponent component = owner.GetComponent<CrowdItemComponent>();
           if (component != null)
             patrolPath = component.Point?.GameObject?.GetComponent<PatrolPath>();
         }
       }
-      if ((UnityEngine.Object) patrolPath == (UnityEngine.Object) null)
+      if (patrolPath == null)
       {
-        Debug.LogWarningFormat("{0} has null patrol points", (object) gameObject.name);
+        Debug.LogWarningFormat("{0} has null patrol points", gameObject.name);
       }
       else
       {
         PatollingType = patrolPath.PatrolType;
         if (patrolPath.transform.childCount < 2)
         {
-          Debug.LogWarningFormat("{0} contains less than two patrol points", (object) patrolPath.gameObject.name);
+          Debug.LogWarningFormat("{0} contains less than two patrol points", patrolPath.gameObject.name);
         }
         else
         {

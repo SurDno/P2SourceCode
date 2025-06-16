@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -65,14 +66,14 @@ namespace RootMotion.FinalIK
       }
       foreach (Point bone in bones)
       {
-        if ((UnityEngine.Object) bone.transform == (UnityEngine.Object) null)
+        if (bone.transform == null)
         {
           message = "One of the Bones is null.";
           return false;
         }
       }
       Transform transform = ContainsDuplicateBone(bones);
-      if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
+      if (transform != null)
       {
         message = transform.name + " is represented multiple times in the Bones.";
         return false;
@@ -86,7 +87,7 @@ namespace RootMotion.FinalIK
       {
         for (int index = 0; index < bones.Length - 1; ++index)
         {
-          if ((double) (bones[index].transform.position - bones[index + 1].transform.position).magnitude == 0.0)
+          if ((bones[index].transform.position - bones[index + 1].transform.position).magnitude == 0.0)
           {
             message = "Bone " + index + " length is zero.";
             return false;
@@ -102,7 +103,7 @@ namespace RootMotion.FinalIK
     {
       for (int index = 0; index < bones.Length; ++index)
       {
-        if ((UnityEngine.Object) bones[index].transform == (UnityEngine.Object) transform)
+        if (bones[index].transform == transform)
           return bones[index];
       }
       return null;
@@ -133,7 +134,7 @@ namespace RootMotion.FinalIK
           chainLength += bones[index].length;
           Vector3 position = bones[index + 1].transform.position;
           bones[index].axis = Quaternion.Inverse(bones[index].transform.rotation) * (position - bones[index].transform.position);
-          if ((UnityEngine.Object) bones[index].rotationLimit != (UnityEngine.Object) null)
+          if (bones[index].rotationLimit != null)
           {
             if (XY && !(bones[index].rotationLimit is RotationLimitHinge))
               Warning.Log("Only Hinge Rotation Limits should be used on 2D IK solvers.", bones[index].transform);
@@ -164,7 +165,7 @@ namespace RootMotion.FinalIK
         return Vector3.zero;
       Vector3 normalized = (IKPosition - bones[0].transform.position).normalized;
       Vector3 rhs = new Vector3(normalized.y, normalized.z, normalized.x);
-      if (useRotationLimits && (UnityEngine.Object) bones[bones.Length - 2].rotationLimit != (UnityEngine.Object) null && bones[bones.Length - 2].rotationLimit is RotationLimitHinge)
+      if (useRotationLimits && bones[bones.Length - 2].rotationLimit != null && bones[bones.Length - 2].rotationLimit is RotationLimitHinge)
         rhs = bones[bones.Length - 2].transform.rotation * bones[bones.Length - 2].rotationLimit.axis;
       return Vector3.Cross(normalized, rhs) * bones[bones.Length - 2].length * 0.5f;
     }
@@ -177,7 +178,7 @@ namespace RootMotion.FinalIK
       Vector3 vector3_2 = IKPosition - bones[0].transform.position;
       float magnitude1 = vector3_1.magnitude;
       float magnitude2 = vector3_2.magnitude;
-      return magnitude1 >= (double) magnitude2 && magnitude1 >= chainLength - bones[bones.Length - 2].length * 0.10000000149011612 && magnitude1 != 0.0 && magnitude2 != 0.0 && magnitude2 <= (double) magnitude1 && (double) Vector3.Dot(vector3_1 / magnitude1, vector3_2 / magnitude2) >= 0.99900001287460327;
+      return magnitude1 >= (double) magnitude2 && magnitude1 >= chainLength - bones[bones.Length - 2].length * 0.10000000149011612 && magnitude1 != 0.0 && magnitude2 != 0.0 && magnitude2 <= (double) magnitude1 && Vector3.Dot(vector3_1 / magnitude1, vector3_2 / magnitude2) >= 0.99900001287460327;
     }
   }
 }

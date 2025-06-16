@@ -1,5 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
+using UnityEngine;
 
 public class NPCStatePOIExtraExit : INpcState
 {
@@ -28,10 +29,10 @@ public class NPCStatePOIExtraExit : INpcState
     if (inited)
       return true;
     animator = pivot.GetAnimator();
-    if ((Object) animator == (Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }

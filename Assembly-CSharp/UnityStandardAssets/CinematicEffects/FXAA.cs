@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -23,7 +25,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Shader == (UnityEngine.Object) null)
+        if (m_Shader == null)
           m_Shader = Shader.Find("Hidden/Fast Approximate Anti-aliasing");
         return m_Shader;
       }
@@ -33,7 +35,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Material == (UnityEngine.Object) null)
+        if (m_Material == null)
           m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(shader);
         return m_Material;
       }
@@ -43,16 +45,16 @@ namespace UnityStandardAssets.CinematicEffects
 
     public void OnEnable(AntiAliasing owner)
     {
-      if (ImageEffectHelper.IsSupported(shader, true, false, (MonoBehaviour) owner))
+      if (ImageEffectHelper.IsSupported(shader, true, false, owner))
         return;
       owner.enabled = false;
     }
 
     public void OnDisable()
     {
-      if (!((UnityEngine.Object) m_Material != (UnityEngine.Object) null))
+      if (!(m_Material != null))
         return;
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_Material);
+      Object.DestroyImmediate(m_Material);
     }
 
     public void OnPreCull(Camera camera)
@@ -65,9 +67,9 @@ namespace UnityStandardAssets.CinematicEffects
 
     public void OnRenderImage(Camera camera, RenderTexture source, RenderTexture destination)
     {
-      material.SetVector("_QualitySettings", (Vector4) new Vector3(preset.qualitySettings.subpixelAliasingRemovalAmount, preset.qualitySettings.edgeDetectionThreshold, preset.qualitySettings.minimumRequiredLuminance));
+      material.SetVector("_QualitySettings", new Vector3(preset.qualitySettings.subpixelAliasingRemovalAmount, preset.qualitySettings.edgeDetectionThreshold, preset.qualitySettings.minimumRequiredLuminance));
       material.SetVector("_ConsoleSettings", new Vector4(preset.consoleSettings.subpixelSpreadAmount, preset.consoleSettings.edgeSharpnessAmount, preset.consoleSettings.edgeDetectionThreshold, preset.consoleSettings.minimumRequiredLuminance));
-      Graphics.Blit((Texture) source, destination, material, 0);
+      Graphics.Blit(source, destination, material, 0);
     }
 
     [Serializable]
@@ -104,9 +106,9 @@ namespace UnityStandardAssets.CinematicEffects
     [Serializable]
     public struct Preset
     {
-      [Preset.Layout]
+      [Layout]
       public QualitySettings qualitySettings;
-      [Preset.Layout]
+      [Layout]
       public ConsoleSettings consoleSettings;
       private static readonly Preset s_ExtremePerformance = new Preset {
         qualitySettings = new QualitySettings {

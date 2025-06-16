@@ -8,6 +8,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -25,11 +26,11 @@ namespace Engine.BehaviourNodes.Conditionals
     public SharedTransform Target;
     private NPCEnemy npcEnemy;
 
-    public override void OnAwake() => npcEnemy = this.GetComponent<NPCEnemy>();
+    public override void OnAwake() => npcEnemy = GetComponent<NPCEnemy>();
 
     public override TaskStatus OnUpdate()
     {
-      return (UnityEngine.Object) npcEnemy == (UnityEngine.Object) null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null ? TaskStatus.Failure : (CanThrow() ? TaskStatus.Success : TaskStatus.Failure);
+      return npcEnemy == null || Target.Value == null ? TaskStatus.Failure : (CanThrow() ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     private bool CanThrow()

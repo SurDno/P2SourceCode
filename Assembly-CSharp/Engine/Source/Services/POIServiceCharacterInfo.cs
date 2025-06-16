@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Common.Components;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -65,7 +66,7 @@ namespace Engine.Source.Services
     private void InitEntity()
     {
       EngineGameObject component = Character.GetComponent<EngineGameObject>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
       Entity = component.Owner;
     }

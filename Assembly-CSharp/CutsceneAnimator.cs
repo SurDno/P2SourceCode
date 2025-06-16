@@ -1,6 +1,7 @@
 ﻿using System;
 using Cofe.Utility;
 using Inspectors;
+using UnityEngine;
 
 public class CutsceneAnimator : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class CutsceneAnimator : MonoBehaviour
   {
     foreach (Item obj in items)
     {
-      if ((UnityEngine.Object) obj.Animator != (UnityEngine.Object) null && !obj.Trigger.IsNullOrEmpty())
+      if (obj.Animator != null && !obj.Trigger.IsNullOrEmpty())
         obj.Animator.SetTrigger(obj.Trigger);
     }
   }

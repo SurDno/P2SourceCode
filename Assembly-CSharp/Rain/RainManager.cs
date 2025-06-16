@@ -1,4 +1,6 @@
-﻿namespace Rain
+﻿using UnityEngine;
+
+namespace Rain
 {
   [ExecuteInEditMode]
   public class RainManager : MonoBehaviour
@@ -36,7 +38,7 @@
     {
       get
       {
-        return (Object) playerCamera != (Object) null ? playerCamera.transform.position : playerPosition;
+        return playerCamera != null ? playerCamera.transform.position : playerPosition;
       }
     }
 

@@ -1,4 +1,6 @@
-﻿public static class MovementControllerUtility
+﻿using UnityEngine;
+
+public static class MovementControllerUtility
 {
   public static void SetRandomAnimation(
     Animator animator,

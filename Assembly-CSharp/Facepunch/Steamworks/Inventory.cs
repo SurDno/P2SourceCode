@@ -170,7 +170,7 @@ namespace Facepunch.Steamworks
         new SteamItemDef_t { Value = target.Id }
       };
       uint[] punArrayGenerateQuantity = new uint[1]{ 1U };
-      SteamItemInstanceID_t[] array1 = list.Select((Func<Item, SteamItemInstanceID_t>) (x => x.Id)).ToArray();
+      SteamItemInstanceID_t[] array1 = list.Select<Item, SteamItemInstanceID_t>(x => x.Id).ToArray();
       uint[] array2 = list.Select(x => 1U).ToArray();
       return !inventory.ExchangeItems(ref pResultHandle, pArrayGenerate, punArrayGenerateQuantity, 1U, array1, array2, (uint) array1.Length) ? null : new Result(this, pResultHandle, true);
     }
@@ -183,7 +183,7 @@ namespace Facepunch.Steamworks
         new SteamItemDef_t { Value = target.Id }
       };
       uint[] punArrayGenerateQuantity = new uint[1]{ 1U };
-      SteamItemInstanceID_t[] array1 = list.Select((Func<Item.Amount, SteamItemInstanceID_t>) (x => x.Item.Id)).ToArray();
+      SteamItemInstanceID_t[] array1 = list.Select<Item.Amount, SteamItemInstanceID_t>(x => x.Item.Id).ToArray();
       uint[] array2 = list.Select(x => (uint) x.Quantity).ToArray();
       return !inventory.ExchangeItems(ref pResultHandle, pArrayGenerate, punArrayGenerateQuantity, 1U, array1, array2, (uint) array1.Length) ? null : new Result(this, pResultHandle, true);
     }

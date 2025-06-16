@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace UnityStandardAssets.ImageEffects
 {
@@ -16,17 +17,17 @@ namespace UnityStandardAssets.ImageEffects
     {
       if (!(bool) (Object) shader)
       {
-        Debug.Log((object) ("Missing shader in " + ToString()));
-        this.enabled = false;
-        return (Material) null;
+        Debug.Log("Missing shader in " + ToString());
+        enabled = false;
+        return null;
       }
-      if (shader.isSupported && (Object) m2Create != (Object) null && (Object) m2Create.shader == (Object) shader)
+      if (shader.isSupported && m2Create != null && m2Create.shader == shader)
         return m2Create;
       if (!shader.isSupported)
       {
         NotSupported();
-        Debug.Log((object) ("The shader " + ((object) shader) + " on effect " + ToString() + " is not supported on this platform!"));
-        return (Material) null;
+        Debug.Log("The shader " + shader + " on effect " + ToString() + " is not supported on this platform!");
+        return null;
       }
       m2Create = new Material(shader);
       createdMaterials.Add(m2Create);
@@ -38,13 +39,13 @@ namespace UnityStandardAssets.ImageEffects
     {
       if (!(bool) (Object) shader)
       {
-        Debug.Log((object) ("Missing shader in " + ToString()));
-        return (Material) null;
+        Debug.Log("Missing shader in " + ToString());
+        return null;
       }
-      if ((bool) (Object) m2Create && (Object) m2Create.shader == (Object) shader && shader.isSupported)
+      if ((bool) (Object) m2Create && m2Create.shader == shader && shader.isSupported)
         return m2Create;
       if (!shader.isSupported)
-        return (Material) null;
+        return null;
       m2Create = new Material(shader);
       createdMaterials.Add(m2Create);
       m2Create.hideFlags = HideFlags.DontSave;
@@ -61,7 +62,7 @@ namespace UnityStandardAssets.ImageEffects
       {
         Material createdMaterial = createdMaterials[0];
         createdMaterials.RemoveAt(0);
-        Object.Destroy((Object) createdMaterial);
+        Destroy(createdMaterial);
       }
     }
 
@@ -69,7 +70,7 @@ namespace UnityStandardAssets.ImageEffects
 
     public virtual bool CheckResources()
     {
-      Debug.LogWarning((object) ("CheckResources () for " + ToString() + " should be overwritten."));
+      Debug.LogWarning("CheckResources () for " + ToString() + " should be overwritten.");
       return isSupported;
     }
 
@@ -95,7 +96,7 @@ namespace UnityStandardAssets.ImageEffects
         return false;
       }
       if (needDepth)
-        this.GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
+        GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
       return true;
     }
 
@@ -113,12 +114,12 @@ namespace UnityStandardAssets.ImageEffects
 
     protected void ReportAutoDisable()
     {
-      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it's not supported on the current platform."));
+      Debug.LogWarning("The image effect " + ToString() + " has been disabled as it's not supported on the current platform.");
     }
 
     private bool CheckShader(Shader shader)
     {
-      Debug.Log((object) ("The shader " + ((object) shader) + " on effect " + ToString() + " is not part of the Unity 3.2+ effects suite anymore. For best performance and quality, please ensure you are using the latest Standard Assets Image Effects (Pro only) package."));
+      Debug.Log("The shader " + shader + " on effect " + ToString() + " is not part of the Unity 3.2+ effects suite anymore. For best performance and quality, please ensure you are using the latest Standard Assets Image Effects (Pro only) package.");
       if (shader.isSupported)
         return false;
       NotSupported();
@@ -127,7 +128,7 @@ namespace UnityStandardAssets.ImageEffects
 
     protected void NotSupported()
     {
-      this.enabled = false;
+      enabled = false;
       isSupported = false;
     }
 
@@ -153,7 +154,7 @@ namespace UnityStandardAssets.ImageEffects
           y2 = 1f;
         }
         float x1 = 0.0f;
-        float x2 = (float) (0.0 + 1.0 / ((double) dest.width * 1.0));
+        float x2 = (float) (0.0 + 1.0 / (dest.width * 1.0));
         float y3 = 0.0f;
         float y4 = 1f;
         GL.Begin(7);
@@ -165,7 +166,7 @@ namespace UnityStandardAssets.ImageEffects
         GL.Vertex3(x2, y4, 0.1f);
         GL.TexCoord2(0.0f, y2);
         GL.Vertex3(x1, y4, 0.1f);
-        float x3 = (float) (1.0 - 1.0 / ((double) dest.width * 1.0));
+        float x3 = (float) (1.0 - 1.0 / (dest.width * 1.0));
         float x4 = 1f;
         float y5 = 0.0f;
         float y6 = 1f;
@@ -180,7 +181,7 @@ namespace UnityStandardAssets.ImageEffects
         float x5 = 0.0f;
         float x6 = 1f;
         float y7 = 0.0f;
-        float y8 = (float) (0.0 + 1.0 / ((double) dest.height * 1.0));
+        float y8 = (float) (0.0 + 1.0 / (dest.height * 1.0));
         GL.TexCoord2(0.0f, y1);
         GL.Vertex3(x5, y7, 0.1f);
         GL.TexCoord2(1f, y1);
@@ -191,7 +192,7 @@ namespace UnityStandardAssets.ImageEffects
         GL.Vertex3(x5, y8, 0.1f);
         float x7 = 0.0f;
         float x8 = 1f;
-        float y9 = (float) (1.0 - 1.0 / ((double) dest.height * 1.0));
+        float y9 = (float) (1.0 - 1.0 / (dest.height * 1.0));
         float y10 = 1f;
         GL.TexCoord2(0.0f, y1);
         GL.Vertex3(x7, y9, 0.1f);

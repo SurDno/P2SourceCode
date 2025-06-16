@@ -11,11 +11,11 @@ namespace Engine.Source.Blueprints.Effects
     [Port("Intensity")]
     private ValueInput<float> intensityInput;
     private float prevIntensity;
-    private PostProcessingStackOverride postProcessingOverride = null;
+    private PostProcessingStackOverride postProcessingOverride;
 
     public void Update()
     {
-      if ((Object) postProcessingOverride == (Object) null)
+      if (postProcessingOverride == null)
       {
         GetOverrideColorGrading();
       }
@@ -32,7 +32,7 @@ namespace Engine.Source.Blueprints.Effects
     private void GetOverrideColorGrading()
     {
       postProcessingOverride = GameCamera.Instance.GamePostProcessingOverride;
-      if (!((Object) postProcessingOverride != (Object) null))
+      if (!(postProcessingOverride != null))
         return;
       postProcessingOverride.ChromaticAberration.Override = true;
       postProcessingOverride.ChromaticAberration.Enabled = true;
@@ -41,7 +41,7 @@ namespace Engine.Source.Blueprints.Effects
     public override void OnDestroy()
     {
       base.OnDestroy();
-      if (!((Object) postProcessingOverride != (Object) null))
+      if (!(postProcessingOverride != null))
         return;
       postProcessingOverride.ChromaticAberration.Override = false;
     }

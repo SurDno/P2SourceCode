@@ -1,4 +1,7 @@
-﻿[RequireComponent(typeof (Button))]
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+[RequireComponent(typeof (Button))]
 public class OpenURLButton : MonoBehaviour
 {
   [SerializeField]
@@ -6,7 +9,7 @@ public class OpenURLButton : MonoBehaviour
 
   private void Awake()
   {
-    this.GetComponent<Button>().onClick.AddListener(new UnityAction(OnClick));
+    GetComponent<Button>().onClick.AddListener(OnClick);
   }
 
   private void OnClick() => Application.OpenURL(url);

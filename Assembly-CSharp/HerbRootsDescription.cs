@@ -1,4 +1,7 @@
-﻿[CreateAssetMenu(fileName = "HerbRootsDescription", menuName = "Pathologic2/HerbRootsDescription", order = 101)]
+﻿using UnityEngine;
+using UnityEngine.Audio;
+
+[CreateAssetMenu(fileName = "HerbRootsDescription", menuName = "Pathologic2/HerbRootsDescription", order = 101)]
 public class HerbRootsDescription : ScriptableObject
 {
   [Header("Топология")]

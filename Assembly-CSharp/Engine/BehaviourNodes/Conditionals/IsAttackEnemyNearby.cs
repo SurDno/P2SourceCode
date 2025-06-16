@@ -11,6 +11,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -40,12 +41,12 @@ namespace Engine.BehaviourNodes.Conditionals
 
     public override TaskStatus OnUpdate()
     {
-      IEntity entity = !((UnityEngine.Object) Target.Value == (UnityEngine.Object) null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject);
+      IEntity entity = !(Target.Value == null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject);
       if (entity == null)
         return TaskStatus.Failure;
       CombatServiceCharacterInfo serviceCharacterInfo = combatService.GetCharacterInfo(entity)?.AttackEnemyNearby();
       bool flag = false;
-      if (serviceCharacterInfo != null && (UnityEngine.Object) serviceCharacterInfo.Character != (UnityEngine.Object) null && (UnityEngine.Object) serviceCharacterInfo.Character.transform != (UnityEngine.Object) null)
+      if (serviceCharacterInfo != null && serviceCharacterInfo.Character != null && serviceCharacterInfo.Character.transform != null)
       {
         Enemy.Value = serviceCharacterInfo?.Character?.transform;
         flag = true;

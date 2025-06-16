@@ -12,6 +12,7 @@ using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -76,7 +77,7 @@ namespace Engine.Source.Effects
       }
       for (int index = 0; index < count && storableComponentList.Count != 0; ++index)
       {
-        IStorableComponent storableComponent = storableComponentList[UnityEngine.Random.Range(0, storableComponentList.Count)];
+        IStorableComponent storableComponent = storableComponentList[Random.Range(0, storableComponentList.Count)];
         symptomsToOpen.Add(storableComponent);
         storableComponentList.Remove(storableComponent);
       }

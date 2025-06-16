@@ -9,6 +9,8 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -31,7 +33,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
       if (owner == null)
       {
-        Debug.LogWarningFormat("{0} has no entity", (object) gameObject.name);
+        Debug.LogWarningFormat("{0} has no entity", gameObject.name);
       }
       else
       {
@@ -39,11 +41,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
         if (component1 != null)
         {
           IEntity setupPoint = component1.SetupPoint;
-          if (setupPoint != null && (UnityEngine.Object) ((IEntityView) setupPoint).GameObject != (UnityEngine.Object) null)
+          if (setupPoint != null && ((IEntityView) setupPoint).GameObject != null)
           {
             PatrolPath component2 = ((IEntityView) setupPoint).GameObject.GetComponent<PatrolPath>();
             PathPart component3 = ((IEntityView) setupPoint).GameObject.GetComponent<PathPart>();
-            if ((UnityEngine.Object) component2 != (UnityEngine.Object) null || (UnityEngine.Object) component3 != (UnityEngine.Object) null)
+            if (component2 != null || component3 != null)
             {
               Spawnpoint.Value = ((IEntityView) setupPoint).GameObject.transform;
               return;
@@ -57,22 +59,22 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
           if (entityPoint == null)
             return;
           GameObject gameObject = ((IEntityView) entityPoint).GameObject;
-          if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+          if (gameObject == null)
             return;
           PatrolPath component5 = gameObject.GetComponent<PatrolPath>();
           PathPart component6 = gameObject.GetComponent<PathPart>();
-          if (!((UnityEngine.Object) component5 != (UnityEngine.Object) null) && !((UnityEngine.Object) component6 != (UnityEngine.Object) null))
+          if (!(component5 != null) && !(component6 != null))
             return;
           Spawnpoint.Value = gameObject.transform;
         }
         else
-          Debug.LogError((object) (this.gameObject.name + " has no patrol path or path part!"));
+          Debug.LogError(this.gameObject.name + " has no patrol path or path part!");
       }
     }
 
     public override TaskStatus OnUpdate()
     {
-      return !(bool) (UnityEngine.Object) Spawnpoint.Value ? TaskStatus.Failure : TaskStatus.Success;
+      return !(bool) (Object) Spawnpoint.Value ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)

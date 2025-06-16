@@ -1,12 +1,13 @@
 ﻿using BehaviorDesigner.Runtime;
+using UnityEngine;
 
 public static class BehaviorSubtreeUtility
 {
   public static BehaviorTree GetCharacterSubtree(GameObject character)
   {
-    if ((Object) character == (Object) null)
+    if (character == null)
     {
-      Debug.LogError((object) "character == null");
+      Debug.LogError("character == null");
       return null;
     }
     BehaviorTree[] components = character.GetComponents<BehaviorTree>();
@@ -20,17 +21,17 @@ public static class BehaviorSubtreeUtility
 
   public static void SetCharacterSubtree(BehaviorTree tree, ExternalBehaviorTree newTree)
   {
-    if ((Object) tree == (Object) null)
+    if (tree == null)
       return;
     string name = tree.ExternalBehaviorTree?.name;
-    if ((Object) newTree != (Object) null)
+    if (newTree != null)
       tree.enabled = true;
     bool startWhenEnabled = tree.StartWhenEnabled;
-    if ((Object) newTree == (Object) null)
+    if (newTree == null)
       tree.StartWhenEnabled = false;
     tree.ExternalBehaviorTree = newTree;
     tree.StartWhenEnabled = startWhenEnabled;
-    if (!((Object) newTree == (Object) null))
+    if (!(newTree == null))
       return;
     tree.enabled = false;
   }

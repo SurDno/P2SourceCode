@@ -1,30 +1,32 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Source.Behaviours
 {
   public class AlphaImageUiEffect : ProgressViewBase
   {
     [SerializeField]
-    private RawImage rawImage = (RawImage) null;
+    private RawImage rawImage;
     [SerializeField]
-    private Image image = (Image) null;
+    private Image image;
 
     public override float Progress
     {
       get
       {
-        if ((Object) rawImage != (Object) null)
+        if (rawImage != null)
           return rawImage.color.a;
-        return (Object) image != (Object) null ? image.color.a : 1f;
+        return image != null ? image.color.a : 1f;
       }
       set
       {
-        if ((Object) rawImage != (Object) null)
+        if (rawImage != null)
           rawImage.color = rawImage.color with
           {
             a = value
           };
-        if (!((Object) image != (Object) null))
+        if (!(image != null))
           return;
         image.color = image.color with
         {

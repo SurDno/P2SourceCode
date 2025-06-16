@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.UI.Menu.Protagonist.MindMap
+﻿using UnityEngine;
+
+namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
   public class MMNewNodeIndicator : MonoBehaviour
   {
@@ -35,7 +37,7 @@
     {
       float f = phase * 3.14159274f;
       float num1 = Mathf.Sin(f);
-      float num2 = (float) (1.0 + (farScale - 1.0) * ((double) Mathf.Cos(f) * 0.5 + 0.5));
+      float num2 = (float) (1.0 + (farScale - 1.0) * (Mathf.Cos(f) * 0.5 + 0.5));
       image.alpha = num1;
       image.transform.localScale = new Vector3(num2, num2, num2);
     }

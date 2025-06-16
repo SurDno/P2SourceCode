@@ -3,6 +3,7 @@ using System.IO;
 using System.Xml;
 using Cofe.Serializations.Converters;
 using Engine.Common.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Settings
 {

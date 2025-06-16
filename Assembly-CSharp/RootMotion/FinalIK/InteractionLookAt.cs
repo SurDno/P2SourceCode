@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -20,7 +21,7 @@ namespace RootMotion.FinalIK
 
     public void Look(Transform target, float time)
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+      if (ik == null)
         return;
       if (ik.solver.IKPositionWeight <= 0.0)
         ik.solver.IKPosition = ik.solver.GetRoot().position + ik.solver.GetRoot().forward * 3f;
@@ -30,32 +31,32 @@ namespace RootMotion.FinalIK
 
     public void OnFixTransforms()
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null || !ik.fixTransforms)
+      if (ik == null || !ik.fixTransforms)
         return;
       ik.solver.FixTransforms();
     }
 
     public void Update()
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+      if (ik == null)
         return;
       if (ik.enabled)
         ik.enabled = false;
-      if ((UnityEngine.Object) lookAtTarget == (UnityEngine.Object) null)
+      if (lookAtTarget == null)
         return;
       if (isPaused)
         stopLookTime += Time.deltaTime;
-      weight = Mathf.Clamp(weight + ((double) Time.time < stopLookTime ? weightSpeed : -weightSpeed) * Time.deltaTime, 0.0f, 1f);
+      weight = Mathf.Clamp(weight + (Time.time < (double) stopLookTime ? weightSpeed : -weightSpeed) * Time.deltaTime, 0.0f, 1f);
       ik.solver.IKPositionWeight = Interp.Float(weight, InterpolationMode.InOutQuintic);
       ik.solver.IKPosition = Vector3.Lerp(ik.solver.IKPosition, lookAtTarget.position, lerpSpeed * Time.deltaTime);
       if (weight <= 0.0)
-        lookAtTarget = (Transform) null;
+        lookAtTarget = null;
       firstFBBIKSolve = true;
     }
 
     public void SolveSpine()
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null || !firstFBBIKSolve)
+      if (ik == null || !firstFBBIKSolve)
         return;
       float headWeight = ik.solver.headWeight;
       float eyesWeight = ik.solver.eyesWeight;
@@ -68,7 +69,7 @@ namespace RootMotion.FinalIK
 
     public void SolveHead()
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null || !firstFBBIKSolve)
+      if (ik == null || !firstFBBIKSolve)
         return;
       float bodyWeight = ik.solver.bodyWeight;
       ik.solver.bodyWeight = 0.0f;

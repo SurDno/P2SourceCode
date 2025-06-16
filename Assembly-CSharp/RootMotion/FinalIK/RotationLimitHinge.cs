@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page12.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Rotation Limits/Rotation Limit Hinge")]
@@ -53,7 +55,7 @@
       float num = Quaternion.Angle(Quaternion.identity, b);
       Vector3 lhs = new Vector3(axis.z, axis.x, axis.y);
       Vector3 rhs = Vector3.Cross(lhs, axis);
-      if ((double) Vector3.Dot(b * lhs, rhs) > 0.0)
+      if (Vector3.Dot(b * lhs, rhs) > 0.0)
         num = -num;
       lastAngle = Mathf.Clamp(lastAngle + num, min, max);
       return Quaternion.AngleAxis(lastAngle, axis);

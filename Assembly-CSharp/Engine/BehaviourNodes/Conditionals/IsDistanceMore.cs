@@ -8,6 +8,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -31,7 +32,7 @@ namespace Engine.BehaviourNodes.Conditionals
 
     public override TaskStatus OnUpdate()
     {
-      return Target == null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null ? TaskStatus.Failure : ((double) (Target.Value.transform.position - gameObject.transform.position).magnitude > Distance ? TaskStatus.Success : TaskStatus.Failure);
+      return Target == null || Target.Value == null ? TaskStatus.Failure : ((Target.Value.transform.position - gameObject.transform.position).magnitude > (double) Distance ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)

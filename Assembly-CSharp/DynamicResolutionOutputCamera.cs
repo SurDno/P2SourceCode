@@ -1,4 +1,7 @@
-﻿[RequireComponent(typeof (Camera))]
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+[RequireComponent(typeof (Camera))]
 public class DynamicResolutionOutputCamera : MonoBehaviour
 {
   [SerializeField]
@@ -7,7 +10,7 @@ public class DynamicResolutionOutputCamera : MonoBehaviour
   private void OnPreCull()
   {
     RenderTexture targetTexture = DynamicResolution.Instance.GetTargetTexture();
-    view.texture = (Texture) targetTexture;
-    view.gameObject.SetActive((Object) targetTexture != (Object) null);
+    view.texture = targetTexture;
+    view.gameObject.SetActive(targetTexture != null);
   }
 }

@@ -3,6 +3,7 @@ using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
 using Engine.Source.Services;
+using UnityEngine;
 
 public class BoundCharactersWindowModes : MonoBehaviour
 {

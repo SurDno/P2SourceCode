@@ -1,6 +1,7 @@
 ﻿using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -14,8 +15,8 @@ namespace Engine.Impl.UI.Controls
 
     private void Awake()
     {
-      if ((Object) Instance != (Object) null)
-        Object.Destroy((Object) Instance.gameObject);
+      if (Instance != null)
+        Destroy(Instance.gameObject);
       Instance = this;
     }
 

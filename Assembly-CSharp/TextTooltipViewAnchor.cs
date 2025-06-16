@@ -1,4 +1,6 @@
-﻿public class TextTooltipViewAnchor : TextTooltipView
+﻿using UnityEngine;
+
+public class TextTooltipViewAnchor : TextTooltipView
 {
   [SerializeField]
   private TextTooltipView prefab;
@@ -8,22 +10,22 @@
 
   private void OnEnable()
   {
-    if (!((Object) Current == (Object) null))
+    if (!(Current == null))
       return;
     Current = this;
   }
 
   private void OnDisable()
   {
-    if (!((Object) Current == (Object) this))
+    if (!(Current == this))
       return;
     Current = null;
   }
 
   public override void Show(Vector2 screenPosition, string text)
   {
-    if ((Object) view == (Object) null)
-      view = Object.Instantiate<TextTooltipView>(prefab, this.transform, false);
+    if (view == null)
+      view = Instantiate(prefab, transform, false);
     view.Show(screenPosition, text);
   }
 }

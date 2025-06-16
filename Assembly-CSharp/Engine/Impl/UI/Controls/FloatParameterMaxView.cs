@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -23,14 +24,14 @@ namespace Engine.Impl.UI.Controls
 
     private void ApplyParameter()
     {
-      if (!((Object) valueView != (Object) null))
+      if (!(valueView != null))
         return;
       valueView.Progress = parameter == null ? defaultValue : parameter.MaxValue;
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) valueView != (Object) null))
+      if (!(valueView != null))
         return;
       valueView.SkipAnimation();
     }

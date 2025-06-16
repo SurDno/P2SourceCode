@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   public class GlobalFogBase : PostEffectsBase
   {
@@ -13,9 +15,9 @@
     [Range(0.001f, 10f)]
     public float heightDensity = 2f;
     [Tooltip("Push fog away from the camera by this amount")]
-    public float startDistance = 0.0f;
-    private static Shader fogShader = (Shader) null;
-    private Material fogMaterial = (Material) null;
+    public float startDistance;
+    private static Shader fogShader;
+    private Material fogMaterial;
     [SerializeField]
     private Camera cam;
 
@@ -28,7 +30,7 @@
     public override bool CheckResources()
     {
       CheckSupport(true);
-      if ((Object) fogShader == (Object) null)
+      if (fogShader == null)
         fogShader = Shader.Find("Hidden/Pathologic/Image Effects/Fog");
       fogMaterial = CheckShaderAndCreateMaterial(fogShader, fogMaterial);
       if (!isSupported)
@@ -49,7 +51,7 @@
       if (!CheckResources() || !distanceFog && !heightFog)
       {
         DisableFog();
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -63,7 +65,7 @@
         float z = y <= 0.0 ? 1f : 0.0f;
         Shader.SetGlobalVector("_FogHeightParams", new Vector4(position.y + height, y, z, heightFog ? heightDensity * 0.5f : 0.0f));
         Shader.SetGlobalVector("_FogDistanceParams", new Vector4(distanceFog ? distanceDensity : 0.0f, -Mathf.Max(startDistance, 0.0f), 0.0f, 0.0f));
-        Graphics.Blit((Texture) source, destination, fogMaterial);
+        Graphics.Blit(source, destination, fogMaterial);
       }
     }
   }

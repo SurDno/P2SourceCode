@@ -1,8 +1,10 @@
-﻿public class NPCHandsWeaponController : NPCWeaponControllerBase
+﻿using UnityEngine;
+
+public class NPCHandsWeaponController : NPCWeaponControllerBase
 {
   protected override void GetLayersIndices()
   {
-    if (!((Object) animator != (Object) null))
+    if (!(animator != null))
       return;
     walkLayerIndex = animator.GetLayerIndex("Fight Walk Layer");
     attackLayerIndex = animator.GetLayerIndex("Fight Attack Layer");

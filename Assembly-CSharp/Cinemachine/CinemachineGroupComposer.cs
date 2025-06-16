@@ -1,5 +1,6 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -58,14 +59,14 @@ namespace Cinemachine
       get
       {
         Transform lookAtTarget = LookAtTarget;
-        return (UnityEngine.Object) lookAtTarget != (UnityEngine.Object) null ? lookAtTarget.GetComponent<CinemachineTargetGroup>() : (CinemachineTargetGroup) null;
+        return lookAtTarget != null ? lookAtTarget.GetComponent<CinemachineTargetGroup>() : null;
       }
     }
 
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
       CinemachineTargetGroup targetGroup = TargetGroup;
-      if ((UnityEngine.Object) targetGroup == (UnityEngine.Object) null)
+      if (targetGroup == null)
         base.MutateCameraState(ref curState, deltaTime);
       else if (!IsValid || !curState.HasLookAt)
       {
@@ -93,19 +94,19 @@ namespace Cinemachine
           float fieldOfView = curState.Lens.FieldOfView;
           double num2 = num1 / (2f * Mathf.Tan((float) (fieldOfView * (Math.PI / 180.0) / 2.0)));
           mLastBounds = m_LastBounds;
-          double z = (double) mLastBounds.extents.z;
+          double z = mLastBounds.extents.z;
           float num3 = Mathf.Clamp(Mathf.Clamp((float) (num2 + z), magnitude1 - m_MaxDollyIn, magnitude1 + m_MaxDollyOut), m_MinimumDistance, m_MaximumDistance);
           curState.PositionCorrection += vector3 - forward * num3 - curState.RawPosition;
         }
         if (curState.Lens.Orthographic || m_AdjustmentMode != AdjustmentMode.DollyOnly)
         {
-          double magnitude2 = (double) (TrackedPoint - curState.CorrectedPosition).magnitude;
+          double magnitude2 = (TrackedPoint - curState.CorrectedPosition).magnitude;
           mLastBounds = m_LastBounds;
-          double z = (double) mLastBounds.extents.z;
+          double z = mLastBounds.extents.z;
           float num4 = (float) (magnitude2 - z);
           float num5 = 179f;
           if (num4 > 9.9999997473787516E-05)
-            num5 = (float) (2.0 * (double) Mathf.Atan(num1 / (2f * num4)) * 57.295780181884766);
+            num5 = (float) (2.0 * Mathf.Atan(num1 / (2f * num4)) * 57.295780181884766);
           LensSettings lens = curState.Lens with
           {
             FieldOfView = Mathf.Clamp(num5, m_MinimumFOV, m_MaximumFOV),

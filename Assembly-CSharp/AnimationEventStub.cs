@@ -1,4 +1,6 @@
-﻿public class AnimationEventStub : MonoBehaviour
+﻿using UnityEngine;
+
+public class AnimationEventStub : MonoBehaviour
 {
   public void AnimatorEvent()
   {

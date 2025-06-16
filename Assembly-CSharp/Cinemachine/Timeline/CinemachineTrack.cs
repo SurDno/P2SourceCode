@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Playables;
 using UnityEngine.Timeline;
 
 namespace Cinemachine.Timeline
@@ -15,12 +17,12 @@ namespace Cinemachine.Timeline
       foreach (TimelineClip clip in GetClips())
       {
         CinemachineVirtualCameraBase virtualCameraBase = ((CinemachineShot) clip.asset).VirtualCamera.Resolve(graph.GetResolver());
-        if ((UnityEngine.Object) virtualCameraBase != (UnityEngine.Object) null)
+        if (virtualCameraBase != null)
           clip.displayName = virtualCameraBase.Name;
       }
       ScriptPlayable<CinemachineMixer> playable = ScriptPlayable<CinemachineMixer>.Create(graph);
-      playable.SetInputCount<ScriptPlayable<CinemachineMixer>>(inputCount);
-      return (Playable) playable;
+      playable.SetInputCount(inputCount);
+      return playable;
     }
   }
 }

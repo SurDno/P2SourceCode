@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableFloat : HideableView
   {
@@ -7,7 +9,7 @@
 
     protected override void ApplyVisibility()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.FloatValue = Visible ? 1f : 0.0f;
     }

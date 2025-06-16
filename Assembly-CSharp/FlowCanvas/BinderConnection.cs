@@ -1,6 +1,7 @@
 ﻿using System;
 using NodeCanvas.Framework;
 using ParadoxNotion;
+using UnityEngine;
 
 namespace FlowCanvas
 {
@@ -77,27 +78,27 @@ namespace FlowCanvas
     {
       if (source == null || target == null)
       {
-        Debug.LogError((object) "Source Port or Target Port is null when making a new Binder Connection");
+        Debug.LogError("Source Port or Target Port is null when making a new Binder Connection");
         return null;
       }
       if (!source.CanAcceptConnections())
       {
-        Debug.LogWarning((object) "Source port can accept no more connections");
+        Debug.LogWarning("Source port can accept no more connections");
         return null;
       }
       if (!target.CanAcceptConnections())
       {
-        Debug.LogWarning((object) "Target port can accept no more connections");
+        Debug.LogWarning("Target port can accept no more connections");
         return null;
       }
       if (source.parent == target.parent)
       {
-        Debug.LogWarning((object) "Can't connect ports on the same parent node");
+        Debug.LogWarning("Can't connect ports on the same parent node");
         return null;
       }
       if (source is FlowOutput && !(target is FlowInput))
       {
-        Debug.LogWarning((object) "Flow ports can only be connected to other Flow ports");
+        Debug.LogWarning("Flow ports can only be connected to other Flow ports");
         return null;
       }
       int num1;
@@ -115,7 +116,7 @@ namespace FlowCanvas
       }
       if (num1 != 0)
       {
-        Debug.LogWarning((object) "Can't connect input to input");
+        Debug.LogWarning("Can't connect input to input");
         return null;
       }
       int num2;
@@ -133,12 +134,12 @@ namespace FlowCanvas
       }
       if (num2 != 0)
       {
-        Debug.LogWarning((object) "Can't connect output to output");
+        Debug.LogWarning("Can't connect output to output");
         return null;
       }
       if (!TypeConverter.HasConvertion(source.type, target.type))
       {
-        Debug.LogWarning((object) string.Format("Can't connect ports. Type '{0}' is not assignable from Type '{1}' and there exists no internal convertion for those types.", target.type.FriendlyName(), source.type.FriendlyName()));
+        Debug.LogWarning(string.Format("Can't connect ports. Type '{0}' is not assignable from Type '{1}' and there exists no internal convertion for those types.", target.type.FriendlyName(), source.type.FriendlyName()));
         return null;
       }
       if (source is FlowOutput && target is FlowInput)

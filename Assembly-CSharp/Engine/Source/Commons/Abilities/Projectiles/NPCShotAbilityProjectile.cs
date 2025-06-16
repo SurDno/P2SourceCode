@@ -5,6 +5,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Projectiles
 {
@@ -22,16 +23,16 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     {
       targets.Targets = new List<EffectsComponent>();
       GameObject gameObject = ((IEntityView) self).GameObject;
-      if ((Object) gameObject == (Object) null)
+      if (gameObject == null)
         return;
       EnemyBase component1 = gameObject.GetComponent<EnemyBase>();
-      if ((Object) component1 == (Object) null)
+      if (component1 == null)
         return;
       EnemyBase enemy = component1.Enemy;
-      if ((Object) enemy == (Object) null)
+      if (enemy == null)
         return;
       EngineGameObject component2 = enemy.gameObject.GetComponent<EngineGameObject>();
-      if ((Object) component2 == (Object) null)
+      if (component2 == null)
         return;
       IEntity owner = component2.Owner;
       if (owner == null || !CheckBlocked(owner))

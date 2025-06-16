@@ -4,6 +4,7 @@ using System.Reflection;
 using Engine.Common;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {

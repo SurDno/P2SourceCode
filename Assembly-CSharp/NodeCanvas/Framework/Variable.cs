@@ -2,6 +2,7 @@
 using System.Reflection;
 using ParadoxNotion;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace NodeCanvas.Framework
 {
@@ -93,20 +94,20 @@ namespace NodeCanvas.Framework
           }
         });
       if (toType == typeof (Transform) && varType == typeof (GameObject))
-        return (Func<object>) (() => value != null ? (object) (value as GameObject).transform : (object) (Transform) null);
+        return (Func<object>) (() => value != null ? (value as GameObject).transform : (object) null);
       if (toType == typeof (GameObject) && typeof (Component).RTIsAssignableFrom(varType))
-        return (Func<object>) (() => value != null ? (object) (value as Component).gameObject : (object) (GameObject) null);
+        return (Func<object>) (() => value != null ? (value as Component).gameObject : (object) null);
       if (toType == typeof (Vector3) && varType == typeof (GameObject))
-        return (Func<object>) (() => (object) (value != null ? (value as GameObject).transform.position : Vector3.zero));
+        return () => value != null ? (value as GameObject).transform.position : Vector3.zero;
       if (toType == typeof (Vector3) && varType == typeof (Transform))
-        return (Func<object>) (() => (object) (value != null ? (value as Transform).position : Vector3.zero));
+        return () => value != null ? (value as Transform).position : Vector3.zero;
       if (toType == typeof (Vector3) && varType == typeof (Quaternion))
-        return (Func<object>) (() => (object) ((Quaternion) value).eulerAngles);
+        return () => ((Quaternion) value).eulerAngles;
       if (toType == typeof (Quaternion) && varType == typeof (Vector3))
-        return (Func<object>) (() => (object) Quaternion.Euler((Vector3) value));
+        return () => Quaternion.Euler((Vector3) value);
       if (toType == typeof (Vector3) && varType == typeof (Vector2))
-        return (Func<object>) (() => (object) (Vector3) (Vector2) value);
-      return toType == typeof (Vector2) && varType == typeof (Vector3) ? (Func<object>) (() => (object) (Vector2) (Vector3) value) : null;
+        return () => (Vector3) (Vector2) value;
+      return toType == typeof (Vector2) && varType == typeof (Vector3) ? () => (Vector2) (Vector3) value : null;
     }
 
     public bool CanConvertFrom(Type fromType) => GetSetConverter(fromType) != null;
@@ -128,9 +129,9 @@ namespace NodeCanvas.Framework
           }
         };
       if (varType == typeof (Transform) && fromType == typeof (GameObject))
-        return o => value = o != null ? (object) (o as GameObject).transform : (object) (Transform) null;
+        return o => value = o != null ? (o as GameObject).transform : (object) null;
       if (varType == typeof (GameObject) && typeof (Component).RTIsAssignableFrom(fromType))
-        return o => value = o != null ? (object) (o as Component).gameObject : (object) (GameObject) null;
+        return o => value = o != null ? (o as Component).gameObject : (object) null;
       if (varType == typeof (GameObject) && fromType == typeof (Vector3))
         return o =>
         {
@@ -146,12 +147,12 @@ namespace NodeCanvas.Framework
           (value as Transform).position = (Vector3) o;
         };
       if (varType == typeof (Vector3) && fromType == typeof (Quaternion))
-        return o => value = (object) ((Quaternion) o).eulerAngles;
+        return o => value = ((Quaternion) o).eulerAngles;
       if (varType == typeof (Quaternion) && fromType == typeof (Vector3))
-        return o => value = (object) Quaternion.Euler((Vector3) o);
+        return o => value = Quaternion.Euler((Vector3) o);
       if (fromType == typeof (Vector3) && varType == typeof (Vector2))
-        return o => value = (object) (Vector2) (Vector3) o;
-      return fromType == typeof (Vector2) && varType == typeof (Vector3) ? o => value = (object) (Vector3) (Vector2) o : null;
+        return o => value = (Vector2) (Vector3) o;
+      return fromType == typeof (Vector2) && varType == typeof (Vector3) ? o => value = (Vector3) (Vector2) o : null;
     }
 
     public override string ToString() => name;

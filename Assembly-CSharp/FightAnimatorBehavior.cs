@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class FightAnimatorBehavior : StateMachineBehaviour
 {
@@ -9,7 +10,7 @@ public class FightAnimatorBehavior : StateMachineBehaviour
 
   public static AnimatorState GetAnimatorState(Animator animator)
   {
-    if ((Object) animator == (Object) null)
+    if (animator == null)
       return new AnimatorState();
     AnimatorState animatorState;
     if (!animatorStates.TryGetValue(animator, out animatorState))

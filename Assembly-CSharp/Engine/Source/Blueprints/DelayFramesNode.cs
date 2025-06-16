@@ -2,6 +2,7 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,13 +16,13 @@ namespace Engine.Source.Blueprints
       base.RegisterPorts();
       FlowOutput output = AddFlowOutput("Out");
       frames = AddValueInput<int>("Frames");
-      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(Delay(frames.value, output))));
+      AddFlowInput("In", () => StartCoroutine(Delay(frames.value, output)));
     }
 
     private IEnumerator Delay(float frames, FlowOutput output)
     {
       for (int index = 0; index < (double) frames; ++index)
-        yield return (object) new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
       output.Call();
     }
   }

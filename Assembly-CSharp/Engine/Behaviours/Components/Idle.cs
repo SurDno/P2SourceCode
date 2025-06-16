@@ -1,6 +1,9 @@
 ﻿using System;
 using Engine.Impl.Tasks;
 using Engine.Source.Commons;
+using UnityEngine;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Engine.Behaviours.Components
 {
@@ -24,7 +27,7 @@ namespace Engine.Behaviours.Components
 
     private void OnPauseEvent()
     {
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      if (animator == null)
         return;
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         animator.SetFloat("Mecanim.Speed", 0.0f);
@@ -36,11 +39,11 @@ namespace Engine.Behaviours.Components
     {
       if (isInitialized)
         return;
-      animator = this.GetComponent<Animator>();
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      animator = GetComponent<Animator>();
+      if (animator == null)
         return;
       animatorOverrideController = animator.runtimeAnimatorController as AnimatorOverrideController;
-      if ((UnityEngine.Object) animatorOverrideController == (UnityEngine.Object) null)
+      if (animatorOverrideController == null)
         return;
       this.parameters = new Parameter[animator.parameterCount];
       AnimatorControllerParameter[] parameters = animator.parameters;
@@ -58,7 +61,7 @@ namespace Engine.Behaviours.Components
     private void Update()
     {
       Initialize();
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null || (UnityEngine.Object) animatorOverrideController == (UnityEngine.Object) null || !animator.isInitialized || !isInitialized)
+      if (animator == null || animatorOverrideController == null || !animator.isInitialized || !isInitialized)
         return;
       if (true & animator.GetInteger("Movable.State.Control") == 1)
       {
@@ -94,7 +97,7 @@ namespace Engine.Behaviours.Components
       localState = state;
       Clip clip = new Clip();
       bool flag = false;
-      float num1 = UnityEngine.Random.value;
+      float num1 = Random.value;
       float num2 = 0.0f;
       for (int index = 0; index < this.clips.Length; ++index)
       {
@@ -109,7 +112,7 @@ namespace Engine.Behaviours.Components
       if (!flag)
         return;
       AnimatorOverrideController animatorController = animator.runtimeAnimatorController as AnimatorOverrideController;
-      if ((UnityEngine.Object) animatorController == (UnityEngine.Object) null)
+      if (animatorController == null)
         return;
       string str = null;
       switch (state)

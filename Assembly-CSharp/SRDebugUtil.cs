@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using SRF;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public static class SRDebugUtil
 {
@@ -21,8 +23,8 @@ public static class SRDebugUtil
       else
         str = "NotNullAssert Failed: {0}".Fmt(message);
       message = str;
-      UnityEngine.Debug.LogError((object) message, (UnityEngine.Object) instance);
-      if ((UnityEngine.Object) instance != (UnityEngine.Object) null)
+      Debug.LogError(message, instance);
+      if (instance != null)
         instance.enabled = false;
       throw new NullReferenceException(message);
     }
@@ -40,7 +42,7 @@ public static class SRDebugUtil
       else
         str = "Assert Failed: {0}".Fmt(message);
       message = str;
-      UnityEngine.Debug.LogError((object) message, (UnityEngine.Object) instance);
+      Debug.LogError(message, instance);
       throw new Exception(message);
     }
   }

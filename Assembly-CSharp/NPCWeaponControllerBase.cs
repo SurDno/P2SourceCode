@@ -3,6 +3,7 @@ using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
+using UnityEngine;
 
 public class NPCWeaponControllerBase : INPCWeaponController
 {
@@ -37,7 +38,7 @@ public class NPCWeaponControllerBase : INPCWeaponController
 
   protected virtual void SetLayers(float weight, bool immediate = false)
   {
-    if ((UnityEngine.Object) service == (UnityEngine.Object) null)
+    if (service == null)
       return;
     if (walkLayerIndex != -1)
       service.AddNeededLayer(walkLayerIndex, weight);

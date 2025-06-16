@@ -8,6 +8,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
 {
@@ -121,10 +123,10 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
 
   private void Init()
   {
-    pivot = this.GetComponent<Pivot>();
-    if (!(bool) (UnityEngine.Object) pivot)
+    pivot = GetComponent<Pivot>();
+    if (!(bool) (Object) pivot)
     {
-      Debug.LogError((object) (typeof (NPCWeaponService).Name + " requires " + typeof (Pivot).Name + " "));
+      Debug.LogError(typeof (NPCWeaponService).Name + " requires " + typeof (Pivot).Name + " ");
     }
     else
     {
@@ -190,13 +192,13 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
   {
     get
     {
-      return (UnityEngine.Object) KnifeParent != (UnityEngine.Object) null ? KnifeParent.position : this.transform.position;
+      return KnifeParent != null ? KnifeParent.position : transform.position;
     }
   }
 
   private void Update()
   {
-    if (!(bool) (UnityEngine.Object) pivot || InstanceByRequest<EngineApplication>.Instance.IsPaused)
+    if (!(bool) (Object) pivot || InstanceByRequest<EngineApplication>.Instance.IsPaused)
       return;
     if (weapon == WeaponEnum.Unknown)
     {
@@ -212,17 +214,17 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
         weaponController.Value.UpdateSilent();
     }
     CountLayersWeights();
-    if ((UnityEngine.Object) KnifeParent != (UnityEngine.Object) null)
+    if (KnifeParent != null)
     {
       if (knifeParentPositionPrev == Vector3.zero)
         knifeParentPositionPrev = KnifeParent.position;
       Vector3 vector3_1 = KnifeParent.position - knifeParentPositionPrev;
-      Vector3 vector3_2 = (double) vector3_1.magnitude > (double) Time.deltaTime * 0.05000000074505806 ? vector3_1 / Time.deltaTime : Vector3.zero;
+      Vector3 vector3_2 = vector3_1.magnitude > Time.deltaTime * 0.05000000074505806 ? vector3_1 / Time.deltaTime : Vector3.zero;
       float num = 1f;
       knifeSpeed = knifeSpeed * (1f - num) + vector3_2 * num;
       knifeParentPositionPrev = KnifeParent.position;
     }
-    if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null) || !((UnityEngine.Object) pivot.ShootStart != (UnityEngine.Object) null))
+    if (!(pivot != null) || !(pivot.ShootStart != null))
       return;
     weaponStartPosition = pivot.ShootStart.transform.position;
     weaponAimDirection = pivot.ShootStart.transform.forward;
@@ -230,7 +232,7 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
 
   public void AddNeededLayer(int key, float value)
   {
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
       return;
     if (!neededLayerWeights.ContainsKey(key))
     {
@@ -257,7 +259,7 @@ public class NPCWeaponService : WeaponServiceBase, IEntityAttachable
         {
           currentLayerWeights[neededLayerWeight.Key] = num;
           float weight = SmoothUtility.Smooth22(num);
-          if ((double) animator.GetLayerWeight(neededLayerWeight.Key) != weight)
+          if (animator.GetLayerWeight(neededLayerWeight.Key) != (double) weight)
             animator.SetLayerWeight(neededLayerWeight.Key, weight);
         }
       }

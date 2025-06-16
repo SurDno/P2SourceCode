@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -22,7 +23,7 @@ namespace RootMotion.Dynamics
     public float muscleWeight = 1f;
     [LargeHeader("Joint and Muscle Settings")]
     public float muscleSpring = 100f;
-    public float muscleDamper = 0.0f;
+    public float muscleDamper;
     [Range(1f, 8f)]
     public float pinPow = 4f;
     [Range(0.0f, 100f)]
@@ -36,13 +37,13 @@ namespace RootMotion.Dynamics
 
     public void ApplyTo(PuppetMaster p)
     {
-      if ((UnityEngine.Object) p.targetRoot == (UnityEngine.Object) null)
-        Debug.LogWarning((object) "Please assign 'Target Root' for PuppetMaster using a Humanoid Config.", (UnityEngine.Object) p.transform);
-      else if ((UnityEngine.Object) p.targetAnimator == (UnityEngine.Object) null)
-        Debug.LogError((object) "PuppetMaster 'Target Root' does not have an Animator component. Can not use Humanoid Config.", (UnityEngine.Object) p.transform);
+      if (p.targetRoot == null)
+        Debug.LogWarning("Please assign 'Target Root' for PuppetMaster using a Humanoid Config.", p.transform);
+      else if (p.targetAnimator == null)
+        Debug.LogError("PuppetMaster 'Target Root' does not have an Animator component. Can not use Humanoid Config.", p.transform);
       else if (!p.targetAnimator.isHuman)
       {
-        Debug.LogError((object) "PuppetMaster target is not a Humanoid. Can not use Humanoid Config.", (UnityEngine.Object) p.transform);
+        Debug.LogError("PuppetMaster target is not a Humanoid. Can not use Humanoid Config.", p.transform);
       }
       else
       {
@@ -83,11 +84,11 @@ namespace RootMotion.Dynamics
     private Muscle GetMuscle(HumanBodyBones boneId, Animator animator, PuppetMaster puppetMaster)
     {
       Transform boneTransform = animator.GetBoneTransform(boneId);
-      if ((UnityEngine.Object) boneTransform == (UnityEngine.Object) null)
+      if (boneTransform == null)
         return null;
       foreach (Muscle muscle in puppetMaster.muscles)
       {
-        if ((UnityEngine.Object) muscle.target == (UnityEngine.Object) boneTransform)
+        if (muscle.target == boneTransform)
           return muscle;
       }
       return null;

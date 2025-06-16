@@ -5,6 +5,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateFightIdle : INpcState
 {
@@ -58,7 +60,7 @@ public class NpcStateFightIdle : INpcState
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
       Status = NpcStateStatusEnum.Failed;
     }
     else
@@ -75,12 +77,12 @@ public class NpcStateFightIdle : INpcState
         }
         else
         {
-          Debug.Log((object) "Can't sample navmesh", (UnityEngine.Object) GameObject);
+          Debug.Log("Can't sample navmesh", GameObject);
           Status = NpcStateStatusEnum.Failed;
           return;
         }
       }
-      if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null & aim) || !((UnityEngine.Object) enemy != (UnityEngine.Object) null) || !((UnityEngine.Object) enemy.Enemy != (UnityEngine.Object) null))
+      if (!(ikController != null & aim) || !(enemy != null) || !(enemy.Enemy != null))
         return;
       ikController.WeaponTarget = enemy.Enemy.transform;
     }
@@ -95,9 +97,9 @@ public class NpcStateFightIdle : INpcState
     npcState.WeaponChangeEvent -= State_WeaponChangeEvent;
     agent.areaMask = prevAreaMask;
     agent.enabled = agentWasEnabled;
-    if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null))
+    if (!(ikController != null))
       return;
-    ikController.WeaponTarget = (Transform) null;
+    ikController.WeaponTarget = null;
   }
 
   public void OnAnimatorMove()

@@ -1,4 +1,6 @@
-﻿public class EnableOnAwake : MonoBehaviour
+﻿using UnityEngine;
+
+public class EnableOnAwake : MonoBehaviour
 {
   [SerializeField]
   private GameObject[] objects;
@@ -7,7 +9,7 @@
   {
     foreach (GameObject gameObject in objects)
     {
-      if ((Object) gameObject != (Object) null)
+      if (gameObject != null)
         gameObject.SetActive(true);
     }
   }

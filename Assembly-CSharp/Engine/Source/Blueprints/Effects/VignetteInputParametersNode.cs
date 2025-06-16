@@ -5,6 +5,7 @@ using Engine.Source.VisualEffects;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -20,8 +21,8 @@ namespace Engine.Source.Blueprints.Effects
     [Port("Value")]
     private IList<IParameter<IntensityParameter<Color>>> Value()
     {
-      effects.GetParameters<IntensityParameter<Color>>(nameInput.value, result);
-      return (IList<IParameter<IntensityParameter<Color>>>) result;
+      effects.GetParameters(nameInput.value, result);
+      return result;
     }
   }
 }

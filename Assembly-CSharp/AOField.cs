@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 [RequireComponent(typeof (DeferredProjector))]
 public class AOField : MonoBehaviour
@@ -69,6 +70,6 @@ public class AOField : MonoBehaviour
 
   private void UpdateDecal()
   {
-    this.GetComponent<DeferredProjector>().enabled = Allowed && IsPlayerOutdoor;
+    GetComponent<DeferredProjector>().enabled = Allowed && IsPlayerOutdoor;
   }
 }

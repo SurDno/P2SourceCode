@@ -1,5 +1,5 @@
-﻿using System;
-using Engine.Common.Services;
+﻿using Engine.Common.Services;
+using UnityEngine;
 
 namespace Engine.Source.Services.Gizmos
 {
@@ -11,14 +11,9 @@ namespace Engine.Source.Services.Gizmos
 
     public static GizmoRenderBehaviour Create(UnityEngine.Camera targetCamera)
     {
-      if ((UnityEngine.Object) targetCamera == (UnityEngine.Object) null)
+      if (targetCamera == null)
         return null;
-      GameObject gameObject = new GameObject("[Camera] Debug", new Type[3]
-      {
-        typeof (UnityEngine.Camera),
-        typeof (GizmoRenderBehaviour),
-        typeof (DynamicResolutionCamera)
-      });
+      GameObject gameObject = new GameObject("[Camera] Debug", typeof (UnityEngine.Camera), typeof (GizmoRenderBehaviour), typeof (DynamicResolutionCamera));
       gameObject.transform.SetParent(targetCamera.transform, false);
       GizmoRenderBehaviour component = gameObject.GetComponent<GizmoRenderBehaviour>();
       component.camera = gameObject.GetComponent<UnityEngine.Camera>();

@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using UnityEngine;
+using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (TOD_Resources))]
@@ -89,7 +92,7 @@ public class TOD_Sky : MonoBehaviour
 
   private void UpdateCelestials()
   {
-    if (World == null || (UnityEngine.Object) Components == (UnityEngine.Object) null || (UnityEngine.Object) Components.SpaceTransform == (UnityEngine.Object) null)
+    if (World == null || Components == null || Components.SpaceTransform == null)
       return;
     float f1 = (float) Math.PI / 180f * World.Latitude;
     float num1 = Mathf.Sin(f1);
@@ -130,7 +133,7 @@ public class TOD_Sky : MonoBehaviour
     float num22 = Mathf.Cos(f6);
     float num23 = num14 + num9 + 180f;
     float num24 = num20 - num23 - longitude;
-    float num25 = 57.29578f * Mathf.Acos((float) (((double) Mathf.Sin((float) Math.PI / 180f * -6f) - num1 * (double) num21) / (num2 * (double) num22)));
+    float num25 = 57.29578f * Mathf.Acos((float) ((Mathf.Sin((float) Math.PI / 180f * -6f) - num1 * (double) num21) / (num2 * (double) num22)));
     SunsetTime = (float) ((24.0 + (num24 + (double) num25) / 15.0 % 24.0) % 24.0);
     SunriseTime = (float) ((24.0 + (num24 - (double) num25) / 15.0 % 24.0) % 24.0);
     float num26 = (float) (282.94039916992188 + 4.7093501052586362E-05 * num5);
@@ -265,10 +268,10 @@ public class TOD_Sky : MonoBehaviour
     bool flag = (1.0 - Atmosphere.Fogginess) * (1.0 - LerpValue) > 0.0;
     Components.SpaceRenderer.enabled = flag;
     Components.StarRenderer.enabled = flag;
-    Components.SunRenderer.enabled = (double) Components.SunTransform.localPosition.y > -(double) num85;
-    Components.MoonRenderer.enabled = (double) Components.MoonTransform.localPosition.y > -(double) num86;
+    Components.SunRenderer.enabled = Components.SunTransform.localPosition.y > -(double) num85;
+    Components.MoonRenderer.enabled = Components.MoonTransform.localPosition.y > -(double) num86;
     Components.AtmosphereRenderer.enabled = true;
-    Components.ClearRenderer.enabled = (UnityEngine.Object) Components.Rays != (UnityEngine.Object) null;
+    Components.ClearRenderer.enabled = Components.Rays != null;
     Components.CloudRenderer.enabled = Clouds.Coverage > 0.0 && Clouds.Opacity > 0.0;
     LerpValue = Mathf.InverseLerp(105f, 90f, SunZenith);
     float time1 = Mathf.Clamp01(SunZenith / 90f);
@@ -313,12 +316,12 @@ public class TOD_Sky : MonoBehaviour
       shadowStrength = Day.ShadowStrength;
       num90 = Mathf.Lerp(0.0f, Day.LightIntensity, SunVisibility);
       color = SunLightColor;
-      if ((UnityEngine.Object) Resources.CloudDensityTexture != (UnityEngine.Object) null)
+      if (Resources.CloudDensityTexture != null)
       {
         float num91 = TOD_Clouds.Instance.LightAttenuation(Resources.CloudDensityTexture, OrbitalToLocal(num48, phi1), 4f * Mathf.Tan((float) Math.PI / 360f * Sun.MeshSize));
         num90 *= (float) (0.25 + num91 * 0.75);
         NGSS_Directional component = Components.LightSource.GetComponent<NGSS_Directional>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
           component.NGSS_SOFTNESS = (float) (2.0 - num91 * 1.75);
       }
     }
@@ -329,12 +332,12 @@ public class TOD_Sky : MonoBehaviour
       shadowStrength = Night.ShadowStrength;
       num90 = Mathf.Lerp(0.0f, Night.LightIntensity, MoonVisibility);
       color = MoonLightColor;
-      if ((UnityEngine.Object) Resources.CloudDensityTexture != (UnityEngine.Object) null)
+      if (Resources.CloudDensityTexture != null)
       {
         float num92 = TOD_Clouds.Instance.LightAttenuation(Resources.CloudDensityTexture, OrbitalToLocal(num50, phi2), 4f * Mathf.Tan((float) Math.PI / 360f * Moon.MeshSize));
         num90 *= num92;
         NGSS_Directional component = Components.LightSource.GetComponent<NGSS_Directional>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
           component.NGSS_SOFTNESS = (float) (2.0 - num92 * 1.75);
       }
     }
@@ -535,10 +538,10 @@ public class TOD_Sky : MonoBehaviour
 
   public void RenderToCubemap(RenderTexture targetTexture = null)
   {
-    if (!(bool) (UnityEngine.Object) Probe)
+    if (!(bool) (Object) Probe)
     {
       Probe = new GameObject().AddComponent<ReflectionProbe>();
-      Probe.name = this.gameObject.name + " Reflection Probe";
+      Probe.name = gameObject.name + " Reflection Probe";
       Probe.mode = ReflectionProbeMode.Realtime;
     }
     if (probeRenderID >= 0 && !Probe.IsFinishedRendering(probeRenderID))
@@ -548,7 +551,7 @@ public class TOD_Sky : MonoBehaviour
     Probe.size = new Vector3(maxValue, maxValue, maxValue);
     Probe.intensity = RenderSettings.reflectionIntensity;
     Probe.clearFlags = Reflection.ClearFlags;
-    Probe.cullingMask = (int) Reflection.CullingMask;
+    Probe.cullingMask = Reflection.CullingMask;
     Probe.refreshMode = ReflectionProbeRefreshMode.ViaScripting;
     Probe.timeSlicingMode = Reflection.TimeSlicing;
     Probe.farClipPlane = Reflection.FarClipPlane;
@@ -559,7 +562,7 @@ public class TOD_Sky : MonoBehaviour
   public Color SampleFogColor(bool directLight = true)
   {
     Vector3 a = Vector3.forward;
-    if ((UnityEngine.Object) Components.Camera != (UnityEngine.Object) null)
+    if (Components.Camera != null)
       a = Quaternion.Euler(0.0f, Components.Camera.transform.rotation.eulerAngles.y, 0.0f) * a;
     Color color = SampleAtmosphere(Vector3.Lerp(a, Vector3.up, Fog.HeightBias).normalized, directLight);
     return new Color(color.r, color.g, color.b, 1f);
@@ -595,10 +598,10 @@ public class TOD_Sky : MonoBehaviour
         RenderSettings.fogColor = SampleFogColor();
         break;
     }
-    if ((UnityEngine.Object) Components.Camera == (UnityEngine.Object) null)
+    if (Components.Camera == null)
       return;
     TOD_Scattering scattering = Components.Scattering;
-    if ((UnityEngine.Object) scattering == (UnityEngine.Object) null)
+    if (scattering == null)
       return;
     scattering.GlobalDensity = Fog.GlobalDensity;
     scattering.StartDistance = Fog.StartDistance;
@@ -662,12 +665,12 @@ public class TOD_Sky : MonoBehaviour
   {
     if (Headless)
       return;
-    Mesh mesh1 = (Mesh) null;
-    Mesh mesh2 = (Mesh) null;
-    Mesh mesh3 = (Mesh) null;
-    Mesh mesh4 = (Mesh) null;
-    Mesh mesh5 = (Mesh) null;
-    Mesh mesh6 = (Mesh) null;
+    Mesh mesh1 = null;
+    Mesh mesh2 = null;
+    Mesh mesh3 = null;
+    Mesh mesh4 = null;
+    Mesh mesh5 = null;
+    Mesh mesh6 = null;
     switch (MeshQuality)
     {
       case TOD_MeshQualityType.Low:
@@ -704,17 +707,17 @@ public class TOD_Sky : MonoBehaviour
         mesh6 = Resources.StarsLOD0;
         break;
     }
-    if ((bool) (UnityEngine.Object) Components.SpaceMeshFilter && (UnityEngine.Object) Components.SpaceMeshFilter.sharedMesh != (UnityEngine.Object) mesh1)
+    if ((bool) (Object) Components.SpaceMeshFilter && Components.SpaceMeshFilter.sharedMesh != mesh1)
       Components.SpaceMeshFilter.mesh = mesh1;
-    if ((bool) (UnityEngine.Object) Components.MoonMeshFilter && (UnityEngine.Object) Components.MoonMeshFilter.sharedMesh != (UnityEngine.Object) mesh5)
+    if ((bool) (Object) Components.MoonMeshFilter && Components.MoonMeshFilter.sharedMesh != mesh5)
       Components.MoonMeshFilter.mesh = mesh5;
-    if ((bool) (UnityEngine.Object) Components.AtmosphereMeshFilter && (UnityEngine.Object) Components.AtmosphereMeshFilter.sharedMesh != (UnityEngine.Object) mesh2)
+    if ((bool) (Object) Components.AtmosphereMeshFilter && Components.AtmosphereMeshFilter.sharedMesh != mesh2)
       Components.AtmosphereMeshFilter.mesh = mesh2;
-    if ((bool) (UnityEngine.Object) Components.ClearMeshFilter && (UnityEngine.Object) Components.ClearMeshFilter.sharedMesh != (UnityEngine.Object) mesh3)
+    if ((bool) (Object) Components.ClearMeshFilter && Components.ClearMeshFilter.sharedMesh != mesh3)
       Components.ClearMeshFilter.mesh = mesh3;
-    if ((bool) (UnityEngine.Object) Components.CloudMeshFilter && (UnityEngine.Object) Components.CloudMeshFilter.sharedMesh != (UnityEngine.Object) mesh4)
+    if ((bool) (Object) Components.CloudMeshFilter && Components.CloudMeshFilter.sharedMesh != mesh4)
       Components.CloudMeshFilter.mesh = mesh4;
-    if (!(bool) (UnityEngine.Object) Components.StarMeshFilter || !((UnityEngine.Object) Components.StarMeshFilter.sharedMesh != (UnityEngine.Object) mesh6))
+    if (!(bool) (Object) Components.StarMeshFilter || !(Components.StarMeshFilter.sharedMesh != mesh6))
       return;
     Components.StarMeshFilter.mesh = mesh6;
   }
@@ -764,7 +767,7 @@ public class TOD_Sky : MonoBehaviour
     switch (ColorRange)
     {
       case TOD_ColorRangeType.Auto:
-        if ((bool) (UnityEngine.Object) Components.Camera && Components.Camera.HDR)
+        if ((bool) (Object) Components.Camera && Components.Camera.HDR)
         {
           Shader.EnableKeyword("TOD_OUTPUT_HDR");
           break;
@@ -828,12 +831,12 @@ public class TOD_Sky : MonoBehaviour
     Shader.SetGlobalColor(Resources.ID_FogColor, FogColor);
     Shader.SetGlobalColor(Resources.ID_GroundColor, GroundColor);
     Shader.SetGlobalColor(Resources.ID_AmbientColor, AmbientColor);
-    Shader.SetGlobalVector(Resources.ID_SunDirection, (Vector4) SunDirection);
-    Shader.SetGlobalVector(Resources.ID_MoonDirection, (Vector4) MoonDirection);
-    Shader.SetGlobalVector(Resources.ID_LightDirection, (Vector4) LightDirection);
-    Shader.SetGlobalVector(Resources.ID_LocalSunDirection, (Vector4) LocalSunDirection);
-    Shader.SetGlobalVector(Resources.ID_LocalMoonDirection, (Vector4) LocalMoonDirection);
-    Shader.SetGlobalVector(Resources.ID_LocalLightDirection, (Vector4) LocalLightDirection);
+    Shader.SetGlobalVector(Resources.ID_SunDirection, SunDirection);
+    Shader.SetGlobalVector(Resources.ID_MoonDirection, MoonDirection);
+    Shader.SetGlobalVector(Resources.ID_LightDirection, LightDirection);
+    Shader.SetGlobalVector(Resources.ID_LocalSunDirection, LocalSunDirection);
+    Shader.SetGlobalVector(Resources.ID_LocalMoonDirection, LocalMoonDirection);
+    Shader.SetGlobalVector(Resources.ID_LocalLightDirection, LocalLightDirection);
     Shader.SetGlobalFloat(Resources.ID_Contrast, Atmosphere.Contrast);
     Shader.SetGlobalFloat(Resources.ID_Brightness, Atmosphere.Brightness);
     Shader.SetGlobalFloat(Resources.ID_Fogginess, Atmosphere.Fogginess);
@@ -852,9 +855,9 @@ public class TOD_Sky : MonoBehaviour
     Shader.SetGlobalFloat(Resources.ID_CloudSaturation, num4);
     Shader.SetGlobalFloat(Resources.ID_CloudScattering, Clouds.Scattering);
     Shader.SetGlobalFloat(Resources.ID_CloudBrightness, Clouds.Brightness);
-    Shader.SetGlobalVector(Resources.ID_CloudOffset, (Vector4) Components.Animation.OffsetUV);
-    Shader.SetGlobalVector(Resources.ID_CloudWind, (Vector4) Components.Animation.CloudUV);
-    Shader.SetGlobalVector(Resources.ID_CloudSize, (Vector4) new Vector3(Clouds.Size * 2f, Clouds.Size, Clouds.Size * 2f));
+    Shader.SetGlobalVector(Resources.ID_CloudOffset, Components.Animation.OffsetUV);
+    Shader.SetGlobalVector(Resources.ID_CloudWind, Components.Animation.CloudUV);
+    Shader.SetGlobalVector(Resources.ID_CloudSize, new Vector3(Clouds.Size * 2f, Clouds.Size, Clouds.Size * 2f));
     Shader.SetGlobalFloat(Resources.ID_StarSize, Stars.Size);
     Shader.SetGlobalFloat(Resources.ID_StarBrightness, Stars.Brightness);
     Shader.SetGlobalFloat(Resources.ID_StarVisibility, (float) ((1.0 - Atmosphere.Fogginess) * (1.0 - LerpValue)));
@@ -862,7 +865,7 @@ public class TOD_Sky : MonoBehaviour
     Shader.SetGlobalFloat(Resources.ID_SunMeshBrightness, Sun.MeshBrightness * (1f - Atmosphere.Fogginess));
     Shader.SetGlobalFloat(Resources.ID_MoonMeshContrast, 1f / Mathf.Max(1f / 1000f, Moon.MeshContrast));
     Shader.SetGlobalFloat(Resources.ID_MoonMeshBrightness, Moon.MeshBrightness * (1f - Atmosphere.Fogginess));
-    Shader.SetGlobalVector(Resources.ID_kBetaMie, (Vector4) kBetaMie);
+    Shader.SetGlobalVector(Resources.ID_kBetaMie, kBetaMie);
     Shader.SetGlobalVector(Resources.ID_kSun, kSun);
     Shader.SetGlobalVector(Resources.ID_k4PI, k4PI);
     Shader.SetGlobalVector(Resources.ID_kRadius, kRadius);
@@ -887,7 +890,7 @@ public class TOD_Sky : MonoBehaviour
   private Color ShaderNightSkyColor(Vector3 dir)
   {
     dir.y = Mathf.Max(0.0f, dir.y);
-    return MoonSkyColor * (float) (1.0 - 0.75 * (double) dir.y);
+    return MoonSkyColor * (float) (1.0 - 0.75 * dir.y);
   }
 
   private Color ShaderMoonHaloColor(Vector3 dir)
@@ -995,9 +998,9 @@ public class TOD_Sky : MonoBehaviour
 
   private void Initialize()
   {
-    Components = this.GetComponent<TOD_Components>();
+    Components = GetComponent<TOD_Components>();
     Components.Initialize();
-    Resources = this.GetComponent<TOD_Resources>();
+    Resources = GetComponent<TOD_Resources>();
     Resources.Initialize();
     instances.Add(this);
     Initialized = true;
@@ -1005,8 +1008,8 @@ public class TOD_Sky : MonoBehaviour
 
   private void Cleanup()
   {
-    if ((bool) (UnityEngine.Object) Probe)
-      UnityEngine.Object.Destroy((UnityEngine.Object) Probe.gameObject);
+    if ((bool) (Object) Probe)
+      Destroy(Probe.gameObject);
     Shader.SetGlobalInt("Pathologic_Ambient", 0);
     instances.Remove(this);
     Initialized = false;

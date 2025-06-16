@@ -18,6 +18,9 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using Engine.Source.UI.Controls;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -91,7 +94,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private List<GameObject> consoleStrainsTextInfo;
     [SerializeField]
     private List<HideableView> strainsEntities;
-    private Coroutine scrollCoroutine = (Coroutine) null;
+    private Coroutine scrollCoroutine;
     private bool IsHealingEnded;
     private bool IsHealingPerformed;
     private StorableUI ItemToUse;
@@ -103,12 +106,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (selectedItem != null)
       {
         StorableUI storable1 = storables[selectedItem];
-        if ((UnityEngine.Object) storable1 != (UnityEngine.Object) null)
+        if (storable1 != null)
           storable1.SetSelected(false);
       }
       selectedItem = storable;
       StorableUI storable2 = storables[storable];
-      if ((UnityEngine.Object) storable2 != (UnityEngine.Object) null)
+      if (storable2 != null)
         storable2.SetSelected(true);
       StorableComponentUtility.PlayTakeSound(storable);
       SetSelectedItemInfo();
@@ -135,7 +138,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
+      if (windowContextMenu != null)
       {
         HideContextMenu();
       }
@@ -148,7 +151,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           return;
         SelectItem(storableComponent);
         ItemToUse = GetStorableByComponent(storableComponent);
-        if (!((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null))
+        if (!(ItemToUse != null))
           return;
         currentSliderIndex = SliderItems.IndexOf(ItemToUse);
       }
@@ -244,7 +247,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LStickDown, MedicineNavigation);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AdministerHealing);
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
       {
         selectedStorable.HoldSelected(false);
         selectedStorable.SetSelected(false);
@@ -281,12 +284,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void HandleHealingHintsVisibility(bool visible)
     {
-      Text componentInChildren = buttonHealingHints.Where((Func<GameObject, bool>) (hint => hint.GetComponent<HideableView>().Visible)).First()?.GetComponentInChildren<Text>();
-      if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null && buttonUse.interactable)
+      Text componentInChildren = buttonHealingHints.Where(hint => hint.GetComponent<HideableView>().Visible).First()?.GetComponentInChildren<Text>();
+      if (componentInChildren != null && buttonUse.interactable)
       {
         _administerHealingHint.transform.parent = componentInChildren.transform;
         _administerHealingHint.transform.localPosition = Vector3.zero;
-        _administerHealingHint.transform.localPosition = new Vector3((float) ((double) componentInChildren.transform.localPosition.x - (double) componentInChildren.preferredWidth / 2.0 - 15.0), _administerHealingHint.transform.localPosition.y);
+        _administerHealingHint.transform.localPosition = new Vector3((float) (componentInChildren.transform.localPosition.x - componentInChildren.preferredWidth / 2.0 - 15.0), _administerHealingHint.transform.localPosition.y);
         _administerHealingHint.SetActive(visible);
       }
       else
@@ -305,21 +308,21 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           return;
         if (SliderItems.Count == 0)
           SliderItems = null;
-        else if ((UnityEngine.Object) ItemToUse == (UnityEngine.Object) null && SliderItems.Count > 0)
+        else if (ItemToUse == null && SliderItems.Count > 0)
           ItemToUse = SliderItems.First();
         if (currentSliderIndex < 0)
           currentSliderIndex = 0;
-        if ((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null)
+        if (ItemToUse != null)
           ItemToUse.HoldSelected(true);
-        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) ItemToUse && (UnityEngine.Object) ItemToUse != (UnityEngine.Object) null)
+        if (selectedStorable != ItemToUse && ItemToUse != null)
         {
           selectedStorable = ItemToUse;
           currentSliderIndex = SliderItems.IndexOf(selectedStorable);
         }
-        if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null && SliderItems.Count > 0)
+        if (selectedStorable == null && SliderItems.Count > 0)
           selectedStorable = SliderItems.First();
         slidingContainer.ScrollTo(currentSliderIndex, SliderItems.Count);
-        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+        if (selectedStorable != null)
         {
           selectedStorable.SetSelected(true);
           SelectItemFromSlider();
@@ -334,12 +337,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         buttonUse.GamepadEndHold();
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Heal, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+        if (selectedStorable != null)
         {
           selectedStorable?.SetSelected(false);
           selectedStorable?.HoldSelected(false);
         }
-        if ((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null)
+        if (ItemToUse != null)
           ItemToUse.HoldSelected(false);
         foreach (GameObject gameObject in consoleStrainsTextInfo)
           gameObject.SetActive(false);
@@ -357,7 +360,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         {
           int num = handle(type, down) ? 1 : 0;
         }
-        yield return (object) new WaitForSeconds(0.5f);
+        yield return new WaitForSeconds(0.5f);
       }
     }
 
@@ -366,14 +369,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (down)
       {
         if (scrollCoroutine != null)
-          this.StopCoroutine(scrollCoroutine);
-        scrollCoroutine = this.StartCoroutine(ScrollCoroutine(OnMedicineNavigation, type, down));
+          StopCoroutine(scrollCoroutine);
+        scrollCoroutine = StartCoroutine(ScrollCoroutine(OnMedicineNavigation, type, down));
         return true;
       }
       if (scrollCoroutine != null)
       {
-        this.StopCoroutine(scrollCoroutine);
-        scrollCoroutine = (Coroutine) null;
+        StopCoroutine(scrollCoroutine);
+        scrollCoroutine = null;
       }
       return false;
     }
@@ -391,10 +394,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         currentSliderIndex = SliderItems.Count - 1;
       if (currentSliderIndex >= SliderItems.Count)
         currentSliderIndex = 0;
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null && (UnityEngine.Object) selectedStorable != (UnityEngine.Object) ItemToUse)
+      if (selectedStorable != null && selectedStorable != ItemToUse)
         selectedStorable?.SetSelected(false);
       selectedStorable = SliderItems[currentSliderIndex];
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
         selectedStorable?.SetSelected(true);
       slidingContainer.ScrollTo(currentSliderIndex, SliderItems.Count);
       return SelectItemFromSlider();
@@ -402,12 +405,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private bool SelectItemFromSlider()
     {
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
       {
         HideInfoWindow();
         SelectItem((StorableComponent) selectedStorable.Internal);
         buttonUse.GamepadEndHold();
-        if ((UnityEngine.Object) ItemToUse != (UnityEngine.Object) null && (UnityEngine.Object) ItemToUse != (UnityEngine.Object) selectedStorable)
+        if (ItemToUse != null && ItemToUse != selectedStorable)
           ItemToUse.HoldSelected(false);
         ItemToUse = selectedStorable;
         ItemToUse.HoldSelected(true);
@@ -423,28 +426,28 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (!InputService.Instance.JoystickUsed)
         return;
       StorableUI itemToUse = ItemToUse;
-      if ((UnityEngine.Object) itemToUse == (UnityEngine.Object) null)
+      if (itemToUse == null)
         return;
       RectTransform component1 = window.GetComponent<RectTransform>();
       RectTransform component2 = slidingContainer.GetComponent<RectTransform>();
       float num1 = 20f;
       float hintsBottomBorder = HintsBottomBorder;
       float num2 = itemToUse.Image.rectTransform.rect.height / 2f * itemToUse.Image.rectTransform.lossyScale.y;
-      double num3 = (double) itemToUse.Image.transform.position.y + num2;
+      double num3 = itemToUse.Image.transform.position.y + (double) num2;
       Rect rect = component1.rect;
-      double num4 = (double) rect.height * (double) component1.lossyScale.y;
+      double num4 = rect.height * (double) component1.lossyScale.y;
       if (num3 - num4 < hintsBottomBorder)
       {
         rect = component1.rect;
-        double height = (double) rect.height;
+        double height = rect.height;
         rect = itemToUse.Image.rectTransform.rect;
-        double num5 = (double) rect.height / 2.0;
+        double num5 = rect.height / 2.0;
         num2 = (float) (height - num5) * itemToUse.Image.rectTransform.lossyScale.y;
       }
       rect = component1.rect;
-      double num6 = -(double) rect.width * (double) component1.lossyScale.x;
+      double num6 = -(double) rect.width * component1.lossyScale.x;
       rect = component2.rect;
-      double num7 = (double) rect.width * (double) component2.lossyScale.x / 2.0;
+      double num7 = rect.width * (double) component2.lossyScale.x / 2.0;
       float num8 = (float) (num6 - num7 - num1 * (double) component2.lossyScale.x / 2.0);
       window.Transform.position = new Vector3(itemToUse.Image.transform.position.x + num8, itemToUse.Image.transform.position.y + num2);
     }
@@ -495,14 +498,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             flag = byName.Value;
         }
         HideableView component = symptomsImages[i]?.GetComponent<HideableView>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
           component.Visible = flag;
       }
     }
 
     public override void Initialize()
     {
-      RegisterLayer((IHealingWindow) this);
+      RegisterLayer<IHealingWindow>(this);
       base.Initialize();
     }
 
@@ -751,7 +754,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         if (parameter.Name != ParameterNameEnum.IsOpen)
           return;
         ShowSymptoms();
-        if ((UnityEngine.Object) definitiveDiagnosisCheck != (UnityEngine.Object) null && definitiveDiagnosisCheck.Visible)
+        if (definitiveDiagnosisCheck != null && definitiveDiagnosisCheck.Visible)
           ServiceLocator.GetService<LogicEventService>().FireEntityEvent("DefinitiveDiagnosis", Target.Owner);
       }
     }

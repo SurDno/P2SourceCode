@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
 
 public class CreditsScrolling : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class CreditsScrolling : MonoBehaviour
 
   private void Start()
   {
-    canvas = (RectTransform) this.GetComponentInParent<Canvas>().transform;
+    canvas = (RectTransform) GetComponentInParent<Canvas>().transform;
     content.Position = -edgePositions;
   }
 

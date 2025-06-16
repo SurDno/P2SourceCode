@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 [ExecuteInEditMode]
 [Serializable]
@@ -18,21 +19,21 @@ public class PatrolPath : MonoBehaviour
     if (!reverse)
     {
       if (pointIndex < 1)
-        return (List<Transform>) null;
+        return null;
       PathPart component = PointsList[pointIndex - 1].GetComponent<PathPart>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
-        return (List<Transform>) null;
+      if (component == null)
+        return null;
       List<Transform> presetPath = new List<Transform>();
-      presetPath.AddRange((IEnumerable<Transform>) component.PointsList);
+      presetPath.AddRange(component.PointsList);
       if (pointIndex < PointsList.Count - 1)
         presetPath.Add(PointsList[pointIndex]);
       return presetPath;
     }
     PathPart component1 = PointsList[pointIndex].GetComponent<PathPart>();
-    if ((UnityEngine.Object) component1 == (UnityEngine.Object) null)
-      return (List<Transform>) null;
+    if (component1 == null)
+      return null;
     List<Transform> presetPath1 = new List<Transform>();
-    presetPath1.AddRange((IEnumerable<Transform>) component1.PointsList);
+    presetPath1.AddRange(component1.PointsList);
     presetPath1.Reverse();
     presetPath1.Add(PointsList[pointIndex]);
     return presetPath1;
@@ -41,8 +42,8 @@ public class PatrolPath : MonoBehaviour
   private void UpdateList()
   {
     pointsList.Clear();
-    int childCount = this.transform.childCount;
+    int childCount = transform.childCount;
     for (int index = 0; index < childCount; ++index)
-      pointsList.Add(this.transform.GetChild(index));
+      pointsList.Add(transform.GetChild(index));
   }
 }

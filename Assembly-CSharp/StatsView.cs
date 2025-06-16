@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class StatsView : MonoBehaviour
 {
@@ -11,9 +12,9 @@ public class StatsView : MonoBehaviour
 
   private void Start()
   {
-    if ((Object) fullVersionView != (Object) null)
+    if (fullVersionView != null)
       fullVersionView.SkipAnimation();
-    if (!((Object) playerEntityView != (Object) null))
+    if (!(playerEntityView != null))
       return;
     playerEntityView.Value = ServiceLocator.GetService<ISimulation>()?.Player;
     playerEntityView.SkipAnimation();
@@ -21,7 +22,7 @@ public class StatsView : MonoBehaviour
 
   private void Update()
   {
-    if (!((Object) playerEntityView != (Object) null))
+    if (!(playerEntityView != null))
       return;
     IEntity player = ServiceLocator.GetService<ISimulation>()?.Player;
     if (playerEntityView.Value != player)
@@ -30,7 +31,7 @@ public class StatsView : MonoBehaviour
 
   public void SetFullVersion(bool value)
   {
-    if (!((Object) fullVersionView != (Object) null))
+    if (!(fullVersionView != null))
       return;
     fullVersionView.Visible = value;
   }

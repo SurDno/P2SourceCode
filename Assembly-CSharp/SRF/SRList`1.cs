@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using UnityEngine;
 
 namespace SRF
 {
@@ -151,13 +152,13 @@ namespace SRF
 
     public void OnBeforeSerialize()
     {
-      Debug.Log((object) "[OnBeforeSerialize] Count: {0}".Fmt(_count));
+      Debug.Log("[OnBeforeSerialize] Count: {0}".Fmt(_count));
       Clean();
     }
 
     public void OnAfterDeserialize()
     {
-      Debug.Log((object) "[OnAfterDeserialize] Count: {0}".Fmt(_count));
+      Debug.Log("[OnAfterDeserialize] Count: {0}".Fmt(_count));
     }
 
     public void AddRange(IEnumerable<T> range)

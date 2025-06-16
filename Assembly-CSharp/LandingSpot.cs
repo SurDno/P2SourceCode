@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEngine;
 
 public class LandingSpot : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class LandingSpot : MonoBehaviour
 
   public void StraightenBird()
   {
-    if ((double) landingChild.transform.eulerAngles.x == 0.0)
+    if (landingChild.transform.eulerAngles.x == 0.0)
       return;
     landingChild.transform.eulerAngles = landingChild.transform.eulerAngles with
     {
@@ -30,7 +31,7 @@ public class LandingSpot : MonoBehaviour
     Quaternion rotation = landingChild.transform.rotation;
     Vector3 eulerAngles = rotation.eulerAngles with
     {
-      y = Mathf.LerpAngle(landingChild.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.y, (float) lerpCounter * Time.deltaTime * _controller._landedRotateSpeed)
+      y = Mathf.LerpAngle(landingChild.transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.y, lerpCounter * Time.deltaTime * _controller._landedRotateSpeed)
     };
     rotation.eulerAngles = eulerAngles;
     landingChild.transform.rotation = rotation;

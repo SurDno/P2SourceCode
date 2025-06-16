@@ -3,6 +3,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Pathologic.Prototype
 {
@@ -25,16 +26,16 @@ namespace Pathologic.Prototype
     private Light light;
     private Renderer bulbRenderer;
     private bool lightEnabled;
-    private static MaterialPropertyBlock mpb = (MaterialPropertyBlock) null;
+    private static MaterialPropertyBlock mpb;
 
     private void Start()
     {
-      light = this.GetComponent<Light>();
+      light = GetComponent<Light>();
       if ((bool) (Object) BulbObject)
         bulbRenderer = BulbObject.GetComponent<Renderer>();
-      if ((Object) light != (Object) null)
+      if (light != null)
       {
-        this.enabled = light.enabled;
+        enabled = light.enabled;
         if (DisableShadowsInPlagueIntro)
         {
           VirtualMachineController service = ServiceLocator.GetService<VirtualMachineController>();
@@ -42,7 +43,7 @@ namespace Pathologic.Prototype
             light.shadows = LightShadows.None;
         }
       }
-      EnableLight(this.enabled);
+      EnableLight(enabled);
     }
 
     private void Update()
@@ -78,20 +79,20 @@ namespace Pathologic.Prototype
 
     public void EnableLight(bool enable)
     {
-      if ((Object) light != (Object) null)
+      if (light != null)
         light.enabled = enable;
-      if ((Object) AdditionalLight != (Object) null)
+      if (AdditionalLight != null)
         AdditionalLight.enabled = enable;
-      LightServiceObject component1 = this.GetComponent<LightServiceObject>();
-      if ((Object) component1 != (Object) null)
+      LightServiceObject component1 = GetComponent<LightServiceObject>();
+      if (component1 != null)
         component1.enabled = enable;
-      LightFlicker2 component2 = this.GetComponent<LightFlicker2>();
-      if ((Object) component2 != (Object) null)
+      LightFlicker2 component2 = GetComponent<LightFlicker2>();
+      if (component2 != null)
         component2.enabled = enable;
-      if ((Object) bulbRenderer != (Object) null)
+      if (bulbRenderer != null)
       {
         if (enable)
-          bulbRenderer.SetPropertyBlock((MaterialPropertyBlock) null);
+          bulbRenderer.SetPropertyBlock(null);
         else
           bulbRenderer.SetPropertyBlock(MPB);
       }

@@ -1,5 +1,7 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -30,13 +32,13 @@ namespace Cinemachine
     private float m_LegacyHeadingBias = float.MaxValue;
     [HideInInspector]
     [NoSaveDuringPlay]
-    public bool m_HeadingIsSlave = false;
+    public bool m_HeadingIsSlave;
     internal UpdateHeadingDelegate HeadingUpdater = (orbital, deltaTime, up) => orbital.UpdateHeading(deltaTime, up, ref orbital.m_XAxis);
     private float mLastHeadingAxisInputTime;
     private float mHeadingRecenteringVelocity;
     private Vector3 mLastTargetPosition = Vector3.zero;
     private HeadingTracker mHeadingTracker;
-    private Rigidbody mTargetRigidBody = (Rigidbody) null;
+    private Rigidbody mTargetRigidBody;
     private Quaternion mHeadingPrevFrame = Quaternion.identity;
     private Vector3 mOffsetPrevFrame = Vector3.zero;
 
@@ -72,7 +74,7 @@ namespace Cinemachine
         if (m_RecenterToTargetHeading.m_enabled)
           axis.Value = targetHeading;
       }
-      else if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp && m_RecenterToTargetHeading.m_enabled && (double) Time.time > mLastHeadingAxisInputTime + (double) m_RecenterToTargetHeading.m_RecenterWaitTime)
+      else if (m_BindingMode != BindingMode.SimpleFollowWithWorldUp && m_RecenterToTargetHeading.m_enabled && Time.time > mLastHeadingAxisInputTime + (double) m_RecenterToTargetHeading.m_RecenterWaitTime)
       {
         float num1 = m_RecenterToTargetHeading.m_RecenteringTime / 3f;
         if (num1 <= (double) deltaTime)
@@ -109,7 +111,7 @@ namespace Cinemachine
     private void OnEnable()
     {
       m_XAxis.SetThresholds(0.0f, 360f, true);
-      PreviousTarget = (Transform) null;
+      PreviousTarget = null;
       mLastTargetPosition = Vector3.zero;
     }
 
@@ -118,11 +120,11 @@ namespace Cinemachine
     public override void MutateCameraState(ref CameraState curState, float deltaTime)
     {
       InitPrevFrameStateInfo(ref curState, deltaTime);
-      if ((UnityEngine.Object) FollowTarget != (UnityEngine.Object) PreviousTarget)
+      if (FollowTarget != PreviousTarget)
       {
         PreviousTarget = FollowTarget;
-        mTargetRigidBody = (UnityEngine.Object) PreviousTarget == (UnityEngine.Object) null ? (Rigidbody) null : PreviousTarget.GetComponent<Rigidbody>();
-        mLastTargetPosition = (UnityEngine.Object) PreviousTarget == (UnityEngine.Object) null ? Vector3.zero : PreviousTarget.position;
+        mTargetRigidBody = PreviousTarget == null ? null : PreviousTarget.GetComponent<Rigidbody>();
+        mLastTargetPosition = PreviousTarget == null ? Vector3.zero : PreviousTarget.position;
         mHeadingTracker = null;
       }
       float angle = HeadingUpdater(this, deltaTime, curState.ReferenceUp);
@@ -160,9 +162,9 @@ namespace Cinemachine
 
     private static string GetFullName(GameObject current)
     {
-      if ((UnityEngine.Object) current == (UnityEngine.Object) null)
+      if (current == null)
         return "";
-      return (UnityEngine.Object) current.transform.parent == (UnityEngine.Object) null ? "/" + current.name : GetFullName(current.transform.parent.gameObject) + "/" + current.name;
+      return current.transform.parent == null ? "/" + current.name : GetFullName(current.transform.parent.gameObject) + "/" + current.name;
     }
 
     private float GetTargetHeading(
@@ -172,11 +174,11 @@ namespace Cinemachine
     {
       if (m_BindingMode == BindingMode.SimpleFollowWithWorldUp)
         return 0.0f;
-      if ((UnityEngine.Object) FollowTarget == (UnityEngine.Object) null)
+      if (FollowTarget == null)
         return currentHeading;
-      if (m_Heading.m_HeadingDefinition == Heading.HeadingDefinition.Velocity && (UnityEngine.Object) mTargetRigidBody == (UnityEngine.Object) null)
+      if (m_Heading.m_HeadingDefinition == Heading.HeadingDefinition.Velocity && mTargetRigidBody == null)
       {
-        Debug.Log((object) string.Format("Attempted to use HeadingDerivationMode.Velocity to calculate heading for {0}. No RigidBody was present on '{1}'. Defaulting to position delta", GetFullName(VirtualCamera.VirtualCameraGameObject), (object) FollowTarget));
+        Debug.Log(string.Format("Attempted to use HeadingDerivationMode.Velocity to calculate heading for {0}. No RigidBody was present on '{1}'. Defaulting to position delta", GetFullName(VirtualCamera.VirtualCameraGameObject), FollowTarget));
         m_Heading.m_HeadingDefinition = Heading.HeadingDefinition.PositionDelta;
       }
       Vector3 zero = Vector3.zero;

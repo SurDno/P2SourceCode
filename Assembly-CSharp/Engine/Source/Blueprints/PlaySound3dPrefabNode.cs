@@ -4,6 +4,8 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using SoundPropagation;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -35,18 +37,18 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         AudioClip clip = clipInput.value;
-        if (!((UnityEngine.Object) clip != (UnityEngine.Object) null))
+        if (!(clip != null))
           return;
         AudioMixerGroup mixer = mixerInput.value;
-        if ((UnityEngine.Object) mixer != (UnityEngine.Object) null)
+        if (mixer != null)
         {
           GameObject gameObject = target.value;
-          if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+          if (gameObject != null)
           {
             float unscaledTime = Time.unscaledTime;
             Transform transform = gameObject.transform;
             AudioState audioState = SoundUtility.PlayAudioClip(sourcePrefab.value, transform, clip, mixer, volumeInput.value, fadeTime.value, usePause.value, "(blueprint) " + graph.agent.name, (Action) (() => output.Call()));
-            if (propagationInput.value && (UnityEngine.Object) transform != (UnityEngine.Object) null)
+            if (propagationInput.value && transform != null)
               audioState.AudioSource.gameObject.AddComponent<SPAudioSource>().Origin = transform;
           }
         }

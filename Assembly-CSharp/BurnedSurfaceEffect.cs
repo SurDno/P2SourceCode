@@ -1,4 +1,7 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+[ExecuteInEditMode]
 public class BurnedSurfaceEffect : MonoBehaviour
 {
   private static MaterialPropertyBlock propertyBlock;
@@ -8,14 +11,14 @@ public class BurnedSurfaceEffect : MonoBehaviour
   private static int alphaOffsetScalePropertyId;
   [SerializeField]
   [FormerlySerializedAs("EffectMaterial")]
-  private Material effectMaterial = (Material) null;
+  private Material effectMaterial;
   [SerializeField]
   [FormerlySerializedAs("IsAlive")]
   private bool isAlive = true;
   [Range(0.0f, 1f)]
-  public float SmokeLevel = 0.0f;
+  public float SmokeLevel;
   [Range(0.0f, 1f)]
-  public float FireLevel = 0.0f;
+  public float FireLevel;
   private SkinnedMeshRenderer skinnedMeshRenderer;
   private Mesh bakedMesh;
   private MeshFilter meshFilter;
@@ -26,15 +29,15 @@ public class BurnedSurfaceEffect : MonoBehaviour
   private void CollectAlphaTextures(Renderer renderer)
   {
     Material[] sharedMaterials = renderer.sharedMaterials;
-    alphaTextures = (Texture[]) new Texture2D[sharedMaterials.Length];
+    alphaTextures = new Texture2D[sharedMaterials.Length];
     alphaOffsetScales = new Vector4[sharedMaterials.Length];
     for (int index = 0; index < sharedMaterials.Length; ++index)
     {
       Material material = sharedMaterials[index];
-      if (!((Object) material == (Object) null))
+      if (!(material == null))
       {
         Shader shader = material.shader;
-        if (!((Object) shader == (Object) null) && shader.name.Contains("Cutout"))
+        if (!(shader == null) && shader.name.Contains("Cutout"))
         {
           alphaTextures[index] = material.mainTexture;
           Vector2 mainTextureScale = material.mainTextureScale;
@@ -52,29 +55,29 @@ public class BurnedSurfaceEffect : MonoBehaviour
     if (subMeshIndex < alphaTextures.Length)
     {
       texture = alphaTextures[subMeshIndex];
-      if ((Object) texture == (Object) null)
-        texture = (Texture) Texture2D.whiteTexture;
+      if (texture == null)
+        texture = Texture2D.whiteTexture;
       else
         vector4 = alphaOffsetScales[subMeshIndex];
     }
     else
-      texture = (Texture) Texture2D.whiteTexture;
+      texture = Texture2D.whiteTexture;
     propertyBlock.SetTexture(alphaTexPropertyId, texture);
     propertyBlock.SetVector(alphaOffsetScalePropertyId, vector4);
-    Graphics.DrawMesh(mesh, this.transform.localToWorldMatrix, effectMaterial, this.gameObject.layer, (Camera) null, subMeshIndex, propertyBlock);
+    Graphics.DrawMesh(mesh, transform.localToWorldMatrix, effectMaterial, gameObject.layer, null, subMeshIndex, propertyBlock);
   }
 
   private void LateUpdate()
   {
-    if ((Object) effectMaterial == (Object) null || SmokeLevel <= 0.0)
+    if (effectMaterial == null || SmokeLevel <= 0.0)
       return;
     propertyBlock.SetFloat(smokePropertyId, SmokeLevel);
     propertyBlock.SetFloat(firePropertyId, FireLevel);
-    if ((Object) skinnedMeshRenderer != (Object) null)
+    if (skinnedMeshRenderer != null)
     {
-      if (!skinnedMeshRenderer.isVisible || !((Object) skinnedMeshRenderer.sharedMesh != (Object) null))
+      if (!skinnedMeshRenderer.isVisible || !(skinnedMeshRenderer.sharedMesh != null))
         return;
-      if ((Object) bakedMesh == (Object) null)
+      if (bakedMesh == null)
       {
         bakedMesh = new Mesh();
         skinnedMeshRenderer.BakeMesh(bakedMesh);
@@ -86,10 +89,10 @@ public class BurnedSurfaceEffect : MonoBehaviour
     }
     else
     {
-      if (!((Object) meshFilter != (Object) null) || !((Object) meshRenderer != (Object) null) || !meshRenderer.isVisible)
+      if (!(meshFilter != null) || !(meshRenderer != null) || !meshRenderer.isVisible)
         return;
       Mesh sharedMesh = meshFilter.sharedMesh;
-      if ((Object) sharedMesh != (Object) null)
+      if (sharedMesh != null)
       {
         for (int subMeshIndex = 0; subMeshIndex < sharedMesh.subMeshCount; ++subMeshIndex)
           DrawMesh(meshFilter.sharedMesh, subMeshIndex);
@@ -99,21 +102,21 @@ public class BurnedSurfaceEffect : MonoBehaviour
 
   private void OnDisable()
   {
-    skinnedMeshRenderer = (SkinnedMeshRenderer) null;
-    meshFilter = (MeshFilter) null;
-    meshRenderer = (MeshRenderer) null;
-    alphaTextures = (Texture[]) null;
-    if (!((Object) bakedMesh != (Object) null))
+    skinnedMeshRenderer = null;
+    meshFilter = null;
+    meshRenderer = null;
+    alphaTextures = null;
+    if (!(bakedMesh != null))
       return;
-    Object.Destroy((Object) bakedMesh);
-    bakedMesh = (Mesh) null;
+    Destroy(bakedMesh);
+    bakedMesh = null;
   }
 
   private void OnEnable()
   {
-    if ((Object) effectMaterial == (Object) null)
+    if (effectMaterial == null)
       effectMaterial = ScriptableObjectInstance<ResourceFromCodeData>.Instance.BurnedEffect;
-    if ((Object) effectMaterial == (Object) null)
+    if (effectMaterial == null)
       return;
     if (propertyBlock == null)
     {
@@ -123,17 +126,17 @@ public class BurnedSurfaceEffect : MonoBehaviour
       alphaTexPropertyId = Shader.PropertyToID("_AlphaTex");
       alphaOffsetScalePropertyId = Shader.PropertyToID("_AlphaTex_ST");
     }
-    skinnedMeshRenderer = this.GetComponent<SkinnedMeshRenderer>();
-    if ((Object) skinnedMeshRenderer != (Object) null)
+    skinnedMeshRenderer = GetComponent<SkinnedMeshRenderer>();
+    if (skinnedMeshRenderer != null)
     {
-      CollectAlphaTextures((Renderer) skinnedMeshRenderer);
+      CollectAlphaTextures(skinnedMeshRenderer);
     }
     else
     {
-      meshFilter = this.GetComponent<MeshFilter>();
-      meshRenderer = this.GetComponent<MeshRenderer>();
-      if ((Object) meshRenderer != (Object) null)
-        CollectAlphaTextures((Renderer) meshRenderer);
+      meshFilter = GetComponent<MeshFilter>();
+      meshRenderer = GetComponent<MeshRenderer>();
+      if (meshRenderer != null)
+        CollectAlphaTextures(meshRenderer);
     }
   }
 }

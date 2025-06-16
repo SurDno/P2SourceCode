@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using UnityEditor;
+using Object = UnityEngine.Object;
 
 namespace ParadoxNotion
 {
@@ -44,8 +45,8 @@ namespace ParadoxNotion
       {
         case string _:
           return string.Format("\"{0}\"", (string) o);
-        case UnityEngine.Object _:
-          return (o as UnityEngine.Object).name;
+        case Object _:
+          return (o as Object).name;
         default:
           Type type = o.GetType();
           return type.RTIsSubclassOf(typeof (Enum)) && type.RTGetAttribute<FlagsAttribute>(true) != null ? EditorGUILayout2.GetEnumValueName((Enum) o) : o.ToString();

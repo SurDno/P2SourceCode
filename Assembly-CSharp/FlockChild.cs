@@ -1,6 +1,8 @@
 ﻿using System;
 using Engine.Common;
 using Engine.Source.Commons;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FlockChild : MonoBehaviour, IUpdatable
 {
@@ -41,7 +43,7 @@ public class FlockChild : MonoBehaviour, IUpdatable
     this.flockController = flockController;
     Wander(0.0f);
     SetRandomScale();
-    this.transform.localPosition = FindWaypoint();
+    transform.localPosition = FindWaypoint();
     RandomizeStartAnimationFrame();
     InitAvoidanceValues();
     speed = flockController._minSpeed;
@@ -91,27 +93,27 @@ public class FlockChild : MonoBehaviour, IUpdatable
       _model.GetComponentNonAlloc<Animation>().Play(flockController._flapAnimation);
   }
 
-  private void OnDisable() => this.CancelInvoke();
+  private void OnDisable() => CancelInvoke();
 
   private void RandomizeStartAnimationFrame()
   {
     foreach (AnimationState animationState in _model.GetComponentNonAlloc<Animation>())
-      animationState.time = UnityEngine.Random.value * animationState.length;
+      animationState.time = Random.value * animationState.length;
   }
 
   private void InitAvoidanceValues()
   {
-    avoidValue = UnityEngine.Random.Range(0.3f, 0.1f);
+    avoidValue = Random.Range(0.3f, 0.1f);
     if (flockController._birdAvoidDistanceMax != (double) flockController._birdAvoidDistanceMin)
-      avoidDistance = UnityEngine.Random.Range(flockController._birdAvoidDistanceMax, flockController._birdAvoidDistanceMin);
+      avoidDistance = Random.Range(flockController._birdAvoidDistanceMax, flockController._birdAvoidDistanceMin);
     else
       avoidDistance = flockController._birdAvoidDistanceMin;
   }
 
   private void SetRandomScale()
   {
-    float num = UnityEngine.Random.Range(flockController._minScale, flockController._maxScale);
-    this.transform.localScale = new Vector3(num, num, num);
+    float num = Random.Range(flockController._minScale, flockController._maxScale);
+    transform.localScale = new Vector3(num, num, num);
   }
 
   private void SoarTimeLimit(float delta)
@@ -129,9 +131,9 @@ public class FlockChild : MonoBehaviour, IUpdatable
 
   private void CheckForDistanceToWaypoint(float delta)
   {
-    if ((UnityEngine.Object) this.transform == (UnityEngine.Object) null || (UnityEngine.Object) flockController == (UnityEngine.Object) null)
+    if (transform == null || flockController == null)
       return;
-    if (!landing && (double) (this.transform.localPosition - wayPoint).magnitude < flockController._waypointDistance + (double) stuckCounter)
+    if (!landing && (transform.localPosition - wayPoint).magnitude < flockController._waypointDistance + (double) stuckCounter)
     {
       Wander(0.0f);
       stuckCounter = 0.0f;
@@ -144,18 +146,18 @@ public class FlockChild : MonoBehaviour, IUpdatable
 
   private void MoveForward(float delta)
   {
-    Vector3 forward = landing ? wayPoint - this.transform.position : wayPoint - this.transform.localPosition;
+    Vector3 forward = landing ? wayPoint - transform.position : wayPoint - transform.localPosition;
     if (targetSpeed > -1.0 && forward != Vector3.zero)
-      this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.LookRotation(forward), delta * damping);
+      transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(forward), delta * damping);
     speed = Mathf.Lerp(speed, targetSpeed, delta * 2.5f);
     if (!move)
       return;
-    this.transform.localPosition += this.transform.forward * speed * delta;
+    transform.localPosition += transform.forward * speed * delta;
   }
 
   private void RotationBasedOnWaypoint(float delta)
   {
-    if (!flockController._childTriggerPos || (double) (this.transform.localPosition - flockController.targetPosition).magnitude >= 1.0)
+    if (!flockController._childTriggerPos || (transform.localPosition - flockController.targetPosition).magnitude >= 1.0)
       return;
     flockController.SetFlockRandomPosition();
   }
@@ -172,38 +174,38 @@ public class FlockChild : MonoBehaviour, IUpdatable
     RaycastHit hitInfo = new RaycastHit();
     Vector3 forward = _model.transform.forward;
     Vector3 right = _model.transform.right;
-    Quaternion rotation = this.transform.rotation;
-    Vector3 eulerAngles = this.transform.rotation.eulerAngles;
-    Vector3 localPosition = this.transform.localPosition;
-    if (Physics.Raycast(this.transform.localPosition, forward + right * avoidValue, out hitInfo, avoidDistance, (int) flockController._avoidanceMask))
+    Quaternion rotation = transform.rotation;
+    Vector3 eulerAngles = transform.rotation.eulerAngles;
+    Vector3 localPosition = transform.localPosition;
+    if (Physics.Raycast(transform.localPosition, forward + right * avoidValue, out hitInfo, avoidDistance, flockController._avoidanceMask))
     {
       eulerAngles.y -= flockController._birdAvoidHorizontalForce * delta * damping;
       rotation.eulerAngles = eulerAngles;
-      this.transform.rotation = rotation;
+      transform.rotation = rotation;
     }
-    else if (Physics.Raycast(this.transform.localPosition, forward + right * -avoidValue, out hitInfo, avoidDistance, (int) flockController._avoidanceMask))
+    else if (Physics.Raycast(transform.localPosition, forward + right * -avoidValue, out hitInfo, avoidDistance, flockController._avoidanceMask))
     {
       eulerAngles.y += flockController._birdAvoidHorizontalForce * delta * damping;
       rotation.eulerAngles = eulerAngles;
-      this.transform.rotation = rotation;
+      transform.rotation = rotation;
     }
-    if (flockController._birdAvoidDown && !landing && Physics.Raycast(this.transform.localPosition, -Vector3.up, out hitInfo, avoidDistance, (int) flockController._avoidanceMask))
+    if (flockController._birdAvoidDown && !landing && Physics.Raycast(transform.localPosition, -Vector3.up, out hitInfo, avoidDistance, flockController._avoidanceMask))
     {
       eulerAngles.x -= flockController._birdAvoidVerticalForce * delta * damping;
       rotation.eulerAngles = eulerAngles;
-      this.transform.rotation = rotation;
+      transform.rotation = rotation;
       localPosition.y += (float) (flockController._birdAvoidVerticalForce * (double) delta * 0.0099999997764825821);
-      this.transform.localPosition = localPosition;
+      transform.localPosition = localPosition;
     }
     else
     {
-      if (!flockController._birdAvoidUp || landing || !Physics.Raycast(this.transform.localPosition, Vector3.up, out hitInfo, avoidDistance, (int) flockController._avoidanceMask))
+      if (!flockController._birdAvoidUp || landing || !Physics.Raycast(transform.localPosition, Vector3.up, out hitInfo, avoidDistance, flockController._avoidanceMask))
         return;
       eulerAngles.x += flockController._birdAvoidVerticalForce * delta * damping;
       rotation.eulerAngles = eulerAngles;
-      this.transform.rotation = rotation;
+      transform.rotation = rotation;
       localPosition.y -= (float) (flockController._birdAvoidVerticalForce * (double) delta * 0.0099999997764825821);
-      this.transform.localPosition = localPosition;
+      transform.localPosition = localPosition;
     }
   }
 
@@ -211,9 +213,9 @@ public class FlockChild : MonoBehaviour, IUpdatable
   {
     Quaternion localRotation = _model.transform.localRotation;
     Vector3 eulerAngles = localRotation.eulerAngles;
-    if ((soar && flockController._flatSoar || flockController._flatFly && !soar) && (double) wayPoint.y > (double) this.transform.localPosition.y || landing)
+    if ((soar && flockController._flatSoar || flockController._flatFly && !soar) && wayPoint.y > (double) transform.localPosition.y || landing)
     {
-      eulerAngles.x = Mathf.LerpAngle(_model.transform.localEulerAngles.x, -this.transform.localEulerAngles.x, delta * 1.75f);
+      eulerAngles.x = Mathf.LerpAngle(_model.transform.localEulerAngles.x, -transform.localEulerAngles.x, delta * 1.75f);
       localRotation.eulerAngles = eulerAngles;
       _model.transform.localRotation = localRotation;
     }
@@ -229,17 +231,17 @@ public class FlockChild : MonoBehaviour, IUpdatable
   {
     if (landing)
       return;
-    damping = UnityEngine.Random.Range(flockController._minDamping, flockController._maxDamping);
-    targetSpeed = UnityEngine.Random.Range(flockController._minSpeed, flockController._maxSpeed);
-    this.Invoke("SetRandomMode", delay);
+    damping = Random.Range(flockController._minDamping, flockController._maxDamping);
+    targetSpeed = Random.Range(flockController._minSpeed, flockController._maxSpeed);
+    Invoke("SetRandomMode", delay);
   }
 
   private void SetRandomMode()
   {
-    this.CancelInvoke(nameof (SetRandomMode));
-    if (!dived && (double) UnityEngine.Random.value < flockController._soarFrequency)
+    CancelInvoke(nameof (SetRandomMode));
+    if (!dived && Random.value < (double) flockController._soarFrequency)
       Soar();
-    else if (!dived && (double) UnityEngine.Random.value < flockController._diveFrequency)
+    else if (!dived && Random.value < (double) flockController._diveFrequency)
       Dive();
     else
       Flap();
@@ -249,7 +251,7 @@ public class FlockChild : MonoBehaviour, IUpdatable
   {
     if (!move)
       return;
-    if ((UnityEngine.Object) _model != (UnityEngine.Object) null)
+    if (_model != null)
       _model.GetComponentNonAlloc<Animation>().CrossFade(flockController._flapAnimation, 0.5f);
     soar = false;
     AnimationSpeed();
@@ -261,9 +263,9 @@ public class FlockChild : MonoBehaviour, IUpdatable
   {
     return Vector3.zero with
     {
-      x = UnityEngine.Random.Range(-flockController._spawnSphereWidth, flockController._spawnSphereWidth) + flockController.targetPosition.x,
-      y = UnityEngine.Random.Range(-flockController._spawnSphereHeight, flockController._spawnSphereHeight) + flockController.targetPosition.y,
-      z = UnityEngine.Random.Range(-flockController._spawnSphereDepth, flockController._spawnSphereDepth) + flockController.targetPosition.z
+      x = Random.Range(-flockController._spawnSphereWidth, flockController._spawnSphereWidth) + flockController.targetPosition.x,
+      y = Random.Range(-flockController._spawnSphereHeight, flockController._spawnSphereHeight) + flockController.targetPosition.y,
+      z = Random.Range(-flockController._spawnSphereDepth, flockController._spawnSphereDepth) + flockController.targetPosition.z
     };
   }
 
@@ -286,7 +288,7 @@ public class FlockChild : MonoBehaviour, IUpdatable
     {
       foreach (AnimationState animationState in _model.GetComponentNonAlloc<Animation>())
       {
-        if ((double) this.transform.localPosition.y < (double) wayPoint.y + 25.0)
+        if (transform.localPosition.y < wayPoint.y + 25.0)
           animationState.speed = 0.1f;
       }
     }
@@ -298,6 +300,6 @@ public class FlockChild : MonoBehaviour, IUpdatable
   private void AnimationSpeed()
   {
     foreach (AnimationState animationState in _model.GetComponentNonAlloc<Animation>())
-      animationState.speed = dived || landing ? flockController._maxAnimationSpeed : UnityEngine.Random.Range(flockController._minAnimationSpeed, flockController._maxAnimationSpeed);
+      animationState.speed = dived || landing ? flockController._maxAnimationSpeed : Random.Range(flockController._minAnimationSpeed, flockController._maxAnimationSpeed);
   }
 }

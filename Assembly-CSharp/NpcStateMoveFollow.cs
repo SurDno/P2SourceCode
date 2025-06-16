@@ -1,4 +1,5 @@
 ﻿using Engine.Behaviours.Components;
+using UnityEngine;
 
 public class NpcStateMoveFollow : NpcStateMoveBase
 {
@@ -19,15 +20,15 @@ public class NpcStateMoveFollow : NpcStateMoveBase
     this.target = target;
     this.followDistance = followDistance;
     completed = false;
-    if ((Object) target == (Object) null)
+    if (target == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": target is null"));
+      Debug.LogWarning(GameObject.name + ": target is null");
       Status = NpcStateStatusEnum.Failed;
     }
     else
     {
       lastDestination = target.position;
-      if ((double) (target.position - GameObject.transform.position).magnitude < 1.1000000238418579 * followDistance)
+      if ((target.position - GameObject.transform.position).magnitude < 1.1000000238418579 * followDistance)
         Status = NpcStateStatusEnum.Success;
       else
         agent.SetDestination(lastDestination);
@@ -36,16 +37,16 @@ public class NpcStateMoveFollow : NpcStateMoveBase
 
   public override void DoUpdate()
   {
-    if ((Object) target == (Object) null)
+    if (target == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": target is null"));
+      Debug.LogWarning(GameObject.name + ": target is null");
       Status = NpcStateStatusEnum.Failed;
     }
     else
     {
       if (completed)
         return;
-      if (agent.hasPath && (double) agent.remainingDistance < followDistance)
+      if (agent.hasPath && agent.remainingDistance < (double) followDistance)
       {
         CompleteTask(false);
         completed = true;
@@ -53,7 +54,7 @@ public class NpcStateMoveFollow : NpcStateMoveBase
       Vector3 vector3 = lastDestination - target.position;
       float magnitude = vector3.magnitude;
       vector3 = target.position - GameObject.transform.position;
-      if ((double) vector3.magnitude > followDistance * 5.0)
+      if (vector3.magnitude > followDistance * 5.0)
       {
         if (magnitude > (double) followDistance)
         {

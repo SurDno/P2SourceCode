@@ -5,6 +5,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateIdleKinematic : INpcState
 {
@@ -39,10 +41,10 @@ public class NpcStateIdleKinematic : INpcState
     weaponService = pivot.GetNpcWeaponService();
     agent = pivot.GetAgent();
     animator = pivot.GetAnimator();
-    if ((Object) animator == (Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -64,12 +66,12 @@ public class NpcStateIdleKinematic : INpcState
     if (!TryInit())
       return;
     MovementControllerUtility.SetRandomAnimation(animator, pivot.SecondaryIdleAnimationCount, pivot.SecondaryLowIdleAnimationCount);
-    if ((Object) agent != (Object) null)
+    if (agent != null)
     {
       agentWasEnabled = agent.enabled;
       agent.enabled = false;
     }
-    if ((Object) rigidbody != (Object) null)
+    if (rigidbody != null)
     {
       rigidbodyWasKinematic = rigidbody.isKinematic;
       rigidbody.isKinematic = true;
@@ -96,7 +98,7 @@ public class NpcStateIdleKinematic : INpcState
         }
       }
     }
-    if (!((Object) weaponService != (Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = WeaponEnum.Unknown;
   }
@@ -105,7 +107,7 @@ public class NpcStateIdleKinematic : INpcState
   {
     agent.enabled = false;
     NavMeshObstacle obstacle = pivot.GetObstacle();
-    if (!((Object) obstacle != (Object) null))
+    if (!(obstacle != null))
       return;
     obstacle.enabled = true;
     obstacle.carving = true;
@@ -116,16 +118,16 @@ public class NpcStateIdleKinematic : INpcState
   {
     if (failed)
       return;
-    if ((Object) agent != (Object) null)
+    if (agent != null)
       agent.enabled = agentWasEnabled;
     if ((bool) (Object) rigidbody)
       rigidbody.isKinematic = rigidbodyWasKinematic;
     animator.updateMode = initialAnimatorUpdateMode;
     animator.cullingMode = initialAnimatorCullingMode;
     NavMeshObstacle obstacle = pivot.GetObstacle();
-    if ((Object) obstacle != (Object) null)
+    if (obstacle != null)
       obstacle.enabled = false;
-    if (!((Object) weaponService != (Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = npcState.Weapon;
   }

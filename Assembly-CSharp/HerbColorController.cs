@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
+using UnityEngine;
 
 public class HerbColorController : MonoBehaviour
 {
@@ -18,9 +19,9 @@ public class HerbColorController : MonoBehaviour
   private void Update()
   {
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-    currentAlpha = Mathf.MoveTowards(currentAlpha, (double) (this.transform.position - (player != null ? ((IEntityView) player).Position : Vector3.zero)).magnitude < maxDistance ? 1f : 0.0f, colorChangeSpeed * Time.deltaTime);
+    currentAlpha = Mathf.MoveTowards(currentAlpha, (transform.position - (player != null ? ((IEntityView) player).Position : Vector3.zero)).magnitude < (double) maxDistance ? 1f : 0.0f, colorChangeSpeed * Time.deltaTime);
     CountColor();
-    this.GetComponent<MeshRenderer>().SetPropertyBlock(currentAlpha > 0.0 ? block : (MaterialPropertyBlock) null);
+    GetComponent<MeshRenderer>().SetPropertyBlock(currentAlpha > 0.0 ? block : null);
   }
 
   private void CountColor()

@@ -1,5 +1,6 @@
 ﻿using System;
 using Inspectors;
+using UnityEngine;
 
 [RequireComponent(typeof (Camera))]
 public class CameraCullDistances : MonoBehaviour
@@ -16,7 +17,7 @@ public class CameraCullDistances : MonoBehaviour
 
   private void ApplyImpl()
   {
-    Camera component = this.GetComponent<Camera>();
+    Camera component = GetComponent<Camera>();
     float[] numArray = new float[32];
     for (int index = 0; index < 32; ++index)
       numArray[index] = defaultFarClippingPlane;

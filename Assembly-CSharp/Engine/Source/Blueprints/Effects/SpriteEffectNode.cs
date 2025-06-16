@@ -3,6 +3,7 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -31,7 +32,7 @@ namespace Engine.Source.Blueprints.Effects
       if (num != 0.0)
       {
         CreateSprite();
-        if ((Object) sprite != (Object) null)
+        if (sprite != null)
           sprite.Progress = num;
       }
       else
@@ -46,12 +47,12 @@ namespace Engine.Source.Blueprints.Effects
 
     private void CreateSprite()
     {
-      if (!((Object) sprite == (Object) null))
+      if (!(sprite == null))
         return;
       ProgressViewBase prefab = spriteInput.value;
-      if ((Object) prefab != (Object) null)
+      if (prefab != null)
       {
-        sprite = UnityFactory.Instantiate<ProgressViewBase>(prefab, "[Effects]");
+        sprite = UnityFactory.Instantiate(prefab, "[Effects]");
         MonoBehaviourInstance<UiEffectsController>.Instance.AddEffect(sprite.gameObject);
         SetAngle();
         SetOffset();
@@ -61,14 +62,14 @@ namespace Engine.Source.Blueprints.Effects
 
     private void SetAngle()
     {
-      if (!((Object) sprite != (Object) null))
+      if (!(sprite != null))
         return;
       sprite.transform.localRotation = Quaternion.Euler(0.0f, 0.0f, angleInput.value);
     }
 
     private void SetOffset()
     {
-      if (!((Object) sprite != (Object) null))
+      if (!(sprite != null))
         return;
       Rect rect = ((RectTransform) sprite.transform.parent).rect;
       Vector2 vector2 = positionInput.value;
@@ -78,17 +79,17 @@ namespace Engine.Source.Blueprints.Effects
 
     private void SetScale()
     {
-      if (!((Object) sprite != (Object) null))
+      if (!(sprite != null))
         return;
       sprite.transform.localScale = scaleInput.value;
     }
 
     private void DestroySprite()
     {
-      if (!((Object) sprite != (Object) null))
+      if (!(sprite != null))
         return;
       MonoBehaviourInstance<UiEffectsController>.Instance.RemoveEffect(sprite.gameObject);
-      UnityFactory.Destroy((MonoBehaviour) sprite);
+      UnityFactory.Destroy(sprite);
       sprite = null;
     }
   }

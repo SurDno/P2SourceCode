@@ -1,4 +1,7 @@
-﻿public class PriceItem : MonoBehaviour
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+public class PriceItem : MonoBehaviour
 {
   [SerializeField]
   private bool NeedMoveCoin;
@@ -23,7 +26,7 @@
       string message = price.ToString();
       unityPrice.text = message;
       if (NeedMoveCoin)
-        unityPriceImage.transform.localPosition = unityPriceImageBasePlace.localPosition + new Vector3((float) -CalculateLengthOfMessage(unityPrice, message), 0.0f, 0.0f);
+        unityPriceImage.transform.localPosition = unityPriceImageBasePlace.localPosition + new Vector3(-CalculateLengthOfMessage(unityPrice, message), 0.0f, 0.0f);
     }
   }
 

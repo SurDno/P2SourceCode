@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public abstract class RotationLimit : MonoBehaviour
   {
@@ -11,7 +13,7 @@
 
     public void SetDefaultLocalRotation()
     {
-      defaultLocalRotation = this.transform.localRotation;
+      defaultLocalRotation = transform.localRotation;
       defaultLocalRotationSet = true;
     }
 
@@ -28,7 +30,7 @@
     public bool Apply()
     {
       bool changed = false;
-      this.transform.localRotation = GetLimitedLocalRotation(this.transform.localRotation, out changed);
+      transform.localRotation = GetLimitedLocalRotation(transform.localRotation, out changed);
       return changed;
     }
 
@@ -36,12 +38,12 @@
     {
       if (initiated)
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
         Awake();
-        this.enabled = false;
+        enabled = false;
       }
     }
 
@@ -56,13 +58,13 @@
       if (!defaultLocalRotationSet)
         SetDefaultLocalRotation();
       if (axis == Vector3.zero)
-        Debug.LogError((object) "Axis is Vector3.zero.");
+        Debug.LogError("Axis is Vector3.zero.");
       initiated = true;
     }
 
     private void LateUpdate() => Apply();
 
-    public void LogWarning(string message) => Warning.Log(message, this.transform);
+    public void LogWarning(string message) => Warning.Log(message, transform);
 
     protected static Quaternion Limit1DOF(Quaternion rotation, Vector3 axis)
     {

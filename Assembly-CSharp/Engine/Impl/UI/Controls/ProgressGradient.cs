@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressGradient : ProgressView
   {
@@ -13,9 +15,9 @@
 
     protected override void ApplyProgress()
     {
-      if ((Object) endGradient != (Object) null)
+      if (endGradient != null)
         endGradient.EndPosition = Progress;
-      if (!((Object) startGradient != (Object) null))
+      if (!(startGradient != null))
         return;
       startGradient.StartPosition = Progress;
     }

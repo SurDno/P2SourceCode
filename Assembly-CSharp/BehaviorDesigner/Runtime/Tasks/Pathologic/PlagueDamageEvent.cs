@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -36,19 +37,19 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) WhoWillBeDamaged.Value == (UnityEngine.Object) null)
+      if (WhoWillBeDamaged.Value == null)
       {
-        Debug.LogWarningFormat("{0}: WhoWillBeDamaged is null", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: WhoWillBeDamaged is null", gameObject.name);
         return TaskStatus.Failure;
       }
-      if (EntityUtility.GetEntity((UnityEngine.Object) WhoDamages.Value == (UnityEngine.Object) null ? gameObject : WhoDamages.Value.gameObject) == null)
+      if (EntityUtility.GetEntity(WhoDamages.Value == null ? gameObject : WhoDamages.Value.gameObject) == null)
       {
-        Debug.LogWarningFormat("{0}: doesn't match any entity", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: doesn't match any entity", gameObject.name);
         return TaskStatus.Failure;
       }
       if (EntityUtility.GetEntity(WhoWillBeDamaged.Value.gameObject) != null)
         return TaskStatus.Success;
-      Debug.LogWarningFormat("{0}: doesn't match any entity", (object) gameObject.name);
+      Debug.LogWarningFormat("{0}: doesn't match any entity", gameObject.name);
       return TaskStatus.Failure;
     }
 

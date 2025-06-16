@@ -4,6 +4,7 @@ using SRDebugger.Services;
 using SRDebugger.UI.Controls;
 using SRF;
 using SRF.Service;
+using UnityEngine;
 
 namespace SRDebugger.UI.Tabs
 {
@@ -75,9 +76,9 @@ namespace SRDebugger.UI.Tabs
 
     private InfoBlock CreateBlock(string title)
     {
-      InfoBlock block = SRInstantiate.Instantiate<InfoBlock>(InfoBlockPrefab);
+      InfoBlock block = SRInstantiate.Instantiate(InfoBlockPrefab);
       block.Title.text = title;
-      block.CachedTransform.SetParent((Transform) LayoutContainer, false);
+      block.CachedTransform.SetParent(LayoutContainer, false);
       return block;
     }
   }

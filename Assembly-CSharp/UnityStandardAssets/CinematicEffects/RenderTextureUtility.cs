@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -23,11 +24,11 @@ namespace UnityStandardAssets.CinematicEffects
 
     public void ReleaseTemporaryRenderTexture(RenderTexture rt)
     {
-      if ((Object) rt == (Object) null)
+      if (rt == null)
         return;
       if (!m_TemporaryRTs.Contains(rt))
       {
-        Debug.LogErrorFormat("Attempting to remove texture that was not allocated: {0}", (object) rt);
+        Debug.LogErrorFormat("Attempting to remove texture that was not allocated: {0}", rt);
       }
       else
       {

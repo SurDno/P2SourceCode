@@ -1,9 +1,11 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SplitEventView : EventView
   {
     [SerializeField]
-    private EventView[] views = null;
+    private EventView[] views;
 
     public override void Invoke()
     {

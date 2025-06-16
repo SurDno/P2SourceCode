@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using UnityEngine;
 
 namespace SRF
 {
@@ -13,7 +14,7 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) _transform == (Object) null)
+        if (_transform == null)
           _transform = base.transform;
         return _transform;
       }
@@ -23,8 +24,8 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) _collider == (Object) null)
-          _collider = this.GetComponent<Collider>();
+        if (_collider == null)
+          _collider = GetComponent<Collider>();
         return _collider;
       }
     }
@@ -33,8 +34,8 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) _rigidBody == (Object) null)
-          _rigidBody = this.GetComponent<Rigidbody>();
+        if (_rigidBody == null)
+          _rigidBody = GetComponent<Rigidbody>();
         return _rigidBody;
       }
     }
@@ -43,32 +44,32 @@ namespace SRF
     {
       [DebuggerStepThrough, DebuggerNonUserCode] get
       {
-        if ((Object) _gameObject == (Object) null)
+        if (_gameObject == null)
           _gameObject = base.gameObject;
         return _gameObject;
       }
     }
 
-    public Transform transform => CachedTransform;
+    public new Transform transform => CachedTransform;
 
     public Collider collider => CachedCollider;
 
     public Rigidbody rigidbody => CachedRigidBody;
 
-    public GameObject gameObject => CachedGameObject;
+    public new GameObject gameObject => CachedGameObject;
 
     [DebuggerNonUserCode]
     [DebuggerStepThrough]
     protected void AssertNotNull(object value, string fieldName = null)
     {
-      SRDebugUtil.AssertNotNull(value, fieldName, (MonoBehaviour) this);
+      SRDebugUtil.AssertNotNull(value, fieldName, this);
     }
 
     [DebuggerNonUserCode]
     [DebuggerStepThrough]
     protected void Assert(bool condition, string message = null)
     {
-      SRDebugUtil.Assert(condition, message, (MonoBehaviour) this);
+      SRDebugUtil.Assert(condition, message, this);
     }
 
     [Conditional("UNITY_EDITOR")]

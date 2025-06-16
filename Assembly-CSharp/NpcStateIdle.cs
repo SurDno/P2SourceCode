@@ -6,6 +6,9 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Profiling;
 
 public class NpcStateIdle : INpcState
 {
@@ -42,14 +45,14 @@ public class NpcStateIdle : INpcState
     rigidbody = pivot.GetRigidbody();
     weaponService = pivot.GetNpcWeaponService();
     agent = pivot.GetAgent();
-    if ((Object) agent == (Object) null)
+    if (agent == null)
     {
-      Debug.LogError((object) ("No navmesh agent " + GameObject.name), (Object) GameObject);
+      Debug.LogError("No navmesh agent " + GameObject.name, GameObject);
       failed = true;
       return false;
     }
     animator = pivot.GetAnimator();
-    if ((Object) animator == (Object) null)
+    if (animator == null)
     {
       failed = true;
       return false;
@@ -76,7 +79,7 @@ public class NpcStateIdle : INpcState
     animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
     animatorState.PrimaryIdleProbability = primaryIdleProbability;
     agentWasEnabled = agent.enabled;
-    if ((Object) rigidbody != (Object) null)
+    if (rigidbody != null)
     {
       rigidbodyWasKinematic = rigidbody.isKinematic;
       rigidbodyWasGravity = rigidbody.useGravity;
@@ -86,7 +89,7 @@ public class NpcStateIdle : INpcState
     LocationItemComponent component1 = npcState.Owner?.GetComponent<LocationItemComponent>();
     if (component1 == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
     }
     else
     {
@@ -113,7 +116,7 @@ public class NpcStateIdle : INpcState
         }
       }
     }
-    if ((Object) weaponService != (Object) null)
+    if (weaponService != null)
       weaponService.Weapon = WeaponEnum.Unknown;
     if (agent.isOnNavMesh)
       return;
@@ -121,7 +124,7 @@ public class NpcStateIdle : INpcState
     if (NavMeshUtility.SampleRaycastPosition(ref position, indoor ? 1f : 5f, indoor ? 2f : 10f, agent.areaMask))
       agent.Warp(position);
     else
-      Debug.Log((object) "Can't sample navmesh", (Object) GameObject);
+      Debug.Log("Can't sample navmesh", GameObject);
   }
 
   private void CreateObstacle()
@@ -137,14 +140,14 @@ public class NpcStateIdle : INpcState
     animator.updateMode = initialAnimatorUpdateMode;
     animator.cullingMode = initialAnimatorCullingMode;
     NavMeshObstacle obstacle = pivot.GetObstacle();
-    if ((Object) obstacle != (Object) null)
+    if (obstacle != null)
       obstacle.enabled = false;
     if ((bool) (Object) rigidbody)
     {
       rigidbody.isKinematic = rigidbodyWasKinematic;
       rigidbody.useGravity = rigidbodyWasGravity;
     }
-    if (!((Object) weaponService != (Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = npcState.Weapon;
   }
@@ -171,7 +174,7 @@ public class NpcStateIdle : INpcState
         {
           agent.Warp(hit.position);
           GameObject.transform.position = agent.nextPosition;
-          Debug.Log((object) "Agent was teleported to closest edge", (Object) agent.gameObject);
+          Debug.Log("Agent was teleported to closest edge", agent.gameObject);
         }
         else
         {
@@ -180,12 +183,12 @@ public class NpcStateIdle : INpcState
           {
             agent.Warp(hit.position);
             GameObject.transform.position = agent.nextPosition;
-            Debug.Log((object) "Agent was teleported (Raycast)", (Object) agent.gameObject);
+            Debug.Log("Agent was teleported (Raycast)", agent.gameObject);
           }
           else
           {
             long monoHeapSizeLong4 = Profiler.GetMonoHeapSizeLong();
-            Debug.LogWarning((object) ObjectInfoUtility.GetStream().Append("Agent was not able to teleport to closest edge and raycast also failed, memory : ").Append(monoHeapSizeLong1).Append(" , ").Append(monoHeapSizeLong2).Append(" , ").Append(monoHeapSizeLong3).Append(" , ").Append(monoHeapSizeLong4), (Object) agent.gameObject);
+            Debug.LogWarning(ObjectInfoUtility.GetStream().Append("Agent was not able to teleport to closest edge and raycast also failed, memory : ").Append(monoHeapSizeLong1).Append(" , ").Append(monoHeapSizeLong2).Append(" , ").Append(monoHeapSizeLong3).Append(" , ").Append(monoHeapSizeLong4), agent.gameObject);
           }
         }
       }

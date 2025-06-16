@@ -1,9 +1,11 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SplitFloatView : FloatViewBase
   {
     [SerializeField]
-    private FloatView[] views = null;
+    private FloatView[] views;
 
     public override void SkipAnimation()
     {
@@ -12,7 +14,7 @@
       for (int index = 0; index < views.Length; ++index)
       {
         FloatView view = views[index];
-        if ((Object) view != (Object) null)
+        if (view != null)
           view.SkipAnimation();
       }
     }
@@ -24,7 +26,7 @@
       for (int index = 0; index < views.Length; ++index)
       {
         FloatView view = views[index];
-        if ((Object) view != (Object) null)
+        if (view != null)
           view.FloatValue = FloatValue;
       }
     }

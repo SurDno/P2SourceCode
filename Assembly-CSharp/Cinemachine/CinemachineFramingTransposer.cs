@@ -1,5 +1,7 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -15,7 +17,7 @@ namespace Cinemachine
     public Action OnGUICallback = null;
     [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
     [Range(0.0f, 1f)]
-    public float m_LookaheadTime = 0.0f;
+    public float m_LookaheadTime;
     [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag")]
     [Range(3f, 30f)]
     public float m_LookaheadSmoothing = 10f;
@@ -49,7 +51,7 @@ namespace Cinemachine
     public float m_DeadZoneDepth;
     [Space]
     [Tooltip("If checked, then then soft zone will be unlimited in size.")]
-    public bool m_UnlimitedSoftZone = false;
+    public bool m_UnlimitedSoftZone;
     [Range(0.0f, 2f)]
     [Tooltip("When target is within this region, camera will gradually move horizontally to re-align towards the desired position, depending on the damping speed.")]
     public float m_SoftZoneWidth = 0.8f;
@@ -151,7 +153,7 @@ namespace Cinemachine
     {
       get
       {
-        return this.enabled && (UnityEngine.Object) FollowTarget != (UnityEngine.Object) null && (UnityEngine.Object) LookAtTarget == (UnityEngine.Object) null;
+        return enabled && FollowTarget != null && LookAtTarget == null;
       }
     }
 
@@ -180,12 +182,12 @@ namespace Cinemachine
       Vector3 vector3_2 = Vector3.zero;
       float a = Mathf.Max(0.01f, m_CameraDistance - m_DeadZoneDepth / 2f);
       float num1 = Mathf.Max(a, m_CameraDistance + m_DeadZoneDepth / 2f);
-      if ((double) targetPos2D.z < a)
+      if (targetPos2D.z < (double) a)
         vector3_2.z = targetPos2D.z - a;
-      if ((double) targetPos2D.z > num1)
+      if (targetPos2D.z > (double) num1)
         vector3_2.z = targetPos2D.z - num1;
       CinemachineTargetGroup targetGroup = TargetGroup;
-      if ((UnityEngine.Object) targetGroup != (UnityEngine.Object) null && m_GroupFramingMode != FramingMode.None)
+      if (targetGroup != null && m_GroupFramingMode != FramingMode.None)
         vector3_2.z += AdjustCameraDepthAndLensForGroupFraming(targetGroup, targetPos2D.z - vector3_2.z, ref curState, deltaTime);
       targetPos2D.z -= vector3_2.z;
       LensSettings lens = curState.Lens;
@@ -223,23 +225,23 @@ namespace Cinemachine
     private Rect ScreenToOrtho(Rect rScreen, float orthoSize, float aspect)
     {
       return new Rect {
-        yMax = (float) (2.0 * orthoSize * (1.0 - (double) rScreen.yMin - 0.5)),
-        yMin = (float) (2.0 * orthoSize * (1.0 - (double) rScreen.yMax - 0.5)),
-        xMin = (float) (2.0 * orthoSize * aspect * ((double) rScreen.xMin - 0.5)),
-        xMax = (float) (2.0 * orthoSize * aspect * ((double) rScreen.xMax - 0.5))
+        yMax = (float) (2.0 * orthoSize * (1.0 - rScreen.yMin - 0.5)),
+        yMin = (float) (2.0 * orthoSize * (1.0 - rScreen.yMax - 0.5)),
+        xMin = (float) (2.0 * orthoSize * aspect * (rScreen.xMin - 0.5)),
+        xMax = (float) (2.0 * orthoSize * aspect * (rScreen.xMax - 0.5))
       };
     }
 
     private Vector3 OrthoOffsetToScreenBounds(Vector3 targetPos2D, Rect screenRect)
     {
       Vector3 zero = Vector3.zero;
-      if ((double) targetPos2D.x < (double) screenRect.xMin)
+      if (targetPos2D.x < (double) screenRect.xMin)
         zero.x += targetPos2D.x - screenRect.xMin;
-      if ((double) targetPos2D.x > (double) screenRect.xMax)
+      if (targetPos2D.x > (double) screenRect.xMax)
         zero.x += targetPos2D.x - screenRect.xMax;
-      if ((double) targetPos2D.y < (double) screenRect.yMin)
+      if (targetPos2D.y < (double) screenRect.yMin)
         zero.y += targetPos2D.y - screenRect.yMin;
-      if ((double) targetPos2D.y > (double) screenRect.yMax)
+      if (targetPos2D.y > (double) screenRect.yMax)
         zero.y += targetPos2D.y - screenRect.yMax;
       return zero;
     }
@@ -253,7 +255,7 @@ namespace Cinemachine
       get
       {
         Transform followTarget = FollowTarget;
-        return (UnityEngine.Object) followTarget != (UnityEngine.Object) null ? followTarget.GetComponent<CinemachineTargetGroup>() : (CinemachineTargetGroup) null;
+        return followTarget != null ? followTarget.GetComponent<CinemachineTargetGroup>() : null;
       }
     }
 
@@ -284,7 +286,7 @@ namespace Cinemachine
         float num4 = targetZ + num1 - m_LastBounds.extents.z;
         float num5 = 179f;
         if (num4 > 9.9999997473787516E-05)
-          num5 = (float) (2.0 * (double) Mathf.Atan(num2 / (2f * num4)) * 57.295780181884766);
+          num5 = (float) (2.0 * Mathf.Atan(num2 / (2f * num4)) * 57.295780181884766);
         LensSettings lens2 = curState.Lens with
         {
           FieldOfView = Mathf.Clamp(num5, m_MinimumFOV, m_MaximumFOV),

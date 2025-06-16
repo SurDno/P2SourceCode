@@ -1,5 +1,7 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -21,11 +23,11 @@ namespace Engine.Impl.UI.Controls
     private int Current()
     {
       GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
-      if ((Object) selectedGameObject == (Object) null)
+      if (selectedGameObject == null)
         return -1;
       for (int index = 0; index < selectables.Length; ++index)
       {
-        if ((Object) selectedGameObject == (Object) selectables[index])
+        if (selectedGameObject == selectables[index])
           return index;
       }
       return -1;
@@ -77,7 +79,7 @@ namespace Engine.Impl.UI.Controls
     private void OnDisable()
     {
       if (Current() != -1)
-        EventSystem.current.SetSelectedGameObject((GameObject) null);
+        EventSystem.current.SetSelectedGameObject(null);
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       for (int index = 0; index < decreaseActions.Length; ++index)
         service.RemoveListener(decreaseActions[index], onDecreaseAction);

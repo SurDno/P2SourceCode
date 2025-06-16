@@ -106,13 +106,13 @@ namespace Engine.Source.Components
       {
         if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
+          Debug.LogError("Template not found, owner : " + Owner.GetInfo());
           return true;
         }
         DetectorComponent component = template.GetComponent<DetectorComponent>();
         if (component == null)
         {
-          Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
+          Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
           return true;
         }
         return isEnabled != component.isEnabled;
@@ -156,7 +156,7 @@ namespace Engine.Source.Components
     private void Owner_OnGameObjectChangedEvent()
     {
       gameObject = ((IEntityView) Owner).GameObject;
-      pivot = (UnityEngine.Object) gameObject != (UnityEngine.Object) null ? gameObject.GetComponent<Pivot>() : (Pivot) null;
+      pivot = gameObject != null ? gameObject.GetComponent<Pivot>() : null;
     }
 
     public void ComputeUpdate()
@@ -166,7 +166,7 @@ namespace Engine.Source.Components
       IEntityView owner = (IEntityView) Owner;
       if (!owner.IsAttached)
         return;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         throw new Exception("gameObject == null , owner : " + Owner.GetInfo());
       if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.ReduceUpdateFarObjects && !DetectorUtility.CheckDistance(owner.Position, EngineApplication.PlayerPosition, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.ReduceUpdateFarObjectsDistance))
       {
@@ -185,7 +185,7 @@ namespace Engine.Source.Components
 
     private void ComputeEye(List<DetectableCandidatInfo> candidates)
     {
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null || (UnityEngine.Object) pivot.Head == (UnityEngine.Object) null)
+      if (pivot == null || pivot.Head == null)
         return;
       tmps.Clear();
       float eyeAngle = EyeAngle;
@@ -201,7 +201,7 @@ namespace Engine.Source.Components
         if (!Mathf.Approximately(magnitude1, 0.0f))
           quaternion = rotation * Quaternion.Inverse(Quaternion.LookRotation(forward));
         float f = Mathf.DeltaAngle(quaternion.eulerAngles.y, 0.0f);
-        if ((double) Mathf.Abs(f) < eyeAngle * 0.5)
+        if (Mathf.Abs(f) < eyeAngle * 0.5)
         {
           float num1 = FunctionUtility.EyeFunction(f + eyeAngle * 0.5f, eyeAngle);
           float num2 = candidate.Detectable.VisibleDistance + eyeDistance * num1;
@@ -212,17 +212,17 @@ namespace Engine.Source.Components
             RaycastHit raycastHit1 = new RaycastHit();
             float num3 = float.MaxValue;
             LayerMask triggerInteractLayer = ScriptableObjectInstance<GameSettingsData>.Instance.TriggerInteractLayer;
-            PhysicsUtility.Raycast(raycastBuffer, pivot.Head.transform.position, direction, magnitude2, -1 ^ (int) triggerInteractLayer);
+            PhysicsUtility.Raycast(raycastBuffer, pivot.Head.transform.position, direction, magnitude2, -1 ^ triggerInteractLayer);
             for (int index2 = 0; index2 < raycastBuffer.Count; ++index2)
             {
               RaycastHit raycastHit2 = raycastBuffer[index2];
-              if (!raycastHit2.collider.isTrigger && (double) raycastHit2.distance < num3)
+              if (!raycastHit2.collider.isTrigger && raycastHit2.distance < (double) num3)
               {
                 raycastHit1 = raycastHit2;
                 num3 = raycastHit2.distance;
               }
             }
-            if (num3 <= (double) magnitude2 && !((UnityEngine.Object) raycastHit1.collider == (UnityEngine.Object) null) && !((UnityEngine.Object) raycastHit1.collider.gameObject != (UnityEngine.Object) candidate.GameObject))
+            if (num3 <= (double) magnitude2 && !(raycastHit1.collider == null) && !(raycastHit1.collider.gameObject != candidate.GameObject))
               tmps.Add(candidate.Detectable);
           }
         }
@@ -263,7 +263,7 @@ namespace Engine.Source.Components
           if (!DetectorUtility.CanHear(gameObject, ((IEntityView) Owner).Position, candidate.GameObject, ((IEntityView) candidate.Detectable.Owner).Position, hearingDistance, candidate.Detectable.NoiseDistance))
             continue;
         }
-        else if ((double) (((IEntityView) candidate.Detectable.Owner).Position - ((IEntityView) Owner).Position).magnitude > hearingDistance + (double) candidate.Detectable.NoiseDistance)
+        else if ((((IEntityView) candidate.Detectable.Owner).Position - ((IEntityView) Owner).Position).magnitude > hearingDistance + (double) candidate.Detectable.NoiseDistance)
           continue;
         tmps.Add(candidate.Detectable);
       }

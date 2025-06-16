@@ -1,6 +1,7 @@
 ﻿using Cofe.Meta;
 using Engine.Common.Services;
 using Engine.Source.Commons;
+using UnityEngine;
 
 public abstract class EngineDependent : MonoBehaviour
 {

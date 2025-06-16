@@ -1,13 +1,15 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class EnvironmentProbeIntensityFloatView : FloatViewBase
   {
     [SerializeField]
-    private EnvironmentProbe view = null;
+    private EnvironmentProbe view;
 
     protected override void ApplyFloatValue()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.AmbientIntensity = FloatValue;
     }

@@ -1,16 +1,20 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace SRF.UI
 {
   [AddComponentMenu("SRF/UI/Long Press Button")]
   public class LongPressButton : Button
   {
     private bool _handled;
     [SerializeField]
-    private Button.ButtonClickedEvent _onLongPress = new Button.ButtonClickedEvent();
+    private ButtonClickedEvent _onLongPress = new ButtonClickedEvent();
     private bool _pressed;
     private float _pressedTime;
     public float LongPressDuration = 0.9f;
 
-    public Button.ButtonClickedEvent onLongPress
+    public ButtonClickedEvent onLongPress
     {
       get => _onLongPress;
       set => _onLongPress = value;
@@ -48,7 +52,7 @@
 
     private void Update()
     {
-      if (!_pressed || (double) Time.realtimeSinceStartup - _pressedTime < LongPressDuration)
+      if (!_pressed || Time.realtimeSinceStartup - (double) _pressedTime < LongPressDuration)
         return;
       _pressed = false;
       _handled = true;

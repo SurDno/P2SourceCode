@@ -2,23 +2,24 @@
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
 using Engine.Source.Components.Repairing;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
   public class DurabilityView : EntityViewBase, IChangeParameterListener
   {
     [SerializeField]
-    private HideableView hideableView = null;
+    private HideableView hideableView;
     [SerializeField]
-    private ProgressViewBase solidView = null;
+    private ProgressViewBase solidView;
     [SerializeField]
-    private ProgressViewBase repairableView = null;
+    private ProgressViewBase repairableView;
     [SerializeField]
-    private ProgressViewBase valueView = null;
+    private ProgressViewBase valueView;
     [SerializeField]
     private List<ProgressViewBase> thresholdViews = new List<ProgressViewBase>();
     [SerializeField]
-    private float defaultValue = 0.0f;
+    private float defaultValue;
     private IParameter<float> parameter;
     private RepairableComponent repairable;
     private RepairableSettings repairableSettings;
@@ -45,7 +46,7 @@ namespace Engine.Impl.UI.Controls
       if (parameter != null)
         parameter.AddListener(this);
       ApplyParameterValue();
-      if (!((Object) hideableView != (Object) null))
+      if (!(hideableView != null))
         return;
       hideableView.Visible = parameter != null;
     }
@@ -53,7 +54,7 @@ namespace Engine.Impl.UI.Controls
     private void ApplyParameterValue()
     {
       ApplyRepairable();
-      if (!((Object) valueView != (Object) null))
+      if (!(valueView != null))
         return;
       valueView.Progress = CurrentDurability();
     }
@@ -86,7 +87,7 @@ namespace Engine.Impl.UI.Controls
             else
             {
               float maxDurability = repairableLevel3.MaxDurability;
-              if (index < thresholdViews.Count && (Object) thresholdViews[index] != (Object) null)
+              if (index < thresholdViews.Count && thresholdViews[index] != null)
                 thresholdViews[index].Progress = maxDurability;
             }
           }
@@ -94,9 +95,9 @@ namespace Engine.Impl.UI.Controls
         repairableLevel1 = repairable.TargetLevel();
         repairableLevel2 = repairable.BaseLevel();
       }
-      if ((Object) repairableView != (Object) null)
+      if (repairableView != null)
         repairableView.Progress = repairableLevel1 != null ? repairableLevel1.MaxDurability : 0.0f;
-      if (!((Object) solidView != (Object) null))
+      if (!(solidView != null))
         return;
       solidView.Progress = repairableLevel2 != null ? repairableLevel2.MaxDurability : 0.0f;
     }
@@ -114,7 +115,7 @@ namespace Engine.Impl.UI.Controls
       while (thresholdViews.Count < count)
       {
         ProgressViewBase thresholdView = thresholdViews[thresholdViews.Count % thresholdPrototypeCount];
-        ProgressViewBase progressViewBase = Object.Instantiate<ProgressViewBase>(thresholdView);
+        ProgressViewBase progressViewBase = Instantiate(thresholdView);
         progressViewBase.transform.SetParent(thresholdView.transform.parent, false);
         thresholdViews.Add(progressViewBase);
       }

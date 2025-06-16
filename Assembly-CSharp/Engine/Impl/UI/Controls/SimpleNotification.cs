@@ -5,6 +5,7 @@ using Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay;
 using Engine.Source.Audio;
 using Engine.Source.Services.Notifications;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -46,7 +47,7 @@ namespace Engine.Impl.UI.Controls
 
     public void Initialise(NotificationEnum type, object[] values) => Type = type;
 
-    public void Shutdown() => Object.Destroy((Object) this.gameObject);
+    public void Shutdown() => Destroy(gameObject);
 
     private void SetAlpha(float value)
     {

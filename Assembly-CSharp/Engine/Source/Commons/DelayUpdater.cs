@@ -4,6 +4,9 @@ using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Profiling;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Commons
 {
@@ -19,7 +22,7 @@ namespace Engine.Source.Commons
     public DelayUpdater(float delay)
     {
       this.delay = delay;
-      accumulator = delay * UnityEngine.Random.value;
+      accumulator = delay * Random.value;
     }
 
     public void AddUpdatable(IUpdatable up) => updatable.Add(up);

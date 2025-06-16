@@ -4,6 +4,7 @@ using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Engine.Source.Effects.Values;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.Source.Proxies
 {

@@ -9,6 +9,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -31,11 +32,11 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player == null)
       {
-        Debug.LogWarningFormat("{0} can't find player entity", (object) gameObject.name);
+        Debug.LogWarningFormat("{0} can't find player entity", gameObject.name);
         return TaskStatus.Failure;
       }
       IEntityView entityView = (IEntityView) player;
-      if ((UnityEngine.Object) entityView.GameObject == (UnityEngine.Object) null)
+      if (entityView.GameObject == null)
         return TaskStatus.Running;
       Result.Value = entityView.GameObject.transform;
       return TaskStatus.Success;

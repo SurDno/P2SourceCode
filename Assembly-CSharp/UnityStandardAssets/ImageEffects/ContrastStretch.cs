@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Color Adjustments/Contrast Stretch")]
@@ -25,7 +27,7 @@
     {
       get
       {
-        if ((Object) m_materialLum == (Object) null)
+        if (m_materialLum == null)
         {
           m_materialLum = new Material(shaderLum);
           m_materialLum.hideFlags = HideFlags.HideAndDontSave;
@@ -38,7 +40,7 @@
     {
       get
       {
-        if ((Object) m_materialReduce == (Object) null)
+        if (m_materialReduce == null)
         {
           m_materialReduce = new Material(shaderReduce);
           m_materialReduce.hideFlags = HideFlags.HideAndDontSave;
@@ -51,7 +53,7 @@
     {
       get
       {
-        if ((Object) m_materialAdapt == (Object) null)
+        if (m_materialAdapt == null)
         {
           m_materialAdapt = new Material(shaderAdapt);
           m_materialAdapt.hideFlags = HideFlags.HideAndDontSave;
@@ -64,7 +66,7 @@
     {
       get
       {
-        if ((Object) m_materialApply == (Object) null)
+        if (m_materialApply == null)
         {
           m_materialApply = new Material(shaderApply);
           m_materialApply.hideFlags = HideFlags.HideAndDontSave;
@@ -77,13 +79,13 @@
     {
       if (!SystemInfo.supportsImageEffects)
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
         if (shaderAdapt.isSupported && shaderApply.isSupported && shaderLum.isSupported && shaderReduce.isSupported)
           return;
-        this.enabled = false;
+        enabled = false;
       }
     }
 
@@ -103,24 +105,24 @@
     {
       for (int index = 0; index < 2; ++index)
       {
-        Object.DestroyImmediate((Object) adaptRenderTex[index]);
-        adaptRenderTex[index] = (RenderTexture) null;
+        DestroyImmediate(adaptRenderTex[index]);
+        adaptRenderTex[index] = null;
       }
       if ((bool) (Object) m_materialLum)
-        Object.DestroyImmediate((Object) m_materialLum);
+        DestroyImmediate(m_materialLum);
       if ((bool) (Object) m_materialReduce)
-        Object.DestroyImmediate((Object) m_materialReduce);
+        DestroyImmediate(m_materialReduce);
       if ((bool) (Object) m_materialAdapt)
-        Object.DestroyImmediate((Object) m_materialAdapt);
+        DestroyImmediate(m_materialAdapt);
       if (!(bool) (Object) m_materialApply)
         return;
-      Object.DestroyImmediate((Object) m_materialApply);
+      DestroyImmediate(m_materialApply);
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
       RenderTexture renderTexture = RenderTexture.GetTemporary(source.width / 1, source.height / 1);
-      Graphics.Blit((Texture) source, renderTexture, materialLum);
+      Graphics.Blit(source, renderTexture, materialLum);
       RenderTexture temporary;
       for (; renderTexture.width > 1 || renderTexture.height > 1; renderTexture = temporary)
       {
@@ -131,12 +133,12 @@
         if (height < 1)
           height = 1;
         temporary = RenderTexture.GetTemporary(width, height);
-        Graphics.Blit((Texture) renderTexture, temporary, materialReduce);
+        Graphics.Blit(renderTexture, temporary, materialReduce);
         RenderTexture.ReleaseTemporary(renderTexture);
       }
-      CalculateAdaptation((Texture) renderTexture);
-      materialApply.SetTexture("_AdaptTex", (Texture) adaptRenderTex[curAdaptIndex]);
-      Graphics.Blit((Texture) source, destination, materialApply);
+      CalculateAdaptation(renderTexture);
+      materialApply.SetTexture("_AdaptTex", adaptRenderTex[curAdaptIndex]);
+      Graphics.Blit(source, destination, materialApply);
       RenderTexture.ReleaseTemporary(renderTexture);
     }
 
@@ -149,7 +151,7 @@
       materialAdapt.SetVector("_AdaptParams", new Vector4(x, limitMinimum, limitMaximum, 0.0f));
       Graphics.SetRenderTarget(adaptRenderTex[this.curAdaptIndex]);
       GL.Clear(false, true, Color.black);
-      Graphics.Blit((Texture) adaptRenderTex[curAdaptIndex], adaptRenderTex[this.curAdaptIndex], materialAdapt);
+      Graphics.Blit(adaptRenderTex[curAdaptIndex], adaptRenderTex[this.curAdaptIndex], materialAdapt);
     }
   }
 }

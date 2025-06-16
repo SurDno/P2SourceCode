@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public class ShoulderRotator : MonoBehaviour
   {
@@ -11,14 +13,14 @@
 
     private void Start()
     {
-      ik = this.GetComponent<FullBodyBipedIK>();
+      ik = GetComponent<FullBodyBipedIK>();
       IKSolverFullBodyBiped solver = ik.solver;
       solver.OnPostUpdate = solver.OnPostUpdate + RotateShoulders;
     }
 
     private void RotateShoulders()
     {
-      if ((Object) ik == (Object) null || ik.solver.IKPositionWeight <= 0.0)
+      if (ik == null || ik.solver.IKPositionWeight <= 0.0)
         return;
       if (skip)
       {
@@ -35,7 +37,7 @@
 
     private void RotateShoulder(FullBodyBipedChain chain, float weight, float offset)
     {
-      Quaternion quaternion = Quaternion.Lerp(Quaternion.identity, Quaternion.FromToRotation(GetParentBoneMap(chain).swingDirection, ik.solver.GetEndEffector(chain).position - GetParentBoneMap(chain).transform.position), Mathf.Clamp(((float) ((double) (ik.solver.GetEndEffector(chain).position - ik.solver.GetLimbMapping(chain).bone1.position).magnitude / (ik.solver.GetChain(chain).nodes[0].length + ik.solver.GetChain(chain).nodes[1].length) - 1.0) + offset) * weight, 0.0f, 1f) * ik.solver.GetEndEffector(chain).positionWeight * ik.solver.IKPositionWeight);
+      Quaternion quaternion = Quaternion.Lerp(Quaternion.identity, Quaternion.FromToRotation(GetParentBoneMap(chain).swingDirection, ik.solver.GetEndEffector(chain).position - GetParentBoneMap(chain).transform.position), Mathf.Clamp(((float) ((ik.solver.GetEndEffector(chain).position - ik.solver.GetLimbMapping(chain).bone1.position).magnitude / (double) (ik.solver.GetChain(chain).nodes[0].length + ik.solver.GetChain(chain).nodes[1].length) - 1.0) + offset) * weight, 0.0f, 1f) * ik.solver.GetEndEffector(chain).positionWeight * ik.solver.IKPositionWeight);
       ik.solver.GetLimbMapping(chain).parentBone.rotation = quaternion * ik.solver.GetLimbMapping(chain).parentBone.rotation;
     }
 
@@ -46,7 +48,7 @@
 
     private void OnDestroy()
     {
-      if (!((Object) ik != (Object) null))
+      if (!(ik != null))
         return;
       IKSolverFullBodyBiped solver = ik.solver;
       solver.OnPostUpdate = solver.OnPostUpdate - RotateShoulders;

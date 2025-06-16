@@ -1,4 +1,7 @@
-﻿[RequireComponent(typeof (Light))]
+﻿using UnityEngine;
+using UnityEngine.Profiling;
+
+[RequireComponent(typeof (Light))]
 public class LightCameraDistance : MonoBehaviour
 {
   [SerializeField]
@@ -27,19 +30,19 @@ public class LightCameraDistance : MonoBehaviour
 
   private void OnEnable()
   {
-    cachedTransform = this.transform;
-    cachedLight = this.GetComponent<Light>();
+    cachedTransform = transform;
+    cachedLight = GetComponent<Light>();
     baseRange = cachedLight.range;
     shadows = cachedLight.shadows;
-    Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
+    Camera.onPreCull += OnPreCullEvent;
   }
 
   private void OnDisable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
+    Camera.onPreCull -= OnPreCullEvent;
     cachedLight.range = baseRange;
     cachedLight.shadows = shadows;
-    cachedLight = (Light) null;
-    cachedTransform = (Transform) null;
+    cachedLight = null;
+    cachedTransform = null;
   }
 }

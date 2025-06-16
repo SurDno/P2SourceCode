@@ -14,8 +14,8 @@
 
     public override void OnDisable()
     {
-      GraphicsUtils.Destroy((Object) m_GrainLookupRT);
-      m_GrainLookupRT = (RenderTexture) null;
+      GraphicsUtils.Destroy(m_GrainLookupRT);
+      m_GrainLookupRT = null;
     }
 
     public override void Prepare(Material uberMaterial)
@@ -25,9 +25,9 @@
       float realtimeSinceStartup = Time.realtimeSinceStartup;
       float z = Random.value;
       float w = Random.value;
-      if ((Object) m_GrainLookupRT == (Object) null || !m_GrainLookupRT.IsCreated())
+      if (m_GrainLookupRT == null || !m_GrainLookupRT.IsCreated())
       {
-        GraphicsUtils.Destroy((Object) m_GrainLookupRT);
+        GraphicsUtils.Destroy(m_GrainLookupRT);
         RenderTexture renderTexture = new RenderTexture(192, 192, 0, RenderTextureFormat.ARGBHalf);
         renderTexture.filterMode = FilterMode.Bilinear;
         renderTexture.wrapMode = TextureWrapMode.Repeat;
@@ -38,9 +38,9 @@
       }
       Material mat = context.materialFactory.Get("Hidden/Post FX/Grain Generator");
       mat.SetFloat(Uniforms._Phase, realtimeSinceStartup / 20f);
-      Graphics.Blit((Texture) null, m_GrainLookupRT, mat, settings.colored ? 1 : 0);
-      uberMaterial.SetTexture(Uniforms._GrainTex, (Texture) m_GrainLookupRT);
-      uberMaterial.SetVector(Uniforms._Grain_Params1, (Vector4) new Vector2(settings.luminanceContribution, settings.intensity * 20f));
+      Graphics.Blit(null, m_GrainLookupRT, mat, settings.colored ? 1 : 0);
+      uberMaterial.SetTexture(Uniforms._GrainTex, m_GrainLookupRT);
+      uberMaterial.SetVector(Uniforms._Grain_Params1, new Vector2(settings.luminanceContribution, settings.intensity * 20f));
       uberMaterial.SetVector(Uniforms._Grain_Params2, new Vector4(context.width / (float) m_GrainLookupRT.width / settings.size, context.height / (float) m_GrainLookupRT.height / settings.size, z, w));
     }
 

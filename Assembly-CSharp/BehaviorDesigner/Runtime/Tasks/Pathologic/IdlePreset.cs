@@ -5,6 +5,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -21,21 +22,21 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnAwake()
     {
       npcState = gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
+      if (!(npcState == null))
         return;
-      Debug.LogError((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogError(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
         return;
       npcState.PresetIdle();
     }
 
     public override TaskStatus OnUpdate()
     {
-      return (UnityEngine.Object) npcState == (UnityEngine.Object) null ? TaskStatus.Failure : TaskStatus.Running;
+      return npcState == null ? TaskStatus.Failure : TaskStatus.Running;
     }
 
     public void DataWrite(IDataWriter writer)

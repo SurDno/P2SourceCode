@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -14,11 +15,11 @@ namespace RootMotion.FinalIK
 
     protected abstract void OnModifyOffset();
 
-    protected virtual void Start() => this.StartCoroutine(Initiate());
+    protected virtual void Start() => StartCoroutine(Initiate());
 
     private IEnumerator Initiate()
     {
-      while ((Object) ik == (Object) null)
+      while (ik == null)
         yield return null;
       IKSolverVR solver = ik.solver;
       solver.OnPreUpdate = solver.OnPreUpdate + ModifyOffset;
@@ -27,7 +28,7 @@ namespace RootMotion.FinalIK
 
     private void ModifyOffset()
     {
-      if (!this.enabled || weight <= 0.0 || deltaTime <= 0.0 || (Object) ik == (Object) null)
+      if (!enabled || weight <= 0.0 || deltaTime <= 0.0 || ik == null)
         return;
       weight = Mathf.Clamp(weight, 0.0f, 1f);
       OnModifyOffset();
@@ -36,7 +37,7 @@ namespace RootMotion.FinalIK
 
     protected virtual void OnDestroy()
     {
-      if (!((Object) ik != (Object) null))
+      if (!(ik != null))
         return;
       IKSolverVR solver = ik.solver;
       solver.OnPreUpdate = solver.OnPreUpdate - ModifyOffset;

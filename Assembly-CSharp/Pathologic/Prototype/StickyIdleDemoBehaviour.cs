@@ -1,4 +1,6 @@
-﻿namespace Pathologic.Prototype
+﻿using UnityEngine;
+
+namespace Pathologic.Prototype
 {
   public class StickyIdleDemoBehaviour : StateMachineBehaviour
   {
@@ -7,7 +9,7 @@
       AnimatorStateInfo stateInfo,
       int layerIndex)
     {
-      if ((double) Random.value < 0.5)
+      if (Random.value < 0.5)
       {
         animator.SetInteger("Next", 0);
       }

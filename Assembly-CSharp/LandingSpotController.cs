@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEngine;
 
 public class LandingSpotController : MonoBehaviour
 {
@@ -23,16 +24,16 @@ public class LandingSpotController : MonoBehaviour
 
   public void Start()
   {
-    if ((Object) _thisT == (Object) null)
-      _thisT = this.transform;
-    if ((Object) _flock == (Object) null)
+    if (_thisT == null)
+      _thisT = transform;
+    if (_flock == null)
     {
-      _flock = (FlockController) Object.FindObjectOfType(typeof (FlockController));
-      Debug.Log((object) (ToString() + " has no assigned FlockController, a random FlockController has been assigned"));
+      _flock = (FlockController) FindObjectOfType(typeof (FlockController));
+      Debug.Log(ToString() + " has no assigned FlockController, a random FlockController has been assigned");
     }
     if (!_landOnStart)
       return;
-    this.StartCoroutine(InstantLandOnStart(0.1f));
+    StartCoroutine(InstantLandOnStart(0.1f));
   }
 
   public void ScareAll() => ScareAll(0.0f, 1f);
@@ -41,28 +42,28 @@ public class LandingSpotController : MonoBehaviour
   {
     for (int index = 0; index < _thisT.childCount; ++index)
     {
-      if ((Object) _thisT.GetChild(index).GetComponent<LandingSpot>() != (Object) null)
+      if (_thisT.GetChild(index).GetComponent<LandingSpot>() != null)
         _thisT.GetChild(index).GetComponent<LandingSpot>().Invoke("ReleaseFlockChild", Random.Range(minDelay, maxDelay));
     }
   }
 
   public void LandAll()
   {
-    if ((Object) _thisT == (Object) null)
+    if (_thisT == null)
       return;
     for (int index = 0; index < _thisT.childCount; ++index)
     {
-      if ((Object) _thisT.GetChild(index).GetComponent<LandingSpot>() != (Object) null)
-        this.StartCoroutine(_thisT.GetChild(index).GetComponent<LandingSpot>().GetFlockChild(0.0f, 2f));
+      if (_thisT.GetChild(index).GetComponent<LandingSpot>() != null)
+        StartCoroutine(_thisT.GetChild(index).GetComponent<LandingSpot>().GetFlockChild(0.0f, 2f));
     }
   }
 
   public IEnumerator InstantLandOnStart(float delay)
   {
-    yield return (object) new WaitForSeconds(delay);
+    yield return new WaitForSeconds(delay);
     for (int i = 0; i < _thisT.childCount; ++i)
     {
-      if ((Object) _thisT.GetChild(i).GetComponent<LandingSpot>() != (Object) null)
+      if (_thisT.GetChild(i).GetComponent<LandingSpot>() != null)
       {
         LandingSpot spot = _thisT.GetChild(i).GetComponent<LandingSpot>();
         spot.InstantLand();
@@ -73,10 +74,10 @@ public class LandingSpotController : MonoBehaviour
 
   public IEnumerator InstantLand(float delay)
   {
-    yield return (object) new WaitForSeconds(delay);
+    yield return new WaitForSeconds(delay);
     for (int i = 0; i < _thisT.childCount; ++i)
     {
-      if ((Object) _thisT.GetChild(i).GetComponent<LandingSpot>() != (Object) null)
+      if (_thisT.GetChild(i).GetComponent<LandingSpot>() != null)
       {
         LandingSpot spot = _thisT.GetChild(i).GetComponent<LandingSpot>();
         spot.InstantLand();

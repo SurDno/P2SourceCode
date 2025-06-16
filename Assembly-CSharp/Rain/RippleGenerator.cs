@@ -1,4 +1,6 @@
-﻿namespace Rain
+﻿using UnityEngine;
+
+namespace Rain
 {
   [ExecuteInEditMode]
   public class RippleGenerator : MonoBehaviour
@@ -22,7 +24,7 @@
     {
       get
       {
-        if ((Object) _material == (Object) null)
+        if (_material == null)
         {
           _material = new Material(shader);
           _material.SetTexture("_WindTex", wavesTex);
@@ -31,22 +33,22 @@
       }
       set
       {
-        if (!((Object) value != (Object) _material))
+        if (!(value != _material))
           return;
-        if ((Object) _material != (Object) null)
-          Object.Destroy((Object) _material);
+        if (_material != null)
+          Destroy(_material);
         _material = value;
       }
     }
 
-    private void OnDisable() => material = (Material) null;
+    private void OnDisable() => material = null;
 
     private void Update()
     {
       RainManager instance = RainManager.Instance;
       _windJitterTimeLeft -= Time.deltaTime;
       float num;
-      if ((Object) instance == (Object) null)
+      if (instance == null)
       {
         num = 0.0f;
         if (_windJitterTimeLeft <= 0.0)

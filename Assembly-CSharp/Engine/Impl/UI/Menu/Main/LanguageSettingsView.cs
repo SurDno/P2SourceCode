@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -17,18 +18,18 @@ namespace Engine.Impl.UI.Menu.Main
     protected override void Awake()
     {
       localizationService = ServiceLocator.GetService<LocalizationService>();
-      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
-      this.textLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      layout = Instantiate(listLayoutPrefab, transform, false);
+      this.textLanguageView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.textLanguageView.SetName("{UI.Menu.Main.Settings.Language.Text}");
       this.textLanguageView.SetValueNames(languageNames);
       NamedIntSettingsValueView textLanguageView = this.textLanguageView;
       textLanguageView.VisibleValueChangeEvent = textLanguageView.VisibleValueChangeEvent + OnLanguageChange;
-      this.voiceLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      this.voiceLanguageView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.voiceLanguageView.SetName("{UI.Menu.Main.Settings.Language.Voice}");
       this.voiceLanguageView.SetValueNames(languageNames);
       NamedIntSettingsValueView voiceLanguageView = this.voiceLanguageView;
       voiceLanguageView.VisibleValueChangeEvent = voiceLanguageView.VisibleValueChangeEvent + OnLipSyncLanguageChange;
-      this.subtitlesLanguageView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      this.subtitlesLanguageView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.subtitlesLanguageView.SetName("{UI.Menu.Main.Settings.Language.Subtitles}");
       this.subtitlesLanguageView.SetValueNames(languageNames);
       NamedIntSettingsValueView subtitlesLanguageView = this.subtitlesLanguageView;

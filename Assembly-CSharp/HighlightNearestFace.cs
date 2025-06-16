@@ -1,11 +1,12 @@
 ﻿using ProBuilder2.Common;
+using UnityEngine;
 
 public class HighlightNearestFace : MonoBehaviour
 {
   public float travel = 50f;
   public float speed = 0.2f;
   private pb_Object target;
-  private pb_Face nearest = null;
+  private pb_Face nearest;
 
   private void Start()
   {
@@ -22,14 +23,14 @@ public class HighlightNearestFace : MonoBehaviour
   private void Update()
   {
     float num1 = Time.time * speed;
-    this.transform.position = new Vector3(Mathf.PerlinNoise(num1, num1) * travel, 2f, Mathf.PerlinNoise(num1 + 1f, num1 + 1f) * travel);
-    if ((Object) target == (Object) null)
+    transform.position = new Vector3(Mathf.PerlinNoise(num1, num1) * travel, 2f, Mathf.PerlinNoise(num1 + 1f, num1 + 1f) * travel);
+    if (target == null)
     {
-      Debug.LogWarning((object) "Missing the ProBuilder Mesh target!");
+      Debug.LogWarning("Missing the ProBuilder Mesh target!");
     }
     else
     {
-      Vector3 a = target.transform.InverseTransformPoint(this.transform.position);
+      Vector3 a = target.transform.InverseTransformPoint(transform.position);
       if (nearest != null)
         target.SetFaceColor(nearest, Color.white);
       int length = target.faces.Length;

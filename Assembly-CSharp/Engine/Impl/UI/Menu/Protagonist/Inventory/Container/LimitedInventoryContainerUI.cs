@@ -4,6 +4,8 @@ using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
 {
@@ -15,13 +17,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
       InventoryCellStyle style,
       GameObject prefab)
     {
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Instantiate(prefab);
       gameObject.name = "[Container] " + container.Owner.Name;
       LimitedInventoryContainerUI component1 = gameObject.GetComponent<LimitedInventoryContainerUI>();
       component1.content = component1;
       component1.InventoryContainer = container;
       Vector2 gridPosition = InventoryUtility.CalculateGridPosition(container.GetPosition().To(), style);
-      component1.Transform.localPosition = (Vector3) gridPosition;
+      component1.Transform.localPosition = gridPosition;
       component1.Transform.pivot = container.GetPivot().To();
       component1.Transform.anchorMax = container.GetAnchor().To();
       component1.Transform.anchorMin = container.GetAnchor().To();
@@ -37,14 +39,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
         Vector2 outerSize = InventoryUtility.CalculateOuterSize(grid, style);
         component1.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, outerSize.x);
         component1.Transform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, outerSize.y);
-        if ((UnityEngine.Object) style.OutlinePrefab != (UnityEngine.Object) null)
+        if (style.OutlinePrefab != null)
         {
-          RectTransform component2 = UnityEngine.Object.Instantiate<GameObject>(style.OutlinePrefab).GetComponent<RectTransform>();
+          RectTransform component2 = Instantiate(style.OutlinePrefab).GetComponent<RectTransform>();
           component2.sizeDelta = new Vector2(outerSize.x + style.OutlineOffset.x * 2f, outerSize.y + style.OutlineOffset.y * 2f);
           component2.SetParent(component1.grid.transform, false);
         }
       }
-      if ((UnityEngine.Object) component1.button != (UnityEngine.Object) null)
+      if (component1.button != null)
       {
         component1.button.OpenBeginEvent += new Action(((InventoryContainerUI) component1).FireOpenBegin);
         component1.button.OpenEndEvent += new Action<bool>(((InventoryContainerUI) component1).FireOpenEnd);

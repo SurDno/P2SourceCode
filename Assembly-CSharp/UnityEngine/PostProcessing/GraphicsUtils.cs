@@ -16,7 +16,7 @@
     {
       get
       {
-        if ((Object) s_WhiteTexture != (Object) null)
+        if (s_WhiteTexture != null)
           return s_WhiteTexture;
         s_WhiteTexture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
         s_WhiteTexture.SetPixel(0, 0, new Color(1f, 1f, 1f, 1f));
@@ -29,7 +29,7 @@
     {
       get
       {
-        if ((Object) s_Quad != (Object) null)
+        if (s_Quad != null)
           return s_Quad;
         Vector3[] vector3Array = new Vector3[4]
         {
@@ -106,11 +106,11 @@
 
     public static void Destroy(Object obj)
     {
-      if (!(obj != (Object) null))
+      if (!(obj != null))
         return;
       Object.Destroy(obj);
     }
 
-    public static void Dispose() => Destroy((Object) s_Quad);
+    public static void Dispose() => Destroy(s_Quad);
   }
 }

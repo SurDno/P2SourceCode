@@ -14,13 +14,13 @@ namespace Engine.Common.Services
     {
       get
       {
-        if (ServiceCache.factory == null)
+        if (factory == null)
         {
-          ServiceCache.factory = ServiceLocator.GetService<IFactory>();
-          if (ServiceCache.factory == null)
+          factory = ServiceLocator.GetService<IFactory>();
+          if (factory == null)
             Logger.AddError("IFactory not found");
         }
-        return ServiceCache.factory;
+        return factory;
       }
     }
 
@@ -28,13 +28,13 @@ namespace Engine.Common.Services
     {
       get
       {
-        if (ServiceCache.simulation == null)
+        if (simulation == null)
         {
-          ServiceCache.simulation = ServiceLocator.GetService<ISimulation>();
-          if (ServiceCache.simulation == null)
+          simulation = ServiceLocator.GetService<ISimulation>();
+          if (simulation == null)
             Logger.AddError("ISimulation not found");
         }
-        return ServiceCache.simulation;
+        return simulation;
       }
     }
 
@@ -42,13 +42,13 @@ namespace Engine.Common.Services
     {
       get
       {
-        if (ServiceCache.templateService == null)
+        if (templateService == null)
         {
-          ServiceCache.templateService = ServiceLocator.GetService<ITemplateService>();
-          if (ServiceCache.templateService == null)
+          templateService = ServiceLocator.GetService<ITemplateService>();
+          if (templateService == null)
             Logger.AddError("ITemplateService not found");
         }
-        return ServiceCache.templateService;
+        return templateService;
       }
     }
 
@@ -56,13 +56,13 @@ namespace Engine.Common.Services
     {
       get
       {
-        if (ServiceCache.optimizationService == null)
+        if (optimizationService == null)
         {
-          ServiceCache.optimizationService = ServiceLocator.GetService<IOptimizationService>();
-          if (ServiceCache.optimizationService == null)
+          optimizationService = ServiceLocator.GetService<IOptimizationService>();
+          if (optimizationService == null)
             Logger.AddError("IOptimizationService not found");
         }
-        return ServiceCache.optimizationService;
+        return optimizationService;
       }
     }
 
@@ -70,13 +70,13 @@ namespace Engine.Common.Services
     {
       get
       {
-        if (ServiceCache.mindMapService == null)
+        if (mindMapService == null)
         {
-          ServiceCache.mindMapService = ServiceLocator.GetService<IMMService>();
-          if (ServiceCache.mindMapService == null)
+          mindMapService = ServiceLocator.GetService<IMMService>();
+          if (mindMapService == null)
             Logger.AddError("IMMService not found");
         }
-        return ServiceCache.mindMapService;
+        return mindMapService;
       }
     }
   }

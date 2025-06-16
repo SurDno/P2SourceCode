@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SoundEventView : EventView
   {
@@ -7,7 +9,7 @@
 
     public override void Invoke()
     {
-      if ((Object) sound == (Object) null || !this.gameObject.activeInHierarchy)
+      if (sound == null || !gameObject.activeInHierarchy)
         return;
       MonoBehaviourInstance<UISounds>.Instance?.PlaySound(sound);
     }

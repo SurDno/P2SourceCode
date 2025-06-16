@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RootMotion.FinalIK
 {
@@ -26,9 +28,9 @@ namespace RootMotion.FinalIK
     {
       if (!base.IsValid(solver, ref message))
         return false;
-      foreach (UnityEngine.Object spineBone in spineBones)
+      foreach (Object spineBone in spineBones)
       {
-        if (spineBone == (UnityEngine.Object) null)
+        if (spineBone == null)
         {
           message = "Spine bones contains a null reference.";
           return false;
@@ -45,22 +47,22 @@ namespace RootMotion.FinalIK
         message = "IKMappingSpine does not contain any nodes.";
         return false;
       }
-      if ((UnityEngine.Object) leftUpperArmBone == (UnityEngine.Object) null)
+      if (leftUpperArmBone == null)
       {
         message = "IKMappingSpine is missing the left upper arm bone.";
         return false;
       }
-      if ((UnityEngine.Object) rightUpperArmBone == (UnityEngine.Object) null)
+      if (rightUpperArmBone == null)
       {
         message = "IKMappingSpine is missing the right upper arm bone.";
         return false;
       }
-      if ((UnityEngine.Object) leftThighBone == (UnityEngine.Object) null)
+      if (leftThighBone == null)
       {
         message = "IKMappingSpine is missing the left thigh bone.";
         return false;
       }
-      if ((UnityEngine.Object) rightThighBone == (UnityEngine.Object) null)
+      if (rightThighBone == null)
       {
         message = "IKMappingSpine is missing the right thigh bone.";
         return false;

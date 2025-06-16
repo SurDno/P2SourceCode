@@ -1,4 +1,6 @@
-﻿public class FlockScare : MonoBehaviour
+﻿using UnityEngine;
+
+public class FlockScare : MonoBehaviour
 {
   public LandingSpotController[] landingSpotControllers;
   public float scareInterval = 0.1f;
@@ -14,7 +16,7 @@
     IterateLandingSpots();
     if (currentController._activeLandingSpots > 0 && CheckDistanceToLandingSpot(landingSpotControllers[lsc]))
       landingSpotControllers[lsc].ScareAll();
-    this.Invoke(nameof (CheckProximityToLandingSpots), scareInterval);
+    Invoke(nameof (CheckProximityToLandingSpots), scareInterval);
   }
 
   private void IterateLandingSpots()
@@ -34,22 +36,22 @@
   private bool CheckDistanceToLandingSpot(LandingSpotController lc)
   {
     Transform child = lc.transform.GetChild(ls);
-    return (Object) child.GetComponent<LandingSpot>().landingChild != (Object) null && (double) (child.position - this.transform.position).sqrMagnitude < distanceToScare * (double) distanceToScare;
+    return child.GetComponent<LandingSpot>().landingChild != null && (child.position - transform.position).sqrMagnitude < distanceToScare * (double) distanceToScare;
   }
 
   private void Invoker()
   {
     for (int index = 0; index < InvokeAmounts; ++index)
-      this.Invoke("CheckProximityToLandingSpots", scareInterval + scareInterval / InvokeAmounts * index);
+      Invoke("CheckProximityToLandingSpots", scareInterval + scareInterval / InvokeAmounts * index);
   }
 
   private void OnEnable()
   {
-    this.CancelInvoke("CheckProximityToLandingSpots");
+    CancelInvoke("CheckProximityToLandingSpots");
     if (landingSpotControllers.Length == 0)
       return;
     Invoker();
   }
 
-  private void OnDisable() => this.CancelInvoke("CheckProximityToLandingSpots");
+  private void OnDisable() => CancelInvoke("CheckProximityToLandingSpots");
 }

@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableSplited : HideableView
   {
@@ -9,7 +11,7 @@
     {
       foreach (HideableView view in views)
       {
-        if ((Object) view != (Object) null)
+        if (view != null)
           view.SkipAnimation();
       }
     }
@@ -18,7 +20,7 @@
     {
       foreach (HideableView view in views)
       {
-        if ((Object) view != (Object) null)
+        if (view != null)
           view.Visible = Visible;
       }
     }

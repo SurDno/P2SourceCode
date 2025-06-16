@@ -3,23 +3,24 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Components.Maps;
 using RegionReputation;
+using UnityEngine;
 
 public class MapRegionInfoWindow : MonoBehaviour
 {
   [SerializeField]
-  private Localizer title = null;
+  private Localizer title;
   [SerializeField]
-  private Localizer text = null;
+  private Localizer text;
   [SerializeField]
   private RegionReputationNames regionReputationNames;
   private MapItemView targetView;
 
   public void Show(MapItemView itemView)
   {
-    if ((Object) itemView == (Object) targetView)
+    if (itemView == targetView)
       return;
-    if ((Object) targetView == (Object) null)
-      this.gameObject.SetActive(true);
+    if (targetView == null)
+      gameObject.SetActive(true);
     else
       targetView.SetHightlight(false);
     targetView = itemView;
@@ -33,9 +34,9 @@ public class MapRegionInfoWindow : MonoBehaviour
 
   public void Hide()
   {
-    if (!((Object) targetView != (Object) null))
+    if (!(targetView != null))
       return;
-    this.gameObject.SetActive(false);
+    gameObject.SetActive(false);
     targetView.SetHightlight(false);
     targetView = null;
   }

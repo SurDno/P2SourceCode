@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -32,7 +33,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      return (UnityEngine.Object) owner == (UnityEngine.Object) null ? TaskStatus.Success : (owner.GetPunchesCount(CalculationTime.Value) >= PunchedMoreOrEqualThan.Value ? TaskStatus.Success : TaskStatus.Failure);
+      return owner == null ? TaskStatus.Success : (owner.GetPunchesCount(CalculationTime.Value) >= PunchedMoreOrEqualThan.Value ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)

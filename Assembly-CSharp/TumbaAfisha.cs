@@ -1,4 +1,5 @@
 ﻿using Engine.Common.Services;
+using UnityEngine;
 
 internal class TumbaAfisha : EngineDependent
 {
@@ -12,7 +13,7 @@ internal class TumbaAfisha : EngineDependent
   private float updateTimeLeft;
   private int currentDay = -1;
 
-  private void Awake() => meshRenderer = this.GetComponent<MeshRenderer>();
+  private void Awake() => meshRenderer = GetComponent<MeshRenderer>();
 
   private void Update()
   {
@@ -31,14 +32,14 @@ internal class TumbaAfisha : EngineDependent
 
   protected override void OnConnectToEngine()
   {
-    connected = (Object) meshRenderer != (Object) null;
+    connected = meshRenderer != null;
   }
 
   protected override void OnDisconnectFromEngine() => connected = false;
 
   private void UpdateMaterial(int day)
   {
-    if ((Object) meshRenderer == (Object) null)
+    if (meshRenderer == null)
       return;
     meshRenderer.material = GetMaterial(day);
   }

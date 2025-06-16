@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 namespace UnityEngine.PostProcessing
 {
@@ -46,7 +47,7 @@ namespace UnityEngine.PostProcessing
     {
       BuiltinDebugViewsModel.Settings settings = model.settings;
       Material material = context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
-      material.shaderKeywords = (string[]) null;
+      material.shaderKeywords = null;
       if (context.isGBufferAvailable)
         material.EnableKeyword("SOURCE_GBUFFER");
       switch (settings.mode)
@@ -69,13 +70,13 @@ namespace UnityEngine.PostProcessing
       Material mat = context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
       BuiltinDebugViewsModel.DepthSettings depth = model.settings.depth;
       cb.SetGlobalFloat(Uniforms._DepthScale, 1f / depth.scale);
-      cb.Blit((Texture) null, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, mat, 0);
+      cb.Blit(null, BuiltinRenderTextureType.CameraTarget, mat, 0);
     }
 
     private void DepthNormalsPass(CommandBuffer cb)
     {
       Material mat = context.materialFactory.Get("Hidden/Post FX/Builtin Debug Views");
-      cb.Blit((Texture) null, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, mat, 1);
+      cb.Blit(null, BuiltinRenderTextureType.CameraTarget, mat, 1);
     }
 
     private void MotionVectorsPass(CommandBuffer cb)
@@ -85,16 +86,16 @@ namespace UnityEngine.PostProcessing
       int num = Uniforms._TempRT;
       cb.GetTemporaryRT(num, context.width, context.height, 0, FilterMode.Bilinear);
       cb.SetGlobalFloat(Uniforms._Opacity, motionVectors.sourceOpacity);
-      cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) num, material, 2);
+      cb.SetGlobalTexture(Uniforms._MainTex, BuiltinRenderTextureType.CameraTarget);
+      cb.Blit(BuiltinRenderTextureType.CameraTarget, num, material, 2);
       if (motionVectors.motionImageOpacity > 0.0 && motionVectors.motionImageAmplitude > 0.0)
       {
         int tempRt2 = Uniforms._TempRT2;
         cb.GetTemporaryRT(tempRt2, context.width, context.height, 0, FilterMode.Bilinear);
         cb.SetGlobalFloat(Uniforms._Opacity, motionVectors.motionImageOpacity);
         cb.SetGlobalFloat(Uniforms._Amplitude, motionVectors.motionImageAmplitude);
-        cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) num);
-        cb.Blit((RenderTargetIdentifier) num, (RenderTargetIdentifier) tempRt2, material, 3);
+        cb.SetGlobalTexture(Uniforms._MainTex, num);
+        cb.Blit(num, tempRt2, material, 3);
         cb.ReleaseTemporaryRT(num);
         num = tempRt2;
       }
@@ -103,13 +104,13 @@ namespace UnityEngine.PostProcessing
         PrepareArrows();
         float y = 1f / motionVectors.motionVectorsResolution;
         float x = y * context.height / context.width;
-        cb.SetGlobalVector(Uniforms._Scale, (Vector4) new Vector2(x, y));
+        cb.SetGlobalVector(Uniforms._Scale, new Vector2(x, y));
         cb.SetGlobalFloat(Uniforms._Opacity, motionVectors.motionVectorsOpacity);
         cb.SetGlobalFloat(Uniforms._Amplitude, motionVectors.motionVectorsAmplitude);
         cb.DrawMesh(m_Arrows.mesh, Matrix4x4.identity, material, 0, 4);
       }
-      cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) num);
-      cb.Blit((RenderTargetIdentifier) num, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
+      cb.SetGlobalTexture(Uniforms._MainTex, num);
+      cb.Blit(num, BuiltinRenderTextureType.CameraTarget);
       cb.ReleaseTemporaryRT(num);
     }
 
@@ -202,8 +203,8 @@ namespace UnityEngine.PostProcessing
 
       public void Release()
       {
-        GraphicsUtils.Destroy((Object) mesh);
-        mesh = (Mesh) null;
+        GraphicsUtils.Destroy(mesh);
+        mesh = null;
       }
     }
   }

@@ -2,6 +2,7 @@
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -14,9 +15,9 @@ namespace Engine.Source.Blueprints.Effects
 
     public void Update()
     {
-      if ((Object) motionTrail == (Object) null)
+      if (motionTrail == null)
         motionTrail = GameCamera.Instance.Camera.GetComponent<MotionTrail>();
-      if ((Object) motionTrail == (Object) null)
+      if (motionTrail == null)
         return;
       motionTrail.enabled = valueInput.value > 1.0 / 256.0;
       motionTrail.Strength = valueInput.value;

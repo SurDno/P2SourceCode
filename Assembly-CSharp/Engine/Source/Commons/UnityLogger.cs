@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Text;
 using Cofe.Loggers;
+using UnityEngine;
+using ILogger = Cofe.Loggers.ILogger;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Commons
 {
@@ -19,7 +22,7 @@ namespace Engine.Source.Commons
       if (true)
       {
         defaultHandler = Debug.unityLogger.logHandler;
-        Debug.unityLogger.logHandler = (ILogHandler) instance;
+        Debug.unityLogger.logHandler = instance;
       }
     }
 
@@ -28,19 +31,19 @@ namespace Engine.Source.Commons
     public void AddLog(LoggerType type, string text)
     {
       if (type == LoggerType.Warning)
-        Debug.LogWarning((object) text);
+        Debug.LogWarning(text);
       else if (type == LoggerType.Error)
-        Debug.LogError((object) text);
+        Debug.LogError(text);
       else
-        Debug.Log((object) text);
+        Debug.Log(text);
     }
 
-    public void LogException(Exception exception, UnityEngine.Object context)
+    public void LogException(Exception exception, Object context)
     {
       defaultHandler.LogException(exception, context);
     }
 
-    public void LogFormat(LogType logType, UnityEngine.Object context, string format, params object[] args)
+    public void LogFormat(LogType logType, Object context, string format, params object[] args)
     {
       if (tmp == null)
         tmp = new StringBuilder(2048);

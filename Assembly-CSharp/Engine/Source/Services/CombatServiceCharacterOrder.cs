@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.Services
+﻿using UnityEngine;
+
+namespace Engine.Source.Services
 {
   public class CombatServiceCharacterOrder
   {

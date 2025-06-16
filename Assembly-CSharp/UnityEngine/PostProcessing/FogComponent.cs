@@ -1,4 +1,6 @@
-﻿namespace UnityEngine.PostProcessing
+﻿using UnityEngine.Rendering;
+
+namespace UnityEngine.PostProcessing
 {
   public sealed class FogComponent : PostProcessingComponentCommandBuffer<FogModel>
   {
@@ -22,7 +24,7 @@
     {
       FogModel.Settings settings = model.settings;
       Material mat = context.materialFactory.Get("Hidden/Post FX/Fog");
-      mat.shaderKeywords = (string[]) null;
+      mat.shaderKeywords = null;
       Color color = GraphicsUtils.isLinearColorSpace ? RenderSettings.fogColor.linear : RenderSettings.fogColor;
       mat.SetColor(Uniforms._FogColor, color);
       mat.SetFloat(Uniforms._Density, RenderSettings.fogDensity);
@@ -42,8 +44,8 @@
       }
       RenderTextureFormat format = context.isHdr ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default;
       cb.GetTemporaryRT(Uniforms._TempRT, context.width, context.height, 24, FilterMode.Bilinear, format);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) Uniforms._TempRT);
-      cb.Blit((RenderTargetIdentifier) Uniforms._TempRT, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, mat, settings.excludeSkybox ? 1 : 0);
+      cb.Blit(BuiltinRenderTextureType.CameraTarget, Uniforms._TempRT);
+      cb.Blit(Uniforms._TempRT, BuiltinRenderTextureType.CameraTarget, mat, settings.excludeSkybox ? 1 : 0);
       cb.ReleaseTemporaryRT(Uniforms._TempRT);
     }
 

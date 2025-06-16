@@ -1,5 +1,7 @@
 ﻿using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -11,7 +13,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private ParameterNameEnum parameterName;
     [SerializeField]
-    private bool defaultValue = false;
+    private bool defaultValue;
     private IParameter<bool> parameter;
 
     protected override void ApplyValue()
@@ -26,14 +28,14 @@ namespace Engine.Impl.UI.Controls
 
     private void ApplyParameter()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.Visible = parameter != null ? parameter.Value : defaultValue;
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.SkipAnimation();
     }

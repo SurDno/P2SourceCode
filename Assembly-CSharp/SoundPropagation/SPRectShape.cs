@@ -1,4 +1,6 @@
-﻿namespace SoundPropagation
+﻿using UnityEngine;
+
+namespace SoundPropagation
 {
   public class SPRectShape : Shape
   {
@@ -8,7 +10,7 @@
 
     protected override void Initialize()
     {
-      plane2world = this.transform.localToWorldMatrix;
+      plane2world = transform.localToWorldMatrix;
       Vector2 vector2 = Size * 0.5f;
       plane2world.m00 *= vector2.x;
       plane2world.m10 *= vector2.x;
@@ -25,13 +27,13 @@
       out Vector3 output)
     {
       Vector3 segmentOnPlane = ClosestToSegmentOnPlane(world2plane, pointA, pointB);
-      if ((double) segmentOnPlane.x > 1.0)
+      if (segmentOnPlane.x > 1.0)
         segmentOnPlane.x = 1f;
-      else if ((double) segmentOnPlane.x < -1.0)
+      else if (segmentOnPlane.x < -1.0)
         segmentOnPlane.x = -1f;
-      if ((double) segmentOnPlane.y > 1.0)
+      if (segmentOnPlane.y > 1.0)
         segmentOnPlane.y = 1f;
-      else if ((double) segmentOnPlane.y < -1.0)
+      else if (segmentOnPlane.y < -1.0)
         segmentOnPlane.y = -1f;
       output = plane2world.MultiplyPoint3x4(segmentOnPlane);
       return true;
@@ -39,7 +41,7 @@
 
     private void OnDrawGizmosSelected()
     {
-      Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+      Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
       Vector2 vector2 = new Vector2(Size.x * 0.5f, Size.y * 0.5f);
       Vector3 vector3_1 = localToWorldMatrix.MultiplyPoint(new Vector3(-vector2.x, -vector2.y, 0.0f));
       Vector3 vector3_2 = localToWorldMatrix.MultiplyPoint(new Vector3(-vector2.x, vector2.y, 0.0f));

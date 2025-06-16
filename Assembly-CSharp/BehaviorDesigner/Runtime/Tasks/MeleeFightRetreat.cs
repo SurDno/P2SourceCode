@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -52,14 +54,14 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) description == (UnityEngine.Object) null)
+      if (description == null)
       {
-        Debug.LogWarning((object) (typeof (MeleeFightRetreat).Name + " has no " + typeof (RetreatDescription).Name + " attached"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(typeof (MeleeFightRetreat).Name + " has no " + typeof (RetreatDescription).Name + " attached", gameObject);
         return TaskStatus.Failure;
       }
-      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner.Enemy == null)
         return TaskStatus.Failure;
-      owner.RotationTarget = (Transform) null;
+      owner.RotationTarget = null;
       owner.RotateByPath = false;
       owner.RetreatAngle = new float?();
       Vector3 forward = owner.Enemy.transform.position - owner.transform.position;
@@ -85,7 +87,7 @@ namespace BehaviorDesigner.Runtime.Tasks
           desiredWalkSpeed = -1f;
         else if (magnitude < (double) description.StopDistance)
           desiredWalkSpeed = 0.0f;
-        if (Escaping.Value && magnitude > (double) description.EscapeDistance || RetreatTime.Value > 0.0 && startTime + (double) waitDuration < (double) Time.time)
+        if (Escaping.Value && magnitude > (double) description.EscapeDistance || RetreatTime.Value > 0.0 && startTime + (double) waitDuration < Time.time)
           return TaskStatus.Success;
         Quaternion quaternion2 = quaternion1 * Quaternion.AngleAxis(retreatDirection.Value, Vector3.up);
       }
@@ -113,7 +115,7 @@ namespace BehaviorDesigner.Runtime.Tasks
           {
             animatorState.SetTrigger("Fight.Triggers/Attack");
             animator.SetInteger("Fight.AttackType", 3);
-            animator.SetBool("Fight.AttackAfterCheat", (double) UnityEngine.Random.value > description.CheatProbability);
+            animator.SetBool("Fight.AttackAfterCheat", Random.value > (double) description.CheatProbability);
             attackCooldownTime = description.TelegraphPunchCooldownTime;
           }
         }
@@ -136,7 +138,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
       DefaultDataWriteUtility.Write(writer, "Instant", instant);
       DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteUnity<RetreatDescription>(writer, "Description", description);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Description", description);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "Escaping", Escaping);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "RetreatTime", RetreatTime);
     }
@@ -148,7 +150,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
       instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
       disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      description = BehaviorTreeDataReadUtility.ReadUnity<RetreatDescription>(reader, "Description", description);
+      description = BehaviorTreeDataReadUtility.ReadUnity(reader, "Description", description);
       Escaping = BehaviorTreeDataReadUtility.ReadShared(reader, "Escaping", Escaping);
       RetreatTime = BehaviorTreeDataReadUtility.ReadShared(reader, "RetreatTime", RetreatTime);
     }

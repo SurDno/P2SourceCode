@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RootMotion.Dynamics
 {
@@ -150,9 +152,9 @@ namespace RootMotion.Dynamics
     {
       get
       {
-        if ((UnityEngine.Object) _targetAnimator == (UnityEngine.Object) null)
+        if (_targetAnimator == null)
           _targetAnimator = targetRoot.GetComponentInChildren<Animator>();
-        if ((UnityEngine.Object) _targetAnimator == (UnityEngine.Object) null && (UnityEngine.Object) targetRoot.parent != (UnityEngine.Object) null)
+        if (_targetAnimator == null && targetRoot.parent != null)
           _targetAnimator = targetRoot.parent.GetComponentInChildren<Animator>();
         return _targetAnimator;
       }
@@ -167,7 +169,7 @@ namespace RootMotion.Dynamics
     {
       get
       {
-        return this.isActiveAndEnabled && initiated && (activeMode == Mode.Active || isBlending);
+        return isActiveAndEnabled && initiated && (activeMode == Mode.Active || isBlending);
       }
     }
 
@@ -185,7 +187,7 @@ namespace RootMotion.Dynamics
     {
       get
       {
-        return this.isActiveAndEnabled && isActive && initiated && updateMode == UpdateMode.FixedUpdate;
+        return isActiveAndEnabled && isActive && initiated && updateMode == UpdateMode.FixedUpdate;
       }
     }
 
@@ -201,7 +203,7 @@ namespace RootMotion.Dynamics
 
     private void OnDisable()
     {
-      if (!this.gameObject.activeInHierarchy && initiated && Application.isPlaying)
+      if (!gameObject.activeInHierarchy && initiated && Application.isPlaying)
       {
         foreach (Muscle muscle in muscles)
           muscle.Reset();
@@ -211,7 +213,7 @@ namespace RootMotion.Dynamics
 
     private void OnEnable()
     {
-      if (!this.gameObject.activeInHierarchy || !initiated || !hasBeenDisabled || !Application.isPlaying)
+      if (!gameObject.activeInHierarchy || !initiated || !hasBeenDisabled || !Application.isPlaying)
         return;
       isSwitchingMode = false;
       activeMode = mode;
@@ -222,7 +224,7 @@ namespace RootMotion.Dynamics
       isKilling = false;
       freezeFlag = false;
       SetAnimationEnabled(state == State.Alive);
-      if (state == State.Alive && (UnityEngine.Object) targetAnimator != (UnityEngine.Object) null && mode != Mode.Disabled)
+      if (state == State.Alive && targetAnimator != null && mode != Mode.Disabled)
         targetAnimator.Update(1f / 1000f);
       foreach (Muscle muscle in muscles)
       {
@@ -252,9 +254,9 @@ namespace RootMotion.Dynamics
           }
           if (stateSettings.freezePermanently)
           {
-            if (behaviours.Length != 0 && (UnityEngine.Object) behaviours[0] != (UnityEngine.Object) null)
-              UnityEngine.Object.Destroy((UnityEngine.Object) behaviours[0].transform.parent.gameObject);
-            UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+            if (behaviours.Length != 0 && behaviours[0] != null)
+              Destroy(behaviours[0].transform.parent.gameObject);
+            Destroy(gameObject);
             return;
           }
         }
@@ -279,16 +281,16 @@ namespace RootMotion.Dynamics
         Initiate();
       if (!initiated)
         return;
-      solvers.AddRange((IEnumerable<SolverManager>) targetRoot.GetComponentsInChildren<SolverManager>());
+      solvers.AddRange(targetRoot.GetComponentsInChildren<SolverManager>());
     }
 
     public Transform FindTargetRootRecursive(Transform t)
     {
-      if ((UnityEngine.Object) t.parent == (UnityEngine.Object) null)
-        return (Transform) null;
-      foreach (UnityEngine.Object @object in t.parent)
+      if (t.parent == null)
+        return null;
+      foreach (Object @object in t.parent)
       {
-        if (@object == (UnityEngine.Object) this.transform)
+        if (@object == transform)
           return t;
       }
       return FindTargetRootRecursive(t.parent);
@@ -297,37 +299,37 @@ namespace RootMotion.Dynamics
     private void Initiate()
     {
       initiated = false;
-      if (muscles.Length != 0 && (UnityEngine.Object) muscles[0].target != (UnityEngine.Object) null && (UnityEngine.Object) targetRoot == (UnityEngine.Object) null)
+      if (muscles.Length != 0 && muscles[0].target != null && targetRoot == null)
         targetRoot = FindTargetRootRecursive(muscles[0].target);
-      if ((UnityEngine.Object) targetRoot != (UnityEngine.Object) null && (UnityEngine.Object) targetAnimator == (UnityEngine.Object) null)
+      if (targetRoot != null && targetAnimator == null)
       {
         targetAnimator = targetRoot.GetComponentInChildren<Animator>();
-        if ((UnityEngine.Object) targetAnimator == (UnityEngine.Object) null)
+        if (targetAnimator == null)
           targetAnimation = targetRoot.GetComponentInChildren<Animation>();
       }
       if (!IsValid(true))
         return;
-      if ((UnityEngine.Object) humanoidConfig != (UnityEngine.Object) null && (UnityEngine.Object) targetAnimator != (UnityEngine.Object) null && targetAnimator.isHuman)
+      if (humanoidConfig != null && targetAnimator != null && targetAnimator.isHuman)
         humanoidConfig.ApplyTo(this);
-      isLegacy = (UnityEngine.Object) targetAnimator == (UnityEngine.Object) null && (UnityEngine.Object) targetAnimation != (UnityEngine.Object) null;
-      behaviours = this.transform.GetComponentsInChildren<BehaviourBase>();
-      if (behaviours.Length == 0 && (UnityEngine.Object) this.transform.parent != (UnityEngine.Object) null)
-        behaviours = this.transform.parent.GetComponentsInChildren<BehaviourBase>();
+      isLegacy = targetAnimator == null && targetAnimation != null;
+      behaviours = transform.GetComponentsInChildren<BehaviourBase>();
+      if (behaviours.Length == 0 && transform.parent != null)
+        behaviours = transform.parent.GetComponentsInChildren<BehaviourBase>();
       for (int index = 0; index < muscles.Length; ++index)
       {
         muscles[index].Initiate(muscles);
         if (behaviours.Length != 0)
         {
           muscles[index].broadcaster = muscles[index].joint.gameObject.GetComponent<MuscleCollisionBroadcaster>();
-          if ((UnityEngine.Object) muscles[index].broadcaster == (UnityEngine.Object) null)
+          if (muscles[index].broadcaster == null)
             muscles[index].broadcaster = muscles[index].joint.gameObject.AddComponent<MuscleCollisionBroadcaster>();
           muscles[index].broadcaster.puppetMaster = this;
           muscles[index].broadcaster.muscleIndex = index;
         }
-        if (double.PositiveInfinity != (double) muscles[index].joint.breakForce)
+        if (double.PositiveInfinity != muscles[index].joint.breakForce)
         {
           muscles[index].jointBreakBroadcaster = muscles[index].joint.gameObject.GetComponent<JointBreakBroadcaster>();
-          if ((UnityEngine.Object) muscles[index].jointBreakBroadcaster == (UnityEngine.Object) null)
+          if (muscles[index].jointBreakBroadcaster == null)
             muscles[index].jointBreakBroadcaster = muscles[index].joint.gameObject.AddComponent<JointBreakBroadcaster>();
           muscles[index].jointBreakBroadcaster.puppetMaster = this;
           muscles[index].jointBreakBroadcaster.muscleIndex = index;
@@ -345,7 +347,7 @@ namespace RootMotion.Dynamics
       foreach (Muscle muscle in muscles)
         muscle.Read();
       StoreTargetMappedState();
-      if ((UnityEngine.Object) Singleton<PuppetMasterSettings>.instance != (UnityEngine.Object) null)
+      if (Singleton<PuppetMasterSettings>.instance != null)
         Singleton<PuppetMasterSettings>.instance.Register(this);
       bool flag = false;
       foreach (BehaviourBase behaviour in behaviours)
@@ -377,7 +379,7 @@ namespace RootMotion.Dynamics
     {
       foreach (BehaviourBase behaviour1 in behaviours)
       {
-        behaviour1.enabled = (UnityEngine.Object) behaviour1 == (UnityEngine.Object) behaviour;
+        behaviour1.enabled = behaviour1 == behaviour;
         if (behaviour1.enabled)
           behaviour1.Activate();
       }
@@ -385,7 +387,7 @@ namespace RootMotion.Dynamics
 
     private void OnDestroy()
     {
-      if (!((UnityEngine.Object) Singleton<PuppetMasterSettings>.instance != (UnityEngine.Object) null))
+      if (!(Singleton<PuppetMasterSettings>.instance != null))
         return;
       Singleton<PuppetMasterSettings>.instance.Unregister(this);
     }
@@ -432,7 +434,7 @@ namespace RootMotion.Dynamics
         }
         foreach (SolverManager solver in solvers)
         {
-          if ((UnityEngine.Object) solver != (UnityEngine.Object) null)
+          if (solver != null)
             solver.UpdateSolverExternal();
         }
         Read();
@@ -541,7 +543,7 @@ namespace RootMotion.Dynamics
 
     private void MoveToTarget()
     {
-      if (!((UnityEngine.Object) Singleton<PuppetMasterSettings>.instance == (UnityEngine.Object) null) && (!((UnityEngine.Object) Singleton<PuppetMasterSettings>.instance != (UnityEngine.Object) null) || !Singleton<PuppetMasterSettings>.instance.UpdateMoveToTarget(this)))
+      if (!(Singleton<PuppetMasterSettings>.instance == null) && (!(Singleton<PuppetMasterSettings>.instance != null) || !Singleton<PuppetMasterSettings>.instance.UpdateMoveToTarget(this)))
         return;
       foreach (Muscle muscle in muscles)
         muscle.MoveToTarget();
@@ -552,20 +554,20 @@ namespace RootMotion.Dynamics
       if (teleport)
       {
         GameObject gameObject = new GameObject();
-        gameObject.transform.position = (UnityEngine.Object) this.transform.parent != (UnityEngine.Object) null ? this.transform.parent.position : Vector3.zero;
-        gameObject.transform.rotation = (UnityEngine.Object) this.transform.parent != (UnityEngine.Object) null ? this.transform.parent.rotation : Quaternion.identity;
-        Transform parent1 = this.transform.parent;
+        gameObject.transform.position = transform.parent != null ? transform.parent.position : Vector3.zero;
+        gameObject.transform.rotation = transform.parent != null ? transform.parent.rotation : Quaternion.identity;
+        Transform parent1 = transform.parent;
         Transform parent2 = targetRoot.parent;
-        this.transform.parent = gameObject.transform;
+        transform.parent = gameObject.transform;
         targetRoot.parent = gameObject.transform;
-        Vector3 position = this.transform.parent.position;
+        Vector3 position = transform.parent.position;
         Quaternion rotation = QuaTools.FromToRotation(targetRoot.rotation, teleportRotation);
-        this.transform.parent.rotation = rotation * this.transform.parent.rotation;
+        transform.parent.rotation = rotation * transform.parent.rotation;
         Vector3 deltaPosition = teleportPosition - targetRoot.position;
-        this.transform.parent.position += deltaPosition;
-        this.transform.parent = parent1;
+        transform.parent.position += deltaPosition;
+        transform.parent = parent1;
         targetRoot.parent = parent2;
-        UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+        Destroy(gameObject);
         targetMappedPositions[0] = position + rotation * (targetMappedPositions[0] - position) + deltaPosition;
         targetSampledPositions[0] = position + rotation * (targetSampledPositions[0] - position) + deltaPosition;
         targetMappedRotations[0] = rotation * targetMappedRotations[0];
@@ -619,9 +621,9 @@ namespace RootMotion.Dynamics
     {
       get
       {
-        if ((UnityEngine.Object) targetAnimator != (UnityEngine.Object) null)
+        if (targetAnimator != null)
           return targetAnimator.updateMode;
-        return (UnityEngine.Object) targetAnimation != (UnityEngine.Object) null ? (targetAnimation.animatePhysics ? AnimatorUpdateMode.AnimatePhysics : AnimatorUpdateMode.Normal) : AnimatorUpdateMode.Normal;
+        return targetAnimation != null ? (targetAnimation.animatePhysics ? AnimatorUpdateMode.AnimatePhysics : AnimatorUpdateMode.Normal) : AnimatorUpdateMode.Normal;
       }
     }
 
@@ -631,13 +633,13 @@ namespace RootMotion.Dynamics
         return;
       foreach (Muscle muscle1 in muscles)
       {
-        if ((UnityEngine.Object) muscle1.joint.connectedBody != (UnityEngine.Object) null && (UnityEngine.Object) muscle1.connectedBodyTarget != (UnityEngine.Object) null)
+        if (muscle1.joint.connectedBody != null && muscle1.connectedBodyTarget != null)
         {
           Debug.DrawLine(muscle1.target.position, muscle1.connectedBodyTarget.position, Color.cyan);
           bool flag = true;
           foreach (Muscle muscle2 in muscles)
           {
-            if (muscle1 != muscle2 && (UnityEngine.Object) muscle2.joint.connectedBody == (UnityEngine.Object) muscle1.rigidbody)
+            if (muscle1 != muscle2 && muscle2.joint.connectedBody == muscle1.rigidbody)
             {
               flag = false;
               break;
@@ -694,16 +696,16 @@ namespace RootMotion.Dynamics
       if (!CheckIfInitiated())
         return;
       if (!initiated)
-        Debug.LogWarning((object) "PuppetMaster has not been initiated.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("PuppetMaster has not been initiated.", transform);
       else if (ContainsJoint(joint))
-        Debug.LogWarning((object) ("Joint " + joint.name + " is already used by a Muscle"), (UnityEngine.Object) this.transform);
-      else if ((UnityEngine.Object) target == (UnityEngine.Object) null)
-        Debug.LogWarning((object) "AddMuscle was called with a null 'target' reference.", (UnityEngine.Object) this.transform);
-      else if ((UnityEngine.Object) connectTo == (UnityEngine.Object) joint.GetComponent<Rigidbody>())
-        Debug.LogWarning((object) "ConnectTo is the joint's own Rigidbody, can not add muscle.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Joint " + joint.name + " is already used by a Muscle", transform);
+      else if (target == null)
+        Debug.LogWarning("AddMuscle was called with a null 'target' reference.", transform);
+      else if (connectTo == joint.GetComponent<Rigidbody>())
+        Debug.LogWarning("ConnectTo is the joint's own Rigidbody, can not add muscle.", transform);
       else if (!isActive)
       {
-        Debug.LogWarning((object) "Adding muscles to inactive PuppetMasters is not currently supported.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Adding muscles to inactive PuppetMasters is not currently supported.", transform);
       }
       else
       {
@@ -713,23 +715,23 @@ namespace RootMotion.Dynamics
         m.props = muscleProps;
         m.joint = joint;
         m.target = target;
-        m.joint.transform.parent = !hierarchyIsFlat && !((UnityEngine.Object) connectTo == (UnityEngine.Object) null) || forceTreeHierarchy ? connectTo.transform : this.transform;
+        m.joint.transform.parent = !hierarchyIsFlat && !(connectTo == null) || forceTreeHierarchy ? connectTo.transform : transform;
         if (forceLayers)
         {
-          joint.gameObject.layer = this.gameObject.layer;
+          joint.gameObject.layer = gameObject.layer;
           target.gameObject.layer = targetRoot.gameObject.layer;
         }
-        if ((UnityEngine.Object) connectTo != (UnityEngine.Object) null)
+        if (connectTo != null)
         {
           m.target.parent = targetParent;
-          Vector3 position = this.GetMuscle(connectTo).transform.InverseTransformPoint(m.target.position);
-          Quaternion quaternion = Quaternion.Inverse(this.GetMuscle(connectTo).transform.rotation) * m.target.rotation;
+          Vector3 position = GetMuscle(connectTo).transform.InverseTransformPoint(m.target.position);
+          Quaternion quaternion = Quaternion.Inverse(GetMuscle(connectTo).transform.rotation) * m.target.rotation;
           joint.transform.position = connectTo.transform.TransformPoint(position);
           joint.transform.rotation = connectTo.transform.rotation * quaternion;
           joint.connectedBody = connectTo;
         }
         m.Initiate(muscles);
-        if ((UnityEngine.Object) connectTo != (UnityEngine.Object) null)
+        if (connectTo != null)
         {
           m.rigidbody.velocity = connectTo.velocity;
           m.rigidbody.angularVelocity = connectTo.angularVelocity;
@@ -766,15 +768,15 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return;
-      if ((UnityEngine.Object) joint == (UnityEngine.Object) null)
-        Debug.LogWarning((object) "RemoveMuscleRecursive was called with a null 'joint' reference.", (UnityEngine.Object) this.transform);
+      if (joint == null)
+        Debug.LogWarning("RemoveMuscleRecursive was called with a null 'joint' reference.", transform);
       else if (!ContainsJoint(joint))
       {
-        Debug.LogWarning((object) "No Muscle with the specified joint was found, can not remove muscle.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("No Muscle with the specified joint was found, can not remove muscle.", transform);
       }
       else
       {
-        int muscleIndex = this.GetMuscleIndex(joint);
+        int muscleIndex = GetMuscleIndex(joint);
         Muscle[] muscleArray = new Muscle[muscles.Length - (muscles[muscleIndex].childIndexes.Length + 1)];
         int index1 = 0;
         for (int index2 = 0; index2 < muscles.Length; ++index2)
@@ -786,15 +788,15 @@ namespace RootMotion.Dynamics
           }
           else
           {
-            if ((UnityEngine.Object) muscles[index2].broadcaster != (UnityEngine.Object) null)
+            if (muscles[index2].broadcaster != null)
             {
               muscles[index2].broadcaster.enabled = false;
-              UnityEngine.Object.Destroy((UnityEngine.Object) muscles[index2].broadcaster);
+              Destroy(muscles[index2].broadcaster);
             }
-            if ((UnityEngine.Object) muscles[index2].jointBreakBroadcaster != (UnityEngine.Object) null)
+            if (muscles[index2].jointBreakBroadcaster != null)
             {
               muscles[index2].jointBreakBroadcaster.enabled = false;
-              UnityEngine.Object.Destroy((UnityEngine.Object) muscles[index2].jointBreakBroadcaster);
+              Destroy(muscles[index2].jointBreakBroadcaster);
             }
           }
         }
@@ -816,11 +818,11 @@ namespace RootMotion.Dynamics
               KillJoint(muscles[muscles[muscleIndex].childIndexes[index5]].joint);
             break;
         }
-        muscles[muscleIndex].transform.parent = (Transform) null;
+        muscles[muscleIndex].transform.parent = null;
         for (int index6 = 0; index6 < muscles[muscleIndex].childIndexes.Length; ++index6)
         {
-          if (removeMode == MuscleRemoveMode.Explode || (UnityEngine.Object) muscles[muscles[muscleIndex].childIndexes[index6]].transform.parent == (UnityEngine.Object) this.transform)
-            muscles[muscles[muscleIndex].childIndexes[index6]].transform.parent = (Transform) null;
+          if (removeMode == MuscleRemoveMode.Explode || muscles[muscles[muscleIndex].childIndexes[index6]].transform.parent == transform)
+            muscles[muscles[muscleIndex].childIndexes[index6]].transform.parent = null;
         }
         foreach (BehaviourBase behaviour in behaviours)
         {
@@ -883,28 +885,28 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return;
-      Debug.LogWarning((object) "@todo", (UnityEngine.Object) this.transform);
+      Debug.LogWarning("@todo", transform);
     }
 
     public void SetMuscles(Muscle[] newMuscles)
     {
       if (!CheckIfInitiated())
         return;
-      Debug.LogWarning((object) "@todo", (UnityEngine.Object) this.transform);
+      Debug.LogWarning("@todo", transform);
     }
 
     public void DisableMuscleRecursive(ConfigurableJoint joint)
     {
       if (!CheckIfInitiated())
         return;
-      Debug.LogWarning((object) "@todo", (UnityEngine.Object) this.transform);
+      Debug.LogWarning("@todo", transform);
     }
 
     public void EnableMuscleRecursive(ConfigurableJoint joint)
     {
       if (!CheckIfInitiated())
         return;
-      Debug.LogWarning((object) "@todo", (UnityEngine.Object) this.transform);
+      Debug.LogWarning("@todo", transform);
     }
 
     [ContextMenu("Flatten Muscle Hierarchy")]
@@ -912,8 +914,8 @@ namespace RootMotion.Dynamics
     {
       foreach (Muscle muscle in muscles)
       {
-        if ((UnityEngine.Object) muscle.joint != (UnityEngine.Object) null)
-          muscle.joint.transform.parent = this.transform;
+        if (muscle.joint != null)
+          muscle.joint.transform.parent = transform;
       }
       hierarchyIsFlat = true;
     }
@@ -923,8 +925,8 @@ namespace RootMotion.Dynamics
     {
       foreach (Muscle muscle in muscles)
       {
-        if ((UnityEngine.Object) muscle.joint != (UnityEngine.Object) null)
-          muscle.joint.transform.parent = (UnityEngine.Object) muscle.joint.connectedBody != (UnityEngine.Object) null ? muscle.joint.connectedBody.transform : this.transform;
+        if (muscle.joint != null)
+          muscle.joint.transform.parent = muscle.joint.connectedBody != null ? muscle.joint.connectedBody.transform : transform;
       }
       hierarchyIsFlat = false;
     }
@@ -934,7 +936,7 @@ namespace RootMotion.Dynamics
     {
       foreach (Muscle muscle in muscles)
       {
-        if ((UnityEngine.Object) muscle.joint != (UnityEngine.Object) null && (UnityEngine.Object) muscle.target != (UnityEngine.Object) null)
+        if (muscle.joint != null && muscle.target != null)
           muscle.joint.transform.position = muscle.target.position;
       }
     }
@@ -954,7 +956,7 @@ namespace RootMotion.Dynamics
     {
       foreach (Muscle muscle in muscles)
       {
-        if ((UnityEngine.Object) muscle.joint.transform.parent != (UnityEngine.Object) this.transform)
+        if (muscle.joint.transform.parent != transform)
           return false;
       }
       return true;
@@ -962,7 +964,7 @@ namespace RootMotion.Dynamics
 
     private void DisconnectJoint(ConfigurableJoint joint)
     {
-      joint.connectedBody = (Rigidbody) null;
+      joint.connectedBody = null;
       KillJoint(joint);
       joint.xMotion = ConfigurableJointMotion.Free;
       joint.yMotion = ConfigurableJointMotion.Free;
@@ -1018,21 +1020,21 @@ namespace RootMotion.Dynamics
         if (mode == Mode.Kinematic)
           DisabledToKinematic();
         else if (mode == Mode.Active)
-          this.StartCoroutine(DisabledToActive());
+          StartCoroutine(DisabledToActive());
       }
       else if (lastMode == Mode.Kinematic)
       {
         if (mode == Mode.Disabled)
           KinematicToDisabled();
         else if (mode == Mode.Active)
-          this.StartCoroutine(KinematicToActive());
+          StartCoroutine(KinematicToActive());
       }
       else if (lastMode == Mode.Active)
       {
         if (mode == Mode.Disabled)
-          this.StartCoroutine(ActiveToDisabled());
+          StartCoroutine(ActiveToDisabled());
         else if (mode == Mode.Kinematic)
-          this.StartCoroutine(ActiveToKinematic());
+          StartCoroutine(ActiveToKinematic());
       }
       lastMode = mode;
     }
@@ -1228,7 +1230,7 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return;
-      int muscleIndex = this.GetMuscleIndex(target);
+      int muscleIndex = GetMuscleIndex(target);
       if (muscleIndex == -1)
         return;
       SetMuscleWeights(muscleIndex, muscleWeight, pinWeight, mappingWeight, muscleDamper);
@@ -1243,7 +1245,7 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return;
-      int muscleIndex = this.GetMuscleIndex(humanBodyBone);
+      int muscleIndex = GetMuscleIndex(humanBodyBone);
       if (muscleIndex == -1)
         return;
       SetMuscleWeights(muscleIndex, muscleWeight, pinWeight, mappingWeight, muscleDamper);
@@ -1260,7 +1262,7 @@ namespace RootMotion.Dynamics
         return;
       for (int muscleIndex = 0; muscleIndex < muscles.Length; ++muscleIndex)
       {
-        if ((UnityEngine.Object) muscles[muscleIndex].target == (UnityEngine.Object) target)
+        if (muscles[muscleIndex].target == target)
         {
           SetMuscleWeightsRecursive(muscleIndex, muscleWeight, pinWeight, mappingWeight, muscleDamper);
           break;
@@ -1291,7 +1293,7 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return;
-      int muscleIndex = this.GetMuscleIndex(humanBodyBone);
+      int muscleIndex = GetMuscleIndex(humanBodyBone);
       if (muscleIndex == -1)
         return;
       SetMuscleWeightsRecursive(muscleIndex, muscleWeight, pinWeight, mappingWeight, muscleDamper);
@@ -1308,7 +1310,7 @@ namespace RootMotion.Dynamics
         return;
       if (muscleIndex < 0.0 || muscleIndex >= muscles.Length)
       {
-        Debug.LogWarning((object) ("Muscle index out of range (" + muscleIndex + ")."), (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Muscle index out of range (" + muscleIndex + ").", transform);
       }
       else
       {
@@ -1321,19 +1323,19 @@ namespace RootMotion.Dynamics
 
     public Muscle GetMuscle(Transform target)
     {
-      int muscleIndex = this.GetMuscleIndex(target);
+      int muscleIndex = GetMuscleIndex(target);
       return muscleIndex == -1 ? null : muscles[muscleIndex];
     }
 
     public Muscle GetMuscle(Rigidbody rigidbody)
     {
-      int muscleIndex = this.GetMuscleIndex(rigidbody);
+      int muscleIndex = GetMuscleIndex(rigidbody);
       return muscleIndex == -1 ? null : muscles[muscleIndex];
     }
 
     public Muscle GetMuscle(ConfigurableJoint joint)
     {
-      int muscleIndex = this.GetMuscleIndex(joint);
+      int muscleIndex = GetMuscleIndex(joint);
       return muscleIndex == -1 ? null : muscles[muscleIndex];
     }
 
@@ -1343,7 +1345,7 @@ namespace RootMotion.Dynamics
         return false;
       foreach (Muscle muscle in muscles)
       {
-        if ((UnityEngine.Object) muscle.joint == (UnityEngine.Object) joint)
+        if (muscle.joint == joint)
           return true;
       }
       return false;
@@ -1353,20 +1355,20 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return -1;
-      if ((UnityEngine.Object) targetAnimator == (UnityEngine.Object) null)
+      if (targetAnimator == null)
       {
-        Debug.LogWarning((object) "PuppetMaster 'Target Root' has no Animator component on it nor on it's children.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("PuppetMaster 'Target Root' has no Animator component on it nor on it's children.", transform);
         return -1;
       }
       if (!targetAnimator.isHuman)
       {
-        Debug.LogWarning((object) "PuppetMaster target's Animator does not belong to a Humanoid, can hot get human muscle index.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("PuppetMaster target's Animator does not belong to a Humanoid, can hot get human muscle index.", transform);
         return -1;
       }
       Transform boneTransform = targetAnimator.GetBoneTransform(humanBodyBone);
-      if (!((UnityEngine.Object) boneTransform == (UnityEngine.Object) null))
-        return this.GetMuscleIndex(boneTransform);
-      Debug.LogWarning((object) ("PuppetMaster target's Avatar does not contain a bone Transform for " + (object) humanBodyBone), (UnityEngine.Object) this.transform);
+      if (!(boneTransform == null))
+        return GetMuscleIndex(boneTransform);
+      Debug.LogWarning("PuppetMaster target's Avatar does not contain a bone Transform for " + humanBodyBone, transform);
       return -1;
     }
 
@@ -1374,17 +1376,17 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return -1;
-      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+      if (target == null)
       {
-        Debug.LogWarning((object) "Target is null, can not get muscle index.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Target is null, can not get muscle index.", transform);
         return -1;
       }
       for (int muscleIndex = 0; muscleIndex < muscles.Length; ++muscleIndex)
       {
-        if ((UnityEngine.Object) muscles[muscleIndex].target == (UnityEngine.Object) target)
+        if (muscles[muscleIndex].target == target)
           return muscleIndex;
       }
-      Debug.LogWarning((object) ("No muscle with target " + target.name + "found on the PuppetMaster."), (UnityEngine.Object) this.transform);
+      Debug.LogWarning("No muscle with target " + target.name + "found on the PuppetMaster.", transform);
       return -1;
     }
 
@@ -1392,17 +1394,17 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return -1;
-      if ((UnityEngine.Object) rigidbody == (UnityEngine.Object) null)
+      if (rigidbody == null)
       {
-        Debug.LogWarning((object) "Rigidbody is null, can not get muscle index.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Rigidbody is null, can not get muscle index.", transform);
         return -1;
       }
       for (int muscleIndex = 0; muscleIndex < muscles.Length; ++muscleIndex)
       {
-        if ((UnityEngine.Object) muscles[muscleIndex].rigidbody == (UnityEngine.Object) rigidbody)
+        if (muscles[muscleIndex].rigidbody == rigidbody)
           return muscleIndex;
       }
-      Debug.LogWarning((object) ("No muscle with Rigidbody " + rigidbody.name + "found on the PuppetMaster."), (UnityEngine.Object) this.transform);
+      Debug.LogWarning("No muscle with Rigidbody " + rigidbody.name + "found on the PuppetMaster.", transform);
       return -1;
     }
 
@@ -1410,17 +1412,17 @@ namespace RootMotion.Dynamics
     {
       if (!CheckIfInitiated())
         return -1;
-      if ((UnityEngine.Object) joint == (UnityEngine.Object) null)
+      if (joint == null)
       {
-        Debug.LogWarning((object) "Joint is null, can not get muscle index.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Joint is null, can not get muscle index.", transform);
         return -1;
       }
       for (int muscleIndex = 0; muscleIndex < muscles.Length; ++muscleIndex)
       {
-        if ((UnityEngine.Object) muscles[muscleIndex].joint == (UnityEngine.Object) joint)
+        if (muscles[muscleIndex].joint == joint)
           return muscleIndex;
       }
-      Debug.LogWarning((object) ("No muscle with Joint " + joint.name + "found on the PuppetMaster."), (UnityEngine.Object) this.transform);
+      Debug.LogWarning("No muscle with Joint " + joint.name + "found on the PuppetMaster.", transform);
       return -1;
     }
 
@@ -1430,7 +1432,7 @@ namespace RootMotion.Dynamics
       int characterControllerLayer,
       int ragdollLayer)
     {
-      if (!((UnityEngine.Object) ragdoll != (UnityEngine.Object) target))
+      if (!(ragdoll != target))
         return SetUp(ragdoll, characterControllerLayer, ragdollLayer);
       PuppetMaster puppetMaster = ragdoll.gameObject.AddComponent<PuppetMaster>();
       puppetMaster.SetUpTo(target, characterControllerLayer, ragdollLayer);
@@ -1442,7 +1444,7 @@ namespace RootMotion.Dynamics
       int characterControllerLayer,
       int ragdollLayer)
     {
-      PuppetMaster puppetMaster = UnityEngine.Object.Instantiate<GameObject>(target.gameObject, target.position, target.rotation).transform.gameObject.AddComponent<PuppetMaster>();
+      PuppetMaster puppetMaster = Instantiate(target.gameObject, target.position, target.rotation).transform.gameObject.AddComponent<PuppetMaster>();
       puppetMaster.SetUpTo(target, characterControllerLayer, ragdollLayer);
       RemoveRagdollComponents(target, characterControllerLayer);
       return puppetMaster;
@@ -1450,59 +1452,59 @@ namespace RootMotion.Dynamics
 
     public void SetUpTo(Transform setUpTo, int characterControllerLayer, int ragdollLayer)
     {
-      if ((UnityEngine.Object) setUpTo == (UnityEngine.Object) null)
+      if (setUpTo == null)
       {
-        Debug.LogWarning((object) "SetUpTo is null. Can not set the PuppetMaster up to a null Transform.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("SetUpTo is null. Can not set the PuppetMaster up to a null Transform.", transform);
       }
       else
       {
-        if ((UnityEngine.Object) setUpTo == (UnityEngine.Object) this.transform)
+        if (setUpTo == transform)
         {
-          setUpTo = UnityEngine.Object.Instantiate<GameObject>(setUpTo.gameObject, setUpTo.position, setUpTo.rotation).transform;
-          setUpTo.name = this.name;
+          setUpTo = Instantiate(setUpTo.gameObject, setUpTo.position, setUpTo.rotation).transform;
+          setUpTo.name = name;
           RemoveRagdollComponents(setUpTo, characterControllerLayer);
         }
         RemoveUnnecessaryBones();
-        Component[] componentsInChildren = this.GetComponentsInChildren<Component>();
+        Component[] componentsInChildren = GetComponentsInChildren<Component>();
         for (int index = 0; index < componentsInChildren.Length; ++index)
         {
           if (!(componentsInChildren[index] is PuppetMaster) && !(componentsInChildren[index] is Transform) && !(componentsInChildren[index] is Rigidbody) && !(componentsInChildren[index] is BoxCollider) && !(componentsInChildren[index] is CapsuleCollider) && !(componentsInChildren[index] is SphereCollider) && !(componentsInChildren[index] is MeshCollider) && !(componentsInChildren[index] is Joint) && !(componentsInChildren[index] is Animator))
-            UnityEngine.Object.DestroyImmediate((UnityEngine.Object) componentsInChildren[index]);
+            DestroyImmediate(componentsInChildren[index]);
         }
-        foreach (UnityEngine.Object componentsInChild in this.GetComponentsInChildren<Animator>())
-          UnityEngine.Object.DestroyImmediate(componentsInChild);
-        Component[] components = this.transform.GetComponents<Component>();
+        foreach (Object componentsInChild in GetComponentsInChildren<Animator>())
+          DestroyImmediate(componentsInChild);
+        Component[] components = transform.GetComponents<Component>();
         for (int index = 0; index < components.Length; ++index)
         {
           if (!(components[index] is PuppetMaster) && !(components[index] is Transform))
-            UnityEngine.Object.DestroyImmediate((UnityEngine.Object) components[index]);
+            DestroyImmediate(components[index]);
         }
-        foreach (Rigidbody componentsInChild in this.transform.GetComponentsInChildren<Rigidbody>())
+        foreach (Rigidbody componentsInChild in transform.GetComponentsInChildren<Rigidbody>())
         {
-          if ((UnityEngine.Object) componentsInChild.transform != (UnityEngine.Object) this.transform && (UnityEngine.Object) componentsInChild.GetComponent<ConfigurableJoint>() == (UnityEngine.Object) null)
+          if (componentsInChild.transform != transform && componentsInChild.GetComponent<ConfigurableJoint>() == null)
             componentsInChild.gameObject.AddComponent<ConfigurableJoint>();
         }
         targetRoot = setUpTo;
         SetUpMuscles(setUpTo);
-        this.name = nameof (PuppetMaster);
-        Transform transform1 = (UnityEngine.Object) setUpTo.parent == (UnityEngine.Object) null || (UnityEngine.Object) setUpTo.parent != (UnityEngine.Object) this.transform.parent || setUpTo.parent.name != setUpTo.name + " Root" ? new GameObject(setUpTo.name + " Root").transform : setUpTo.parent;
-        transform1.parent = this.transform.parent;
+        name = nameof (PuppetMaster);
+        Transform transform1 = setUpTo.parent == null || setUpTo.parent != transform.parent || setUpTo.parent.name != setUpTo.name + " Root" ? new GameObject(setUpTo.name + " Root").transform : setUpTo.parent;
+        transform1.parent = transform.parent;
         Transform transform2 = new GameObject("Behaviours").transform;
         Comments comments = transform2.gameObject.GetComponent<Comments>();
-        if ((UnityEngine.Object) comments == (UnityEngine.Object) null)
+        if (comments == null)
           comments = transform2.gameObject.AddComponent<Comments>();
         comments.text = "All Puppet Behaviours should be parented to this GameObject, the PuppetMaster will automatically find them from here. All Puppet Behaviours have been designed so that they could be simply copied from one character to another without changing any references. It is important because they contain a lot of parameters and would be otherwise tedious to set up and tweak.";
         transform1.position = setUpTo.position;
         transform1.rotation = setUpTo.rotation;
         transform2.position = setUpTo.position;
         transform2.rotation = setUpTo.rotation;
-        this.transform.position = setUpTo.position;
-        this.transform.rotation = setUpTo.rotation;
+        transform.position = setUpTo.position;
+        transform.rotation = setUpTo.rotation;
         transform2.parent = transform1;
-        this.transform.parent = transform1;
+        transform.parent = transform1;
         setUpTo.parent = transform1;
         targetRoot.gameObject.layer = characterControllerLayer;
-        this.gameObject.layer = ragdollLayer;
+        gameObject.layer = ragdollLayer;
         foreach (Muscle muscle in muscles)
           muscle.joint.gameObject.layer = ragdollLayer;
         Physics.IgnoreLayerCollision(characterControllerLayer, ragdollLayer);
@@ -1511,38 +1513,38 @@ namespace RootMotion.Dynamics
 
     public static void RemoveRagdollComponents(Transform target, int characterControllerLayer)
     {
-      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+      if (target == null)
         return;
       Rigidbody[] componentsInChildren1 = target.GetComponentsInChildren<Rigidbody>();
       Cloth[] componentsInChildren2 = target.GetComponentsInChildren<Cloth>();
       for (int index = 0; index < componentsInChildren1.Length; ++index)
       {
-        if ((UnityEngine.Object) componentsInChildren1[index].gameObject != (UnityEngine.Object) target.gameObject)
+        if (componentsInChildren1[index].gameObject != target.gameObject)
         {
           Joint component1 = componentsInChildren1[index].GetComponent<Joint>();
           Collider component2 = componentsInChildren1[index].GetComponent<Collider>();
-          if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
-            UnityEngine.Object.DestroyImmediate((UnityEngine.Object) component1);
-          if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
+          if (component1 != null)
+            DestroyImmediate(component1);
+          if (component2 != null)
           {
             if (!IsClothCollider(component2, componentsInChildren2))
-              UnityEngine.Object.DestroyImmediate((UnityEngine.Object) component2);
+              DestroyImmediate(component2);
             else
               component2.gameObject.layer = characterControllerLayer;
           }
-          UnityEngine.Object.DestroyImmediate((UnityEngine.Object) componentsInChildren1[index]);
+          DestroyImmediate(componentsInChildren1[index]);
         }
       }
       Collider[] componentsInChildren3 = target.GetComponentsInChildren<Collider>();
       for (int index = 0; index < componentsInChildren3.Length; ++index)
       {
-        if ((UnityEngine.Object) componentsInChildren3[index].transform != (UnityEngine.Object) target && !IsClothCollider(componentsInChildren3[index], componentsInChildren2))
-          UnityEngine.Object.DestroyImmediate((UnityEngine.Object) componentsInChildren3[index]);
+        if (componentsInChildren3[index].transform != target && !IsClothCollider(componentsInChildren3[index], componentsInChildren2))
+          DestroyImmediate(componentsInChildren3[index]);
       }
       PuppetMaster component = target.GetComponent<PuppetMaster>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) component);
+      DestroyImmediate(component);
     }
 
     private void SetUpMuscles(Transform setUpTo)
@@ -1550,7 +1552,7 @@ namespace RootMotion.Dynamics
       ConfigurableJoint[] componentsInChildren1 = this.transform.GetComponentsInChildren<ConfigurableJoint>();
       if (componentsInChildren1.Length == 0)
       {
-        Debug.LogWarning((object) "No ConfigurableJoints found, can not build PuppetMaster. Please create ConfigurableJoints to connect the ragdoll bones together.", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("No ConfigurableJoints found, can not build PuppetMaster. Please create ConfigurableJoints to connect the ragdoll bones together.", transform);
       }
       else
       {
@@ -1563,15 +1565,15 @@ namespace RootMotion.Dynamics
           muscles[index2] = new Muscle();
           muscles[index2].joint = componentsInChildren1[index2];
           muscles[index2].name = componentsInChildren1[index2].name;
-          muscles[index2].props = new Muscle.Props(1f, 1f, 1f, 1f, (UnityEngine.Object) muscles[index2].joint.connectedBody == (UnityEngine.Object) null);
-          if ((UnityEngine.Object) muscles[index2].joint.connectedBody == (UnityEngine.Object) null && index1 == -1)
+          muscles[index2].props = new Muscle.Props(1f, 1f, 1f, 1f, muscles[index2].joint.connectedBody == null);
+          if (muscles[index2].joint.connectedBody == null && index1 == -1)
             index1 = index2;
           foreach (Transform transform in componentsInChildren2)
           {
             if (transform.name == componentsInChildren1[index2].name)
             {
               muscles[index2].target = transform;
-              if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
+              if (componentInChildren != null)
               {
                 muscles[index2].props.group = FindGroup(componentInChildren, muscles[index2].target);
                 if (muscles[index2].props.group == Muscle.Group.Hips || muscles[index2].props.group == Muscle.Group.Leg || muscles[index2].props.group == Muscle.Group.Foot)
@@ -1591,14 +1593,14 @@ namespace RootMotion.Dynamics
         bool flag = true;
         foreach (Muscle muscle in muscles)
         {
-          if ((UnityEngine.Object) muscle.target == (UnityEngine.Object) null)
-            Debug.LogWarning((object) ("No target Transform found for PuppetMaster muscle " + muscle.joint.name + ". Please assign manually."), (UnityEngine.Object) this.transform);
+          if (muscle.target == null)
+            Debug.LogWarning("No target Transform found for PuppetMaster muscle " + muscle.joint.name + ". Please assign manually.", transform);
           if (muscle.props.group != muscles[0].props.group)
             flag = false;
         }
         if (!flag)
           return;
-        Debug.LogWarning((object) "Muscle groups need to be assigned in the PuppetMaster!", (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Muscle groups need to be assigned in the PuppetMaster!", this.transform);
       }
     }
 
@@ -1606,48 +1608,48 @@ namespace RootMotion.Dynamics
     {
       if (!animator.isHuman)
         return Muscle.Group.Hips;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.Chest))
+      if (t == animator.GetBoneTransform(HumanBodyBones.Chest))
         return Muscle.Group.Spine;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.Head))
+      if (t == animator.GetBoneTransform(HumanBodyBones.Head))
         return Muscle.Group.Head;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.Hips))
+      if (t == animator.GetBoneTransform(HumanBodyBones.Hips))
         return Muscle.Group.Hips;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.LeftFoot))
+      if (t == animator.GetBoneTransform(HumanBodyBones.LeftFoot))
         return Muscle.Group.Foot;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.LeftHand))
+      if (t == animator.GetBoneTransform(HumanBodyBones.LeftHand))
         return Muscle.Group.Hand;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.LeftLowerArm))
+      if (t == animator.GetBoneTransform(HumanBodyBones.LeftLowerArm))
         return Muscle.Group.Arm;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg))
+      if (t == animator.GetBoneTransform(HumanBodyBones.LeftLowerLeg))
         return Muscle.Group.Leg;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.LeftUpperArm))
+      if (t == animator.GetBoneTransform(HumanBodyBones.LeftUpperArm))
         return Muscle.Group.Arm;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg))
+      if (t == animator.GetBoneTransform(HumanBodyBones.LeftUpperLeg))
         return Muscle.Group.Leg;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.RightFoot))
+      if (t == animator.GetBoneTransform(HumanBodyBones.RightFoot))
         return Muscle.Group.Foot;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.RightHand))
+      if (t == animator.GetBoneTransform(HumanBodyBones.RightHand))
         return Muscle.Group.Hand;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.RightLowerArm))
+      if (t == animator.GetBoneTransform(HumanBodyBones.RightLowerArm))
         return Muscle.Group.Arm;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.RightLowerLeg))
+      if (t == animator.GetBoneTransform(HumanBodyBones.RightLowerLeg))
         return Muscle.Group.Leg;
-      if ((UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.RightUpperArm))
+      if (t == animator.GetBoneTransform(HumanBodyBones.RightUpperArm))
         return Muscle.Group.Arm;
-      return (UnityEngine.Object) t == (UnityEngine.Object) animator.GetBoneTransform(HumanBodyBones.RightUpperLeg) ? Muscle.Group.Leg : Muscle.Group.Spine;
+      return t == animator.GetBoneTransform(HumanBodyBones.RightUpperLeg) ? Muscle.Group.Leg : Muscle.Group.Spine;
     }
 
     private void RemoveUnnecessaryBones()
     {
-      Transform[] componentsInChildren = this.GetComponentsInChildren<Transform>();
+      Transform[] componentsInChildren = GetComponentsInChildren<Transform>();
       for (int index1 = 1; index1 < componentsInChildren.Length; ++index1)
       {
         bool flag = false;
-        if ((UnityEngine.Object) componentsInChildren[index1].GetComponent<Rigidbody>() != (UnityEngine.Object) null || (UnityEngine.Object) componentsInChildren[index1].GetComponent<ConfigurableJoint>() != (UnityEngine.Object) null)
+        if (componentsInChildren[index1].GetComponent<Rigidbody>() != null || componentsInChildren[index1].GetComponent<ConfigurableJoint>() != null)
           flag = true;
-        if ((UnityEngine.Object) componentsInChildren[index1].GetComponent<Collider>() != (UnityEngine.Object) null && (UnityEngine.Object) componentsInChildren[index1].GetComponent<Rigidbody>() == (UnityEngine.Object) null)
+        if (componentsInChildren[index1].GetComponent<Collider>() != null && componentsInChildren[index1].GetComponent<Rigidbody>() == null)
           flag = true;
-        if ((UnityEngine.Object) componentsInChildren[index1].GetComponent<CharacterController>() != (UnityEngine.Object) null)
+        if (componentsInChildren[index1].GetComponent<CharacterController>() != null)
           flag = false;
         if (!flag)
         {
@@ -1656,7 +1658,7 @@ namespace RootMotion.Dynamics
             transformArray[index2] = componentsInChildren[index1].GetChild(index2);
           for (int index3 = 0; index3 < transformArray.Length; ++index3)
             transformArray[index3].parent = componentsInChildren[index1].parent;
-          UnityEngine.Object.DestroyImmediate((UnityEngine.Object) componentsInChildren[index1].gameObject);
+          DestroyImmediate(componentsInChildren[index1].gameObject);
         }
       }
     }
@@ -1667,16 +1669,16 @@ namespace RootMotion.Dynamics
         return false;
       foreach (Cloth cloth in cloths)
       {
-        if ((UnityEngine.Object) cloth == (UnityEngine.Object) null)
+        if (cloth == null)
           return false;
         foreach (CapsuleCollider capsuleCollider in cloth.capsuleColliders)
         {
-          if ((UnityEngine.Object) capsuleCollider != (UnityEngine.Object) null && (UnityEngine.Object) capsuleCollider.gameObject == (UnityEngine.Object) collider.gameObject)
+          if (capsuleCollider != null && capsuleCollider.gameObject == collider.gameObject)
             return true;
         }
         foreach (ClothSphereColliderPair sphereCollider in cloth.sphereColliders)
         {
-          if ((UnityEngine.Object) sphereCollider.first != (UnityEngine.Object) null && (UnityEngine.Object) sphereCollider.first.gameObject == (UnityEngine.Object) collider.gameObject || (UnityEngine.Object) sphereCollider.second != (UnityEngine.Object) null && (UnityEngine.Object) sphereCollider.second.gameObject == (UnityEngine.Object) collider.gameObject)
+          if (sphereCollider.first != null && sphereCollider.first.gameObject == collider.gameObject || sphereCollider.second != null && sphereCollider.second.gameObject == collider.gameObject)
             return true;
         }
       }
@@ -1733,9 +1735,9 @@ namespace RootMotion.Dynamics
       if (lastState == State.Alive)
       {
         if (state == State.Dead)
-          this.StartCoroutine(AliveToDead(false));
+          StartCoroutine(AliveToDead(false));
         else if (state == State.Frozen)
-          this.StartCoroutine(AliveToDead(true));
+          StartCoroutine(AliveToDead(true));
       }
       else if (lastState == State.Dead)
       {
@@ -1852,9 +1854,9 @@ namespace RootMotion.Dynamics
         OnFreeze();
       if (!stateSettings.freezePermanently)
         return;
-      if (behaviours.Length != 0 && (UnityEngine.Object) behaviours[0] != (UnityEngine.Object) null)
-        UnityEngine.Object.Destroy((UnityEngine.Object) behaviours[0].transform.parent.gameObject);
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+      if (behaviours.Length != 0 && behaviours[0] != null)
+        Destroy(behaviours[0].transform.parent.gameObject);
+      Destroy(gameObject);
     }
 
     private void DeadToAlive()
@@ -1887,9 +1889,9 @@ namespace RootMotion.Dynamics
     private void SetAnimationEnabled(bool to)
     {
       animatorDisabled = false;
-      if ((UnityEngine.Object) targetAnimator != (UnityEngine.Object) null)
+      if (targetAnimator != null)
         targetAnimator.enabled = to;
-      if (!((UnityEngine.Object) targetAnimation != (UnityEngine.Object) null))
+      if (!(targetAnimation != null))
         return;
       targetAnimation.enabled = to;
     }
@@ -1923,9 +1925,9 @@ namespace RootMotion.Dynamics
         if (behaviour.deactivated)
           behaviour.gameObject.SetActive(true);
       }
-      if ((UnityEngine.Object) targetAnimator != (UnityEngine.Object) null)
+      if (targetAnimator != null)
         targetAnimator.enabled = true;
-      if ((UnityEngine.Object) targetAnimation != (UnityEngine.Object) null)
+      if (targetAnimation != null)
         targetAnimation.enabled = true;
       activeState = State.Alive;
       if (OnUnfreeze != null)
@@ -1973,7 +1975,7 @@ namespace RootMotion.Dynamics
     {
       foreach (Muscle muscle in muscles)
       {
-        if ((double) muscle.rigidbody.velocity.sqrMagnitude > stateSettings.maxFreezeSqrVelocity)
+        if (muscle.rigidbody.velocity.sqrMagnitude > (double) stateSettings.maxFreezeSqrVelocity)
           return false;
       }
       return true;
@@ -2005,9 +2007,9 @@ namespace RootMotion.Dynamics
         return;
       for (int index = 0; index < targetChildren.Length; ++index)
       {
-        if ((UnityEngine.Object) targetChildren[index] == (UnityEngine.Object) null)
+        if (targetChildren[index] == null)
         {
-          Debug.LogWarning((object) "PuppetMaster.UpdateTargetHierarchy() needs to be called when any of the child Transforms of the targetRoot are unparented or removed.", (UnityEngine.Object) this.transform);
+          Debug.LogWarning("PuppetMaster.UpdateTargetHierarchy() needs to be called when any of the child Transforms of the targetRoot are unparented or removed.", transform);
           return;
         }
         if (index == 0)
@@ -2086,9 +2088,9 @@ namespace RootMotion.Dynamics
     {
       for (int index = 0; index < muscles.Length; ++index)
       {
-        if ((UnityEngine.Object) muscles[index].broadcaster != (UnityEngine.Object) null)
+        if (muscles[index].broadcaster != null)
           muscles[index].broadcaster.muscleIndex = index;
-        if ((UnityEngine.Object) muscles[index].jointBreakBroadcaster != (UnityEngine.Object) null)
+        if (muscles[index].jointBreakBroadcaster != null)
           muscles[index].jointBreakBroadcaster.muscleIndex = index;
       }
     }
@@ -2098,13 +2100,13 @@ namespace RootMotion.Dynamics
       for (int index1 = 0; index1 < muscles.Length; ++index1)
       {
         muscles[index1].parentIndexes = new int[0];
-        if ((UnityEngine.Object) muscles[index1].joint.connectedBody != (UnityEngine.Object) null)
+        if (muscles[index1].joint.connectedBody != null)
           AddToParentsRecursive(muscles[index1].joint.connectedBody.GetComponent<ConfigurableJoint>(), ref muscles[index1].parentIndexes);
         muscles[index1].childIndexes = new int[0];
         muscles[index1].childFlags = new bool[muscles.Length];
         for (int index2 = 0; index2 < muscles.Length; ++index2)
         {
-          if (index1 != index2 && (UnityEngine.Object) muscles[index2].joint.connectedBody == (UnityEngine.Object) muscles[index1].rigidbody)
+          if (index1 != index2 && muscles[index2].joint.connectedBody == muscles[index1].rigidbody)
             AddToChildrenRecursive(muscles[index2].joint, ref muscles[index1].childIndexes, ref muscles[index1].childFlags);
         }
       }
@@ -2112,14 +2114,14 @@ namespace RootMotion.Dynamics
 
     private void AddToParentsRecursive(ConfigurableJoint joint, ref int[] indexes)
     {
-      if ((UnityEngine.Object) joint == (UnityEngine.Object) null)
+      if (joint == null)
         return;
       int muscleIndexLowLevel = GetMuscleIndexLowLevel(joint);
       if (muscleIndexLowLevel == -1)
         return;
       Array.Resize(ref indexes, indexes.Length + 1);
       indexes[indexes.Length - 1] = muscleIndexLowLevel;
-      if ((UnityEngine.Object) joint.connectedBody == (UnityEngine.Object) null)
+      if (joint.connectedBody == null)
         return;
       AddToParentsRecursive(joint.connectedBody.GetComponent<ConfigurableJoint>(), ref indexes);
     }
@@ -2129,7 +2131,7 @@ namespace RootMotion.Dynamics
       ref int[] indexes,
       ref bool[] childFlags)
     {
-      if ((UnityEngine.Object) joint == (UnityEngine.Object) null)
+      if (joint == null)
         return;
       int muscleIndexLowLevel = GetMuscleIndexLowLevel(joint);
       if (muscleIndexLowLevel == -1)
@@ -2139,7 +2141,7 @@ namespace RootMotion.Dynamics
       childFlags[muscleIndexLowLevel] = true;
       for (int index = 0; index < muscles.Length; ++index)
       {
-        if (index != muscleIndexLowLevel && (UnityEngine.Object) muscles[index].joint.connectedBody == (UnityEngine.Object) joint.GetComponent<Rigidbody>())
+        if (index != muscleIndexLowLevel && muscles[index].joint.connectedBody == joint.GetComponent<Rigidbody>())
           AddToChildrenRecursive(muscles[index].joint, ref indexes, ref childFlags);
       }
     }
@@ -2158,7 +2160,7 @@ namespace RootMotion.Dynamics
     {
       for (int index1 = 0; index1 < muscles.Length; ++index1)
       {
-        if (index1 != index && (UnityEngine.Object) muscles[index1].joint.connectedBody == (UnityEngine.Object) muscles[index].rigidbody)
+        if (index1 != index && muscles[index1].joint.connectedBody == muscles[index].rigidbody)
         {
           kinshipDegrees[index1] = degree;
           AssignKinshipsDownRecursive(ref kinshipDegrees, degree + 1, index1);
@@ -2170,13 +2172,13 @@ namespace RootMotion.Dynamics
     {
       for (int index1 = 0; index1 < muscles.Length; ++index1)
       {
-        if (index1 != index && (UnityEngine.Object) muscles[index1].rigidbody == (UnityEngine.Object) muscles[index].joint.connectedBody)
+        if (index1 != index && muscles[index1].rigidbody == muscles[index].joint.connectedBody)
         {
           kinshipDegrees[index1] = degree;
           AssignKinshipsUpRecursive(ref kinshipDegrees, degree + 1, index1);
           for (int index2 = 0; index2 < muscles.Length; ++index2)
           {
-            if (index2 != index1 && index2 != index && (UnityEngine.Object) muscles[index2].joint.connectedBody == (UnityEngine.Object) muscles[index1].rigidbody)
+            if (index2 != index1 && index2 != index && muscles[index2].joint.connectedBody == muscles[index1].rigidbody)
             {
               kinshipDegrees[index2] = degree + 1;
               AssignKinshipsDownRecursive(ref kinshipDegrees, degree + 2, index2);
@@ -2190,7 +2192,7 @@ namespace RootMotion.Dynamics
     {
       for (int muscleIndexLowLevel = 0; muscleIndexLowLevel < muscles.Length; ++muscleIndexLowLevel)
       {
-        if ((UnityEngine.Object) muscles[muscleIndexLowLevel].joint == (UnityEngine.Object) joint)
+        if (muscles[muscleIndexLowLevel].joint == joint)
           return muscleIndexLowLevel;
       }
       return -1;
@@ -2201,13 +2203,13 @@ namespace RootMotion.Dynamics
       if (muscles == null)
       {
         if (log)
-          Debug.LogWarning((object) "PuppetMaster Muscles is null.", (UnityEngine.Object) this.transform);
+          Debug.LogWarning("PuppetMaster Muscles is null.", transform);
         return false;
       }
       if (muscles.Length == 0)
       {
         if (log)
-          Debug.LogWarning((object) "PuppetMaster has no muscles.", (UnityEngine.Object) this.transform);
+          Debug.LogWarning("PuppetMaster has no muscles.", transform);
         return false;
       }
       for (int index = 0; index < muscles.Length; ++index)
@@ -2215,60 +2217,60 @@ namespace RootMotion.Dynamics
         if (muscles[index] == null)
         {
           if (log)
-            Debug.LogWarning((object) "Muscle is null, PuppetMaster muscle setup is invalid.", (UnityEngine.Object) this.transform);
+            Debug.LogWarning("Muscle is null, PuppetMaster muscle setup is invalid.", transform);
           return false;
         }
         if (!muscles[index].IsValid(log))
           return false;
       }
-      if ((UnityEngine.Object) targetRoot == (UnityEngine.Object) null)
+      if (targetRoot == null)
       {
         if (log)
-          Debug.LogWarning((object) "'Target Root' of PuppetMaster is null.");
+          Debug.LogWarning("'Target Root' of PuppetMaster is null.");
         return false;
       }
-      if (targetRoot.position != this.transform.position)
+      if (targetRoot.position != transform.position)
       {
         if (log)
-          Debug.LogWarning((object) "The position of the animated character (Target) must match with the position of the PuppetMaster when initiating PuppetMaster. If you are creating the Puppet in runtime, make sure you don't move the Target to another position immediatelly after instantiation. Move the Root Transform instead.");
+          Debug.LogWarning("The position of the animated character (Target) must match with the position of the PuppetMaster when initiating PuppetMaster. If you are creating the Puppet in runtime, make sure you don't move the Target to another position immediatelly after instantiation. Move the Root Transform instead.");
         return false;
       }
-      if ((UnityEngine.Object) targetRoot == (UnityEngine.Object) null)
+      if (targetRoot == null)
       {
         if (log)
-          Debug.LogWarning((object) "Invalid PuppetMaster setup. (targetRoot not found)", (UnityEngine.Object) this.transform);
+          Debug.LogWarning("Invalid PuppetMaster setup. (targetRoot not found)", transform);
         return false;
       }
       for (int index1 = 0; index1 < muscles.Length; ++index1)
       {
         for (int index2 = 0; index2 < muscles.Length; ++index2)
         {
-          if (index1 != index2 && (muscles[index1] == muscles[index2] || (UnityEngine.Object) muscles[index1].joint == (UnityEngine.Object) muscles[index2].joint))
+          if (index1 != index2 && (muscles[index1] == muscles[index2] || muscles[index1].joint == muscles[index2].joint))
           {
             if (log)
-              Debug.LogWarning((object) ("Joint " + muscles[index1].joint.name + " is used by multiple muscles (indexes " + index1 + " and " + index2 + "), PuppetMaster muscle setup is invalid."), (UnityEngine.Object) this.transform);
+              Debug.LogWarning("Joint " + muscles[index1].joint.name + " is used by multiple muscles (indexes " + index1 + " and " + index2 + "), PuppetMaster muscle setup is invalid.", transform);
             return false;
           }
         }
       }
-      if ((UnityEngine.Object) muscles[0].joint.connectedBody != (UnityEngine.Object) null && muscles.Length > 1)
+      if (muscles[0].joint.connectedBody != null && muscles.Length > 1)
       {
         for (int index = 1; index < muscles.Length; ++index)
         {
-          if ((UnityEngine.Object) muscles[index].joint.GetComponent<Rigidbody>() == (UnityEngine.Object) muscles[0].joint.connectedBody)
+          if (muscles[index].joint.GetComponent<Rigidbody>() == muscles[0].joint.connectedBody)
           {
             if (log)
-              Debug.LogWarning((object) "The first muscle needs to be the one that all the others are connected to (the hips).", (UnityEngine.Object) this.transform);
+              Debug.LogWarning("The first muscle needs to be the one that all the others are connected to (the hips).", transform);
             return false;
           }
         }
       }
       for (int index = 0; index < muscles.Length; ++index)
       {
-        if ((double) Vector3.SqrMagnitude(muscles[index].joint.transform.position - muscles[index].target.position) > 1.0 / 1000.0)
+        if (Vector3.SqrMagnitude(muscles[index].joint.transform.position - muscles[index].target.position) > 1.0 / 1000.0)
         {
           if (log)
-            Debug.LogWarning((object) ("The position of each muscle needs to match with the position of it's target. Muscle '" + muscles[index].joint.name + "' position does not match with it's target. Right-click on the PuppetMaster component's header and select 'Fix Muscle Positions' from the context menu."), (UnityEngine.Object) muscles[index].joint.transform);
+            Debug.LogWarning("The position of each muscle needs to match with the position of it's target. Muscle '" + muscles[index].joint.name + "' position does not match with it's target. Right-click on the PuppetMaster component's header and select 'Fix Muscle Positions' from the context menu.", muscles[index].joint.transform);
           return false;
         }
       }
@@ -2291,14 +2293,14 @@ namespace RootMotion.Dynamics
       if (num2 / (double) num1 <= threshold)
         return true;
       if (log)
-        Debug.LogWarning((object) ("Mass variation between the Rigidbodies in the ragdoll is more than " + threshold + " times. This might cause instability and unwanted results with Rigidbodies connected by Joints. Min mass: " + num1 + ", max mass: " + num2), (UnityEngine.Object) this.transform);
+        Debug.LogWarning("Mass variation between the Rigidbodies in the ragdoll is more than " + threshold + " times. This might cause instability and unwanted results with Rigidbodies connected by Joints. Min mass: " + num1 + ", max mass: " + num2, transform);
       return false;
     }
 
     private bool CheckIfInitiated()
     {
       if (!initiated)
-        Debug.LogError((object) "PuppetMaster has not been initiated yet.");
+        Debug.LogError("PuppetMaster has not been initiated yet.");
       return initiated;
     }
 

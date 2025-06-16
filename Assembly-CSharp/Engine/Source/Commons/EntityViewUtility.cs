@@ -1,4 +1,6 @@
 ﻿using Engine.Common;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Engine.Source.Commons
 {
@@ -17,7 +19,7 @@ namespace Engine.Source.Commons
       Transform transform = ((IEntityView) entity).GameObject.transform;
       Rigidbody componentNonAlloc1 = transform.GetComponentNonAlloc<Rigidbody>();
       bool flag = false;
-      if ((Object) componentNonAlloc1 != (Object) null && !componentNonAlloc1.isKinematic)
+      if (componentNonAlloc1 != null && !componentNonAlloc1.isKinematic)
       {
         flag = true;
         componentNonAlloc1.isKinematic = true;
@@ -25,7 +27,7 @@ namespace Engine.Source.Commons
       if (player)
         rotation = Quaternion.Euler(0.0f, rotation.eulerAngles.y, 0.0f);
       transform.SetPositionAndRotation(position, rotation);
-      if ((Object) componentNonAlloc1 != (Object) null)
+      if (componentNonAlloc1 != null)
       {
         if (flag)
           componentNonAlloc1.isKinematic = false;
@@ -33,7 +35,7 @@ namespace Engine.Source.Commons
       }
       Physics.SyncTransforms();
       NavMeshAgent componentNonAlloc2 = transform.GetComponentNonAlloc<NavMeshAgent>();
-      if (!((Object) componentNonAlloc2 != (Object) null))
+      if (!(componentNonAlloc2 != null))
         return;
       componentNonAlloc2.Warp(position);
     }
@@ -43,9 +45,9 @@ namespace Engine.Source.Commons
       if (!((IEntityView) entity).IsAttached)
         return;
       GameObject gameObject = ((IEntityView) entity).GameObject;
-      if ((Object) gameObject == (Object) null)
+      if (gameObject == null)
       {
-        Debug.LogError((object) ("GameObject is destroed, owner : " + entity.GetInfo()));
+        Debug.LogError("GameObject is destroed, owner : " + entity.GetInfo());
       }
       else
       {
@@ -75,11 +77,11 @@ namespace Engine.Source.Commons
       vector3.x = new Vector4(matrix.m00, matrix.m10, matrix.m20, matrix.m30).magnitude;
       ref Vector3 local1 = ref vector3;
       Vector4 vector4 = new Vector4(matrix.m01, matrix.m11, matrix.m21, matrix.m31);
-      double magnitude1 = (double) vector4.magnitude;
+      double magnitude1 = vector4.magnitude;
       local1.y = (float) magnitude1;
       ref Vector3 local2 = ref vector3;
       vector4 = new Vector4(matrix.m02, matrix.m12, matrix.m22, matrix.m32);
-      double magnitude2 = (double) vector4.magnitude;
+      double magnitude2 = vector4.magnitude;
       local2.z = (float) magnitude2;
     }
   }

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion
 {
@@ -184,7 +185,7 @@ namespace RootMotion
       Transform[] array = new Transform[0];
       foreach (Transform bone in bones)
       {
-        if ((UnityEngine.Object) bone != (UnityEngine.Object) null && GetBoneType(bone.name) == boneType)
+        if (bone != null && GetBoneType(bone.name) == boneType)
         {
           Array.Resize(ref array, array.Length + 1);
           array[array.Length - 1] = bone;
@@ -198,7 +199,7 @@ namespace RootMotion
       Transform[] array = new Transform[0];
       foreach (Transform bone in bones)
       {
-        if ((UnityEngine.Object) bone != (UnityEngine.Object) null && GetBoneSide(bone.name) == boneSide)
+        if (bone != null && GetBoneSide(bone.name) == boneSide)
         {
           Array.Resize(ref array, array.Length + 1);
           array[array.Length - 1] = bone;
@@ -222,7 +223,7 @@ namespace RootMotion
       Transform[] bones)
     {
       Transform[] bonesOfTypeAndSide = GetBonesOfTypeAndSide(boneType, boneSide, bones);
-      return bonesOfTypeAndSide.Length == 0 ? (Transform) null : bonesOfTypeAndSide[0];
+      return bonesOfTypeAndSide.Length == 0 ? null : bonesOfTypeAndSide[0];
     }
 
     public static Transform GetNamingMatch(Transform[] transforms, params string[][] namings)
@@ -241,7 +242,7 @@ namespace RootMotion
         if (flag)
           return transform;
       }
-      return (Transform) null;
+      return null;
     }
 
     public static BoneType GetBoneType(string boneName)

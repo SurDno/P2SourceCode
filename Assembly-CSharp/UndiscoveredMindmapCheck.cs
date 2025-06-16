@@ -1,6 +1,7 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
+using UnityEngine;
 
 public class UndiscoveredMindmapCheck : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class UndiscoveredMindmapCheck : MonoBehaviour
 
   private void OnEnable()
   {
-    if ((UnityEngine.Object) view == (UnityEngine.Object) null)
+    if (view == null)
       return;
     service = ServiceLocator.GetService<MMService>();
     if (service == null)

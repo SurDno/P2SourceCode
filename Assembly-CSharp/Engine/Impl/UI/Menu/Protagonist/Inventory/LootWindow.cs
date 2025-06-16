@@ -18,6 +18,8 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
 using Pingle;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -57,18 +59,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       get => _selectedContainer;
       set
       {
-        if ((UnityEngine.Object) _selectedContainer == (UnityEngine.Object) value)
+        if (_selectedContainer == value)
           return;
         HideClosedContainerInfo();
-        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+        if (selectedStorable != null)
         {
           selectedStorable = null;
           HideInfoWindow();
         }
-        if ((UnityEngine.Object) _selectedContainer != (UnityEngine.Object) null)
+        if (_selectedContainer != null)
           _selectedContainer.Button.GamepadEndHold();
         _selectedContainer = value;
-        if ((UnityEngine.Object) value != (UnityEngine.Object) null)
+        if (value != null)
         {
           ShowClosedContainerInfo(_selectedContainer.InventoryContainer);
         }
@@ -122,7 +124,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionLeft, OnChangeInventory);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.BumperSelectionRight, OnChangeInventory);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
-      inventories = new List<ContainerResizableWindow>((IEnumerable<ContainerResizableWindow>) this.GetComponentsInChildren<ContainerResizableWindow>());
+      inventories = new List<ContainerResizableWindow>(GetComponentsInChildren<ContainerResizableWindow>());
       actors.Clear();
       actors.Add(Actor);
       actors.Add(Target);
@@ -216,11 +218,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             if (_currentMode == Modes.Loot)
             {
               ServiceLocator.GetService<GameActionService>();
-              if ((UnityEngine.Object) _selectedContainer != (UnityEngine.Object) null)
+              if (_selectedContainer != null)
                 selectedContainer = null;
               if (!MoveStorableBetweenInventories)
               {
-                if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+                if (selectedStorable != null)
                 {
                   lastLootStor = selectedStorable;
                   selectedStorable = null;
@@ -245,7 +247,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
               ServiceLocator.GetService<GameActionService>();
               if (!MoveStorableBetweenInventories)
               {
-                if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+                if (selectedStorable != null)
                 {
                   lastInventoryStor = selectedStorable;
                   selectedStorable = null;
@@ -270,7 +272,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (!InputService.Instance.JoystickUsed)
         return false;
-      if ((UnityEngine.Object) _selectedContainer != (UnityEngine.Object) null)
+      if (_selectedContainer != null)
       {
         if (type == GameActionType.Submit & down)
         {
@@ -286,7 +288,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           return true;
         }
       }
-      if (((!((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null) ? 0 : (type == GameActionType.Submit ? 1 : 0)) & (down ? 1 : 0)) == 0)
+      if (((!(selectedStorable != null) ? 0 : (type == GameActionType.Submit ? 1 : 0)) & (down ? 1 : 0)) == 0)
         return false;
       if (selectedStorable.Internal.Storage == Target)
       {
@@ -301,7 +303,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected override void OnNavigate(
       Navigation navigation)
     {
-      if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null && (UnityEngine.Object) selectedContainer == (UnityEngine.Object) null)
+      if (selectedStorable == null && selectedContainer == null)
         CurrentMode = navigation != Navigation.CellRight && navigation != Navigation.ContainerRight ? Modes.Loot : Modes.Inventory;
       base.OnNavigate(navigation);
     }
@@ -311,11 +313,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.OnJoystick(joystick);
       if (joystick)
       {
-        if ((UnityEngine.Object) selectedContainer != (UnityEngine.Object) null)
+        if (selectedContainer != null)
           ShowClosedContainerInfo(selectedContainer.InventoryContainer);
         SetSelectedContainer();
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Loot, new GameActionHandle(((UIWindow) this).WithoutJoystickCancelListener));
-        if (!((UnityEngine.Object) currentInventory != (UnityEngine.Object) null))
+        if (!(currentInventory != null))
           return;
         currentInventory.SetActive(true);
       }
@@ -350,7 +352,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override bool DragBegin(IStorableComponent storable)
     {
-      if (drag.IsEnabled || storable == null || storable.IsDisposed || !storables.ContainsKey(storable) || (UnityEngine.Object) selectedContainer != (UnityEngine.Object) null || storable.Container != null && containerViews.ContainsKey(storable.Container) && !containerViews[storable.Container].ClickEnabled)
+      if (drag.IsEnabled || storable == null || storable.IsDisposed || !storables.ContainsKey(storable) || selectedContainer != null || storable.Container != null && containerViews.ContainsKey(storable.Container) && !containerViews[storable.Container].ClickEnabled)
         return false;
       if (Target.Items.Contains(storable))
         OnGetLoot(storable);
@@ -382,7 +384,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return;
       if (Target == null || Target.IsDisposed)
         ServiceLocator.GetService<UIService>().Pop();
-      if ((UnityEngine.Object) currentInventory != (UnityEngine.Object) null)
+      if (currentInventory != null)
       {
         StorableUI[] componentsInChildren = currentInventory.GetComponentsInChildren<StorableUI>();
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, MainControl);
@@ -417,19 +419,19 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (InputService.Instance.JoystickUsed)
       {
         FillSelectableList(selectableList, false);
-        List<GameObject> list = selectableList.Where((Func<GameObject, bool>) (sel => (UnityEngine.Object) sel.GetComponent<InventoryContainerUI>() != (UnityEngine.Object) null)).ToList();
+        List<GameObject> list = selectableList.Where(sel => sel.GetComponent<InventoryContainerUI>() != null).ToList();
         if (list.Count > 0)
         {
           int num = 0;
           foreach (GameObject gameObject in list)
-            num += ((IEnumerable<StorableUI>) gameObject.GetComponentsInChildren<StorableUI>()).ToList().Count;
-          if (((IEnumerable<StorableUI>) currentInventory.GetComponentsInChildren<StorableUI>()).ToList().Count - 1 - num > 0)
+            num += gameObject.GetComponentsInChildren<StorableUI>().ToList().Count;
+          if (currentInventory.GetComponentsInChildren<StorableUI>().ToList().Count - 1 - num > 0)
           {
             foreach (GameObject gameObject in list)
               selectableList.Remove(gameObject);
           }
         }
-        OnSelectObject(UISelectableHelper.SelectClosest((IEnumerable<GameObject>) selectableList, lastStorablePosition));
+        OnSelectObject(UISelectableHelper.SelectClosest(selectableList, lastStorablePosition));
       }
       OnGetLoot(storable);
       MoveItem(storable, Actor);
@@ -441,7 +443,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override void AdditionalAfterChangeAction()
     {
-      if ((UnityEngine.Object) selectedContainer != (UnityEngine.Object) null)
+      if (selectedContainer != null)
         lastStorablePosition = selectedContainer.transform.position;
       base.AdditionalAfterChangeAction();
     }
@@ -450,7 +452,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (component == null)
         return null;
-      List<InventoryContainerUI> list = ((IEnumerable<InventoryContainerUI>) lootContainerWindow.GetComponentsInChildren<InventoryContainerUI>()).ToList();
+      List<InventoryContainerUI> list = lootContainerWindow.GetComponentsInChildren<InventoryContainerUI>().ToList();
       if (list.Count == 0)
         return null;
       foreach (InventoryContainerUI containerByComponent in list)
@@ -467,9 +469,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (!complete)
         return;
       Actor.GetComponent<PlayerControllerComponent>()?.OnOpenContainer(container);
-      if ((UnityEngine.Object) _selectedContainer == (UnityEngine.Object) null || _selectedContainer.InventoryContainer != container)
+      if (_selectedContainer == null || _selectedContainer.InventoryContainer != container)
         selectedContainer = FindContainerByComponent(container);
-      if ((UnityEngine.Object) _selectedContainer == (UnityEngine.Object) null)
+      if (_selectedContainer == null)
         return;
       if (_selectedContainer.InventoryContainer.OpenState.Value != ContainerOpenStateEnum.Open)
       {
@@ -478,7 +480,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       else
       {
         StorableUI componentInChildren = _selectedContainer.GetComponentInChildren<StorableUI>();
-        if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
+        if (componentInChildren != null)
         {
           selectedContainer = null;
           OnSelectObject(componentInChildren.gameObject);
@@ -486,7 +488,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         else
         {
           FillSelectableList(selectableList, false);
-          OnSelectObject(UISelectableHelper.SelectClosest((IEnumerable<GameObject>) selectableList, selectedContainer.transform.position));
+          OnSelectObject(UISelectableHelper.SelectClosest(selectableList, selectedContainer.transform.position));
         }
       }
     }
@@ -498,7 +500,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      RegisterLayer((ILootWindow) this);
+      RegisterLayer<ILootWindow>(this);
       base.Initialize();
     }
 
@@ -567,13 +569,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       list.Clear();
       foreach (KeyValuePair<IStorableComponent, StorableUI> storable in storables)
       {
-        if (addSelected || !((UnityEngine.Object) storable.Value == (UnityEngine.Object) selectedStorable))
+        if (addSelected || !(storable.Value == selectedStorable))
         {
           IInventoryComponent container = storable.Key.Container;
-          if (!((UnityEngine.Object) storable.Value == (UnityEngine.Object) selectedStorable) && container.OpenState.Value == ContainerOpenStateEnum.Open && (!block || container == null || !((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null) || container != selectedStorable.Internal.Container))
+          if (!(storable.Value == selectedStorable) && container.OpenState.Value == ContainerOpenStateEnum.Open && (!block || container == null || !(selectedStorable != null) || container != selectedStorable.Internal.Container))
           {
             Vector3 position = storable.Value.transform.position;
-            if ((double) position.x >= 0.0 && (double) position.y >= 0.0 && (double) position.x <= (double) Screen.width && (double) position.y <= (double) Screen.height)
+            if (position.x >= 0.0 && position.y >= 0.0 && position.x <= (double) Screen.width && position.y <= (double) Screen.height)
               list.Add(storable.Value.gameObject);
           }
         }
@@ -587,28 +589,28 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected override Vector2 CurentNavigationPosition()
     {
-      RectTransform transform = (UnityEngine.Object) _selectedContainer != (UnityEngine.Object) null ? _selectedContainer.transform as RectTransform : (RectTransform) null;
-      return (UnityEngine.Object) transform != (UnityEngine.Object) null ? (Vector2) transform.TransformPoint((Vector3) transform.rect.center) : base.CurentNavigationPosition();
+      RectTransform transform = _selectedContainer != null ? _selectedContainer.transform as RectTransform : null;
+      return transform != null ? transform.TransformPoint(transform.rect.center) : base.CurentNavigationPosition();
     }
 
     protected override void OnSelectObject(GameObject selected)
     {
       ContainerResizableWindow componentInParent = selected?.GetComponentInParent<ContainerResizableWindow>();
-      if ((UnityEngine.Object) componentInParent != (UnityEngine.Object) null)
+      if (componentInParent != null)
       {
-        if ((UnityEngine.Object) componentInParent == (UnityEngine.Object) lootContainerWindow && CurrentMode != Modes.Loot)
+        if (componentInParent == lootContainerWindow && CurrentMode != Modes.Loot)
           CurrentMode = Modes.Loot;
-        else if ((UnityEngine.Object) componentInParent != (UnityEngine.Object) lootContainerWindow && CurrentMode != Modes.Inventory)
+        else if (componentInParent != lootContainerWindow && CurrentMode != Modes.Inventory)
           CurrentMode = Modes.Inventory;
       }
       InventoryContainerUI component = selected?.GetComponent<InventoryContainerUI>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+      if (component != null)
       {
         selectedContainer = component;
       }
       else
       {
-        if ((UnityEngine.Object) selected != (UnityEngine.Object) null)
+        if (selected != null)
           selectedContainer = null;
         base.OnSelectObject(selected);
       }
@@ -616,30 +618,30 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected void SetSelectedContainer()
     {
-      if ((UnityEngine.Object) selectionFrame == (UnityEngine.Object) null)
+      if (selectionFrame == null)
         return;
-      selectionFrame.gameObject.SetActive(InputService.Instance.JoystickUsed && (UnityEngine.Object) _selectedContainer != (UnityEngine.Object) null);
-      if (!((UnityEngine.Object) _selectedContainer != (UnityEngine.Object) null))
+      selectionFrame.gameObject.SetActive(InputService.Instance.JoystickUsed && _selectedContainer != null);
+      if (!(_selectedContainer != null))
         return;
       Image imageForeground = _selectedContainer.ImageForeground;
       selectionFrame.rectTransform.sizeDelta = imageForeground.rectTransform.rect.size;
-      selectionFrame.rectTransform.position = imageForeground.rectTransform.TransformPoint((Vector3) imageForeground.rectTransform.rect.center);
+      selectionFrame.rectTransform.position = imageForeground.rectTransform.TransformPoint(imageForeground.rectTransform.rect.center);
     }
 
     protected override void GetFirstStorable()
     {
-      if (!((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null) || !((UnityEngine.Object) selectedContainer == (UnityEngine.Object) null))
+      if (!(selectedStorable == null) || !(selectedContainer == null))
         return;
       FillSelectableList(selectableList, false);
-      Vector3 origin = this.transform.position;
-      if ((UnityEngine.Object) currentInventory != (UnityEngine.Object) null)
+      Vector3 origin = transform.position;
+      if (currentInventory != null)
       {
-        selectableList.RemoveAll((Predicate<GameObject>) (s => !s.transform.IsChildOf(currentInventory.transform)));
+        selectableList.RemoveAll(s => !s.transform.IsChildOf(currentInventory.transform));
         RectTransform component = currentInventory.GetComponent<RectTransform>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
           origin = new Vector3(0.0f, component.position.y + component.sizeDelta.y);
       }
-      OnSelectObject(UISelectableHelper.SelectClosest((IEnumerable<GameObject>) selectableList, origin));
+      OnSelectObject(UISelectableHelper.SelectClosest(selectableList, origin));
     }
 
     private enum Modes

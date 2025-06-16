@@ -1,4 +1,6 @@
-﻿public class FightAnimator_TelegraphPunch : StateMachineBehaviour
+﻿using UnityEngine;
+
+public class FightAnimator_TelegraphPunch : StateMachineBehaviour
 {
   public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {

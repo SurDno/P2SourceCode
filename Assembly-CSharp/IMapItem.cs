@@ -6,6 +6,7 @@ using Engine.Common.Components.Regions;
 using Engine.Common.MindMap;
 using Engine.Common.Types;
 using Engine.Source.Components.Maps;
+using UnityEngine;
 
 public interface IMapItem
 {

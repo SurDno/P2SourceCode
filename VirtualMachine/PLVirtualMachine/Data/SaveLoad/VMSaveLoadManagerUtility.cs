@@ -11,7 +11,7 @@ namespace PLVirtualMachine.Data.SaveLoad
   public static class VMSaveLoadManagerUtility
   {
     private static Dictionary<string, XmlElement> preloadedNodes = new Dictionary<string, XmlElement>();
-    private static XmlElement preloadedNode = null;
+    private static XmlElement preloadedNode;
 
     public static void LoadEntities(XmlElement rootNode)
     {
@@ -54,7 +54,7 @@ namespace PLVirtualMachine.Data.SaveLoad
         XmlNode firstChild = childNode.FirstChild;
         if (firstChild == null)
         {
-          Logger.AddError(string.Format("Saveload error: wrong saved entity in node {0} !", childNode.ToString()));
+          Logger.AddError(string.Format("Saveload error: wrong saved entity in node {0} !", childNode));
         }
         else
         {

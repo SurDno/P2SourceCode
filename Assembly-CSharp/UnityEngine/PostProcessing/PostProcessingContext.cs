@@ -14,7 +14,7 @@
     public PostProcessingContext Reset()
     {
       profile = null;
-      camera = (Camera) null;
+      camera = null;
       materialFactory = null;
       renderTextureFactory = null;
       interrupted = false;

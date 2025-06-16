@@ -1,5 +1,6 @@
 ﻿using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class EntityItemView : ItemView
 {
@@ -11,7 +12,7 @@ public class EntityItemView : ItemView
     get => view?.Value?.GetComponent<StorableComponent>();
     set
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.Value = value?.Owner;
     }

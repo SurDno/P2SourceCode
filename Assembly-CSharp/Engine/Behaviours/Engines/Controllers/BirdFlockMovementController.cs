@@ -1,5 +1,8 @@
 ﻿using System;
 using Engine.Behaviours.Components;
+using UnityEngine;
+using UnityEngine.AI;
+using Object = UnityEngine.Object;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -21,7 +24,7 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       this.gameObject = gameObject;
       agent = gameObject.GetComponent<NavMeshAgent>();
-      if (!(bool) (UnityEngine.Object) agent)
+      if (!(bool) (Object) agent)
         return;
       agent.enabled = false;
     }

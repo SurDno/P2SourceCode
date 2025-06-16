@@ -1,5 +1,7 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class SubmitOnGameAction : MonoBehaviour
 {
@@ -13,10 +15,10 @@ public class SubmitOnGameAction : MonoBehaviour
       return false;
     EventSystem current = EventSystem.current;
     GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
-    if ((Object) selectedGameObject == (Object) null)
+    if (selectedGameObject == null)
       return false;
     PointerEventData eventData = new PointerEventData(EventSystem.current);
-    ExecuteEvents.Execute<ISubmitHandler>(selectedGameObject, (BaseEventData) eventData, ExecuteEvents.submitHandler);
+    ExecuteEvents.Execute(selectedGameObject, eventData, ExecuteEvents.submitHandler);
     return true;
   }
 

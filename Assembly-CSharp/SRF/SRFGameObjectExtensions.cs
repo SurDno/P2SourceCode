@@ -1,4 +1,6 @@
-﻿namespace SRF
+﻿using UnityEngine;
+
+namespace SRF
 {
   public static class SRFGameObjectExtensions
   {
@@ -10,7 +12,7 @@
     public static T GetComponentOrAdd<T>(this GameObject obj) where T : Component
     {
       T componentOrAdd = obj.GetComponent<T>();
-      if ((Object) componentOrAdd == (Object) null)
+      if (componentOrAdd == null)
         componentOrAdd = obj.AddComponent<T>();
       return componentOrAdd;
     }
@@ -18,21 +20,21 @@
     public static void RemoveComponentIfExists<T>(this GameObject obj) where T : Component
     {
       T component = obj.GetComponent<T>();
-      if (!((Object) component != (Object) null))
+      if (!(component != null))
         return;
-      Object.Destroy((Object) component);
+      Object.Destroy(component);
     }
 
     public static void RemoveComponentsIfExists<T>(this GameObject obj) where T : Component
     {
       foreach (T component in obj.GetComponents<T>())
-        Object.Destroy((Object) component);
+        Object.Destroy(component);
     }
 
     public static bool EnableComponentIfExists<T>(this GameObject obj, bool enable = true) where T : MonoBehaviour
     {
       T component = obj.GetComponent<T>();
-      if ((Object) component == (Object) null)
+      if (component == null)
         return false;
       component.enabled = enable;
       return true;

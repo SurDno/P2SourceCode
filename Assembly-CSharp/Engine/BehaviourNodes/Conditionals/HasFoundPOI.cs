@@ -8,6 +8,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -28,12 +29,12 @@ namespace Engine.BehaviourNodes.Conditionals
     {
       if (ReferencedPOISequence != null)
         return;
-      Debug.LogWarning((object) ("poi sequence not connected to has found poi node! " + (object) Owner.gameObject));
+      Debug.LogWarning("poi sequence not connected to has found poi node! " + Owner.gameObject);
     }
 
     public override TaskStatus OnUpdate()
     {
-      return ReferencedPOISequence != null ? ((UnityEngine.Object) ReferencedPOISequence.OutPOI != (UnityEngine.Object) null ? TaskStatus.Success : TaskStatus.Failure) : TaskStatus.Success;
+      return ReferencedPOISequence != null ? (ReferencedPOISequence.OutPOI != null ? TaskStatus.Success : TaskStatus.Failure) : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)

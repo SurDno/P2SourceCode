@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityGameObject
 {
@@ -45,7 +47,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityGameObject
 
     public override TaskStatus OnUpdate()
     {
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) GetDefaultGameObject(targetGameObject.Value));
+      Object.DestroyImmediate(GetDefaultGameObject(targetGameObject.Value));
       return TaskStatus.Success;
     }
 

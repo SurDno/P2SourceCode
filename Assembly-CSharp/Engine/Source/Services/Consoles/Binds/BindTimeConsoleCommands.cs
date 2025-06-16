@@ -12,10 +12,10 @@ namespace Engine.Source.Services.Consoles.Binds
     private static void Initialise()
     {
       ConsoleTargetService.AddTarget(typeof (TimeService).Name, value => ServiceLocator.GetService<ITimeService>());
-      SetConsoleCommand.AddBind("solar_time", false, (Action<TimeService, TimeSpan>) ((target, value) => target.SolarTime = value));
-      GetConsoleCommand.AddBind("solar_time", true, (Func<TimeService, TimeSpan>) (target => target.SolarTime));
-      SetConsoleCommand.AddBind("game_time", false, (Action<TimeService, TimeSpan>) ((target, value) => target.SetGameTime(value)));
-      GetConsoleCommand.AddBind("game_time", true, (Func<TimeService, TimeSpan>) (target => target.GameTime));
+      SetConsoleCommand.AddBind<TimeService, TimeSpan>("solar_time", false, (target, value) => target.SolarTime = value);
+      GetConsoleCommand.AddBind<TimeService, TimeSpan>("solar_time", true, target => target.SolarTime);
+      SetConsoleCommand.AddBind<TimeService, TimeSpan>("game_time", false, (target, value) => target.SetGameTime(value));
+      GetConsoleCommand.AddBind<TimeService, TimeSpan>("game_time", true, target => target.GameTime);
     }
   }
 }

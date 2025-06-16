@@ -29,6 +29,10 @@ using Engine.Source.Utility;
 using InputServices;
 using Inspectors;
 using Pingle;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
 {
@@ -163,15 +167,15 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   private GameObject playerMarker;
   private GameObject customMarker;
   private List<GameObject> nodes = new List<GameObject>();
-  private Vector3 cursorCenter = new Vector3();
-  private Vector2 cursorMapPosition = new Vector2();
+  private Vector3 cursorCenter;
+  private Vector2 cursorMapPosition;
   private IMMNode bufferedNode;
-  private MonoBehaviour hovered = (MonoBehaviour) null;
-  private MonoBehaviour newHovered = (MonoBehaviour) null;
-  private MonoBehaviour hoveredRegion = (MonoBehaviour) null;
-  private MonoBehaviour newHoveredRegion = (MonoBehaviour) null;
-  private GraphicRaycaster rayCaster = (GraphicRaycaster) null;
-  private PointerEventData pointerData = (PointerEventData) null;
+  private MonoBehaviour hovered;
+  private MonoBehaviour newHovered;
+  private MonoBehaviour hoveredRegion;
+  private MonoBehaviour newHoveredRegion;
+  private GraphicRaycaster rayCaster;
+  private PointerEventData pointerData;
   private const float MAX_ACCELERATION_RATE = 3f;
   private float currentAcceleration;
   private float accelerationSpeed = 3f;
@@ -238,9 +242,9 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       for (int index = 0; index < regionObjects.Count; ++index)
         regionObjects[index].OnZoomChange(num4);
     }
-    if ((UnityEngine.Object) vignette != (UnityEngine.Object) null)
+    if (vignette != null)
       vignette.color = new Color(1f, 1f, 1f, Mathf.Lerp(vignetteOpacityRange.y, vignetteOpacityRange.x, num1));
-    if (!((UnityEngine.Object) bull != (UnityEngine.Object) null))
+    if (!(bull != null))
       return;
     bull.Progress = Mathf.Clamp01(-scroll);
   }
@@ -251,13 +255,13 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     if (regionObjects != null)
     {
       for (int index = 0; index < regionObjects.Count; ++index)
-        UnityEngine.Object.Destroy((UnityEngine.Object) regionObjects[index].gameObject);
+        Destroy(regionObjects[index].gameObject);
       regionObjects.Clear();
       for (int index = 0; index < baseObjects.Count; ++index)
-        UnityEngine.Object.Destroy((UnityEngine.Object) baseObjects[index]);
+        Destroy(baseObjects[index]);
       baseObjects.Clear();
       for (int index = 0; index < overlayObjects.Count; ++index)
-        UnityEngine.Object.Destroy((UnityEngine.Object) overlayObjects[index].gameObject);
+        Destroy(overlayObjects[index].gameObject);
       overlayObjects.Clear();
     }
     HideMapNodeInfo();
@@ -329,10 +333,10 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     RectTransform rectTransform;
     Image image;
     Vector2 normalizedPoint;
-    this.CreateImage(rectangle, worldPos, rotation, sprite.rect.size * resolution, kind, sprite, out instance, out rectTransform, out image, out normalizedPoint);
+    CreateImage(rectangle, worldPos, rotation, sprite.rect.size * resolution, kind, sprite, out instance, out rectTransform, out image, out normalizedPoint);
     if (mapService.FastTravelOrigin == null && mapService.FocusedItem == null && mapService.FocusedNode == null && kind == ImageKind.Player)
     {
-      startingPosition = (Vector2) contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint((Vector3) normalizedPoint));
+      startingPosition = contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint(normalizedPoint));
       startingScroll = onPlayerScalePower;
     }
     image.sprite = sprite;
@@ -376,9 +380,9 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       return;
     ImageKind kind = ImageKind.Overlay;
     Texture sprite = placeholder == null ? tooltipResource.Image.Value : placeholder.Image.Value;
-    if ((UnityEngine.Object) sprite == (UnityEngine.Object) null)
+    if (sprite == null)
     {
-      Debug.LogError((object) ("Sprite not found , holder : " + placeholder.GetInfo() + " , tooltip : " + tooltipResource.GetInfo()));
+      Debug.LogError("Sprite not found , holder : " + placeholder.GetInfo() + " , tooltip : " + tooltipResource.GetInfo());
     }
     else
     {
@@ -390,7 +394,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       CreateMindMapImage(rectangle, worldPos, -referenceRect.localEulerAngles.z, size1, kind, sprite, out instance, out rectTransform, out image, out normalizedPoint);
       if (mapService.FocusedNode != null && mapService.FocusedNode == tooltip.node)
       {
-        startingPosition = (Vector2) contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint((Vector3) normalizedPoint));
+        startingPosition = contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint(normalizedPoint));
         startingScroll = onNodeScalePower;
       }
       image.material = mindMapNodeMaterial;
@@ -465,7 +469,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     out Vector2 normalizedPoint)
   {
     RectTransform parent = AnchorByKind(kind);
-    instance = UnityEngine.Object.Instantiate<GameObject>(mindMapImagePrefab, (Transform) parent, false);
+    instance = Instantiate(mindMapImagePrefab, parent, false);
     instance.name = sprite.name;
     rectTransform = (RectTransform) instance.transform;
     image = instance.GetComponent<RawImage>();
@@ -499,7 +503,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     out Vector2 normalizedPoint)
   {
     RectTransform parent = AnchorByKind(kind);
-    instance = UnityEngine.Object.Instantiate<GameObject>(kind == ImageKind.Overlay ? overlayImagePrefab : imagePrefab, (Transform) parent, false);
+    instance = Instantiate(kind == ImageKind.Overlay ? overlayImagePrefab : imagePrefab, parent, false);
     instance.name = sprite.name;
     rectTransform = (RectTransform) instance.transform;
     image = instance.GetComponent<Image>();
@@ -562,13 +566,13 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       case ImageKind.Normal:
         return normalMaterial;
       default:
-        return (Material) null;
+        return null;
     }
   }
 
   private void Build2()
   {
-    if ((UnityEngine.Object) baseAnchorRect == (UnityEngine.Object) null)
+    if (baseAnchorRect == null)
       return;
     Rect rect1 = new Rect();
     rect1.min = worldLeftBottom;
@@ -596,7 +600,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
         if (resource.Kind == MapPlaceholderKind.Building || resource.Kind == MapPlaceholderKind.ShopBuilding || resource.Kind == MapPlaceholderKind.SpecialBuilding)
         {
           Sprite shadowSprite = resource.ShadowSprite;
-          if ((UnityEngine.Object) shadowSprite != (UnityEngine.Object) null)
+          if (shadowSprite != null)
             CreateImage(rectangle, worldPosition, num2 - mapItem1.Rotation, ImageKind.Shadow, shadowSprite, num1 / shadowResolution, false, null);
         }
         BoundHealthStateEnum boundHealthStateEnum = BoundHealthStateEnum.Normal;
@@ -618,12 +622,12 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
           if (kind != 0)
           {
             Sprite hoverSprite = resource.HoverSprite;
-            if ((UnityEngine.Object) hoverSprite != (UnityEngine.Object) null)
+            if (hoverSprite != null)
               CreateImage(rectangle, worldPosition, num2 - mapItem1.Rotation, kind, hoverSprite, num1 / shadowResolution, false, null);
           }
         }
         Sprite mainSprite = resource.MainSprite;
-        if ((UnityEngine.Object) mainSprite != (UnityEngine.Object) null)
+        if (mainSprite != null)
         {
           float resolution = 1f;
           switch (resource.Kind)
@@ -663,7 +667,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
         if (resource.Kind == MapPlaceholderKind.Building || resource.Kind == MapPlaceholderKind.ShopBuilding || resource.Kind == MapPlaceholderKind.SpecialBuilding)
         {
           Sprite normalSprite = resource.NormalSprite;
-          if ((UnityEngine.Object) normalSprite != (UnityEngine.Object) null)
+          if (normalSprite != null)
             CreateImage(rectangle, worldPosition, num2 - mapItem1.Rotation, ImageKind.Normal, normalSprite, num1 / normalResolution, false, null);
         }
       }
@@ -699,7 +703,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
         Vector2 sizeDelta = baseAnchorRect.sizeDelta;
         normalized.x *= sizeDelta.x;
         normalized.y *= sizeDelta.y;
-        startingPosition = (Vector2) contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint((Vector3) normalized));
+        startingPosition = contentRect.InverseTransformPoint(baseAnchorRect.TransformPoint(normalized));
         startingScroll = onNodeScalePower;
       }
     }
@@ -725,19 +729,19 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     desiredScroll = startingScroll;
     float num = Mathf.Pow(4f, Mathf.Max(0.0f, startingScroll));
     Vector2 vector2_1 = (contentRect.sizeDelta * num - contentRect.sizeDelta) * 0.5f;
-    if ((double) vector2_1.x < 0.0)
+    if (vector2_1.x < 0.0)
       vector2_1.x = 0.0f;
-    if ((double) vector2_1.y < 0.0)
+    if (vector2_1.y < 0.0)
       vector2_1.y = 0.0f;
     cursorMapPosition = startingPosition;
     Vector2 vector2_2 = -num * startingPosition;
-    if ((double) vector2_2.x < -(double) vector2_1.x)
+    if (vector2_2.x < -(double) vector2_1.x)
       vector2_2.x = -vector2_1.x;
-    else if ((double) vector2_2.x > (double) vector2_1.x)
+    else if (vector2_2.x > (double) vector2_1.x)
       vector2_2.x = vector2_1.x;
-    if ((double) vector2_2.y < -(double) vector2_1.y)
+    if (vector2_2.y < -(double) vector2_1.y)
       vector2_2.y = -vector2_1.y;
-    else if ((double) vector2_2.y > (double) vector2_1.y)
+    else if (vector2_2.y > (double) vector2_1.y)
       vector2_2.y = vector2_1.y;
     contentRect.anchoredPosition = vector2_2;
     lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
@@ -748,19 +752,19 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
     ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, new GameActionHandle(((UIWindow) this).CancelListener), true);
     ServiceLocator.GetService<NotificationService>().RemoveNotify(NotificationEnum.Map);
-    SoundUtility.PlayAudioClip2D(windowOpenSound, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+    SoundUtility.PlayAudioClip2D(windowOpenSound, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     hasCustomMarkerView.Visible = service.CustomMarker != null;
     ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, MoveOnNodes);
     ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, MoveOnNodes);
     ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, MoveOnNodes);
     ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, MoveOnNodes);
     ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, SwapToMMap);
-    rayCaster = this.GetComponent<GraphicRaycaster>();
+    rayCaster = GetComponent<GraphicRaycaster>();
     pointerData = new PointerEventData(EventSystem.current)
     {
-      position = (Vector2) consoleCursor.transform.position
+      position = consoleCursor.transform.position
     };
-    List<MapNodeView> mapNodeViewList = new List<MapNodeView>((IEnumerable<MapNodeView>) contentRect.GetComponentsInChildren<MapNodeView>());
+    List<MapNodeView> mapNodeViewList = new List<MapNodeView>(contentRect.GetComponentsInChildren<MapNodeView>());
     cursorCenter = consoleCursor.transform.position;
     SelectNode();
   }
@@ -781,7 +785,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, SwapToMMap);
     ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, FastTravelListener);
     consoleCursor.transform.position = cursorCenter;
-    cursorMapPosition = (Vector2) contentRect.InverseTransformPoint(cursorCenter);
+    cursorMapPosition = contentRect.InverseTransformPoint(cursorCenter);
     base.OnDisable();
   }
 
@@ -795,7 +799,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
 
   private bool SwapToMMap(GameActionType type, bool down)
   {
-    if (!InputService.Instance.JoystickUsed || !down || !((UnityEngine.Object) hovered != (UnityEngine.Object) null) || !(hovered is MapNodeView))
+    if (!InputService.Instance.JoystickUsed || !down || !(hovered != null) || !(hovered is MapNodeView))
       return false;
     CallMindMap(((MapNodeView) hovered).GetNode());
     return true;
@@ -805,21 +809,21 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
 
   private void NavigateNode(Vector3 dir)
   {
-    nodes = new List<GameObject>(((IEnumerable<MapNodeView>) contentRect.GetComponentsInChildren<MapNodeView>()).Select((Func<MapNodeView, GameObject>) (n => n.gameObject)));
+    nodes = new List<GameObject>(contentRect.GetComponentsInChildren<MapNodeView>().Select(n => n.gameObject));
     nodes.Add(playerMarker);
-    List<GameObject> collection = new List<GameObject>(((IEnumerable<MapFastTravelPointView>) contentRect.GetComponentsInChildren<MapFastTravelPointView>()).Select((Func<MapFastTravelPointView, GameObject>) (node => node.gameObject)));
+    List<GameObject> collection = new List<GameObject>(contentRect.GetComponentsInChildren<MapFastTravelPointView>().Select(node => node.gameObject));
     if (collection.Count > 0)
-      nodes.AddRange((IEnumerable<GameObject>) collection);
+      nodes.AddRange(collection);
     if (customMarkerEnabledView.Visible)
       nodes.Add(customMarker);
-    GameObject gameObject = UISelectableHelper.Select((IEnumerable<GameObject>) nodes, consoleCursor, dir);
-    if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+    GameObject gameObject = UISelectableHelper.Select(nodes, consoleCursor, dir);
+    if (gameObject == null)
       return;
-    cursorMapPosition = (Vector2) contentRect.InverseTransformPoint(gameObject.gameObject.transform.position);
-    consoleCursor.transform.position = contentRect.TransformPoint((Vector3) cursorMapPosition);
+    cursorMapPosition = contentRect.InverseTransformPoint(gameObject.gameObject.transform.position);
+    consoleCursor.transform.position = contentRect.TransformPoint(cursorMapPosition);
     pointerData = new PointerEventData(EventSystem.current)
     {
-      position = (Vector2) consoleCursor.transform.position
+      position = consoleCursor.transform.position
     };
     SelectNode();
   }
@@ -828,7 +832,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   {
     if (pointerData == null)
       return;
-    if ((UnityEngine.Object) bull != (UnityEngine.Object) null && bull.Progress != 0.0)
+    if (bull != null && bull.Progress != 0.0)
     {
       ((IPointerExitHandler) newHovered)?.OnPointerExit(pointerData);
       ((IPointerExitHandler) newHoveredRegion)?.OnPointerExit(pointerData);
@@ -837,20 +841,20 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     {
       List<RaycastResult> raycastResultList = new List<RaycastResult>();
       rayCaster.Raycast(pointerData, raycastResultList);
-      newHovered = (MonoBehaviour) null;
-      newHoveredRegion = (MonoBehaviour) null;
+      newHovered = null;
+      newHoveredRegion = null;
       foreach (RaycastResult raycastResult in raycastResultList)
       {
-        MonoBehaviour component = (MonoBehaviour) raycastResult.gameObject?.GetComponent<MapItemView>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null && ((MapItemView) component).IsRegion)
+        MonoBehaviour component = raycastResult.gameObject?.GetComponent<MapItemView>();
+        if (component != null && ((MapItemView) component).IsRegion)
           newHoveredRegion = component;
-        else if (!((UnityEngine.Object) newHovered != (UnityEngine.Object) null))
+        else if (!(newHovered != null))
         {
-          if ((UnityEngine.Object) component == (UnityEngine.Object) null)
-            component = (MonoBehaviour) raycastResult.gameObject?.GetComponent<MapNodeView>();
-          if ((UnityEngine.Object) component == (UnityEngine.Object) null)
-            component = (MonoBehaviour) raycastResult.gameObject?.GetComponent<MapFastTravelPointView>();
-          if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+          if (component == null)
+            component = raycastResult.gameObject?.GetComponent<MapNodeView>();
+          if (component == null)
+            component = raycastResult.gameObject?.GetComponent<MapFastTravelPointView>();
+          if (component != null)
           {
             if (component is MapNodeView)
               bufferedNode = ((MapNodeView) component).GetNode();
@@ -858,13 +862,13 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
           }
         }
       }
-      if ((UnityEngine.Object) newHovered != (UnityEngine.Object) hovered)
+      if (newHovered != hovered)
       {
         ((IPointerExitHandler) hovered)?.OnPointerExit(pointerData);
         ((IPointerEnterHandler) newHovered)?.OnPointerEnter(pointerData);
         hovered = newHovered;
       }
-      if (!((UnityEngine.Object) newHoveredRegion != (UnityEngine.Object) hoveredRegion))
+      if (!(newHoveredRegion != hoveredRegion))
         return;
       ((IPointerExitHandler) hoveredRegion)?.OnPointerExit(pointerData);
       ((IPointerEnterHandler) newHoveredRegion)?.OnPointerEnter(pointerData);
@@ -877,13 +881,13 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     if (!InputService.Instance.JoystickUsed)
       return;
     Vector2 dir = new Vector2(InputService.Instance.GetAxis("RightStickX"), -InputService.Instance.GetAxis("RightStickY"));
-    if (!analogNavigationCooldown && (double) dir.sqrMagnitude > 0.64000004529953)
+    if (!analogNavigationCooldown && dir.sqrMagnitude > 0.64000004529953)
     {
       analogNavigationCooldown = true;
       dir.Normalize();
-      NavigateNode((Vector3) dir);
+      NavigateNode(dir);
     }
-    else if (analogNavigationCooldown && (double) dir.sqrMagnitude < 0.64000004529953)
+    else if (analogNavigationCooldown && dir.sqrMagnitude < 0.64000004529953)
       analogNavigationCooldown = false;
     float scale = ScrollToScale(Scroll);
     Vector2 zero = Vector2.zero;
@@ -911,21 +915,21 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     else
       currentAcceleration = 0.0f;
     RectTransform transform = (RectTransform) consoleCursor.transform;
-    if ((double) transform.anchoredPosition.sqrMagnitude > 1.0)
+    if (transform.anchoredPosition.sqrMagnitude > 1.0)
     {
       Vector2 vector2_1 = contentRect.anchoredPosition - transform.anchoredPosition;
-      Vector2 vector2_2 = new Vector2((float) ((double) contentRect.sizeDelta.x * (scale - 1.0) * 0.5), (float) ((double) contentRect.sizeDelta.y * (scale - 1.0) * 0.5));
-      if ((double) vector2_2.x < 0.0)
+      Vector2 vector2_2 = new Vector2((float) (contentRect.sizeDelta.x * (scale - 1.0) * 0.5), (float) (contentRect.sizeDelta.y * (scale - 1.0) * 0.5));
+      if (vector2_2.x < 0.0)
         vector2_2.x = 0.0f;
-      if ((double) vector2_2.y < 0.0)
+      if (vector2_2.y < 0.0)
         vector2_2.y = 0.0f;
-      if ((double) vector2_1.x < -(double) vector2_2.x)
+      if (vector2_1.x < -(double) vector2_2.x)
         vector2_1.x = -vector2_2.x;
-      if ((double) vector2_1.x > (double) vector2_2.x)
+      if (vector2_1.x > (double) vector2_2.x)
         vector2_1.x = vector2_2.x;
-      if ((double) vector2_1.y < -(double) vector2_2.y)
+      if (vector2_1.y < -(double) vector2_2.y)
         vector2_1.y = -vector2_2.y;
-      if ((double) vector2_1.y > (double) vector2_2.y)
+      if (vector2_1.y > (double) vector2_2.y)
         vector2_1.y = vector2_2.y;
       contentRect.anchoredPosition += (vector2_1 - contentRect.anchoredPosition) * Mathf.MoveTowards(0.0f, 1f, 5f * Time.deltaTime);
     }
@@ -935,13 +939,13 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   {
     if (!consoleCursor.activeSelf)
       return;
-    Vector3 vector3 = contentRect.TransformPoint((Vector3) cursorMapPosition);
+    Vector3 vector3 = contentRect.TransformPoint(cursorMapPosition);
     consoleCursor.transform.position = vector3;
-    if ((double) vector3.sqrMagnitude > 0.0)
+    if (vector3.sqrMagnitude > 0.0)
     {
       pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) consoleCursor.transform.position
+        position = consoleCursor.transform.position
       };
       SelectNode();
     }
@@ -950,32 +954,32 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
   private bool IsOutOfArea(Vector3 maxPos, Vector3 anchorPos)
   {
     bool flag = false;
-    if ((double) anchorPos.x < -(double) maxPos.x)
+    if (anchorPos.x < -(double) maxPos.x)
     {
-      if ((double) anchorPos.y < -(double) maxPos.y)
+      if (anchorPos.y < -(double) maxPos.y)
         flag = true;
-      else if ((double) anchorPos.y > (double) maxPos.y)
+      else if (anchorPos.y > (double) maxPos.y)
         flag = true;
     }
-    else if ((double) anchorPos.x > (double) maxPos.x)
+    else if (anchorPos.x > (double) maxPos.x)
     {
-      if ((double) anchorPos.y < -(double) maxPos.y)
+      if (anchorPos.y < -(double) maxPos.y)
         flag = true;
-      else if ((double) anchorPos.y > (double) maxPos.y)
+      else if (anchorPos.y > (double) maxPos.y)
         flag = true;
     }
-    else if ((double) anchorPos.y < -(double) maxPos.y)
+    else if (anchorPos.y < -(double) maxPos.y)
     {
-      if ((double) anchorPos.x < -(double) maxPos.x)
+      if (anchorPos.x < -(double) maxPos.x)
         flag = true;
-      else if ((double) anchorPos.x > (double) maxPos.y)
+      else if (anchorPos.x > (double) maxPos.y)
         flag = true;
     }
-    else if ((double) anchorPos.y > (double) maxPos.y)
+    else if (anchorPos.y > (double) maxPos.y)
     {
-      if ((double) anchorPos.x < -(double) maxPos.x)
+      if (anchorPos.x < -(double) maxPos.x)
         flag = true;
-      else if ((double) anchorPos.x > (double) maxPos.y)
+      else if (anchorPos.x > (double) maxPos.y)
         flag = true;
     }
     return flag;
@@ -987,16 +991,16 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     CursorService.Instance.Visible = !joystick;
     controlPanel.SetActive(joystick);
     consoleCursor.SetActive(joystick);
-    EventSystem.current.SetSelectedGameObject((GameObject) null);
-    if ((UnityEngine.Object) hovered != (UnityEngine.Object) null)
+    EventSystem.current.SetSelectedGameObject(null);
+    if (hovered != null)
     {
       ((IPointerExitHandler) hovered)?.OnPointerExit(pointerData);
-      hovered = (MonoBehaviour) null;
+      hovered = null;
     }
-    if ((UnityEngine.Object) newHovered != (UnityEngine.Object) null)
+    if (newHovered != null)
     {
       ((IPointerExitHandler) newHovered)?.OnPointerExit(pointerData);
-      newHovered = (MonoBehaviour) null;
+      newHovered = null;
     }
     if (joystick)
     {
@@ -1051,7 +1055,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       {
         float num2 = scale2 / scale1;
         Vector2 anchoredPosition = contentRect.anchoredPosition;
-        Vector2 vector2_1 = (Vector2) contentRect.parent.InverseTransformPoint(InputService.Instance.JoystickUsed ? consoleCursor.transform.position : Input.mousePosition);
+        Vector2 vector2_1 = contentRect.parent.InverseTransformPoint(InputService.Instance.JoystickUsed ? consoleCursor.transform.position : Input.mousePosition);
         Vector2 vector2_2 = (anchoredPosition - vector2_1) * num2;
         contentRect.anchoredPosition = vector2_1 + vector2_2;
       }
@@ -1059,17 +1063,17 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       {
         Vector2 anchoredPosition = contentRect.anchoredPosition;
         Vector2 vector2 = new Vector2((float) ((1920.0 * scale2 - 1920.0) * 0.5), (float) ((1080.0 * scale2 - 886.0) * 0.5));
-        if ((double) vector2.x < 0.0)
+        if (vector2.x < 0.0)
           vector2.x = 0.0f;
-        if ((double) vector2.y < 0.0)
+        if (vector2.y < 0.0)
           vector2.y = 0.0f;
-        if ((double) anchoredPosition.x < -(double) vector2.x)
+        if (anchoredPosition.x < -(double) vector2.x)
           anchoredPosition.x = -vector2.x;
-        if ((double) anchoredPosition.x > (double) vector2.x)
+        if (anchoredPosition.x > (double) vector2.x)
           anchoredPosition.x = vector2.x;
-        if ((double) anchoredPosition.y < -(double) vector2.y)
+        if (anchoredPosition.y < -(double) vector2.y)
           anchoredPosition.y = -vector2.y;
-        if ((double) anchoredPosition.y > (double) vector2.y)
+        if (anchoredPosition.y > (double) vector2.y)
           anchoredPosition.y = vector2.y;
         contentRect.anchoredPosition = anchoredPosition;
       }
@@ -1082,7 +1086,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
 
   public override void Initialize()
   {
-    RegisterLayer((IMapWindow) this);
+    RegisterLayer<IMapWindow>(this);
     base.Initialize();
   }
 
@@ -1095,7 +1099,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       min = worldLeftBottom,
       max = worldRightTop
     };
-    mousePosition = (Vector3) (Vector2) baseAnchorRect.InverseTransformPoint(mousePosition);
+    mousePosition = (Vector2) baseAnchorRect.InverseTransformPoint(mousePosition);
     mousePosition.x /= sizeDelta.x;
     mousePosition.y /= sizeDelta.y;
     mousePosition.x = mousePosition.x * rect.width + rect.x;
@@ -1113,8 +1117,8 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
     }, point);
     normalized.x *= sizeDelta.x;
     normalized.y *= sizeDelta.y;
-    Vector2 screenPosition = (Vector2) baseAnchorRect.TransformPoint((Vector3) normalized);
-    screenPosition.y = (float) Screen.height - screenPosition.y;
+    Vector2 screenPosition = baseAnchorRect.TransformPoint(normalized);
+    screenPosition.y = Screen.height - screenPosition.y;
     return screenPosition;
   }
 
@@ -1137,7 +1141,7 @@ public class MapWindow : UIWindow, IMapWindow, IWindow, IPauseMenu
       return;
     MapCustomMarkerComponent component1 = customMarker.GetComponent<MapCustomMarkerComponent>();
     if (component1 != null)
-      component1.Position = !InputService.Instance.JoystickUsed ? (Vector2) GetWorldPosition(Input.mousePosition) : (Vector2) GetWorldPosition(consoleCursor.transform.position);
+      component1.Position = !InputService.Instance.JoystickUsed ? GetWorldPosition(Input.mousePosition) : (Vector2) GetWorldPosition(consoleCursor.transform.position);
     IMapItemComponent component2 = customMarker.GetComponent<IMapItemComponent>();
     if (component2 != null)
       component2.IsEnabled = true;

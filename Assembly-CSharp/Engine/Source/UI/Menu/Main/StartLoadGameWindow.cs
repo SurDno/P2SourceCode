@@ -12,7 +12,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      RegisterLayer((IStartLoadGameWindow) this);
+      RegisterLayer<IStartLoadGameWindow>(this);
     }
 
     public override Type GetWindowType() => typeof (IStartLoadGameWindow);

@@ -7,6 +7,7 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -59,12 +60,12 @@ namespace Engine.Source.Effects
       }
       enemy = self?.Enemy;
       NPCWeaponService component2 = self?.GetComponent<NPCWeaponService>();
-      if ((UnityEngine.Object) self == (UnityEngine.Object) null || (UnityEngine.Object) enemy == (UnityEngine.Object) null || (UnityEngine.Object) component2 == (UnityEngine.Object) null)
+      if (self == null || enemy == null || component2 == null)
         return true;
       bomb = (IEntityView) AbilityItem.Self;
       if (bomb != null)
       {
-        if ((UnityEngine.Object) bomb.GameObject != (UnityEngine.Object) null)
+        if (bomb.GameObject != null)
           Throw();
         else
           bomb.OnGameObjectChangedEvent += OnGameObjectChanged;
@@ -74,7 +75,7 @@ namespace Engine.Source.Effects
 
     private void OnGameObjectChanged()
     {
-      if (!((UnityEngine.Object) bomb.GameObject != (UnityEngine.Object) null))
+      if (!(bomb.GameObject != null))
         return;
       bomb.OnGameObjectChangedEvent -= OnGameObjectChanged;
       Throw();
@@ -86,7 +87,7 @@ namespace Engine.Source.Effects
       GameObject gameObject = bomb.GameObject;
       Rigidbody component = gameObject.GetComponent<Rigidbody>();
       component.velocity = vector3;
-      component.angularVelocity = UnityEngine.Random.insideUnitSphere * throwPower;
+      component.angularVelocity = Random.insideUnitSphere * throwPower;
       gameObject.GetComponent<ProjectileObject>().SetOwner(self);
     }
 

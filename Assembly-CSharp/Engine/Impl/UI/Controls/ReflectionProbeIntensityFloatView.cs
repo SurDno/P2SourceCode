@@ -1,13 +1,15 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ReflectionProbeIntensityFloatView : FloatViewBase
   {
     [SerializeField]
-    private ReflectionProbe view = (ReflectionProbe) null;
+    private ReflectionProbe view;
 
     protected override void ApplyFloatValue()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.intensity = FloatValue;
     }

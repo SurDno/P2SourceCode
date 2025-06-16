@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -25,7 +26,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       EnemyBase component = gameObject?.GetComponent<EnemyBase>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
       component.PlayLipSync(cryType);
     }

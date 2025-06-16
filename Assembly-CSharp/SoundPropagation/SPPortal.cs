@@ -1,18 +1,20 @@
-﻿namespace SoundPropagation
+﻿using UnityEngine;
+
+namespace SoundPropagation
 {
   public class SPPortal : MonoBehaviour
   {
     public SPCell CellA;
     public SPCell CellB;
-    public float Occlusion = 0.0f;
+    public float Occlusion;
     private bool initialized;
-    private Shape[] shapes = null;
+    private Shape[] shapes;
 
     private void Check()
     {
       if (initialized)
         return;
-      shapes = this.GetComponentsInChildren<Shape>();
+      shapes = GetComponentsInChildren<Shape>();
       initialized = true;
     }
 

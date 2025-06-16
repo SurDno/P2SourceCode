@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -57,7 +58,7 @@ namespace RootMotion.FinalIK
     {
       for (int nodeIndex = 0; nodeIndex < nodes.Length; ++nodeIndex)
       {
-        if ((UnityEngine.Object) nodes[nodeIndex].transform == (UnityEngine.Object) boneTransform)
+        if (nodes[nodeIndex].transform == boneTransform)
           return nodeIndex;
       }
       return -1;
@@ -72,7 +73,7 @@ namespace RootMotion.FinalIK
       }
       foreach (IKSolver.Point node in nodes)
       {
-        if ((UnityEngine.Object) node.transform == (UnityEngine.Object) null)
+        if (node.transform == null)
         {
           message = "Node transform is null in FBIK chain.";
           return false;
@@ -227,7 +228,7 @@ namespace RootMotion.FinalIK
       if (magnitude == 0.0)
         return;
       float directionMagnitude = Mathf.Clamp(magnitude, 0.0f, length * 0.99999f);
-      nodes[1].solverPosition = nodes[0].solverPosition + this.GetDirToBendPoint(vector3 / magnitude * directionMagnitude, !calculateBendDirection || !bendConstraint.initiated ? nodes[1].solverPosition - nodes[0].solverPosition : bendConstraint.GetDir(solver), directionMagnitude);
+      nodes[1].solverPosition = nodes[0].solverPosition + GetDirToBendPoint(vector3 / magnitude * directionMagnitude, !calculateBendDirection || !bendConstraint.initiated ? nodes[1].solverPosition - nodes[0].solverPosition : bendConstraint.GetDir(solver), directionMagnitude);
     }
 
     public void Stage1(IKSolverFullBody solver)
@@ -285,7 +286,7 @@ namespace RootMotion.FinalIK
       float directionMagnitude)
     {
       float z = (float) ((directionMagnitude * (double) directionMagnitude + sqrMagDif) / 2.0) / directionMagnitude;
-      float y = (float) Math.Sqrt((double) Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
+      float y = (float) Math.Sqrt(Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
       return direction == Vector3.zero ? Vector3.zero : Quaternion.LookRotation(direction, bendDirection) * new Vector3(0.0f, y, z);
     }
 

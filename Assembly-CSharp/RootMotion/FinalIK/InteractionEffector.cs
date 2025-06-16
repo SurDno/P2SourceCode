@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -44,7 +45,7 @@ namespace RootMotion.FinalIK
 
     public InteractionObject interactionObject { get; private set; }
 
-    public bool inInteraction => (UnityEngine.Object) interactionObject != (UnityEngine.Object) null;
+    public bool inInteraction => interactionObject != null;
 
     public InteractionEffector(FullBodyBipedEffector effectorType)
     {
@@ -145,7 +146,7 @@ namespace RootMotion.FinalIK
         defaults = false;
       }
       target = interactionObject.GetTarget(effectorType, tag);
-      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+      if (target == null)
         return false;
       interactionTarget = target.GetComponent<InteractionTarget>();
       this.interactionObject = interactionObject;
@@ -155,11 +156,11 @@ namespace RootMotion.FinalIK
       triggered.Clear();
       for (int index = 0; index < interactionObject.events.Length; ++index)
         triggered.Add(false);
-      if ((UnityEngine.Object) poser != (UnityEngine.Object) null)
+      if (poser != null)
       {
-        if ((UnityEngine.Object) poser.poseRoot == (UnityEngine.Object) null)
+        if (poser.poseRoot == null)
           poser.weight = 0.0f;
-        poser.poseRoot = !((UnityEngine.Object) interactionTarget != (UnityEngine.Object) null) ? (Transform) null : target.transform;
+        poser.poseRoot = !(interactionTarget != null) ? null : target.transform;
         poser.AutoMapping();
       }
       positionWeightUsed = interactionObject.CurveUsed(InteractionObject.WeightCurve.Type.PositionWeight);
@@ -178,7 +179,7 @@ namespace RootMotion.FinalIK
       pickedUp = false;
       pickUpPosition = Vector3.zero;
       pickUpRotation = Quaternion.identity;
-      if ((UnityEngine.Object) interactionTarget != (UnityEngine.Object) null)
+      if (interactionTarget != null)
         interactionTarget.RotateTo(effector.bone.position);
       started = true;
       return true;
@@ -198,7 +199,7 @@ namespace RootMotion.FinalIK
       }
       else
       {
-        if ((UnityEngine.Object) interactionTarget != (UnityEngine.Object) null && !interactionTarget.rotateOnce)
+        if (interactionTarget != null && !interactionTarget.rotateOnce)
           interactionTarget.RotateTo(effector.bone.position);
         if (isPaused)
         {
@@ -208,7 +209,7 @@ namespace RootMotion.FinalIK
         }
         else
         {
-          timer += (float) ((double) Time.deltaTime * speed * ((UnityEngine.Object) interactionTarget != (UnityEngine.Object) null ? interactionTarget.interactionSpeedMlp : 1.0));
+          timer += (float) (Time.deltaTime * (double) speed * (interactionTarget != null ? interactionTarget.interactionSpeedMlp : 1.0));
           weight = Mathf.Clamp(weight + Time.deltaTime * fadeInSpeed * speed, 0.0f, 1f);
           bool pickUp = false;
           bool pause = false;
@@ -223,7 +224,7 @@ namespace RootMotion.FinalIK
           if (pause)
             Pause();
           float b3 = interactionObject.GetValue(InteractionObject.WeightCurve.Type.PoserWeight, interactionTarget, timer);
-          if ((UnityEngine.Object) poser != (UnityEngine.Object) null)
+          if (poser != null)
             poser.weight = Mathf.Lerp(poser.weight, b3, weight);
           else if (b3 > 0.0)
             Warning.Log("InteractionObject " + interactionObject.name + " has a curve/multipler for Poser Weight, but the bone of effector " + effectorType + " has no HandPoser/GenericPoser attached.", effector.bone);
@@ -274,11 +275,11 @@ namespace RootMotion.FinalIK
       pickUpOnPostFBBIK = true;
       pickedUp = true;
       Rigidbody component = interactionObject.targetsRoot.GetComponent<Rigidbody>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+      if (component != null)
       {
         if (!component.isKinematic)
           component.isKinematic = true;
-        if ((UnityEngine.Object) root.GetComponent<Collider>() != (UnityEngine.Object) null)
+        if (root.GetComponent<Collider>() != null)
         {
           foreach (Collider componentsInChild in interactionObject.targetsRoot.GetComponentsInChildren<Collider>())
           {
@@ -301,16 +302,16 @@ namespace RootMotion.FinalIK
       TriggerUntriggeredEvents(false, out pickUp, out pause);
       if (interactionSystem.OnInteractionStop != null)
         interactionSystem.OnInteractionStop(effectorType, interactionObject);
-      if ((UnityEngine.Object) interactionTarget != (UnityEngine.Object) null)
+      if (interactionTarget != null)
         interactionTarget.ResetRotation();
       interactionObject = null;
       weight = 0.0f;
       timer = 0.0f;
       isPaused = false;
-      target = (Transform) null;
+      target = null;
       defaults = false;
       resetTimer = 1f;
-      if ((UnityEngine.Object) poser != (UnityEngine.Object) null && !pickedUp)
+      if (poser != null && !pickedUp)
         poser.weight = 0.0f;
       pickedUp = false;
       started = false;

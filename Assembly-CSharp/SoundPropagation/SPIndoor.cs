@@ -1,4 +1,6 @@
-﻿namespace SoundPropagation
+﻿using UnityEngine;
+
+namespace SoundPropagation
 {
   public class SPIndoor : MonoBehaviour
   {

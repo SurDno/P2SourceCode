@@ -1,4 +1,6 @@
-﻿namespace RootMotion
+﻿using UnityEngine;
+
+namespace RootMotion
 {
   public class Interp
   {
@@ -259,7 +261,7 @@
     private static float InOutSine(float t, float b, float c)
     {
       c -= b;
-      return (float) (-(double) c / 2.0 * ((double) Mathf.Cos((float) (3.1415927410125732 * t / 1.0)) - 1.0)) + b;
+      return (float) (-(double) c / 2.0 * (Mathf.Cos((float) (3.1415927410125732 * t / 1.0)) - 1.0)) + b;
     }
 
     private static float InElastic(float t, float b, float c)
@@ -280,7 +282,7 @@
       }
       else
         num4 = num2 / 6.28318548f * Mathf.Asin(c / num3);
-      return (float) -(num3 * (double) Mathf.Pow(2f, 10f * --t) * (double) Mathf.Sin((float) ((t * (double) num1 - num4) * 6.2831854820251465) / num2)) + b;
+      return (float) -(num3 * (double) Mathf.Pow(2f, 10f * --t) * Mathf.Sin((float) ((t * (double) num1 - num4) * 6.2831854820251465) / num2)) + b;
     }
 
     private static float OutElastic(float t, float b, float c)

@@ -4,6 +4,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 public class DialogIndication : MonoBehaviour, IEntityAttachable
@@ -84,13 +85,13 @@ public class DialogIndication : MonoBehaviour, IEntityAttachable
     if (visible == value)
       return;
     visible = value;
-    if ((UnityEngine.Object) effect == (UnityEngine.Object) null)
+    if (effect == null)
     {
       if (!visible)
         return;
-      effect = this.GetComponent<FocusEffect>();
-      if ((UnityEngine.Object) effect == (UnityEngine.Object) null)
-        effect = this.gameObject.AddComponent<FocusEffect>();
+      effect = GetComponent<FocusEffect>();
+      if (effect == null)
+        effect = gameObject.AddComponent<FocusEffect>();
     }
     else
       effect.enabled = visible;

@@ -13,6 +13,8 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -208,10 +210,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Storables);
         IStorableComponent component = entity.GetComponent<IStorableComponent>();
         Actor.AddItemOrDrop(component, null);
-        this.CancelInvoke("ClearResultView");
+        CancelInvoke("ClearResultView");
         resultView.Storable = (StorableComponent) component;
-        this.Invoke("ClearResultView", resultShowTime);
-        if ((UnityEngine.Object) craftAudio != (UnityEngine.Object) null)
+        Invoke("ClearResultView", resultShowTime);
+        if (craftAudio != null)
           PlayAudio(craftAudio);
       }
       OnInvalidate();
@@ -245,13 +247,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      RegisterLayer((ICraftMixtureWindow) this);
+      RegisterLayer<ICraftMixtureWindow>(this);
       foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
         ingredientSelector.ChangeItemEvent += OnIngredientChange;
         ingredientSelector.ValidateItemEvent += OnValidateIngredient;
       }
-      craftButton.onClick.AddListener(new UnityAction(Craft));
+      craftButton.onClick.AddListener(Craft);
       base.Initialize();
     }
 
@@ -263,7 +265,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         ItemSelector ingredientSelector = ingredientSelectors[index];
         IStorableComponent storableComponent = ingredientSelector.Item;
-        if ((UnityEngine.Object) itemSelector == (UnityEngine.Object) ingredientSelector && ingredient == storableComponent)
+        if (itemSelector == ingredientSelector && ingredient == storableComponent)
           return true;
         if (storableComponent != null && StorageUtility.GetItemId(ingredient.Owner) == StorageUtility.GetItemId(storableComponent.Owner))
           return false;

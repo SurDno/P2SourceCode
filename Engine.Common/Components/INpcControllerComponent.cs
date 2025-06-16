@@ -1,6 +1,6 @@
-﻿using Engine.Common.Commons;
+﻿using System;
+using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
-using System;
 
 namespace Engine.Common.Components
 {
@@ -34,7 +34,7 @@ namespace Engine.Common.Components
 
     IParameterValue<float> Immunity { get; }
 
-    IParameterValue<Engine.Common.Commons.StammKind> StammKind { get; }
+    IParameterValue<StammKind> StammKind { get; }
 
     IParameterValue<FractionEnum> Fraction { get; }
 

@@ -8,6 +8,7 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine.Profiling;
 
 namespace Engine.Impl.Services.Factories
 {

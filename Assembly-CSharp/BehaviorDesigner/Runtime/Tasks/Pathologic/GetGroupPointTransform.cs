@@ -8,6 +8,8 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -49,27 +51,27 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnStart()
     {
       GroupPointsService service = ServiceLocator.GetService<GroupPointsService>();
-      if ((UnityEngine.Object) point != (UnityEngine.Object) null)
+      if (point != null)
       {
         service.AddPoint(point);
         point = null;
       }
       point = service.GetFreePoint();
-      if (!((UnityEngine.Object) point != (UnityEngine.Object) null))
+      if (!(point != null))
         return;
       GroupPointTransform.Value = point.transform;
     }
 
     public override TaskStatus OnUpdate()
     {
-      return !(bool) (UnityEngine.Object) GroupPointTransform.Value ? TaskStatus.Failure : TaskStatus.Success;
+      return !(bool) (Object) GroupPointTransform.Value ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public override void OnEnd()
     {
       executionStatus = TaskStatus.Inactive;
       currentChildIndex = 0;
-      if (!((UnityEngine.Object) point != (UnityEngine.Object) null))
+      if (!(point != null))
         return;
       ServiceLocator.GetService<GroupPointsService>().AddPoint(point);
       point = null;

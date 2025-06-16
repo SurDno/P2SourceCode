@@ -6,6 +6,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Settings;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Engine.Source.Services
 {
@@ -39,9 +41,9 @@ namespace Engine.Source.Services
 
     public void RegisterPostman(IEntity owner, int areaMask)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Register postman, mask : ").Append(areaMask).Append(" , owner : ").GetInfo(owner));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Register postman, mask : ").Append(areaMask).Append(" , owner : ").GetInfo(owner));
       if (IsRegistered(owner))
-        Debug.LogError((object) ("Postman already register, owner : " + owner.GetInfo()));
+        Debug.LogError("Postman already register, owner : " + owner.GetInfo());
       else
         postmans.Add(new Slot {
           Owner = owner,
@@ -52,9 +54,9 @@ namespace Engine.Source.Services
 
     public void UnregisterPostman(IEntity owner)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Unregister postman, owner : ").GetInfo(owner));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Unregister postman, owner : ").GetInfo(owner));
       if (!IsRegistered(owner))
-        Debug.LogError((object) ("Postman already unregister, owner : " + owner.GetInfo()));
+        Debug.LogError("Postman already unregister, owner : " + owner.GetInfo());
       else
         postmans.RemoveAt(postmans.FindIndex(s => s.Owner == owner));
     }
@@ -67,7 +69,7 @@ namespace Engine.Source.Services
       if (player == null)
         return;
       GameObject gameObject = ((IEntityView) player).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       LocationItemComponent component1 = player.GetComponent<LocationItemComponent>();
       if (component1 == null || component1.IsIndoor)
@@ -97,7 +99,7 @@ namespace Engine.Source.Services
           else
           {
             IEntityView owner = (IEntityView) postman.Owner;
-            if ((UnityEngine.Object) owner.GameObject != (UnityEngine.Object) null && PostmanTeleportUtility.IsPointVisibleByPlayer(playerGameObject, owner.GameObject.transform.position))
+            if (owner.GameObject != null && PostmanTeleportUtility.IsPointVisibleByPlayer(playerGameObject, owner.GameObject.transform.position))
             {
               postman.TimeLeft = Mathf.Max(postman.TimeLeft, 10f);
               continue;
@@ -131,9 +133,9 @@ namespace Engine.Source.Services
     private Vector3 RandomPoint(GameObject player)
     {
       float num1 = InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value * GameCamera.Instance.Camera.aspect;
-      float num2 = UnityEngine.Random.Range((float) (num1 / 2.0 - 180.0), (float) (180.0 - num1 / 2.0));
+      float num2 = Random.Range((float) (num1 / 2.0 - 180.0), (float) (180.0 - num1 / 2.0));
       float y = player.transform.rotation.eulerAngles.y + num2;
-      float num3 = UnityEngine.Random.Range(10f, 20f);
+      float num3 = Random.Range(10f, 20f);
       return player.transform.position + Quaternion.Euler(0.0f, y, 0.0f) * Vector3.back * num3;
     }
 

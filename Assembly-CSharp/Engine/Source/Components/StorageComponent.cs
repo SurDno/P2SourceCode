@@ -16,6 +16,7 @@ using Engine.Source.Inventory;
 using Engine.Source.Services;
 using Engine.Source.Services.Templates;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -115,22 +116,22 @@ namespace Engine.Source.Components
     {
       if (item.Storage != null)
       {
-        Debug.LogError((object) ("Item already added : " + item.Owner.GetInfo()));
+        Debug.LogError("Item already added : " + item.Owner.GetInfo());
         return false;
       }
       if (item.IsDisposed)
       {
-        Debug.LogError((object) ("Item disposed : " + item.Owner.GetInfo()));
+        Debug.LogError("Item disposed : " + item.Owner.GetInfo());
         return false;
       }
       if (!((Entity) item.Owner).IsAdded)
       {
-        Debug.LogError((object) ("Item is not added in simulation : " + item.Owner.GetInfo()));
+        Debug.LogError("Item is not added in simulation : " + item.Owner.GetInfo());
         return false;
       }
       if (item.Count <= 0)
       {
-        Debug.LogError((object) ("Item count error, count : " + item.Count + " , owner : " + item.Owner.GetInfo()));
+        Debug.LogError("Item count error, count : " + item.Count + " , owner : " + item.Owner.GetInfo());
         return false;
       }
       Intersect intersect = StorageUtility.GetIntersect(this, container, (StorableComponent) item, cellTo);
@@ -164,17 +165,17 @@ namespace Engine.Source.Components
     {
       if (item.Storage != this)
       {
-        Debug.LogError((object) ("Wrong item storage : " + item.Owner.GetInfo()));
+        Debug.LogError("Wrong item storage : " + item.Owner.GetInfo());
         return false;
       }
       if (item.IsDisposed)
       {
-        Debug.LogError((object) ("Item disposed : " + item.Owner.GetInfo()));
+        Debug.LogError("Item disposed : " + item.Owner.GetInfo());
         return false;
       }
       if (!((Entity) item.Owner).IsAdded)
       {
-        Debug.LogError((object) ("Item is not added in simulation : " + item.Owner.GetInfo()));
+        Debug.LogError("Item is not added in simulation : " + item.Owner.GetInfo());
         return false;
       }
       IInventoryComponent container = item.Container;
@@ -204,34 +205,34 @@ namespace Engine.Source.Components
     {
       if (item.Storage != this)
       {
-        Debug.LogError((object) ("Wrong item storage : " + item.Owner.GetInfo()));
+        Debug.LogError("Wrong item storage : " + item.Owner.GetInfo());
         return false;
       }
       if (item.IsDisposed)
       {
-        Debug.LogError((object) ("Item disposed : " + item.Owner.GetInfo()));
+        Debug.LogError("Item disposed : " + item.Owner.GetInfo());
         return false;
       }
       if (!((Entity) item.Owner).IsAdded)
       {
-        Debug.LogError((object) ("Item is not added in simulation : " + item.Owner.GetInfo()));
+        Debug.LogError("Item is not added in simulation : " + item.Owner.GetInfo());
         return false;
       }
       if (item.Count <= 0)
       {
-        Debug.LogError((object) ("Item count error, count : " + item.Count + " , owner : " + item.Owner.GetInfo()));
+        Debug.LogError("Item count error, count : " + item.Count + " , owner : " + item.Owner.GetInfo());
         return false;
       }
       if (!StorageUtility.GetIntersect(this, container, (StorableComponent) item, toCell).IsAllowed)
         return false;
       if (!RemoveItem(item))
       {
-        Debug.LogError((object) ("Error remove item : " + item.Owner.GetInfo()));
+        Debug.LogError("Error remove item : " + item.Owner.GetInfo());
         return false;
       }
       if (((StorageComponent) storage).AddItem(item, container, toCell))
         return true;
-      Debug.LogError((object) ("Error add item : " + item.Owner.GetInfo()));
+      Debug.LogError("Error add item : " + item.Owner.GetInfo());
       return false;
     }
 

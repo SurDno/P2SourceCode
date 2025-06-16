@@ -1,15 +1,17 @@
-﻿namespace Rain
+﻿using UnityEngine;
+
+namespace Rain
 {
   [AddComponentMenu("Image Effects/Blur Behind")]
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
   public class BlurBehind : MonoBehaviour
   {
-    private static RenderTexture storedTexture = (RenderTexture) null;
+    private static RenderTexture storedTexture;
     private static int count;
     private static Rect storedRect = new Rect(0.0f, 0.0f, 1f, 1f);
-    public static Shader blurShader = (Shader) null;
-    private Material blurMaterial = (Material) null;
+    public static Shader blurShader;
+    private Material blurMaterial;
     public Mode mode = Mode.Relative;
     public float radius = 15f;
     public Settings settings = Settings.Manual;
@@ -23,7 +25,7 @@
       Rect rect = Camera.current.rect;
       if (!(rect != new Rect(0.0f, 0.0f, 1f, 1f)))
         return;
-      Vector2 vector2 = !((Object) Camera.current.targetTexture == (Object) null) ? new Vector2((float) Camera.current.targetTexture.width, (float) Camera.current.targetTexture.height) : new Vector2((float) Screen.width, (float) Screen.height);
+      Vector2 vector2 = !(Camera.current.targetTexture == null) ? new Vector2(Camera.current.targetTexture.width, Camera.current.targetTexture.height) : new Vector2(Screen.width, Screen.height);
       rect.width = Mathf.Round(Mathf.Clamp01(rect.width + rect.x) * vector2.x) / vector2.x;
       rect.height = Mathf.Round(Mathf.Clamp01(rect.height + rect.y) * vector2.y) / vector2.y;
       rect.x = Mathf.Round(Mathf.Clamp01(rect.x) * vector2.x) / vector2.x;
@@ -54,7 +56,7 @@
         if (radius > 0.0)
         {
           iterations = radius >= (double) p ? Mathf.FloorToInt(Mathf.Log(radius, p)) + 1 : 1;
-          downsample = radius / Mathf.Pow(3f, (float) iterations);
+          downsample = radius / Mathf.Pow(3f, iterations);
           if (downsample < 1.0)
             downsample = 1f;
         }
@@ -68,7 +70,7 @@
       {
         float f = radius / 100f * sourceSize;
         iterations = f >= (double) p ? Mathf.FloorToInt(Mathf.Log(f, p)) + 1 : 1;
-        downsample = sourceSize / (f / Mathf.Pow(3f, (float) iterations));
+        downsample = sourceSize / (f / Mathf.Pow(3f, iterations));
       }
       else
       {
@@ -79,12 +81,12 @@
 
     private void CheckOutput(int rtW, int rtH, RenderTextureFormat format)
     {
-      if ((Object) storedTexture == (Object) null)
+      if (storedTexture == null)
         CreateOutput(rtW, rtH, format);
       else if (storedTexture.width != rtW || storedTexture.height != rtH || storedTexture.format != format)
       {
         storedTexture.Release();
-        Object.DestroyImmediate((Object) storedTexture);
+        DestroyImmediate(storedTexture);
         CreateOutput(rtW, rtH, format);
       }
       else
@@ -93,11 +95,11 @@
 
     private bool CheckResources()
     {
-      if ((Object) blurMaterial == (Object) null)
+      if (blurMaterial == null)
       {
-        if ((Object) blurShader == (Object) null)
+        if (blurShader == null)
           blurShader = Shader.Find("Hidden/Blur Behind/Blur");
-        if ((Object) blurShader != (Object) null)
+        if (blurShader != null)
         {
           if (blurShader.isSupported)
           {
@@ -106,13 +108,13 @@
           }
           else
           {
-            Debug.Log((object) "Blur Behind UI: Shader not supported");
+            Debug.Log("Blur Behind UI: Shader not supported");
             return false;
           }
         }
         else
         {
-          Debug.Log((object) "Blur Behind UI: Shader reference missing");
+          Debug.Log("Blur Behind UI: Shader reference missing");
           return false;
         }
       }
@@ -123,7 +125,7 @@
     {
       if (SystemInfo.supportsImageEffects)
         return true;
-      Debug.Log((object) "Blur Behind UI: Image effects not supported");
+      Debug.Log("Blur Behind UI: Image effects not supported");
       return false;
     }
 
@@ -132,25 +134,25 @@
       storedTexture = new RenderTexture(width, height, 0, format);
       storedTexture.filterMode = FilterMode.Bilinear;
       storedTexture.hideFlags = HideFlags.DontSave;
-      Shader.SetGlobalTexture("_BlurBehindTex", (Texture) storedTexture);
+      Shader.SetGlobalTexture("_BlurBehindTex", storedTexture);
       Shader.EnableKeyword("BLUR_BEHIND_SET");
     }
 
     private RenderTexture CropSource(RenderTexture source)
     {
-      Rect rect1 = new Rect(cropRect.x * (float) source.width + pixelOffset.x, cropRect.y * (float) source.height + pixelOffset.y, cropRect.width * (float) source.width + pixelOffset.width, cropRect.height * (float) source.height + pixelOffset.height);
-      rect1.width = Mathf.Clamp01(Mathf.Round(rect1.width + rect1.x) / (float) source.width);
-      rect1.height = Mathf.Clamp01(Mathf.Round(rect1.height + rect1.y) / (float) source.height);
-      rect1.x = Mathf.Clamp01(Mathf.Round(rect1.x) / (float) source.width);
-      rect1.y = Mathf.Clamp01(Mathf.Round(rect1.y) / (float) source.height);
+      Rect rect1 = new Rect(cropRect.x * source.width + pixelOffset.x, cropRect.y * source.height + pixelOffset.y, cropRect.width * source.width + pixelOffset.width, cropRect.height * source.height + pixelOffset.height);
+      rect1.width = Mathf.Clamp01(Mathf.Round(rect1.width + rect1.x) / source.width);
+      rect1.height = Mathf.Clamp01(Mathf.Round(rect1.height + rect1.y) / source.height);
+      rect1.x = Mathf.Clamp01(Mathf.Round(rect1.x) / source.width);
+      rect1.y = Mathf.Clamp01(Mathf.Round(rect1.y) / source.height);
       rect1.width -= rect1.x;
       rect1.height -= rect1.y;
       RenderTexture dest;
       if (rect1 != new Rect(0.0f, 0.0f, 1f, 1f))
       {
-        dest = RenderTexture.GetTemporary(Mathf.RoundToInt(rect1.width * (float) source.width), Mathf.RoundToInt(rect1.height * (float) source.height), 0, source.format);
+        dest = RenderTexture.GetTemporary(Mathf.RoundToInt(rect1.width * source.width), Mathf.RoundToInt(rect1.height * source.height), 0, source.format);
         blurMaterial.SetVector("_Parameter", new Vector4(rect1.x, rect1.y, rect1.width, rect1.height));
-        Graphics.Blit((Texture) source, dest, blurMaterial, 2);
+        Graphics.Blit(source, dest, blurMaterial, 2);
         storedRect = rect1;
       }
       else
@@ -161,7 +163,7 @@
       Rect rect2 = Camera.current.rect;
       if (rect2 != new Rect(0.0f, 0.0f, 1f, 1f))
       {
-        Vector2 vector2 = !((Object) Camera.current.targetTexture == (Object) null) ? new Vector2((float) Camera.current.targetTexture.width, (float) Camera.current.targetTexture.height) : new Vector2((float) Screen.width, (float) Screen.height);
+        Vector2 vector2 = !(Camera.current.targetTexture == null) ? new Vector2(Camera.current.targetTexture.width, Camera.current.targetTexture.height) : new Vector2(Screen.width, Screen.height);
         rect2.width = Mathf.Round(Mathf.Clamp01(rect2.width + rect2.x) * vector2.x) / vector2.x;
         rect2.height = Mathf.Round(Mathf.Clamp01(rect2.height + rect2.y) * vector2.y) / vector2.y;
         rect2.x = Mathf.Round(Mathf.Clamp01(rect2.x) * vector2.x) / vector2.x;
@@ -201,40 +203,40 @@
           renderTexture.filterMode = FilterMode.Bilinear;
           RenderTexture temporary = RenderTexture.GetTemporary(width, height, 0, renderTexture.format);
           blurMaterial.SetVector("_Parameter", new Vector4(renderTexture.texelSize.x, renderTexture.texelSize.y, -renderTexture.texelSize.x, -renderTexture.texelSize.y));
-          Graphics.Blit((Texture) renderTexture, temporary, blurMaterial, 1);
-          if ((Object) renderTexture != (Object) source)
+          Graphics.Blit(renderTexture, temporary, blurMaterial, 1);
+          if (renderTexture != source)
             RenderTexture.ReleaseTemporary(renderTexture);
           renderTexture = temporary;
         }
         if (num > 1)
         {
           blurMaterial.SetVector("_Parameter", new Vector4(renderTexture.texelSize.x, renderTexture.texelSize.y, -renderTexture.texelSize.x, -renderTexture.texelSize.y));
-          Graphics.Blit((Texture) renderTexture, dest, blurMaterial, 1);
+          Graphics.Blit(renderTexture, dest, blurMaterial, 1);
         }
         else
-          Graphics.Blit((Texture) renderTexture, dest);
-        if (!((Object) renderTexture != (Object) source))
+          Graphics.Blit(renderTexture, dest);
+        if (!(renderTexture != source))
           return;
         RenderTexture.ReleaseTemporary(renderTexture);
       }
       else
-        Graphics.Blit((Texture) source, dest);
+        Graphics.Blit(source, dest);
     }
 
     private void OnDisable()
     {
       if ((bool) (Object) blurMaterial)
       {
-        Object.Destroy((Object) blurMaterial);
-        blurMaterial = (Material) null;
+        Destroy(blurMaterial);
+        blurMaterial = null;
       }
       --count;
       if (count != 0 || !(bool) (Object) storedTexture)
         return;
       storedTexture.Release();
-      Object.Destroy((Object) storedTexture);
-      storedTexture = (RenderTexture) null;
-      Shader.SetGlobalTexture("_BlurBehindTex", (Texture) null);
+      Destroy(storedTexture);
+      storedTexture = null;
+      Shader.SetGlobalTexture("_BlurBehindTex", null);
       Shader.DisableKeyword("BLUR_BEHIND_SET");
     }
 
@@ -246,8 +248,8 @@
     {
       if (!CheckSupport() || !CheckResources())
       {
-        this.enabled = false;
-        Graphics.Blit((Texture) source, destination);
+        enabled = false;
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -259,7 +261,7 @@
         SetOutputSize(source, renderTexture, out width, out height);
         CheckOutput(width, height, renderTexture.format);
         Downsample(renderTexture, storedTexture);
-        if ((Object) renderTexture != (Object) source)
+        if (renderTexture != source)
           RenderTexture.ReleaseTemporary(renderTexture);
         if (iterations > 0 && radius > 0.0)
         {
@@ -267,11 +269,11 @@
           temporary.filterMode = FilterMode.Bilinear;
           for (int p = 0; p < iterations; ++p)
           {
-            float num = radius / 300f * Mathf.Pow(3f, (float) p) / Mathf.Pow(3f, (float) (iterations - 1));
+            float num = radius / 300f * Mathf.Pow(3f, p) / Mathf.Pow(3f, iterations - 1);
             if (mode == Mode.Absolute)
               num *= 100f / sourceSize;
-            else if ((Object) renderTexture != (Object) source)
-              num *= (source.width > source.height ? (float) source.width : (float) source.height) / sourceSize;
+            else if (renderTexture != source)
+              num *= (source.width > source.height ? source.width : (float) source.height) / sourceSize;
             float f = p * 0.7853982f / iterations;
             Vector2 vector2_1 = new Vector2(Mathf.Sin(f), Mathf.Cos(f)) * num;
             Vector2 vector2_2 = width > height ? new Vector2(1f, 1f / height * width) : new Vector2(1f / width * height, 1f);
@@ -279,18 +281,18 @@
             vector4.z = -vector4.x;
             vector4.w = -vector4.y;
             blurMaterial.SetVector("_Parameter", vector4);
-            Graphics.Blit((Texture) storedTexture, temporary, blurMaterial, 0);
+            Graphics.Blit(storedTexture, temporary, blurMaterial, 0);
             storedTexture.DiscardContents();
             vector4 = new Vector4(vector2_1.y * vector2_2.x, -vector2_1.x * vector2_2.y, 0.0f, 0.0f);
             vector4.z = -vector4.x;
             vector4.w = -vector4.y;
             blurMaterial.SetVector("_Parameter", vector4);
-            Graphics.Blit((Texture) temporary, storedTexture, blurMaterial, 0);
+            Graphics.Blit(temporary, storedTexture, blurMaterial, 0);
             temporary.DiscardContents();
           }
           RenderTexture.ReleaseTemporary(temporary);
         }
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
     }
 
@@ -300,9 +302,9 @@
       out int width,
       out int height)
     {
-      float num = mode != Mode.Absolute ? (source.width <= source.height ? ((double) source.height <= downsample ? 1f : downsample / (float) source.height) : ((double) source.width <= downsample ? 1f : downsample / (float) source.width)) : 1f / downsample;
-      width = Mathf.RoundToInt((float) croppedSource.width * num);
-      height = Mathf.RoundToInt((float) croppedSource.height * num);
+      float num = mode != Mode.Absolute ? (source.width <= source.height ? (source.height <= (double) downsample ? 1f : downsample / source.height) : (source.width <= (double) downsample ? 1f : downsample / source.width)) : 1f / downsample;
+      width = Mathf.RoundToInt(croppedSource.width * num);
+      height = Mathf.RoundToInt(croppedSource.height * num);
       if (width < 1)
         width = 1;
       else if (width > croppedSource.width)

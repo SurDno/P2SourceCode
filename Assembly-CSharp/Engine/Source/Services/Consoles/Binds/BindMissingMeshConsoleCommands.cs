@@ -1,4 +1,5 @@
 ﻿using Cofe.Meta;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -14,7 +15,7 @@ namespace Engine.Source.Services.Consoles.Binds
         if (shape.shapeType == ParticleSystemShapeType.Mesh)
         {
           shape = context.shape;
-          if ((Object) shape.mesh == (Object) null)
+          if (shape.mesh == null)
           {
             object[] objArray = new object[4]
             {
@@ -24,10 +25,10 @@ namespace Engine.Source.Services.Consoles.Binds
               null
             };
             shape = context.shape;
-            objArray[1] = (object) shape.shapeType;
+            objArray[1] = shape.shapeType;
             objArray[2] = " , info : ";
-            objArray[3] = (object) context.GetInfo();
-            Debug.LogError((object) string.Concat(objArray), (Object) context);
+            objArray[3] = context.GetInfo();
+            Debug.LogError(string.Concat(objArray), context);
           }
         }
         else
@@ -36,7 +37,7 @@ namespace Engine.Source.Services.Consoles.Binds
           if (shape.shapeType == ParticleSystemShapeType.MeshRenderer)
           {
             shape = context.shape;
-            if ((Object) shape.meshRenderer == (Object) null)
+            if (shape.meshRenderer == null)
             {
               object[] objArray = new object[4]
               {
@@ -46,10 +47,10 @@ namespace Engine.Source.Services.Consoles.Binds
                 null
               };
               shape = context.shape;
-              objArray[1] = (object) shape.shapeType;
+              objArray[1] = shape.shapeType;
               objArray[2] = " , info : ";
-              objArray[3] = (object) context.GetInfo();
-              Debug.LogError((object) string.Concat(objArray), (Object) context);
+              objArray[3] = context.GetInfo();
+              Debug.LogError(string.Concat(objArray), context);
             }
           }
           else
@@ -58,7 +59,7 @@ namespace Engine.Source.Services.Consoles.Binds
             if (shape.shapeType == ParticleSystemShapeType.SkinnedMeshRenderer)
             {
               shape = context.shape;
-              if ((Object) shape.skinnedMeshRenderer == (Object) null)
+              if (shape.skinnedMeshRenderer == null)
               {
                 object[] objArray = new object[4]
                 {
@@ -68,10 +69,10 @@ namespace Engine.Source.Services.Consoles.Binds
                   null
                 };
                 shape = context.shape;
-                objArray[1] = (object) shape.shapeType;
+                objArray[1] = shape.shapeType;
                 objArray[2] = " , info : ";
-                objArray[3] = (object) context.GetInfo();
-                Debug.LogError((object) string.Concat(objArray), (Object) context);
+                objArray[3] = context.GetInfo();
+                Debug.LogError(string.Concat(objArray), context);
               }
             }
           }
@@ -79,8 +80,8 @@ namespace Engine.Source.Services.Consoles.Binds
       }
       foreach (MeshFilter context in Object.FindObjectsOfType<MeshFilter>())
       {
-        if ((Object) context.mesh == (Object) null)
-          Debug.LogError((object) ("Mesh not found, MeshFilter : " + context.GetInfo()), (Object) context);
+        if (context.mesh == null)
+          Debug.LogError("Mesh not found, MeshFilter : " + context.GetInfo(), context);
       }
       return command;
     }

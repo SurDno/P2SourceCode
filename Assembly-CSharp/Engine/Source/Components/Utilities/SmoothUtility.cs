@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.Components.Utilities
+﻿using UnityEngine;
+
+namespace Engine.Source.Components.Utilities
 {
   public static class SmoothUtility
   {

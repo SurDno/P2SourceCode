@@ -1,4 +1,6 @@
-﻿namespace UnityEngine.PostProcessing
+﻿using UnityEngine.Rendering;
+
+namespace UnityEngine.PostProcessing
 {
   public abstract class PostProcessingComponentCommandBuffer<T> : PostProcessingComponent<T> where T : PostProcessingModel
   {

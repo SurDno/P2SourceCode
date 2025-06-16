@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -44,13 +45,13 @@ namespace RootMotion.FinalIK
           Vector3 to = new Vector3(direction.x, 0.0f, direction.z);
           if (to == Vector3.zero)
             to = Vector3.forward;
-          if ((double) Vector3.Angle(new Vector3(d.x, 0.0f, d.z), to) > yaw + (double) angleBuffer)
+          if (Vector3.Angle(new Vector3(d.x, 0.0f, d.z), to) > yaw + (double) angleBuffer)
             return false;
         }
         if (pitch >= 180.0)
           return true;
         float num = Vector3.Angle(Vector3.up, direction);
-        return (double) Mathf.Abs(Vector3.Angle(Vector3.up, d) - num) < pitch + (double) angleBuffer;
+        return Mathf.Abs(Vector3.Angle(Vector3.up, d) - num) < pitch + (double) angleBuffer;
       }
 
       public void SetAngleBuffer(float value) => angleBuffer = value;

@@ -1,4 +1,6 @@
-﻿namespace AssetDatabases
+﻿using UnityEngine;
+
+namespace AssetDatabases
 {
   public class AsyncLoadFromResources : IAsyncLoad
   {
@@ -6,7 +8,7 @@
 
     public AsyncLoadFromResources(ResourceRequest operation) => this.operation = operation;
 
-    public object Asset => (object) operation.asset;
+    public object Asset => operation.asset;
 
     public bool IsDone => operation.isDone;
   }

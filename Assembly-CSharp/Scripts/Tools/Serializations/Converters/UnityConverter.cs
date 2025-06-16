@@ -1,6 +1,7 @@
 ﻿using System;
 using Cofe.Serializations.Converters;
 using Cofe.Utility;
+using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -39,7 +40,7 @@ namespace Scripts.Tools.Serializations.Converters
     {
       Vector2 result;
       if (!TryParseVector2(value, out result))
-        Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
+        Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
 
@@ -63,7 +64,7 @@ namespace Scripts.Tools.Serializations.Converters
     {
       Vector3 result;
       if (!TryParseVector3(value, out result))
-        Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
+        Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
 
@@ -87,7 +88,7 @@ namespace Scripts.Tools.Serializations.Converters
     {
       Vector4 result;
       if (!TryParseVector4(value, out result))
-        Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
+        Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
 
@@ -111,7 +112,7 @@ namespace Scripts.Tools.Serializations.Converters
     {
       Quaternion result;
       if (!TryParseQuaternion(value, out result))
-        Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
+        Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
 
@@ -140,7 +141,7 @@ namespace Scripts.Tools.Serializations.Converters
     {
       Color result;
       if (!TryParseColor(value, out result))
-        Debug.LogWarning((object) ("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace()));
+        Debug.LogWarning("Error parse value : " + (value != null ? value : "null") + "\n" + ObjectInfoUtility.GetStackTrace());
       return result;
     }
 

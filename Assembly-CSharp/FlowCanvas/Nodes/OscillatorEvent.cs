@@ -1,5 +1,6 @@
 ﻿using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -16,13 +17,7 @@ namespace FlowCanvas.Nodes
 
     public OscillatorEvent()
     {
-      curve = new AnimationCurve(new Keyframe[4]
-      {
-        new Keyframe(0.0f, 1f),
-        new Keyframe(0.5f, 1f),
-        new Keyframe(0.5f, -1f),
-        new Keyframe(1f, -1f)
-      });
+      curve = new AnimationCurve(new Keyframe(0.0f, 1f), new Keyframe(0.5f, 1f), new Keyframe(0.5f, -1f), new Keyframe(1f, -1f));
       curve.postWrapMode = WrapMode.Loop;
     }
 

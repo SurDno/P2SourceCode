@@ -15,6 +15,7 @@ using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -150,7 +151,7 @@ namespace Engine.Source.Components
       if (hudWindow == null)
         return;
       InteractableWindow interactableInterface = hudWindow.InteractableInterface;
-      if ((UnityEngine.Object) interactableInterface == (UnityEngine.Object) null)
+      if (interactableInterface == null)
         return;
       if (!isSame)
       {
@@ -167,7 +168,7 @@ namespace Engine.Source.Components
         }
         else
         {
-          List<KeyValuePair<Sprite, bool>> iconSprites = (List<KeyValuePair<Sprite, bool>>) null;
+          List<KeyValuePair<Sprite, bool>> iconSprites = null;
           if (currentInteractable != null && !currentInteractable.IsDisposed)
           {
             InteractableWindow.IconType iconType = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);

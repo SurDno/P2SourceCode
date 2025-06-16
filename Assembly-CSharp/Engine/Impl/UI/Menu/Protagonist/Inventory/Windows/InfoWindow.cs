@@ -3,6 +3,8 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Components;
 using Engine.Source.Inventory;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -12,13 +14,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     private IStorableComponent target;
     private float price;
     [SerializeField]
-    private Image unityImage = (Image) null;
+    private Image unityImage;
     [SerializeField]
-    private bool useBigPicture = false;
+    private bool useBigPicture;
     [SerializeField]
-    private Text unityInformation = (Text) null;
+    private Text unityInformation;
     [SerializeField]
-    private Text unityName = (Text) null;
+    private Text unityName;
     [SerializeField]
     private PriceItem priceItem;
 
@@ -38,7 +40,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
         unityInformation.text = service.GetText(target.Tooltip);
         InventoryPlaceholder placeholder = ((StorableComponent) target).Placeholder;
         unityImage.sprite = useBigPicture ? placeholder.ImageInformation.Value : placeholder.ImageInformation.Value;
-        if ((Object) unityImage.sprite == (Object) null)
+        if (unityImage.sprite == null)
           unityImage.color = Color.black;
         else
           unityImage.color = Color.white;
@@ -51,7 +53,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       set
       {
         price = value;
-        if (!((Object) priceItem != (Object) null))
+        if (!(priceItem != null))
           return;
         priceItem.SetPrice((int) price);
       }
@@ -65,10 +67,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     public static InfoWindow Instantiate(bool withPrice, GameObject prefab)
     {
-      GameObject gameObject = Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Instantiate(prefab);
       gameObject.name = prefab.name;
       InfoWindow component = gameObject.GetComponent<InfoWindow>();
-      if ((Object) component.priceItem != (Object) null)
+      if (component.priceItem != null)
         component.priceItem.gameObject.SetActive(withPrice);
       return component;
     }

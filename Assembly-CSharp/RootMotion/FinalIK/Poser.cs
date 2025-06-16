@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public abstract class Poser : SolverManager
   {

@@ -1,6 +1,8 @@
 ﻿using System;
 using Engine.Behaviours.Localization;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class SelectableSettingsItemView : MonoBehaviour, ISelectable
 {
@@ -26,7 +28,7 @@ public class SelectableSettingsItemView : MonoBehaviour, ISelectable
       if (selected == value)
         return;
       selected = value;
-      if (!((UnityEngine.Object) selectedView != (UnityEngine.Object) null))
+      if (!(selectedView != null))
         return;
       selectedView.Visible = value;
     }
@@ -40,13 +42,13 @@ public class SelectableSettingsItemView : MonoBehaviour, ISelectable
       if (interactable == value)
         return;
       interactable = value;
-      if (!((UnityEngine.Object) interactableView != (UnityEngine.Object) null))
+      if (!(interactableView != null))
         return;
       interactableView.Visible = interactable;
     }
   }
 
-  private void Awake() => button.onClick.AddListener(new UnityAction(OnClick));
+  private void Awake() => button.onClick.AddListener(OnClick);
 
   private void OnClick()
   {
@@ -60,14 +62,14 @@ public class SelectableSettingsItemView : MonoBehaviour, ISelectable
 
   public void SetName(string value)
   {
-    if (!((UnityEngine.Object) nameText != (UnityEngine.Object) null))
+    if (!(nameText != null))
       return;
     nameText.Signature = value;
   }
 
   public void SetValue(string value)
   {
-    if (!((UnityEngine.Object) valueText != (UnityEngine.Object) null))
+    if (!(valueText != null))
       return;
     valueText.Signature = value;
   }

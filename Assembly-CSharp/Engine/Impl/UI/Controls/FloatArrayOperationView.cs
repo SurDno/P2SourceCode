@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class FloatArrayOperationView : FloatArrayView
   {
@@ -52,7 +54,7 @@
 
     private void ApplyValues()
     {
-      if (!((Object) resultView != (Object) null))
+      if (!(resultView != null))
         return;
       switch (operation)
       {
@@ -76,7 +78,7 @@
 
     public override void SkipAnimation()
     {
-      if (!((Object) resultView != (Object) null))
+      if (!(resultView != null))
         return;
       resultView.SkipAnimation();
     }

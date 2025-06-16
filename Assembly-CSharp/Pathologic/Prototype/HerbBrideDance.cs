@@ -1,4 +1,7 @@
-﻿namespace Pathologic.Prototype
+﻿using UnityEngine;
+using UnityEngine.AI;
+
+namespace Pathologic.Prototype
 {
   [RequireComponent(typeof (CapsuleCollider))]
   [RequireComponent(typeof (NavMeshObstacle))]
@@ -11,10 +14,10 @@
 
     private void Update()
     {
-      this.GetComponent<CapsuleCollider>().center = this.gameObject.transform.InverseTransformPoint(CapsuleTransform.position);
-      if ((double) (_lastPosition - CapsuleTransform.position).magnitude <= 0.30000001192092896)
+      GetComponent<CapsuleCollider>().center = gameObject.transform.InverseTransformPoint(CapsuleTransform.position);
+      if ((_lastPosition - CapsuleTransform.position).magnitude <= 0.30000001192092896)
         return;
-      this.GetComponent<NavMeshObstacle>().center = this.GetComponent<CapsuleCollider>().center;
+      GetComponent<NavMeshObstacle>().center = GetComponent<CapsuleCollider>().center;
       _lastPosition = CapsuleTransform.position;
     }
   }

@@ -12,6 +12,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [TaskDescription("Can see member of related fraction")]
 [TaskCategory("Pathologic")]

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Engine.Source.Commons;
 using Engine.Source.Settings;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -34,8 +36,8 @@ namespace Engine.Impl.UI.Menu.Main
     protected override void Awake()
     {
       graphicsGameSettings = InstanceByRequest<GraphicsGameSettings>.Instance;
-      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
-      this.fullScreenModeView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      layout = Instantiate(listLayoutPrefab, transform, false);
+      this.fullScreenModeView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.fullScreenModeView.SetName("{UI.Menu.Main.Settings.Graphics.FullScreenMode}");
       this.fullScreenModeView.SetValueNames(new string[3]
       {
@@ -45,11 +47,11 @@ namespace Engine.Impl.UI.Menu.Main
       });
       NamedIntSettingsValueView fullScreenModeView = this.fullScreenModeView;
       fullScreenModeView.VisibleValueChangeEvent = fullScreenModeView.VisibleValueChangeEvent + OnSliderChange;
-      this.resolutionView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      this.resolutionView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.resolutionView.SetName("{UI.Menu.Main.Settings.Graphics.Resolution}");
       NamedIntSettingsValueView resolutionView = this.resolutionView;
       resolutionView.VisibleValueChangeEvent = resolutionView.VisibleValueChangeEvent + OnSliderChange;
-      this.renderScaleView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.renderScaleView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.renderScaleView.SetName("{UI.Menu.Main.Settings.Graphics.RenderScale}");
       this.renderScaleView.SetMinValue(graphicsGameSettings.RenderScale.MinValue);
       this.renderScaleView.SetMaxValue(graphicsGameSettings.RenderScale.MaxValue);
@@ -58,14 +60,14 @@ namespace Engine.Impl.UI.Menu.Main
       this.renderScaleView.SetValueValidationFunction(RenderScaleValueValidation, 0.05f);
       FloatSettingsValueView renderScaleView = this.renderScaleView;
       renderScaleView.VisibleValueChangeEvent = renderScaleView.VisibleValueChangeEvent + OnSliderChange;
-      applyButton.onClick.AddListener(new UnityAction(OnApplyButtonClick));
+      applyButton.onClick.AddListener(OnApplyButtonClick);
       InitConsoleSettings(layout);
       base.Awake();
     }
 
     private void InitConsoleSettings(LayoutContainer layout)
     {
-      this.gammaView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.gammaView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.gammaView.SetName("{UI.Menu.Main.Settings.Graphics.Gamma}");
       this.gammaView.SetMinValue(graphicsGameSettings.Gamma.MinValue);
       this.gammaView.SetMaxValue(graphicsGameSettings.Gamma.MaxValue);
@@ -75,7 +77,7 @@ namespace Engine.Impl.UI.Menu.Main
       FloatSettingsValueView gammaView = this.gammaView;
       gammaView.VisibleValueChangeEvent = gammaView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
       graphicsGameSettings = InstanceByRequest<GraphicsGameSettings>.Instance;
-      this.fieldOfViewView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.fieldOfViewView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.fieldOfViewView.SetName("{UI.Menu.Main.Settings.Graphics.FieldOfView}");
       this.fieldOfViewView.SetMinValue(graphicsGameSettings.FieldOfView.MinValue);
       this.fieldOfViewView.SetMaxValue(graphicsGameSettings.FieldOfView.MaxValue);
@@ -116,18 +118,18 @@ namespace Engine.Impl.UI.Menu.Main
       Screen.SetResolution(resolutionWidths[visibleValue], resolutionHeights[visibleValue], fullscreenMode);
       renderScaleView.ApplyVisibleValue();
       graphicsGameSettings.Apply();
-      if ((UnityEngine.Object) confirmationInstance == (UnityEngine.Object) null)
-        confirmationInstance = UnityEngine.Object.Instantiate<ConfirmationWindow>(confirmationPrefab, this.transform, false);
+      if (confirmationInstance == null)
+        confirmationInstance = Instantiate(confirmationPrefab, transform, false);
       confirmationInstance.Show("{UI.Menu.Main.Settings.Display.Confirmation}", StopAutorevertCoroutine, Revert);
-      autorevertCoroutine = this.StartCoroutine(AutorevertCoroutine());
+      autorevertCoroutine = StartCoroutine(AutorevertCoroutine());
       gammaView.RevertVisibleValue();
       fieldOfViewView.RevertVisibleValue();
     }
 
     private IEnumerator AutorevertCoroutine()
     {
-      yield return (object) new WaitForSeconds(confirmationTime);
-      autorevertCoroutine = (Coroutine) null;
+      yield return new WaitForSeconds(confirmationTime);
+      autorevertCoroutine = null;
       Revert();
     }
 
@@ -144,8 +146,8 @@ namespace Engine.Impl.UI.Menu.Main
     {
       if (autorevertCoroutine == null)
         return;
-      this.StopCoroutine(autorevertCoroutine);
-      autorevertCoroutine = (Coroutine) null;
+      StopCoroutine(autorevertCoroutine);
+      autorevertCoroutine = null;
     }
 
     protected override void OnEnable()
@@ -231,14 +233,14 @@ namespace Engine.Impl.UI.Menu.Main
               num = names.Count;
             resolutionWidths.Add(resolution.width);
             resolutionHeights.Add(resolution.height);
-            names.Add(resolution.width.ToString() + " × " + (object) resolution.height);
+            names.Add(resolution.width + " × " + resolution.height);
           }
         }
       }
       if (num == -1)
       {
         num = names.Count;
-        names.Add(Screen.width.ToString() + " × " + (object) Screen.height);
+        names.Add(Screen.width + " × " + Screen.height);
         resolutionWidths.Add(Screen.width);
         resolutionHeights.Add(Screen.height);
       }

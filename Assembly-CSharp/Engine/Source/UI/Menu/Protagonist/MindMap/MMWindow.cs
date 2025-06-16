@@ -19,6 +19,9 @@ using Engine.Source.Utility;
 using InputServices;
 using Inspectors;
 using Pingle;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -95,8 +98,8 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     private MMNodeView previousNode;
     private MMNodeView hovered;
     private MMNodeView newHovered;
-    private GraphicRaycaster rayCaster = (GraphicRaycaster) null;
-    private PointerEventData pointerData = (PointerEventData) null;
+    private GraphicRaycaster rayCaster;
+    private PointerEventData pointerData;
     private const float MAX_ACCELERATION_RATE = 3f;
     private float currentAcceleration;
     private float accelerationSpeed = 3f;
@@ -148,7 +151,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
           OpenPage(globalPage);
         else
           sideBar.UpdateButtons();
-        Debug.Log((object) "Mind Map : Global page set");
+        Debug.Log("Mind Map : Global page set");
       }
     }
 
@@ -256,9 +259,9 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     private void CloseOpenedPage()
     {
       infoView.Hide();
-      if ((UnityEngine.Object) openedPageView != (UnityEngine.Object) null)
+      if (openedPageView != null)
       {
-        UnityEngine.Object.Destroy((UnityEngine.Object) openedPageView.gameObject);
+        Destroy(openedPageView.gameObject);
         openedPageView = null;
       }
       OpenedPage = null;
@@ -271,7 +274,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     public void AddPage(MMPage page)
     {
       bool flag = OpenedPage != null && OpenedPage == LastPage;
-      Debug.Log((object) ("Mind Map : Local page " + pages.Count + " added"));
+      Debug.Log("Mind Map : Local page " + pages.Count + " added");
       pages.Add(page);
       if (flag)
         OpenPage(page);
@@ -304,7 +307,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
         OpenPage(globalPage);
       else
         sideBar.UpdateButtons();
-      Debug.Log((object) ("Mind Map : Local page " + index + " removed"));
+      Debug.Log("Mind Map : Local page " + index + " removed");
     }
 
     public MMPage GetPage(int index) => pages[index];
@@ -338,17 +341,17 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickLeft, MoveOnNodes);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickRight, MoveOnNodes);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, SwapToMap);
-      rayCaster = this.GetComponent<GraphicRaycaster>();
+      rayCaster = GetComponent<GraphicRaycaster>();
       pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) consoleCursor.transform.position
+        position = consoleCursor.transform.position
       };
       SelectNode();
     }
 
     private bool SwapToMap(GameActionType type, bool down)
     {
-      if (!InputService.Instance.JoystickUsed || !down || !((UnityEngine.Object) newHovered != (UnityEngine.Object) null))
+      if (!InputService.Instance.JoystickUsed || !down || !(newHovered != null))
         return false;
       CallMap(newHovered.Node);
       return true;
@@ -361,12 +364,12 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       CursorService.Instance.Visible = !joystick;
       helpPanel.SetActive(joystick);
       consoleCursor.SetActive(joystick);
-      if ((UnityEngine.Object) hovered != (UnityEngine.Object) null)
+      if (hovered != null)
       {
         hovered?.OnPointerExit(pointerData);
         hovered = null;
       }
-      if ((UnityEngine.Object) newHovered != (UnityEngine.Object) null)
+      if (newHovered != null)
       {
         newHovered?.OnPointerExit(pointerData);
         newHovered = null;
@@ -384,7 +387,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     private void ParseNodes(NodeMoveDirection direction)
     {
-      Transform transform = (UnityEngine.Object) newHovered != (UnityEngine.Object) null ? newHovered.transform : consoleCursor.transform;
+      Transform transform = newHovered != null ? newHovered.transform : consoleCursor.transform;
       SetNodes(openedPageView);
       if (nodes.Count == 0)
         return;
@@ -411,14 +414,14 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     {
       if (nodes.Count == 0)
         return;
-      MMNodeView component = UISelectableHelper.Select(nodes.Select((Func<MMNodeView, GameObject>) (n => n.gameObject)), consoleCursor, dir)?.GetComponent<MMNodeView>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      MMNodeView component = UISelectableHelper.Select(nodes.Select(n => n.gameObject), consoleCursor, dir)?.GetComponent<MMNodeView>();
+      if (component == null)
         return;
-      cursorMapPosition = (Vector2) contentRect.InverseTransformPoint(component.gameObject.transform.position);
-      consoleCursor.transform.position = contentRect.TransformPoint((Vector3) cursorMapPosition);
+      cursorMapPosition = contentRect.InverseTransformPoint(component.gameObject.transform.position);
+      consoleCursor.transform.position = contentRect.TransformPoint(cursorMapPosition);
       pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) consoleCursor.transform.position
+        position = consoleCursor.transform.position
       };
       SelectNode();
     }
@@ -428,13 +431,13 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       if (!InputService.Instance.JoystickUsed)
         return;
       Vector2 dir = new Vector2(InputService.Instance.GetAxis("RightStickX"), -InputService.Instance.GetAxis("RightStickY"));
-      if (!analogNavigationCooldown && (double) dir.sqrMagnitude > 0.64000004529953)
+      if (!analogNavigationCooldown && dir.sqrMagnitude > 0.64000004529953)
       {
         analogNavigationCooldown = true;
         dir.Normalize();
-        NavigateNode((Vector3) dir);
+        NavigateNode(dir);
       }
-      else if (analogNavigationCooldown && (double) dir.sqrMagnitude < 0.64000004529953)
+      else if (analogNavigationCooldown && dir.sqrMagnitude < 0.64000004529953)
         analogNavigationCooldown = false;
       float num1 = Mathf.Pow(2f, Mathf.Lerp(baseScalePower, 1.5f, scaleValue));
       Vector2 zero = Vector2.zero;
@@ -460,7 +463,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       else if (currentAcceleration != 0.0)
         currentAcceleration = 0.0f;
       RectTransform transform = (RectTransform) consoleCursor.transform;
-      if ((double) transform.anchoredPosition.sqrMagnitude > 1.0)
+      if (transform.anchoredPosition.sqrMagnitude > 1.0)
         contentRect.anchoredPosition += -transform.anchoredPosition * Mathf.MoveTowards(0.0f, 1f, 5f * Time.deltaTime);
     }
 
@@ -468,13 +471,13 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     {
       if (!consoleCursor.activeSelf)
         return;
-      Vector3 vector3 = contentRect.TransformPoint((Vector3) cursorMapPosition);
+      Vector3 vector3 = contentRect.TransformPoint(cursorMapPosition);
       consoleCursor.transform.position = vector3;
-      if ((double) vector3.sqrMagnitude > 0.0)
+      if (vector3.sqrMagnitude > 0.0)
       {
         pointerData = new PointerEventData(EventSystem.current)
         {
-          position = (Vector2) consoleCursor.transform.position
+          position = consoleCursor.transform.position
         };
         SelectNode();
       }
@@ -486,7 +489,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       if (pointerData == null)
         return;
       rayCaster.Raycast(pointerData, source);
-      if (source.Count == 1 && (UnityEngine.Object) source.ElementAt(0).gameObject?.GetComponent<ScrollRect>() != (UnityEngine.Object) null)
+      if (source.Count == 1 && source.ElementAt(0).gameObject?.GetComponent<ScrollRect>() != null)
       {
         hovered?.OnPointerExit(pointerData);
         newHovered?.OnPointerExit(pointerData);
@@ -496,13 +499,13 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       foreach (RaycastResult raycastResult in source)
       {
         MMNodeView component = raycastResult.gameObject?.GetComponent<MMNodeView>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
         {
           newHovered = component;
           break;
         }
       }
-      if (!((UnityEngine.Object) newHovered != (UnityEngine.Object) hovered))
+      if (!(newHovered != hovered))
         return;
       hovered?.OnPointerExit(pointerData);
       previousNode = hovered;
@@ -512,7 +515,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     private void SetNodes(MMPageView pageView)
     {
-      nodes = new List<MMNodeView>((IEnumerable<MMNodeView>) pageView.GetComponentsInChildren<MMNodeView>());
+      nodes = new List<MMNodeView>(pageView.GetComponentsInChildren<MMNodeView>());
       if (nodes.Count == 0)
         return;
       UpdateBoundVectors();
@@ -526,7 +529,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       minNavigationValues = new Vector2();
       for (int index = 0; index < nodes.Count; ++index)
       {
-        Vector2 vector2 = (Vector2) contentRect.InverseTransformPoint(nodes[index].transform.position);
+        Vector2 vector2 = contentRect.InverseTransformPoint(nodes[index].transform.position);
         minNavigationValues.x = Mathf.Min(minNavigationValues.x, vector2.x - 150f);
         minNavigationValues.y = Mathf.Min(minNavigationValues.y, vector2.y - 150f);
         maxNavigationValues.x = Mathf.Max(maxNavigationValues.x, vector2.x + 150f);
@@ -568,7 +571,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       newHovered = null;
       maxNavigationValues = Vector2.zero;
       minNavigationValues = Vector2.zero;
-      nodes = new List<MMNodeView>((IEnumerable<MMNodeView>) openedPageView.GetComponentsInChildren<MMNodeView>());
+      nodes = new List<MMNodeView>(openedPageView.GetComponentsInChildren<MMNodeView>());
       cursorMapPosition = Vector2.zero;
       UpdateBoundVectors();
     }
@@ -577,11 +580,11 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     {
       ScaleValue = 0.5f;
       desiredScaleValue = 0.5f;
-      Vector2 position = (Vector2) node.position;
-      Vector2 vector2 = new Vector2((float) Screen.width / 2f, (float) Screen.height / 2f);
+      Vector2 position = node.position;
+      Vector2 vector2 = new Vector2(Screen.width / 2f, Screen.height / 2f);
       if (!InputService.Instance.JoystickUsed)
         ContentRect.anchoredPosition += vector2 - position;
-      cursorMapPosition = (Vector2) ContentRect.InverseTransformPoint(node.position);
+      cursorMapPosition = ContentRect.InverseTransformPoint(node.position);
     }
 
     public float RadiusByKind(MMNodeKind kind)
@@ -628,16 +631,16 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       if (InputService.Instance.JoystickUsed ? !InputService.Instance.GetButton("A", false) : !Input.GetMouseButton(0))
       {
         float num2 = x2 / x1;
-        Vector3 anchoredPosition = (Vector3) ContentRect.anchoredPosition;
+        Vector3 anchoredPosition = ContentRect.anchoredPosition;
         Vector3 vector3_1 = ContentRect.parent.InverseTransformPoint(InputService.Instance.JoystickUsed ? consoleCursor.transform.position : Input.mousePosition);
         Vector3 vector3_2 = (anchoredPosition - vector3_1) * num2;
-        ContentRect.anchoredPosition = (Vector2) (vector3_1 + vector3_2);
+        ContentRect.anchoredPosition = vector3_1 + vector3_2;
       }
     }
 
     public override void Initialize()
     {
-      RegisterLayer((IMMWindow) this);
+      RegisterLayer<IMMWindow>(this);
       base.Initialize();
     }
 
@@ -676,7 +679,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     {
       contentRect.sizeDelta = size;
       Vector2 sizeDelta = ((RectTransform) contentRect.parent).sizeDelta;
-      if ((double) size.x <= 0.0 || (double) size.y <= 0.0)
+      if (size.x <= 0.0 || size.y <= 0.0)
       {
         BaseScalePower = 0.0f;
       }

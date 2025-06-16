@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -11,14 +12,14 @@ namespace FlowCanvas.Nodes
   {
     private Coroutine coroutine;
 
-    public override void OnGraphStarted() => coroutine = (Coroutine) null;
+    public override void OnGraphStarted() => coroutine = null;
 
     public override void OnGraphStoped()
     {
       if (coroutine == null)
         return;
       StopCoroutine(coroutine);
-      coroutine = (Coroutine) null;
+      coroutine = null;
     }
 
     protected override void RegisterPorts()
@@ -46,7 +47,7 @@ namespace FlowCanvas.Nodes
         fCurrent.Call();
         yield return null;
       }
-      coroutine = (Coroutine) null;
+      coroutine = null;
       fFinish.Call();
     }
   }

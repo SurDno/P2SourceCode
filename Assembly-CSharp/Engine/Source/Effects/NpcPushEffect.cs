@@ -7,6 +7,7 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -65,7 +66,7 @@ namespace Engine.Source.Effects
 
     public void Cleanup()
     {
-      if (!((Object) pushed != (Object) null))
+      if (!(pushed != null))
         return;
       pushed.IsPushed = false;
       if (pushed is PlayerEnemy && playerController != null)
@@ -86,7 +87,7 @@ namespace Engine.Source.Effects
         pusher = ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
         pushed = ((IEntityView) Target).GameObject.GetComponent<EnemyBase>();
       }
-      if ((Object) pushed == (Object) null || (Object) pusher == (Object) null)
+      if (pushed == null || pusher == null)
         return true;
       pushDirection = (pushed.transform.position - pusher.transform.position).normalized;
       pushed.IsPushed = true;
@@ -105,7 +106,7 @@ namespace Engine.Source.Effects
 
     public bool Compute(float currentRealTime, float currentGameTime)
     {
-      if ((Object) pushed == (Object) null || (Object) pusher == (Object) null)
+      if (pushed == null || pusher == null)
         return false;
       if (currentRealTime - (double) startTime < time)
       {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BoneRigger : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class BoneRigger : MonoBehaviour
   public VisemeBoneDefine[] Poses;
   [HideInInspector]
   public string editorSelected;
-  private AnnoBoneDeformer rtBoneDeformer = null;
+  private AnnoBoneDeformer rtBoneDeformer;
 
   private void Start() => InitializeRuntimeDeformer();
 
@@ -89,7 +90,7 @@ public class BoneRigger : MonoBehaviour
   {
     if (Poses == null)
     {
-      Debug.Log((object) "GetPose problem: no poses?");
+      Debug.Log("GetPose problem: no poses?");
       return null;
     }
     foreach (VisemeBoneDefine pose in Poses)

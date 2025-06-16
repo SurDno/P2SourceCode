@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
-using Cofe.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Cofe.Loggers;
+using Cofe.Utility;
 
 namespace Engine.Common.Commons.Cloneable
 {
@@ -29,7 +29,7 @@ namespace Engine.Common.Commons.Cloneable
       target.Capacity = source.Count;
       foreach (T obj1 in source)
       {
-        if ((object) obj1 == null)
+        if (obj1 == null)
           target.Add(default (T));
         else if (!(obj1 is ICloneable cloneable))
         {
@@ -45,7 +45,7 @@ namespace Engine.Common.Commons.Cloneable
 
     public static T Clone<T>(T source) where T : class
     {
-      if ((object) source == null)
+      if (source == null)
         return default (T);
       if (source is ICloneable cloneable)
         return (T) cloneable.Clone();
@@ -55,7 +55,7 @@ namespace Engine.Common.Commons.Cloneable
 
     public static T RuntimeOnlyCopy<T>(T source) where T : class
     {
-      if ((object) source == null)
+      if (source == null)
         return default (T);
       if (EngineRuntime.IsRuntime)
         return source;

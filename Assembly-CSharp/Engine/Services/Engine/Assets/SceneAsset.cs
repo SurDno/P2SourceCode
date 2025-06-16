@@ -2,6 +2,8 @@
 using Cofe.Utility;
 using Engine.Common;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Engine.Services.Engine.Assets
 {
@@ -49,11 +51,11 @@ namespace Engine.Services.Engine.Assets
         string path = AssetDatabaseService.Instance.GetPath(reference.Id);
         if (path.IsNullOrEmpty())
         {
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Scene not found : ").Append(reference.Id).Append(" , context : ").Append(context));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Scene not found : ").Append(reference.Id).Append(" , context : ").Append(context));
           IsError = true;
           return;
         }
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Begin async load scene : ").Append(path).Append(" , context : ").Append(context));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Begin async load scene : ").Append(path).Append(" , context : ").Append(context));
         async = AssetDatabaseService.Instance.LoadSceneAsync(path);
         initialized = true;
       }
@@ -72,7 +74,7 @@ namespace Engine.Services.Engine.Assets
         }
         if (!IsDisposed || !Scene.IsValid())
           return;
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Unload scene : ").Append(Scene.path).Append(" , context : ").Append(context).Append(" , reason : ").Append(reason));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Unload scene : ").Append(Scene.path).Append(" , context : ").Append(context).Append(" , reason : ").Append(reason));
         SceneManager.UnloadSceneAsync(Scene);
         Scene = new Scene();
         IsReadyToDispose = true;

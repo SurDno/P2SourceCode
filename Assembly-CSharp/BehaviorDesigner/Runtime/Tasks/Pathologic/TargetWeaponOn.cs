@@ -8,6 +8,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -33,18 +34,18 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) ikController == (UnityEngine.Object) null)
+      if (ikController == null)
       {
         ikController = gameObject.GetComponent<IKController>();
-        if ((UnityEngine.Object) ikController == (UnityEngine.Object) null)
+        if (ikController == null)
         {
-          Debug.LogError((object) (gameObject.name + ": doesn't contain " + typeof (IKController).Name + " unity component"), (UnityEngine.Object) gameObject);
+          Debug.LogError(gameObject.name + ": doesn't contain " + typeof (IKController).Name + " unity component", gameObject);
           return TaskStatus.Failure;
         }
       }
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target.Value == null)
       {
-        Debug.LogWarning((object) (gameObject.name + ": null target"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + ": null target", gameObject);
         return TaskStatus.Failure;
       }
       ikController.WeaponTarget = Target.Value;

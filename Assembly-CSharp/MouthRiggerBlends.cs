@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 public class MouthRiggerBlends : MonoBehaviour
 {
   public SkinnedMeshRenderer skinnedMesh;
   public Visemes_Count_t VisemeSet = Visemes_Count_t._Please_Set_;
   private string VisemeSelector;
-  public VisemeBlendDefine[] VisemeBlends = null;
-  public PhonemeVisemeMapping phnMap = null;
+  public VisemeBlendDefine[] VisemeBlends;
+  public PhonemeVisemeMapping phnMap;
   private bool bExpandedList;
   private bool bExpandedBoneList;
   private AnnoBlendDeformer visemeBlendDeformer;
-  public BonePose[] BasePoses = null;
+  public BonePose[] BasePoses;
 
   public IAnnoDeformer MouthDeformer
   {
@@ -27,8 +28,8 @@ public class MouthRiggerBlends : MonoBehaviour
   {
     if (visemeBlendDeformer != null || phnMap == null || VisemeBlends == null)
       return;
-    if ((UnityEngine.Object) skinnedMesh == (UnityEngine.Object) null)
-      skinnedMesh = this.GetComponent<SkinnedMeshRenderer>();
+    if (skinnedMesh == null)
+      skinnedMesh = GetComponent<SkinnedMeshRenderer>();
     UpdateBlendIndices(skinnedMesh, VisemeBlends);
     visemeBlendDeformer = new AnnoBlendDeformer(VisemeBlends, GetActiveBlendIndices(skinnedMesh, VisemeBlends), skinnedMesh);
   }
@@ -168,7 +169,7 @@ public class MouthRiggerBlends : MonoBehaviour
         message = message + theBlend.blendName + "," + theBlend.weight;
       message += "\n";
     }
-    Debug.Log((object) message);
+    Debug.Log(message);
   }
 
   private static int BlendNameToBlendIndex(SkinnedMeshRenderer obj, string blendName)
@@ -179,7 +180,7 @@ public class MouthRiggerBlends : MonoBehaviour
       if (obj.sharedMesh.GetBlendShapeName(shapeIndex) == blendName)
         return shapeIndex;
     }
-    Debug.Log((object) ("Missing Blend Shape for blend " + blendName));
+    Debug.Log("Missing Blend Shape for blend " + blendName);
     return -1;
   }
 

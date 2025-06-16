@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 [AddComponentMenu("")]
 public class AmplifyOcclusionBase : MonoBehaviour
@@ -17,10 +19,10 @@ public class AmplifyOcclusionBase : MonoBehaviour
   public float PowerExponent = 1.8f;
   [Range(0.0f, 0.99f)]
   public float Bias = 0.05f;
-  public bool CacheAware = false;
-  public bool Downsample = false;
+  public bool CacheAware;
+  public bool Downsample;
   [Header("Distance Fade")]
-  public bool FadeEnabled = false;
+  public bool FadeEnabled;
   public float FadeStart = 100f;
   public float FadeLength = 50f;
   [Range(0.0f, 1f)]
@@ -70,17 +72,17 @@ public class AmplifyOcclusionBase : MonoBehaviour
   private RenderTextureFormat m_depthRTFormat = RenderTextureFormat.RFloat;
   private RenderTextureFormat m_normalRTFormat = RenderTextureFormat.ARGB2101010;
   private RenderTextureFormat m_occlusionRTFormat = RenderTextureFormat.RGHalf;
-  private RenderTexture m_occlusionRT = (RenderTexture) null;
+  private RenderTexture m_occlusionRT;
   private int[] m_depthLayerRT;
   private int[] m_normalLayerRT;
   private int[] m_occlusionLayerRT;
   private int m_mrtCount;
-  private RenderTargetIdentifier[] m_depthTargets = (RenderTargetIdentifier[]) null;
-  private RenderTargetIdentifier[] m_normalTargets = (RenderTargetIdentifier[]) null;
+  private RenderTargetIdentifier[] m_depthTargets;
+  private RenderTargetIdentifier[] m_normalTargets;
   private int m_deinterleaveDepthPass;
   private int m_deinterleaveNormalPass;
-  private RenderTargetIdentifier[] m_applyDeferredTargets = (RenderTargetIdentifier[]) null;
-  private Mesh m_blitMesh = (Mesh) null;
+  private RenderTargetIdentifier[] m_applyDeferredTargets;
+  private Mesh m_blitMesh;
   private TargetDesc m_target;
   private Dictionary<CameraEvent, CommandBuffer> m_registeredCommandBuffers = new Dictionary<CameraEvent, CommandBuffer>();
 
@@ -147,8 +149,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
       m_deinterleaveNormalPass = 6;
     }
     m_applyDeferredTargets = new RenderTargetIdentifier[2];
-    if ((UnityEngine.Object) m_blitMesh != (UnityEngine.Object) null)
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_blitMesh);
+    if (m_blitMesh != null)
+      DestroyImmediate(m_blitMesh);
     m_blitMesh = new Mesh();
     m_blitMesh.vertices = new Vector3[4]
     {
@@ -179,15 +181,15 @@ public class AmplifyOcclusionBase : MonoBehaviour
   {
     CommandBuffer_UnregisterAll();
     SafeReleaseRT(ref m_occlusionRT);
-    if ((UnityEngine.Object) m_occlusionMat != (UnityEngine.Object) null)
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_occlusionMat);
-    if ((UnityEngine.Object) m_blurMat != (UnityEngine.Object) null)
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_blurMat);
-    if ((UnityEngine.Object) m_copyMat != (UnityEngine.Object) null)
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_copyMat);
-    if (!((UnityEngine.Object) m_blitMesh != (UnityEngine.Object) null))
+    if (m_occlusionMat != null)
+      DestroyImmediate(m_occlusionMat);
+    if (m_blurMat != null)
+      DestroyImmediate(m_blurMat);
+    if (m_copyMat != null)
+      DestroyImmediate(m_copyMat);
+    if (!(m_blitMesh != null))
       return;
-    UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_blitMesh);
+    DestroyImmediate(m_blitMesh);
   }
 
   private bool CheckRenderTextureFormats()
@@ -218,12 +220,12 @@ public class AmplifyOcclusionBase : MonoBehaviour
   {
     if (!CheckRenderTextureFormats())
     {
-      Debug.LogError((object) "[AmplifyOcclusion] Target platform does not meet the minimum requirements for this effect to work properly.");
-      this.enabled = false;
+      Debug.LogError("[AmplifyOcclusion] Target platform does not meet the minimum requirements for this effect to work properly.");
+      enabled = false;
     }
     else
     {
-      m_camera = this.GetComponent<Camera>();
+      m_camera = GetComponent<Camera>();
       Warmup();
       CommandBuffer_UnregisterAll();
     }
@@ -240,18 +242,18 @@ public class AmplifyOcclusionBase : MonoBehaviour
       if (PerPixelNormals != PerPixelNormalSource.None && PerPixelNormals != PerPixelNormalSource.Camera)
       {
         PerPixelNormals = PerPixelNormalSource.Camera;
-        Debug.LogWarning((object) "[AmplifyOcclusion] GBuffer Normals only available in Camera Deferred Shading mode. Switched to Camera source.");
+        Debug.LogWarning("[AmplifyOcclusion] GBuffer Normals only available in Camera Deferred Shading mode. Switched to Camera source.");
       }
       if (ApplyMethod == ApplicationMethod.Deferred)
       {
         ApplyMethod = ApplicationMethod.PostEffect;
-        Debug.LogWarning((object) "[AmplifyOcclusion] Deferred Method requires a Deferred Shading path. Switching to Post Effect Method.");
+        Debug.LogWarning("[AmplifyOcclusion] Deferred Method requires a Deferred Shading path. Switching to Post Effect Method.");
       }
     }
     if (ApplyMethod == ApplicationMethod.Deferred && PerPixelNormals == PerPixelNormalSource.Camera)
     {
       PerPixelNormals = PerPixelNormalSource.GBuffer;
-      Debug.LogWarning((object) "[AmplifyOcclusion] Camera Normals not supported for Deferred Method. Switching to GBuffer Normals.");
+      Debug.LogWarning("[AmplifyOcclusion] Camera Normals not supported for Deferred Method. Switching to GBuffer Normals.");
     }
     if ((m_camera.depthTextureMode & DepthTextureMode.Depth) == DepthTextureMode.None)
       m_camera.depthTextureMode |= DepthTextureMode.Depth;
@@ -263,19 +265,19 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
   private void CheckMaterial()
   {
-    if ((UnityEngine.Object) m_occlusionMat == (UnityEngine.Object) null)
+    if (m_occlusionMat == null)
     {
       Material material = new Material(Shader.Find("Hidden/Amplify Occlusion/Occlusion"));
       material.hideFlags = HideFlags.DontSave;
       m_occlusionMat = material;
     }
-    if ((UnityEngine.Object) m_blurMat == (UnityEngine.Object) null)
+    if (m_blurMat == null)
     {
       Material material = new Material(Shader.Find("Hidden/Amplify Occlusion/Blur"));
       material.hideFlags = HideFlags.DontSave;
       m_blurMat = material;
     }
-    if (!((UnityEngine.Object) m_copyMat == (UnityEngine.Object) null))
+    if (!(m_copyMat == null))
       return;
     Material material1 = new Material(Shader.Find("Hidden/Amplify Occlusion/Copy"));
     material1.hideFlags = HideFlags.DontSave;
@@ -347,12 +349,12 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
   private void SafeReleaseRT(ref RenderTexture rt)
   {
-    if (!((UnityEngine.Object) rt != (UnityEngine.Object) null))
+    if (!(rt != null))
       return;
-    RenderTexture.active = (RenderTexture) null;
+    RenderTexture.active = null;
     rt.Release();
-    UnityEngine.Object.DestroyImmediate((UnityEngine.Object) rt);
-    rt = (RenderTexture) null;
+    DestroyImmediate(rt);
+    rt = null;
   }
 
   private int SafeAllocateTemporaryRT(
@@ -377,8 +379,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
     int targetWidth,
     int targetHeight)
   {
-    cb.SetGlobalVector("_AO_Target_TexelSize", new Vector4(1f / targetWidth, 1f / targetHeight, (float) targetWidth, (float) targetHeight));
-    cb.SetGlobalVector("_AO_Target_Position", (Vector4) Vector2.zero);
+    cb.SetGlobalVector("_AO_Target_TexelSize", new Vector4(1f / targetWidth, 1f / targetHeight, targetWidth, targetHeight));
+    cb.SetGlobalVector("_AO_Target_Position", Vector2.zero);
     cb.SetRenderTarget(targets, targets[0]);
   }
 
@@ -388,7 +390,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
     int targetWidth,
     int targetHeight)
   {
-    cb.SetGlobalVector("_AO_Target_TexelSize", new Vector4(1f / targetWidth, 1f / targetHeight, (float) targetWidth, (float) targetHeight));
+    cb.SetGlobalVector("_AO_Target_TexelSize", new Vector4(1f / targetWidth, 1f / targetHeight, targetWidth, targetHeight));
     cb.SetRenderTarget(target);
   }
 
@@ -399,7 +401,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
   private void PerformBlit(CommandBuffer cb, Material mat, int pass, int x, int y)
   {
-    cb.SetGlobalVector("_AO_Target_Position", (Vector4) new Vector2((float) x, (float) y));
+    cb.SetGlobalVector("_AO_Target_Position", new Vector2(x, y));
     PerformBlit(cb, mat, pass);
   }
 
@@ -412,7 +414,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
     int pass)
   {
     cb.SetGlobalTexture("_AO_Source", source);
-    cb.SetGlobalVector("_AO_Source_TexelSize", new Vector4(1f / sourceWidth, 1f / sourceHeight, (float) sourceWidth, (float) sourceHeight));
+    cb.SetGlobalVector("_AO_Source_TexelSize", new Vector4(1f / sourceWidth, 1f / sourceHeight, sourceWidth, sourceHeight));
     PerformBlit(cb, mat, pass);
   }
 
@@ -426,7 +428,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
     int x,
     int y)
   {
-    cb.SetGlobalVector("_AO_Target_Position", (Vector4) new Vector2((float) x, (float) y));
+    cb.SetGlobalVector("_AO_Target_Position", new Vector2(x, y));
     PerformBlit(cb, source, sourceWidth, sourceHeight, mat, pass);
   }
 
@@ -443,7 +445,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
 
   private void CommandBuffer_Unregister(CameraEvent cameraEvent, CommandBuffer commandBuffer)
   {
-    if (!((UnityEngine.Object) m_camera != (UnityEngine.Object) null))
+    if (!(m_camera != null))
       return;
     foreach (CommandBuffer commandBuffer1 in m_camera.GetCommandBuffers(cameraEvent))
     {
@@ -467,7 +469,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
         name = "AO-BeforeRefl";
         break;
       default:
-        Debug.LogError((object) "[AmplifyOcclusion] Unsupported CameraEvent. Please contact support.");
+        Debug.LogError("[AmplifyOcclusion] Unsupported CameraEvent. Please contact support.");
         break;
     }
     CommandBuffer commandBuffer = CommandBuffer_Allocate(name);
@@ -485,9 +487,9 @@ public class AmplifyOcclusionBase : MonoBehaviour
   private void UpdateGlobalShaderConstants(TargetDesc target)
   {
     float num1 = m_camera.fieldOfView * ((float) Math.PI / 180f);
-    Vector2 vector2_1 = new Vector2((float) (1.0 / (double) Mathf.Tan(num1 * 0.5f) * (target.height / (double) target.width)), 1f / Mathf.Tan(num1 * 0.5f));
+    Vector2 vector2_1 = new Vector2((float) (1.0 / Mathf.Tan(num1 * 0.5f) * (target.height / (double) target.width)), 1f / Mathf.Tan(num1 * 0.5f));
     Vector2 vector2_2 = new Vector2(1f / vector2_1.x, 1f / vector2_1.y);
-    float num2 = !m_camera.orthographic ? target.height / (Mathf.Tan(num1 * 0.5f) * 2f) : (float) target.height / m_camera.orthographicSize;
+    float num2 = !m_camera.orthographic ? target.height / (Mathf.Tan(num1 * 0.5f) * 2f) : target.height / m_camera.orthographicSize;
     float num3 = Mathf.Clamp(Bias, 0.0f, 1f);
     FadeStart = Mathf.Max(0.0f, FadeStart);
     FadeLength = Mathf.Max(0.01f, FadeLength);
@@ -502,8 +504,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
     Shader.SetGlobalFloat("_AO_Multiplier", (float) (1.0 / (1.0 - num3)));
     Shader.SetGlobalFloat("_AO_BlurSharpness", BlurSharpness);
     Shader.SetGlobalColor("_AO_Levels", new Color(Tint.r, Tint.g, Tint.b, Intensity));
-    Shader.SetGlobalVector("_AO_FadeParams", (Vector4) new Vector2(FadeStart, y));
-    Shader.SetGlobalVector("_AO_FadeValues", (Vector4) new Vector3(FadeToIntensity, FadeToRadius, FadeToPowerExponent));
+    Shader.SetGlobalVector("_AO_FadeParams", new Vector2(FadeStart, y));
+    Shader.SetGlobalVector("_AO_FadeValues", new Vector3(FadeToIntensity, FadeToRadius, FadeToPowerExponent));
   }
 
   private void CommandBuffer_FillComputeOcclusion(
@@ -513,10 +515,10 @@ public class AmplifyOcclusionBase : MonoBehaviour
     CheckMaterial();
     CheckRandomData();
     cb.SetGlobalVector("_AO_Buffer_PadScale", new Vector4(target.padRatioWidth, target.padRatioHeight, 1f / target.padRatioWidth, 1f / target.padRatioHeight));
-    cb.SetGlobalVector("_AO_Buffer_TexelSize", new Vector4(1f / target.width, 1f / target.height, (float) target.width, (float) target.height));
-    cb.SetGlobalVector("_AO_QuarterBuffer_TexelSize", new Vector4(1f / target.quarterWidth, 1f / target.quarterHeight, (float) target.quarterWidth, (float) target.quarterHeight));
-    cb.SetGlobalFloat("_AO_MaxRadiusPixels", (float) Mathf.Min(target.width, target.height));
-    if ((UnityEngine.Object) m_occlusionRT == (UnityEngine.Object) null || m_occlusionRT.width != target.width || m_occlusionRT.height != target.height || !m_occlusionRT.IsCreated())
+    cb.SetGlobalVector("_AO_Buffer_TexelSize", new Vector4(1f / target.width, 1f / target.height, target.width, target.height));
+    cb.SetGlobalVector("_AO_QuarterBuffer_TexelSize", new Vector4(1f / target.quarterWidth, 1f / target.quarterHeight, target.quarterWidth, target.quarterHeight));
+    cb.SetGlobalFloat("_AO_MaxRadiusPixels", Mathf.Min(target.width, target.height));
+    if (m_occlusionRT == null || m_occlusionRT.width != target.width || m_occlusionRT.height != target.height || !m_occlusionRT.IsCreated())
     {
       SafeReleaseRT(ref m_occlusionRT);
       m_occlusionRT = SafeAllocateRT("_AO_OcclusionTexture", target.width, target.height, m_occlusionRTFormat, RenderTextureReadWrite.Linear);
@@ -540,9 +542,9 @@ public class AmplifyOcclusionBase : MonoBehaviour
           int index3 = index2 + index1;
           int num3 = index3 & 3;
           int num4 = index3 >> 2;
-          cb.SetGlobalVector(m_layerOffsetNames[index2], (Vector4) new Vector2(num3 + 0.5f, num4 + 0.5f));
-          m_depthTargets[index2] = (RenderTargetIdentifier) m_depthLayerRT[index3];
-          m_normalTargets[index2] = (RenderTargetIdentifier) m_normalLayerRT[index3];
+          cb.SetGlobalVector(m_layerOffsetNames[index2], new Vector2(num3 + 0.5f, num4 + 0.5f));
+          m_depthTargets[index2] = m_depthLayerRT[index3];
+          m_normalTargets[index2] = m_normalLayerRT[index3];
         }
         SetBlitTarget(cb, m_depthTargets, target.quarterWidth, target.quarterHeight);
         PerformBlit(cb, m_occlusionMat, m_deinterleaveDepthPass);
@@ -551,21 +553,21 @@ public class AmplifyOcclusionBase : MonoBehaviour
       }
       for (int index = 0; index < 16; ++index)
       {
-        cb.SetGlobalVector("_AO_LayerOffset", (Vector4) new Vector2((index & 3) + 0.5f, (index >> 2) + 0.5f));
-        cb.SetGlobalVector("_AO_LayerRandom", (Vector4) m_randomData[index]);
-        cb.SetGlobalTexture("_AO_NormalTexture", (RenderTargetIdentifier) m_normalLayerRT[index]);
-        cb.SetGlobalTexture("_AO_DepthTexture", (RenderTargetIdentifier) m_depthLayerRT[index]);
-        SetBlitTarget(cb, (RenderTargetIdentifier) m_occlusionLayerRT[index], target.quarterWidth, target.quarterHeight);
+        cb.SetGlobalVector("_AO_LayerOffset", new Vector2((index & 3) + 0.5f, (index >> 2) + 0.5f));
+        cb.SetGlobalVector("_AO_LayerRandom", m_randomData[index]);
+        cb.SetGlobalTexture("_AO_NormalTexture", m_normalLayerRT[index]);
+        cb.SetGlobalTexture("_AO_DepthTexture", m_depthLayerRT[index]);
+        SetBlitTarget(cb, m_occlusionLayerRT[index], target.quarterWidth, target.quarterHeight);
         PerformBlit(cb, m_occlusionMat, (int) (15 + SampleCount));
       }
-      SetBlitTarget(cb, (RenderTargetIdentifier) num2, target.width, target.height);
+      SetBlitTarget(cb, num2, target.width, target.height);
       for (int index = 0; index < 16; ++index)
       {
         int x = (index & 3) * target.quarterWidth;
         int y = (index >> 2) * target.quarterHeight;
-        PerformBlit(cb, (RenderTargetIdentifier) m_occlusionLayerRT[index], target.quarterWidth, target.quarterHeight, m_copyMat, 0, x, y);
+        PerformBlit(cb, m_occlusionLayerRT[index], target.quarterWidth, target.quarterHeight, m_copyMat, 0, x, y);
       }
-      cb.SetGlobalTexture("_AO_OcclusionAtlas", (RenderTargetIdentifier) num2);
+      cb.SetGlobalTexture("_AO_OcclusionAtlas", num2);
       SetBlitTarget(cb, (RenderTargetIdentifier) (Texture) m_occlusionRT, target.width, target.height);
       PerformBlit(cb, m_occlusionMat, 19);
       for (int index = 0; index < 16; ++index)
@@ -581,22 +583,22 @@ public class AmplifyOcclusionBase : MonoBehaviour
       int pass = (int) (20 + (int) SampleCount * 4 + PerPixelNormals);
       if (Downsample)
       {
-        cb.Blit((Texture) null, new RenderTargetIdentifier(num1), m_occlusionMat, pass);
+        cb.Blit(null, new RenderTargetIdentifier(num1), m_occlusionMat, pass);
         SetBlitTarget(cb, (RenderTargetIdentifier) (Texture) m_occlusionRT, target.width, target.height);
-        PerformBlit(cb, (RenderTargetIdentifier) num1, target.width / 2, target.height / 2, m_occlusionMat, 41);
+        PerformBlit(cb, num1, target.width / 2, target.height / 2, m_occlusionMat, 41);
       }
       else
-        cb.Blit((Texture) null, (RenderTargetIdentifier) (Texture) m_occlusionRT, m_occlusionMat, pass);
+        cb.Blit(null, (RenderTargetIdentifier) (Texture) m_occlusionRT, m_occlusionMat, pass);
     }
     if (BlurEnabled)
     {
       int num5 = SafeAllocateTemporaryRT(cb, "_AO_TEMP", target.width, target.height, m_occlusionRTFormat, RenderTextureReadWrite.Linear);
       for (int index = 0; index < BlurPasses; ++index)
       {
-        SetBlitTarget(cb, (RenderTargetIdentifier) num5, target.width, target.height);
+        SetBlitTarget(cb, num5, target.width, target.height);
         PerformBlit(cb, (RenderTargetIdentifier) (Texture) m_occlusionRT, target.width, target.height, m_blurMat, (BlurRadius - 1) * 2);
         SetBlitTarget(cb, (RenderTargetIdentifier) (Texture) m_occlusionRT, target.width, target.height);
-        PerformBlit(cb, (RenderTargetIdentifier) num5, target.width, target.height, m_blurMat, 1 + (BlurRadius - 1) * 2);
+        PerformBlit(cb, num5, target.width, target.height, m_blurMat, 1 + (BlurRadius - 1) * 2);
       }
       SafeReleaseTemporaryRT(cb, num5);
     }
@@ -611,8 +613,8 @@ public class AmplifyOcclusionBase : MonoBehaviour
     bool logTarget)
   {
     cb.SetGlobalTexture("_AO_OcclusionTexture", (RenderTargetIdentifier) (Texture) m_occlusionRT);
-    m_applyDeferredTargets[0] = (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer0;
-    m_applyDeferredTargets[1] = (RenderTargetIdentifier) (logTarget ? BuiltinRenderTextureType.GBuffer3 : BuiltinRenderTextureType.CameraTarget);
+    m_applyDeferredTargets[0] = BuiltinRenderTextureType.GBuffer0;
+    m_applyDeferredTargets[1] = logTarget ? BuiltinRenderTextureType.GBuffer3 : BuiltinRenderTextureType.CameraTarget;
     if (!logTarget)
     {
       SetBlitTarget(cb, m_applyDeferredTargets, target.fullWidth, target.fullHeight);
@@ -622,10 +624,10 @@ public class AmplifyOcclusionBase : MonoBehaviour
     {
       int num1 = SafeAllocateTemporaryRT(cb, "_AO_GBufferAlbedo", target.fullWidth, target.fullHeight, RenderTextureFormat.ARGB32);
       int num2 = SafeAllocateTemporaryRT(cb, "_AO_GBufferEmission", target.fullWidth, target.fullHeight, RenderTextureFormat.ARGB32);
-      cb.Blit(m_applyDeferredTargets[0], (RenderTargetIdentifier) num1);
-      cb.Blit(m_applyDeferredTargets[1], (RenderTargetIdentifier) num2);
-      cb.SetGlobalTexture("_AO_GBufferAlbedo", (RenderTargetIdentifier) num1);
-      cb.SetGlobalTexture("_AO_GBufferEmission", (RenderTargetIdentifier) num2);
+      cb.Blit(m_applyDeferredTargets[0], num1);
+      cb.Blit(m_applyDeferredTargets[1], num2);
+      cb.SetGlobalTexture("_AO_GBufferAlbedo", num1);
+      cb.SetGlobalTexture("_AO_GBufferEmission", num2);
       SetBlitTarget(cb, m_applyDeferredTargets, target.fullWidth, target.fullHeight);
       PerformBlit(cb, m_occlusionMat, 38);
       SafeReleaseTemporaryRT(cb, num1);
@@ -642,15 +644,15 @@ public class AmplifyOcclusionBase : MonoBehaviour
     cb.SetGlobalTexture("_AO_OcclusionTexture", (RenderTargetIdentifier) (Texture) m_occlusionRT);
     if (!logTarget)
     {
-      SetBlitTarget(cb, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, target.fullWidth, target.fullHeight);
+      SetBlitTarget(cb, BuiltinRenderTextureType.CameraTarget, target.fullWidth, target.fullHeight);
       PerformBlit(cb, m_occlusionMat, 39);
     }
     else
     {
       int num = SafeAllocateTemporaryRT(cb, "_AO_GBufferEmission", target.fullWidth, target.fullHeight, RenderTextureFormat.ARGB32);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer3, (RenderTargetIdentifier) num);
-      cb.SetGlobalTexture("_AO_GBufferEmission", (RenderTargetIdentifier) num);
-      SetBlitTarget(cb, (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer3, target.fullWidth, target.fullHeight);
+      cb.Blit(BuiltinRenderTextureType.GBuffer3, num);
+      cb.SetGlobalTexture("_AO_GBufferEmission", num);
+      SetBlitTarget(cb, BuiltinRenderTextureType.GBuffer3, target.fullWidth, target.fullHeight);
       PerformBlit(cb, m_occlusionMat, 40);
       SafeReleaseTemporaryRT(cb, num);
     }
@@ -662,7 +664,7 @@ public class AmplifyOcclusionBase : MonoBehaviour
     TargetDesc target)
   {
     cb.SetGlobalTexture("_AO_OcclusionTexture", (RenderTargetIdentifier) (Texture) m_occlusionRT);
-    SetBlitTarget(cb, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, target.fullWidth, target.fullHeight);
+    SetBlitTarget(cb, BuiltinRenderTextureType.CameraTarget, target.fullWidth, target.fullHeight);
     PerformBlit(cb, m_occlusionMat, 36);
     cb.SetRenderTarget((RenderTargetIdentifier) (Texture) null);
   }

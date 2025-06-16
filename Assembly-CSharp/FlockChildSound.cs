@@ -1,4 +1,7 @@
-﻿[RequireComponent(typeof (AudioSource))]
+﻿using Engine.Source.Audio;
+using UnityEngine;
+
+[RequireComponent(typeof (AudioSource))]
 public class FlockChildSound : MonoBehaviour
 {
   public AudioClip[] _idleSounds;
@@ -16,17 +19,17 @@ public class FlockChildSound : MonoBehaviour
 
   public void Start()
   {
-    _flockChild = this.GetComponent<FlockChild>();
-    _audio = this.GetComponent<AudioSource>();
-    this.InvokeRepeating("PlayRandomSound", Random.value + 1f, 1f);
+    _flockChild = GetComponent<FlockChild>();
+    _audio = GetComponent<AudioSource>();
+    InvokeRepeating("PlayRandomSound", Random.value + 1f, 1f);
     if (_scareSounds.Length == 0)
       return;
-    this.InvokeRepeating("ScareSound", 1f, 0.01f);
+    InvokeRepeating("ScareSound", 1f, 0.01f);
   }
 
   public void PlayRandomSound()
   {
-    if (!this.gameObject.activeInHierarchy)
+    if (!gameObject.activeInHierarchy)
       return;
     if (!_audio.isPlaying && _flightSounds.Length != 0 && _flightSoundRandomChance > (double) Random.value && !_flockChild.landing)
     {
@@ -47,7 +50,7 @@ public class FlockChildSound : MonoBehaviour
 
   public void ScareSound()
   {
-    if (!this.gameObject.activeInHierarchy || !_hasLanded || _flockChild.landing || _idleSoundRandomChance * 2.0 <= (double) Random.value)
+    if (!gameObject.activeInHierarchy || !_hasLanded || _flockChild.landing || _idleSoundRandomChance * 2.0 <= Random.value)
       return;
     _audio.clip = _scareSounds[Random.Range(0, _scareSounds.Length)];
     _audio.volume = Random.Range(_volumeMin, _volumeMax);

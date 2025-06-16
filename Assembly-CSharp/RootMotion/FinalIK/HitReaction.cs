@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -37,20 +38,20 @@ namespace RootMotion.FinalIK
 
     public void Hit(Collider collider, Vector3 force, Vector3 point)
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+      if (ik == null)
       {
-        Debug.LogError((object) "No IK assigned in HitReaction");
+        Debug.LogError("No IK assigned in HitReaction");
       }
       else
       {
         foreach (HitPointEffector effectorHitPoint in effectorHitPoints)
         {
-          if ((UnityEngine.Object) effectorHitPoint.collider == (UnityEngine.Object) collider)
+          if (effectorHitPoint.collider == collider)
             effectorHitPoint.Hit(force, point);
         }
         foreach (HitPointBone boneHitPoint in boneHitPoints)
         {
-          if ((UnityEngine.Object) boneHitPoint.collider == (UnityEngine.Object) collider)
+          if (boneHitPoint.collider == collider)
             boneHitPoint.Hit(force, point);
         }
       }
@@ -86,7 +87,7 @@ namespace RootMotion.FinalIK
           length = GetLength();
         if (length <= 0.0)
         {
-          Debug.LogError((object) "Hit Point WeightCurve length is zero.");
+          Debug.LogError("Hit Point WeightCurve length is zero.");
         }
         else
         {
@@ -191,9 +192,9 @@ namespace RootMotion.FinalIK
 
       protected override void OnApply(IKSolverFullBodyBiped solver, float weight)
       {
-        if ((UnityEngine.Object) rigidbody == (UnityEngine.Object) null)
+        if (rigidbody == null)
           rigidbody = collider.GetComponent<Rigidbody>();
-        if (!((UnityEngine.Object) rigidbody != (UnityEngine.Object) null))
+        if (!(rigidbody != null))
           return;
         Vector3 axis = Vector3.Cross(force, point - rigidbody.worldCenterOfMass);
         Quaternion offset = Quaternion.AngleAxis(aroundCenterOfMass.Evaluate(timer) * weight, axis);

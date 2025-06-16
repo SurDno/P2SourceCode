@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine.Common;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -23,7 +24,7 @@ namespace Engine.Source.Services
 
     public GroupPoint GetFreePoint()
     {
-      int index = UnityEngine.Random.Range(0, freePoints.Count);
+      int index = Random.Range(0, freePoints.Count);
       if (freePoints.Count <= 0)
         return null;
       GroupPoint freePoint = freePoints[index];

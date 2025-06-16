@@ -9,6 +9,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -31,10 +32,10 @@ namespace Engine.BehaviourNodes.Conditionals
     {
       inited = false;
       Pivot component = Owner.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return;
       Animator animator = component.GetAnimator();
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      if (animator == null)
         return;
       fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
       if (fightAnimatorState == null)

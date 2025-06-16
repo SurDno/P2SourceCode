@@ -1,4 +1,4 @@
-﻿using System;
+﻿using UnityEngine;
 
 namespace UnityStandardAssets.ImageEffects
 {
@@ -9,25 +9,25 @@ namespace UnityStandardAssets.ImageEffects
   {
     private static float MAX_RADIUS = 10f;
     public MotionBlurFilter filterType = MotionBlurFilter.Reconstruction;
-    public bool preview = false;
+    public bool preview;
     public Vector3 previewScale = Vector3.one;
-    public float movementScale = 0.0f;
+    public float movementScale;
     public float rotationScale = 1f;
     public float maxVelocity = 8f;
     public float minVelocity = 0.1f;
     public float velocityScale = 0.375f;
     public float softZDistance = 0.005f;
     public int velocityDownsample = 1;
-    public LayerMask excludeLayers = (LayerMask) 0;
-    private GameObject tmpCam = (GameObject) null;
+    public LayerMask excludeLayers = 0;
+    private GameObject tmpCam;
     public Shader shader;
     public Shader dx11MotionBlurShader;
     public Shader replacementClear;
-    private Material motionBlurMaterial = (Material) null;
-    private Material dx11MotionBlurMaterial = (Material) null;
-    public Texture2D noiseTexture = (Texture2D) null;
+    private Material motionBlurMaterial;
+    private Material dx11MotionBlurMaterial;
+    public Texture2D noiseTexture;
     public float jitter = 0.05f;
-    public bool showVelocity = false;
+    public bool showVelocity;
     public float showVelocityScale = 1f;
     private Matrix4x4 currentViewProjMat;
     private Matrix4x4 prevViewProjMat;
@@ -47,9 +47,9 @@ namespace UnityStandardAssets.ImageEffects
     private new void Start()
     {
       CheckResources();
-      if ((UnityEngine.Object) _camera == (UnityEngine.Object) null)
-        _camera = this.GetComponent<Camera>();
-      wasActive = this.gameObject.activeInHierarchy;
+      if (_camera == null)
+        _camera = GetComponent<Camera>();
+      wasActive = gameObject.activeInHierarchy;
       CalculateViewProjection();
       Remember();
       wasActive = false;
@@ -57,27 +57,27 @@ namespace UnityStandardAssets.ImageEffects
 
     private void OnEnable()
     {
-      if ((UnityEngine.Object) _camera == (UnityEngine.Object) null)
-        _camera = this.GetComponent<Camera>();
+      if (_camera == null)
+        _camera = GetComponent<Camera>();
       _camera.depthTextureMode |= DepthTextureMode.Depth;
     }
 
     private void OnDisable()
     {
-      if ((UnityEngine.Object) null != (UnityEngine.Object) motionBlurMaterial)
+      if (null != motionBlurMaterial)
       {
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) motionBlurMaterial);
-        motionBlurMaterial = (Material) null;
+        DestroyImmediate(motionBlurMaterial);
+        motionBlurMaterial = null;
       }
-      if ((UnityEngine.Object) null != (UnityEngine.Object) dx11MotionBlurMaterial)
+      if (null != dx11MotionBlurMaterial)
       {
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) dx11MotionBlurMaterial);
-        dx11MotionBlurMaterial = (Material) null;
+        DestroyImmediate(dx11MotionBlurMaterial);
+        dx11MotionBlurMaterial = null;
       }
-      if (!((UnityEngine.Object) null != (UnityEngine.Object) tmpCam))
+      if (!(null != tmpCam))
         return;
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) tmpCam);
-      tmpCam = (GameObject) null;
+      DestroyImmediate(tmpCam);
+      tmpCam = null;
     }
 
     public override bool CheckResources()
@@ -95,7 +95,7 @@ namespace UnityStandardAssets.ImageEffects
     {
       if (!CheckResources())
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -105,7 +105,7 @@ namespace UnityStandardAssets.ImageEffects
         RenderTexture temporary1 = RenderTexture.GetTemporary(divRoundUp(source.width, velocityDownsample), divRoundUp(source.height, velocityDownsample), 0, format);
         this.maxVelocity = Mathf.Max(2f, this.maxVelocity);
         float maxVelocity = this.maxVelocity;
-        bool flag = filterType == MotionBlurFilter.ReconstructionDX11 && (UnityEngine.Object) dx11MotionBlurMaterial == (UnityEngine.Object) null;
+        bool flag = filterType == MotionBlurFilter.ReconstructionDX11 && dx11MotionBlurMaterial == null;
         int width;
         int height;
         float num1;
@@ -127,16 +127,16 @@ namespace UnityStandardAssets.ImageEffects
         temporary1.filterMode = FilterMode.Point;
         temporary2.filterMode = FilterMode.Point;
         temporary3.filterMode = FilterMode.Point;
-        if ((bool) (UnityEngine.Object) noiseTexture)
+        if ((bool) (Object) noiseTexture)
           noiseTexture.filterMode = FilterMode.Point;
         source.wrapMode = TextureWrapMode.Clamp;
         temporary1.wrapMode = TextureWrapMode.Clamp;
         temporary3.wrapMode = TextureWrapMode.Clamp;
         temporary2.wrapMode = TextureWrapMode.Clamp;
         CalculateViewProjection();
-        if (this.gameObject.activeInHierarchy && !wasActive)
+        if (gameObject.activeInHierarchy && !wasActive)
           Remember();
-        wasActive = this.gameObject.activeInHierarchy;
+        wasActive = gameObject.activeInHierarchy;
         Matrix4x4 matrix4x4 = Matrix4x4.Inverse(currentViewProjMat);
         motionBlurMaterial.SetMatrix("_InvViewProj", matrix4x4);
         motionBlurMaterial.SetMatrix("_PrevViewProj", prevViewProjMat);
@@ -146,10 +146,10 @@ namespace UnityStandardAssets.ImageEffects
         motionBlurMaterial.SetFloat("_MinVelocity", minVelocity);
         motionBlurMaterial.SetFloat("_VelocityScale", velocityScale);
         motionBlurMaterial.SetFloat("_Jitter", jitter);
-        motionBlurMaterial.SetTexture("_NoiseTex", (Texture) noiseTexture);
-        motionBlurMaterial.SetTexture("_VelTex", (Texture) temporary1);
-        motionBlurMaterial.SetTexture("_NeighbourMaxTex", (Texture) temporary3);
-        motionBlurMaterial.SetTexture("_TileTexDebug", (Texture) temporary2);
+        motionBlurMaterial.SetTexture("_NoiseTex", noiseTexture);
+        motionBlurMaterial.SetTexture("_VelTex", temporary1);
+        motionBlurMaterial.SetTexture("_NeighbourMaxTex", temporary3);
+        motionBlurMaterial.SetTexture("_TileTexDebug", temporary2);
         if (preview)
         {
           Matrix4x4 worldToCameraMatrix = _camera.worldToCameraMatrix;
@@ -162,20 +162,20 @@ namespace UnityStandardAssets.ImageEffects
         if (filterType == MotionBlurFilter.CameraMotion)
         {
           Vector4 zero = Vector4.zero;
-          float num2 = Vector3.Dot(this.transform.up, Vector3.up);
-          Vector3 rhs = prevFramePos - this.transform.position;
+          float num2 = Vector3.Dot(transform.up, Vector3.up);
+          Vector3 rhs = prevFramePos - transform.position;
           float magnitude = rhs.magnitude;
-          float num3 = (float) ((double) Vector3.Angle(this.transform.up, prevFrameUp) / (double) _camera.fieldOfView * ((double) source.width * 0.75));
+          float num3 = (float) (Vector3.Angle(transform.up, prevFrameUp) / (double) _camera.fieldOfView * (source.width * 0.75));
           zero.x = rotationScale * num3;
-          float num4 = (float) ((double) Vector3.Angle(this.transform.forward, prevFrameForward) / (double) _camera.fieldOfView * ((double) source.width * 0.75));
+          float num4 = (float) (Vector3.Angle(transform.forward, prevFrameForward) / (double) _camera.fieldOfView * (source.width * 0.75));
           zero.y = rotationScale * num2 * num4;
-          float num5 = (float) ((double) Vector3.Angle(this.transform.forward, prevFrameForward) / (double) _camera.fieldOfView * ((double) source.width * 0.75));
+          float num5 = (float) (Vector3.Angle(transform.forward, prevFrameForward) / (double) _camera.fieldOfView * (source.width * 0.75));
           zero.z = rotationScale * (1f - num2) * num5;
           if (magnitude > (double) Mathf.Epsilon && movementScale > (double) Mathf.Epsilon)
           {
-            zero.w = (float) (movementScale * (double) Vector3.Dot(this.transform.forward, rhs) * ((double) source.width * 0.5));
-            zero.x += (float) (movementScale * (double) Vector3.Dot(this.transform.up, rhs) * ((double) source.width * 0.5));
-            zero.y += (float) (movementScale * (double) Vector3.Dot(this.transform.right, rhs) * ((double) source.width * 0.5));
+            zero.w = (float) (movementScale * (double) Vector3.Dot(transform.forward, rhs) * (source.width * 0.5));
+            zero.x += (float) (movementScale * (double) Vector3.Dot(transform.up, rhs) * (source.width * 0.5));
+            zero.y += (float) (movementScale * (double) Vector3.Dot(transform.right, rhs) * (source.width * 0.5));
           }
           if (preview)
             motionBlurMaterial.SetVector("_BlurDirectionPacked", new Vector4(previewScale.y, previewScale.x, 0.0f, previewScale.z) * 0.5f * _camera.fieldOfView);
@@ -184,14 +184,14 @@ namespace UnityStandardAssets.ImageEffects
         }
         else
         {
-          Graphics.Blit((Texture) source, temporary1, motionBlurMaterial, 0);
-          Camera camera = (Camera) null;
+          Graphics.Blit(source, temporary1, motionBlurMaterial, 0);
+          Camera camera = null;
           if (excludeLayers.value != 0)
             camera = GetTmpCam();
-          if ((bool) (UnityEngine.Object) camera && excludeLayers.value != 0 && (bool) (UnityEngine.Object) replacementClear && replacementClear.isSupported)
+          if ((bool) (Object) camera && excludeLayers.value != 0 && (bool) (Object) replacementClear && replacementClear.isSupported)
           {
             camera.targetTexture = temporary1;
-            camera.cullingMask = (int) excludeLayers;
+            camera.cullingMask = excludeLayers;
             camera.RenderWithShader(replacementClear, "");
           }
         }
@@ -204,40 +204,40 @@ namespace UnityStandardAssets.ImageEffects
         if (showVelocity)
         {
           motionBlurMaterial.SetFloat("_DisplayVelocityScale", showVelocityScale);
-          Graphics.Blit((Texture) temporary1, destination, motionBlurMaterial, 1);
+          Graphics.Blit(temporary1, destination, motionBlurMaterial, 1);
         }
         else if (filterType == MotionBlurFilter.ReconstructionDX11 && !flag)
         {
           dx11MotionBlurMaterial.SetFloat("_MinVelocity", minVelocity);
           dx11MotionBlurMaterial.SetFloat("_VelocityScale", velocityScale);
           dx11MotionBlurMaterial.SetFloat("_Jitter", jitter);
-          dx11MotionBlurMaterial.SetTexture("_NoiseTex", (Texture) noiseTexture);
-          dx11MotionBlurMaterial.SetTexture("_VelTex", (Texture) temporary1);
-          dx11MotionBlurMaterial.SetTexture("_NeighbourMaxTex", (Texture) temporary3);
+          dx11MotionBlurMaterial.SetTexture("_NoiseTex", noiseTexture);
+          dx11MotionBlurMaterial.SetTexture("_VelTex", temporary1);
+          dx11MotionBlurMaterial.SetTexture("_NeighbourMaxTex", temporary3);
           dx11MotionBlurMaterial.SetFloat("_SoftZDistance", Mathf.Max(0.00025f, softZDistance));
           dx11MotionBlurMaterial.SetFloat("_MaxRadiusOrKInPaper", num1);
-          Graphics.Blit((Texture) temporary1, temporary2, dx11MotionBlurMaterial, 0);
-          Graphics.Blit((Texture) temporary2, temporary3, dx11MotionBlurMaterial, 1);
-          Graphics.Blit((Texture) source, destination, dx11MotionBlurMaterial, 2);
+          Graphics.Blit(temporary1, temporary2, dx11MotionBlurMaterial, 0);
+          Graphics.Blit(temporary2, temporary3, dx11MotionBlurMaterial, 1);
+          Graphics.Blit(source, destination, dx11MotionBlurMaterial, 2);
         }
         else if (filterType == MotionBlurFilter.Reconstruction | flag)
         {
           motionBlurMaterial.SetFloat("_SoftZDistance", Mathf.Max(0.00025f, softZDistance));
-          Graphics.Blit((Texture) temporary1, temporary2, motionBlurMaterial, 2);
-          Graphics.Blit((Texture) temporary2, temporary3, motionBlurMaterial, 3);
-          Graphics.Blit((Texture) source, destination, motionBlurMaterial, 4);
+          Graphics.Blit(temporary1, temporary2, motionBlurMaterial, 2);
+          Graphics.Blit(temporary2, temporary3, motionBlurMaterial, 3);
+          Graphics.Blit(source, destination, motionBlurMaterial, 4);
         }
         else if (filterType == MotionBlurFilter.CameraMotion)
-          Graphics.Blit((Texture) source, destination, motionBlurMaterial, 6);
+          Graphics.Blit(source, destination, motionBlurMaterial, 6);
         else if (filterType == MotionBlurFilter.ReconstructionDisc)
         {
           motionBlurMaterial.SetFloat("_SoftZDistance", Mathf.Max(0.00025f, softZDistance));
-          Graphics.Blit((Texture) temporary1, temporary2, motionBlurMaterial, 2);
-          Graphics.Blit((Texture) temporary2, temporary3, motionBlurMaterial, 3);
-          Graphics.Blit((Texture) source, destination, motionBlurMaterial, 7);
+          Graphics.Blit(temporary1, temporary2, motionBlurMaterial, 2);
+          Graphics.Blit(temporary2, temporary3, motionBlurMaterial, 3);
+          Graphics.Blit(source, destination, motionBlurMaterial, 7);
         }
         else
-          Graphics.Blit((Texture) source, destination, motionBlurMaterial, 5);
+          Graphics.Blit(source, destination, motionBlurMaterial, 5);
         RenderTexture.ReleaseTemporary(temporary1);
         RenderTexture.ReleaseTemporary(temporary2);
         RenderTexture.ReleaseTemporary(temporary3);
@@ -247,22 +247,19 @@ namespace UnityStandardAssets.ImageEffects
     private void Remember()
     {
       prevViewProjMat = currentViewProjMat;
-      prevFrameForward = this.transform.forward;
-      prevFrameUp = this.transform.up;
-      prevFramePos = this.transform.position;
+      prevFrameForward = transform.forward;
+      prevFrameUp = transform.up;
+      prevFramePos = transform.position;
     }
 
     private Camera GetTmpCam()
     {
-      if ((UnityEngine.Object) tmpCam == (UnityEngine.Object) null)
+      if (tmpCam == null)
       {
         string name = "_" + _camera.name + "_MotionBlurTmpCam";
         GameObject gameObject = GameObject.Find(name);
-        if ((UnityEngine.Object) null == (UnityEngine.Object) gameObject)
-          tmpCam = new GameObject(name, new Type[1]
-          {
-            typeof (Camera)
-          });
+        if (null == gameObject)
+          tmpCam = new GameObject(name, typeof (Camera));
         else
           tmpCam = gameObject;
       }
@@ -279,7 +276,7 @@ namespace UnityStandardAssets.ImageEffects
 
     private void StartFrame()
     {
-      prevFramePos = Vector3.Slerp(prevFramePos, this.transform.position, 0.75f);
+      prevFramePos = Vector3.Slerp(prevFramePos, transform.position, 0.75f);
     }
 
     private static int divRoundUp(int x, int d) => (x + d - 1) / d;

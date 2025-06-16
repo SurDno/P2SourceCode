@@ -15,7 +15,7 @@ namespace Engine.Source.Blueprints
     {
       base.RegisterPorts();
       entityInput = AddValueInput<IEntity>("Entity");
-      AddValueOutput("GameObject", (ValueHandler<GameObject>) (() => ((IEntityView) entityInput.value)?.GameObject));
+      AddValueOutput("GameObject", () => ((IEntityView) entityInput.value)?.GameObject);
     }
   }
 }

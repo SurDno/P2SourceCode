@@ -5,6 +5,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Blenders
 {

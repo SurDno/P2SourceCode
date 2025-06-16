@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Leg IK")]
   public class LegIK : IK
@@ -8,13 +10,13 @@
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()
     {
-      Debug.Log((object) "No User Manual page for this component yet, sorry.");
+      Debug.Log("No User Manual page for this component yet, sorry.");
     }
 
     [ContextMenu("Scrpt Reference")]
     protected override void OpenScriptReference()
     {
-      Debug.Log((object) "No Script Reference for this component yet, sorry.");
+      Debug.Log("No Script Reference for this component yet, sorry.");
     }
 
     [ContextMenu("Support Group")]

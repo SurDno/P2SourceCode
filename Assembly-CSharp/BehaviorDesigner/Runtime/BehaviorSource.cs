@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks;
 using Engine.Common.Services;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -148,7 +150,7 @@ namespace BehaviorDesigner.Runtime
       {
         SharedVariable variable = variables[index];
         if (!variable.GetType().Equals(typeof (SharedVariable)) && !variable.GetType().Equals(sharedVariable.GetType()))
-          Debug.LogError((object) string.Format("Error: Unable to set SharedVariable {0} - the variable type {1} does not match the existing type {2}", name, variable.GetType(), sharedVariable.GetType()));
+          Debug.LogError(string.Format("Error: Unable to set SharedVariable {0} - the variable type {1} does not match the existing type {2}", name, variable.GetType(), sharedVariable.GetType()));
         else
           variable.SetValue(sharedVariable.GetValue());
       }

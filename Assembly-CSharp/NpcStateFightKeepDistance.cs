@@ -6,6 +6,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateFightKeepDistance : INpcState
 {
@@ -38,10 +40,10 @@ public class NpcStateFightKeepDistance : INpcState
     animator = pivot.GetAnimator();
     weaponService = pivot.GetNpcWeaponService();
     ikController = GameObject.GetComponent<IKController>();
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -53,7 +55,7 @@ public class NpcStateFightKeepDistance : INpcState
 
   private bool IsEnemyRunningAway()
   {
-    return (double) enemy.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(enemy.transform.forward, (enemy.Enemy.transform.position - enemy.transform.position).normalized) > 0.25;
+    return enemy.Enemy.Velocity.magnitude >= 0.5 && Vector3.Dot(enemy.transform.forward, (enemy.Enemy.transform.position - enemy.transform.position).normalized) > 0.25;
   }
 
   public NpcStateFightKeepDistance(NpcState npcState, Pivot pivot)
@@ -77,7 +79,7 @@ public class NpcStateFightKeepDistance : INpcState
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
       Status = NpcStateStatusEnum.Failed;
     }
     else
@@ -98,7 +100,7 @@ public class NpcStateFightKeepDistance : INpcState
           return;
         }
       }
-      if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null & aim) || !((UnityEngine.Object) enemy != (UnityEngine.Object) null) || !((UnityEngine.Object) enemy.Enemy != (UnityEngine.Object) null))
+      if (!(ikController != null & aim) || !(enemy != null) || !(enemy.Enemy != null))
         return;
       ikController.WeaponTarget = enemy.Enemy.transform;
     }
@@ -113,9 +115,9 @@ public class NpcStateFightKeepDistance : INpcState
     npcState.WeaponChangeEvent -= State_WeaponChangeEvent;
     agent.areaMask = prevAreaMask;
     agent.enabled = agentWasEnabled;
-    if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null))
+    if (!(ikController != null))
       return;
-    ikController.WeaponTarget = (Transform) null;
+    ikController.WeaponTarget = null;
   }
 
   public void OnAnimatorMove()
@@ -141,10 +143,10 @@ public class NpcStateFightKeepDistance : INpcState
     }
     else
     {
-      enemy.RotationTarget = (Transform) null;
+      enemy.RotationTarget = null;
       enemy.RotateByPath = false;
       enemy.RetreatAngle = new float?();
-      if ((UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) null)
+      if (enemy.Enemy == null)
         return;
       Vector3 forward = enemy.Enemy.transform.position - enemy.transform.position;
       float magnitude = forward.magnitude;

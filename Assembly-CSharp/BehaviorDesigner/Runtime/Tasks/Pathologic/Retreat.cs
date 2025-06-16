@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -36,22 +37,22 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       if (!inited)
       {
         npcState = gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+        if (npcState == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component", gameObject);
           return;
         }
         inited = true;
       }
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
-        Debug.LogWarningFormat("{0}: has null Target", (object) gameObject.name);
+      if (Target.Value == null)
+        Debug.LogWarningFormat("{0}: has null Target", gameObject.name);
       else
         npcState.MoveRetreat(Target.Value, RetreatDistance.Value);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (!inited || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null || npcState.CurrentNpcState != NpcStateEnum.MoveRetreat)
+      if (!inited || Target.Value == null || npcState.CurrentNpcState != NpcStateEnum.MoveRetreat)
         return TaskStatus.Failure;
       switch (npcState.Status)
       {

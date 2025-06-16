@@ -11,6 +11,7 @@ using Engine.Source.Services;
 using Engine.Source.Settings;
 using Inspectors;
 using Scripts.Data;
+using UnityEngine;
 
 namespace Engine.Impl.Services
 {
@@ -161,10 +162,10 @@ namespace Engine.Impl.Services
       else
         result.Clear();
       TextAsset textAsset = Resources.Load<TextAsset>(fileName);
-      if ((UnityEngine.Object) textAsset != (UnityEngine.Object) null && textAsset.text != null)
+      if (textAsset != null && textAsset.text != null)
         LoadText(textAsset.text, result);
       else
-        Debug.LogError((object) ("Engine localization file '" + fileName + "' not found"));
+        Debug.LogError("Engine localization file '" + fileName + "' not found");
     }
 
     private static void LoadVmLanguageImpl(
@@ -186,7 +187,7 @@ namespace Engine.Impl.Services
         {
           string path = PlatformUtility.GetPath("Data/VirtualMachine/{ProjectName}/Localizations/".Replace("{ProjectName}", gameDataInfo.Name) + fileName.ToLowerInvariant() + ".txt");
           if (!File.Exists(path))
-            Debug.LogError((object) ("Vm localization file '" + path + "' not found"));
+            Debug.LogError("Vm localization file '" + path + "' not found");
           else
             LoadTextVm(File.ReadAllText(path), result);
         }

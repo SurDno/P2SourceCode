@@ -7,6 +7,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -33,15 +35,15 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       if (!inited)
       {
         agent = gameObject.GetComponent<NavMeshAgent>();
-        if ((UnityEngine.Object) agent == (UnityEngine.Object) null)
+        if (agent == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain NavMeshAgent unity component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain NavMeshAgent unity component", gameObject);
           return;
         }
         npcState = gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+        if (npcState == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
           return;
         }
         inited = true;

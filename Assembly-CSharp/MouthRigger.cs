@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Xml;
+using UnityEngine;
 
 public class MouthRigger : MonoBehaviour
 {
@@ -9,12 +10,12 @@ public class MouthRigger : MonoBehaviour
   public Visemes_Count_t VisemeSet = Visemes_Count_t._Please_Set_;
   public TextAsset BoneConfigFile;
   private string VisemeSelector;
-  public VisemeBoneDefine[] VisemeBones = null;
-  public PhonemeVisemeMapping phnMap = null;
+  public VisemeBoneDefine[] VisemeBones;
+  public PhonemeVisemeMapping phnMap;
   private bool bExpandedList;
   private bool bExpandedBoneList;
   private AnnoBoneDeformer visemeBoneDeformer;
-  public BonePose[] BasePoses = null;
+  public BonePose[] BasePoses;
   public bool bImportFlipX;
   public float importScale = 0.01f;
 
@@ -39,7 +40,7 @@ public class MouthRigger : MonoBehaviour
       phn_string_array_t phonemes = phnMap.GetPhonemes(visemeBone.m_visemeLabel);
       if (phonemes == null)
       {
-        Debug.Log((object) ("Invalid Phoneme Map: can't find " + visemeBone.m_visemeLabel));
+        Debug.Log("Invalid Phoneme Map: can't find " + visemeBone.m_visemeLabel);
       }
       else
       {
@@ -85,7 +86,7 @@ public class MouthRigger : MonoBehaviour
   public void ImportBoneConfig()
   {
     bool bKeepLocalRotations = true;
-    if (!((Object) BoneConfigFile != (Object) null))
+    if (!(BoneConfigFile != null))
       return;
     List<VisemeBoneDefine> visemeBoneDefineList = new List<VisemeBoneDefine>();
     Hashtable cache = new Hashtable();
@@ -94,33 +95,33 @@ public class MouthRigger : MonoBehaviour
     {
       if (reader.Name == "mapping")
       {
-        Debug.Log((object) "Read mapping");
+        Debug.Log("Read mapping");
         phnMap = new PhonemeVisemeMapping();
         phnMap.ReadMapping(reader, "mapping");
       }
       else if (reader.Name == "scale")
       {
-        Debug.Log((object) "Read scale");
+        Debug.Log("Read scale");
         importScale = XMLUtils.ReadXMLInnerTextFloat(reader, "scale");
       }
       else if (reader.Name == "flipx")
       {
-        Debug.Log((object) "Read flip");
+        Debug.Log("Read flip");
         bImportFlipX = true;
       }
       else if (reader.Name == "ignore_local_rotations")
         bKeepLocalRotations = false;
       else if (reader.Name == "viseme")
       {
-        Debug.Log((object) "Read viseme");
+        Debug.Log("Read viseme");
         VisemeBoneDefine visemeBoneDefine = new VisemeBoneDefine();
         visemeBoneDefine.ReadViseme(reader, "viseme", bImportFlipX, importScale);
-        visemeBoneDefine.LoadUnityBones(this.transform, cache, bKeepLocalRotations);
+        visemeBoneDefine.LoadUnityBones(transform, cache, bKeepLocalRotations);
         string viseme = phnMap.PhonemeToViseme(visemeBoneDefine.m_visemeLabel);
         if (viseme.Length != 0)
           visemeBoneDefine.m_visemeLabel = viseme;
         else
-          Debug.LogError((object) ("Can't find phoneme to viseme mapping for <viseme><label>" + visemeBoneDefine.m_visemeLabel + "</label> in BoneConfigFile"));
+          Debug.LogError("Can't find phoneme to viseme mapping for <viseme><label>" + visemeBoneDefine.m_visemeLabel + "</label> in BoneConfigFile");
         visemeBoneDefineList.Add(visemeBoneDefine);
       }
     }

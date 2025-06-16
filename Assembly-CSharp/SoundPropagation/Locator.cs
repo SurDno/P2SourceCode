@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -45,9 +46,9 @@ namespace SoundPropagation
         PathPoint pathPoint2 = path[index];
         PathPoint pathPoint3 = path[index + 1];
         location.PathLength += pathPoint2.StepLength;
-        if ((Object) pathPoint2.Cell != (Object) null)
+        if (pathPoint2.Cell != null)
           location.Filtering.AddFiltering(pathPoint2.Cell.FilteringPerMeter, pathPoint2.StepLength);
-        if ((Object) pathPoint2.Portal != (Object) null)
+        if (pathPoint2.Portal != null)
           location.Filtering.AddOcclusion(pathPoint2.Portal.Occlusion);
         Vector3 vector3 = pathPoint2.Direction - pathPoint3.Direction;
         location.Filtering.AddOcclusion(vector3.magnitude * OcclusionPerTurn);
@@ -55,7 +56,7 @@ namespace SoundPropagation
         {
           Vector3 lhs = pathPoint2.Position - pathPoint1.Position;
           lhs.Normalize();
-          if ((double) Vector3.Dot(lhs, rhs) < 0.999)
+          if (Vector3.Dot(lhs, rhs) < 0.999)
           {
             location.NearestCorner = pathPoint2.Position;
             rhs = lhs;

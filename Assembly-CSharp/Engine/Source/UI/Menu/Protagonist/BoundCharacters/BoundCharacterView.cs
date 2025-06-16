@@ -3,6 +3,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
+using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 {
@@ -43,7 +44,7 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
         str = "<color=" + deadColor.ToRGBHex() + ">" + str + "</color>";
       stateView.StringValue = str;
       Sprite sprite = BoundCharacterUtility.StateSprite(character, character.SeenBoundHealthState);
-      if ((Object) sprite == (Object) null)
+      if (sprite == null)
         sprite = fallbackSprite;
       portrait.SetValue(sprite, instant);
       medicatedView.Visible = BoundCharacterUtility.MedicineAttempted(character);

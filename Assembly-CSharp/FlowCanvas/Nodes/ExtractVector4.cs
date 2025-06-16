@@ -1,4 +1,6 @@
-﻿namespace FlowCanvas.Nodes
+﻿using UnityEngine;
+
+namespace FlowCanvas.Nodes
 {
   public class ExtractVector4 : ExtractorNode<Vector4, float, float, float, float>
   {

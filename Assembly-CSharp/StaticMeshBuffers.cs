@@ -1,4 +1,6 @@
-﻿public class StaticMeshBuffers
+﻿using UnityEngine;
+
+public class StaticMeshBuffers
 {
   public Vector3[] Vertices;
   public Color32[] Colors;

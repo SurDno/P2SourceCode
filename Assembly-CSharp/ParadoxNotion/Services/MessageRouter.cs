@@ -2,6 +2,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
+using UnityEngine.EventSystems;
 
 namespace ParadoxNotion.Services
 {
@@ -25,67 +27,67 @@ namespace ParadoxNotion.Services
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-      Dispatch(nameof (OnPointerEnter), (object) eventData);
+      Dispatch(nameof (OnPointerEnter), eventData);
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-      Dispatch(nameof (OnPointerExit), (object) eventData);
+      Dispatch(nameof (OnPointerExit), eventData);
     }
 
     public void OnPointerDown(PointerEventData eventData)
     {
-      Dispatch(nameof (OnPointerDown), (object) eventData);
+      Dispatch(nameof (OnPointerDown), eventData);
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-      Dispatch(nameof (OnPointerUp), (object) eventData);
+      Dispatch(nameof (OnPointerUp), eventData);
     }
 
     public void OnPointerClick(PointerEventData eventData)
     {
-      Dispatch(nameof (OnPointerClick), (object) eventData);
+      Dispatch(nameof (OnPointerClick), eventData);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-      Dispatch(nameof (OnDrag), (object) eventData);
+      Dispatch(nameof (OnDrag), eventData);
     }
 
     public void OnDrop(BaseEventData eventData)
     {
-      Dispatch(nameof (OnDrop), (object) eventData);
+      Dispatch(nameof (OnDrop), eventData);
     }
 
     public void OnScroll(PointerEventData eventData)
     {
-      Dispatch(nameof (OnScroll), (object) eventData);
+      Dispatch(nameof (OnScroll), eventData);
     }
 
     public void OnUpdateSelected(BaseEventData eventData)
     {
-      Dispatch(nameof (OnUpdateSelected), (object) eventData);
+      Dispatch(nameof (OnUpdateSelected), eventData);
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-      Dispatch(nameof (OnSelect), (object) eventData);
+      Dispatch(nameof (OnSelect), eventData);
     }
 
     public void OnDeselect(BaseEventData eventData)
     {
-      Dispatch(nameof (OnDeselect), (object) eventData);
+      Dispatch(nameof (OnDeselect), eventData);
     }
 
     public void OnMove(AxisEventData eventData)
     {
-      Dispatch(nameof (OnMove), (object) eventData);
+      Dispatch(nameof (OnMove), eventData);
     }
 
     public void OnSubmit(BaseEventData eventData)
     {
-      Dispatch(nameof (OnSubmit), (object) eventData);
+      Dispatch(nameof (OnSubmit), eventData);
     }
 
     private void OnAnimatorIK(int layerIndex)
@@ -99,32 +101,32 @@ namespace ParadoxNotion.Services
 
     private void OnCollisionEnter(Collision collisionInfo)
     {
-      Dispatch(nameof (OnCollisionEnter), (object) collisionInfo);
+      Dispatch(nameof (OnCollisionEnter), collisionInfo);
     }
 
     private void OnCollisionExit(Collision collisionInfo)
     {
-      Dispatch(nameof (OnCollisionExit), (object) collisionInfo);
+      Dispatch(nameof (OnCollisionExit), collisionInfo);
     }
 
     private void OnCollisionStay(Collision collisionInfo)
     {
-      Dispatch(nameof (OnCollisionStay), (object) collisionInfo);
+      Dispatch(nameof (OnCollisionStay), collisionInfo);
     }
 
     private void OnTriggerEnter(Collider other)
     {
-      Dispatch(nameof (OnTriggerEnter), (object) other);
+      Dispatch(nameof (OnTriggerEnter), other);
     }
 
     private void OnTriggerExit(Collider other)
     {
-      Dispatch(nameof (OnTriggerExit), (object) other);
+      Dispatch(nameof (OnTriggerExit), other);
     }
 
     private void OnTriggerStay(Collider other)
     {
-      Dispatch(nameof (OnTriggerStay), (object) other);
+      Dispatch(nameof (OnTriggerStay), other);
     }
 
     private void OnMouseDown() => Dispatch(nameof (OnMouseDown), null);
@@ -141,12 +143,12 @@ namespace ParadoxNotion.Services
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-      Dispatch(nameof (OnControllerColliderHit), (object) hit);
+      Dispatch(nameof (OnControllerColliderHit), hit);
     }
 
     private void OnParticleCollision(GameObject other)
     {
-      Dispatch(nameof (OnParticleCollision), (object) other);
+      Dispatch(nameof (OnParticleCollision), other);
     }
 
     public void OnCustomEvent(EventData eventData)
@@ -162,7 +164,7 @@ namespace ParadoxNotion.Services
       {
         if (target.GetType().RTGetMethod(messages[index]) == null)
         {
-          Debug.LogError((object) string.Format("Type '{0}' does not implement a method named '{1}', for the registered event to use.", target.GetType().FriendlyName(), messages[index]));
+          Debug.LogError(string.Format("Type '{0}' does not implement a method named '{1}', for the registered event to use.", target.GetType().FriendlyName(), messages[index]));
         }
         else
         {

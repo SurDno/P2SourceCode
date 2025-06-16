@@ -1,4 +1,6 @@
 ﻿using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof (Image))]
 public class PlatformDependentImage : MonoBehaviour
@@ -9,11 +11,11 @@ public class PlatformDependentImage : MonoBehaviour
   private Sprite thumbnailXBox;
   [SerializeField]
   private Sprite thumbnailPS4;
-  private Image imageObject = (Image) null;
+  private Image imageObject;
   [SerializeField]
   private Text text;
 
-  private void Awake() => imageObject = this.GetComponent<Image>();
+  private void Awake() => imageObject = GetComponent<Image>();
 
   private void OnEnable()
   {
@@ -29,9 +31,9 @@ public class PlatformDependentImage : MonoBehaviour
   private void SetupImage(bool joystick)
   {
     imageObject.sprite = joystick ? thumbnailXBox : thumbnail;
-    ((RectTransform) this.transform).sizeDelta = imageObject.sprite.rect.size;
-    if (!((UnityEngine.Object) text != (UnityEngine.Object) null))
+    ((RectTransform) transform).sizeDelta = imageObject.sprite.rect.size;
+    if (!(text != null))
       return;
-    text.gameObject.SetActive(!joystick && (UnityEngine.Object) imageObject.sprite == (UnityEngine.Object) null);
+    text.gameObject.SetActive(!joystick && imageObject.sprite == null);
   }
 }

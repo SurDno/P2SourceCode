@@ -7,6 +7,8 @@ using Engine.Impl.UI.Menu.Protagonist.Inventory.Container;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Components;
 using Engine.Source.UI.Menu.Protagonist.Inventory.Grid;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ItemsSlidingContainer : UIControl
 {
@@ -33,7 +35,7 @@ public class ItemsSlidingContainer : UIControl
     Dictionary<IStorableComponent, StorableUI> storables)
   {
     foreach (Object itemGroupTitle in itemGroupTitles)
-      Object.DestroyImmediate(itemGroupTitle);
+      DestroyImmediate(itemGroupTitle);
     itemGroupTitles.Clear();
     foreach (InventoryContainerUI containerView in containerViews)
     {
@@ -46,7 +48,7 @@ public class ItemsSlidingContainer : UIControl
         }
       }
       containers.Remove(containerView);
-      Object.DestroyImmediate((Object) containerView.gameObject);
+      DestroyImmediate(containerView.gameObject);
     }
     containerViews.Clear();
     scrollRect.verticalNormalizedPosition = 1f;
@@ -64,7 +66,7 @@ public class ItemsSlidingContainer : UIControl
   {
     for (int index = 0; index < itemsList.Count; ++index)
     {
-      GameObject gameObject = Object.Instantiate<GameObject>(groupTitlePrefab, (UnityEngine.Transform) ContentArea, false);
+      GameObject gameObject = Instantiate(groupTitlePrefab, ContentArea, false);
       gameObject.GetComponent<Localizer>().Signature = groupSignatures[index];
       itemGroupTitles.Add(gameObject);
       CreateSlots(itemsList[index], storage, containers, storables);
@@ -78,7 +80,7 @@ public class ItemsSlidingContainer : UIControl
     Dictionary<IStorableComponent, StorableUI> storables)
   {
     ComplexInventoryContainerUI key = ComplexInventoryContainerUI.Instantiate(cellStyle, inventoryContainerPrefab, itemsList, Mask);
-    key.transform.SetParent((UnityEngine.Transform) ContentArea, false);
+    key.transform.SetParent(ContentArea, false);
     containerViews.Add(key);
     List<StorableUI> collection = new List<StorableUI>();
     foreach (StorableComponent items in itemsList)
@@ -86,8 +88,8 @@ public class ItemsSlidingContainer : UIControl
       StorableUI storableUi = StorableUI.Instantiate(items, inventoryStorablePrefab, cellStyle.imageStyle);
       storableUi.Style = cellStyle;
       InventoryCellUI cellUi = key.GetCellUi(items.Cell);
-      storableUi.transform.SetParent((UnityEngine.Transform) cellUi.Transform, false);
-      storableUi.transform.localPosition = (Vector3) Vector2.zero;
+      storableUi.transform.SetParent(cellUi.Transform, false);
+      storableUi.transform.localPosition = Vector2.zero;
       storables[items] = storableUi;
       collection.Add(storableUi);
     }
@@ -103,7 +105,7 @@ public class ItemsSlidingContainer : UIControl
     Vector2 anchoredPosition = ContentArea.anchoredPosition;
     if (num - (double) anchoredPosition.y > height1)
       anchoredPosition.y = num + (double) anchoredPosition.y > height1 ? num - height1 : 0.0f;
-    else if (num - height2 * 2.0 - (double) anchoredPosition.y < 0.0)
+    else if (num - height2 * 2.0 - anchoredPosition.y < 0.0)
       anchoredPosition.y = num - height2 * 2f;
     ContentArea.anchoredPosition = anchoredPosition;
   }

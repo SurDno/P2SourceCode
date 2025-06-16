@@ -1,6 +1,7 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -17,10 +18,10 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         Transform transform1 = transformValue.value;
-        if ((Object) transform1 != (Object) null)
+        if (transform1 != null)
         {
           Transform transform2 = valueValue.value;
-          if ((Object) transform2 != (Object) null)
+          if (transform2 != null)
             transform1.SetPositionAndRotation(transform2.position, transform2.rotation);
         }
         output.Call();

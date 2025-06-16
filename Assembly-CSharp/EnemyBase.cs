@@ -10,6 +10,9 @@ using Engine.Source.Components;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 public class EnemyBase : MonoBehaviour, IEntityAttachable
 {
@@ -190,7 +193,7 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
     float num2 = 2f;
     foreach (EnemyBase attacker1 in attackers)
     {
-      if (!((UnityEngine.Object) attacker1 == (UnityEngine.Object) attacker))
+      if (!(attacker1 == attacker))
       {
         Vector3 vector3 = attacker.transform.position - attacker1.transform.position;
         float num3 = num1 * num1 / vector3.sqrMagnitude;
@@ -220,11 +223,11 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
         position += enemy.transform.right * 0.3f;
         break;
     }
-    Vector3 normalized = (position - this.transform.position).normalized;
-    float y = Vector3.Cross(normalized, this.transform.forward).y;
-    if ((double) Vector3.Dot(normalized, this.transform.forward) > 0.0)
+    Vector3 normalized = (position - transform.position).normalized;
+    float y = Vector3.Cross(normalized, transform.forward).y;
+    if (Vector3.Dot(normalized, transform.forward) > 0.0)
     {
-      if ((double) Mathf.Abs(y) < (double) Mathf.Sin(0.2617994f))
+      if (Mathf.Abs(y) < (double) Mathf.Sin(0.2617994f))
       {
         switch (reactionType)
         {
@@ -262,14 +265,14 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
 
   public void PlayLipSync(CombatCryEnum cryEnum)
   {
-    if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null) || !((UnityEngine.Object) pivot.SoundBank != (UnityEngine.Object) null))
+    if (!(pivot != null) || !(pivot.SoundBank != null))
       return;
-    IEntity entity = EntityUtility.GetEntity(this.gameObject);
+    IEntity entity = EntityUtility.GetEntity(gameObject);
     if (entity != null)
     {
       LipSyncComponent component = entity.GetComponent<LipSyncComponent>();
       NPCSoundBankCrySettings soundBankCrySettings = pivot.SoundBank.CombatCries.Find(x => x.Name == cryEnum);
-      if (component != null && soundBankCrySettings != null && soundBankCrySettings.Chance > (double) UnityEngine.Random.value)
+      if (component != null && soundBankCrySettings != null && soundBankCrySettings.Chance > (double) Random.value)
       {
         LipSyncObjectSerializable description = soundBankCrySettings.Description;
         component.Play3D(description.Value, ScriptableObjectInstance<ResourceFromCodeData>.Instance.AudioSourceForNpcCombatReplics, true);
@@ -294,14 +297,14 @@ public class EnemyBase : MonoBehaviour, IEntityAttachable
   {
     if (attackers.Add(enemy))
       return;
-    Debug.LogWarning((object) ("RegisterAttacker " + this.gameObject.name + " already cotains " + enemy.gameObject.name));
+    Debug.LogWarning("RegisterAttacker " + gameObject.name + " already cotains " + enemy.gameObject.name);
   }
 
   public void UnregisterAttacker(EnemyBase enemy)
   {
     if (attackers.Remove(enemy))
       return;
-    Debug.LogWarning((object) ("UnregisterAttacker " + this.gameObject.name + " doesn't cotain " + enemy.gameObject.name));
+    Debug.LogWarning("UnregisterAttacker " + gameObject.name + " doesn't cotain " + enemy.gameObject.name);
   }
 
   [Inspected]

@@ -5,6 +5,8 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using SoundPropagation;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -39,14 +41,14 @@ namespace Engine.Source.Blueprints.Sounds
 
     private void ComputeDestroy(float deltaTime)
     {
-      if (!((Object) source != (Object) null))
+      if (!(source != null))
         return;
       sleep += deltaTime;
       if (sleep > 10.0)
       {
         sleep = 0.0f;
-        Object.Destroy((Object) source.gameObject);
-        source = (AudioSource) null;
+        Object.Destroy(source.gameObject);
+        source = null;
       }
     }
 
@@ -61,17 +63,17 @@ namespace Engine.Source.Blueprints.Sounds
     {
       InstanceByRequest<UpdateService>.Instance.BlueprintSoundsUpdater.RemoveUpdatable(this);
       base.OnGraphStoped();
-      if (!((Object) source != (Object) null))
+      if (!(source != null))
         return;
-      Object.Destroy((Object) source.gameObject);
-      source = (AudioSource) null;
+      Object.Destroy(source.gameObject);
+      source = null;
     }
 
     public bool Complete { get; private set; }
 
     public void Reset()
     {
-      if ((Object) source == (Object) null || !Complete)
+      if (source == null || !Complete)
         return;
       Complete = false;
       progress = 0.0f;
@@ -95,28 +97,28 @@ namespace Engine.Source.Blueprints.Sounds
         float fade = fadeTimeInput.value;
         if (Play)
         {
-          if ((Object) source == (Object) null)
+          if (source == null)
           {
             AudioClip clip = clipInput.value;
-            if ((Object) clip == (Object) null)
+            if (clip == null)
               return;
             AudioMixerGroup mixer = mixerInput.value;
-            if ((Object) mixer == (Object) null)
+            if (mixer == null)
               return;
             currentVolume = 0.0f;
             source = CreateAudioSource(sourcePrefab.value, clip, mixer, targetInput.value);
-            if (propagationInput.value && (Object) targetInput.value != (Object) null)
+            if (propagationInput.value && targetInput.value != null)
               source.gameObject.AddComponent<SPAudioSource>().Origin = targetInput.value;
             source.PlayAndCheck();
-            Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , context : ").Append("(blueprint) ").Append(graph.agent.name));
+            Debug.Log(ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , context : ").Append("(blueprint) ").Append(graph.agent.name));
           }
-          else if ((Object) targetInput.value != (Object) null)
+          else if (targetInput.value != null)
           {
             source.transform.position = targetInput.value.position;
             source.transform.rotation = targetInput.value.rotation;
           }
         }
-        if ((Object) source == (Object) null)
+        if (source == null)
           return;
         if (run)
         {
@@ -185,7 +187,7 @@ namespace Engine.Source.Blueprints.Sounds
     {
       GameObject gameObject = UnityFactory.Instantiate(prefab, "[Sounds]");
       gameObject.name = clip.name;
-      if ((Object) transform != (Object) null)
+      if (transform != null)
         gameObject.transform.position = transform.position;
       float length = clip.length;
       AudioSource component = gameObject.GetComponent<AudioSource>();

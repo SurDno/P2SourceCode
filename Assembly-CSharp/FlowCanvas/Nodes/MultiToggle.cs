@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -37,12 +38,12 @@ namespace FlowCanvas.Nodes
       AddFlowInput("In", () => outs[current].Call());
       AddFlowInput("+", () =>
       {
-        current = (int) Mathf.Repeat((float) (current + 1), (float) portCount);
+        current = (int) Mathf.Repeat(current + 1, portCount);
         outs[current].Call();
       });
       AddFlowInput("-", () =>
       {
-        current = (int) Mathf.Repeat((float) (current - 1), (float) portCount);
+        current = (int) Mathf.Repeat(current - 1, portCount);
         outs[current].Call();
       });
       AddValueOutput("Current", () => current);

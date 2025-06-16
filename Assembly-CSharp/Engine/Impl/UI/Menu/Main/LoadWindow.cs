@@ -4,6 +4,8 @@ using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -53,8 +55,8 @@ namespace Engine.Impl.UI.Menu.Main
 
     public bool Show
     {
-      get => this.gameObject.activeSelf;
-      set => this.gameObject.SetActive(value);
+      get => gameObject.activeSelf;
+      set => gameObject.SetActive(value);
     }
 
     public bool ShowProgress
@@ -74,7 +76,7 @@ namespace Engine.Impl.UI.Menu.Main
     private void Build()
     {
       defaultSprite.Visible = mode == LoadWindowMode.Initial;
-      Sprite sprite1 = (Sprite) null;
+      Sprite sprite1 = null;
       string str = null;
       if (mode == LoadWindowMode.StartGameData || mode == LoadWindowMode.LoadSavedGame)
       {
@@ -86,7 +88,7 @@ namespace Engine.Impl.UI.Menu.Main
           {
             IProfilesService service = ServiceLocator.GetService<IProfilesService>();
             int intValue = service != null ? service.GetIntValue("Deaths") : 0;
-            if ((UnityEngine.Object) windowGameDataItem.LoadStorables != (UnityEngine.Object) null && InstanceByRequest<EngineApplication>.Instance.IsInitialized)
+            if (windowGameDataItem.LoadStorables != null && InstanceByRequest<EngineApplication>.Instance.IsInitialized)
             {
               IInventoryPlaceholderSerializable placeholderSerializable = Evaluate(windowGameDataItem.LoadStorables.Items, GameDay, intValue);
               if (placeholderSerializable != new IInventoryPlaceholderSerializable())
@@ -94,7 +96,7 @@ namespace Engine.Impl.UI.Menu.Main
                 Sprite sprite2;
                 if (!(placeholderSerializable.Value is InventoryPlaceholder inventoryPlaceholder))
                 {
-                  sprite2 = (Sprite) null;
+                  sprite2 = null;
                 }
                 else
                 {
@@ -104,15 +106,15 @@ namespace Engine.Impl.UI.Menu.Main
                 sprite1 = sprite2;
               }
             }
-            if ((UnityEngine.Object) windowGameDataItem.LoadTooltips != (UnityEngine.Object) null)
+            if (windowGameDataItem.LoadTooltips != null)
               str = Evaluate(windowGameDataItem.LoadTooltips.Items, GameDay, intValue);
           }
-          if ((UnityEngine.Object) sprite1 == (UnityEngine.Object) null)
+          if (sprite1 == null)
           {
             Sprite sprite3;
             if (!(windowGameDataItem.StartStorable.Value is InventoryPlaceholder inventoryPlaceholder))
             {
-              sprite3 = (Sprite) null;
+              sprite3 = null;
             }
             else
             {
@@ -132,7 +134,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void Clear()
     {
-      spriteView.SetValue((Sprite) null, true);
+      spriteView.SetValue(null, true);
       tooltipTagView.StringValue = null;
       bufferedTooltip = null;
     }
@@ -153,7 +155,7 @@ namespace Engine.Impl.UI.Menu.Main
       }
       if (max == 0)
         return default (T);
-      int num1 = UnityEngine.Random.Range(0, max);
+      int num1 = Random.Range(0, max);
       int num2 = 0;
       for (int index = 0; index < items.Length; ++index)
       {
@@ -170,7 +172,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void Invalidate()
     {
-      if (!this.isActiveAndEnabled)
+      if (!isActiveAndEnabled)
         return;
       Build();
     }

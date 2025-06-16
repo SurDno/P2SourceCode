@@ -8,6 +8,8 @@ using Engine.Source.Components.Crowds;
 using Engine.Source.Debugs;
 using Engine.Source.Services.Gizmos;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
 
 public class HerbRoots : MonoBehaviour, IEntityAttachable
 {
@@ -76,9 +78,9 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
 
   private void Awake()
   {
-    if (!((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null))
+    if (!(rootsGeometry != null))
       return;
-    initialPosition = this.transform.position;
+    initialPosition = transform.position;
   }
 
   void IEntityAttachable.Attach(IEntity owner)
@@ -87,7 +89,7 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
     herbRootsComponent = (HerbRootsComponent) owner.GetComponent<IHerbRootsComponent>();
     if (herbRootsComponent == null)
     {
-      Debug.LogError((object) (typeof (HerbRootsComponent).Name + " : " + Owner.GetInfo()), (UnityEngine.Object) this.gameObject);
+      Debug.LogError(typeof (HerbRootsComponent).Name + " : " + Owner.GetInfo(), gameObject);
     }
     else
     {
@@ -118,7 +120,7 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
     {
       case HerbRootsStateEnum.Sleeping:
         activationStayTimeLeft = activationStayTime;
-        if ((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null)
+        if (rootsGeometry != null)
         {
           rootsGeometry.transform.position = initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f);
         }
@@ -126,11 +128,11 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
       case HerbRootsStateEnum.MovingFromEarth:
         herbRootsComponent?.FireOnActivateStartEvent();
         activationTimeLeft = activationTime;
-        SoundUtility.PlayAudioClip3D(this.transform, rootReleaseOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
+        SoundUtility.PlayAudioClip3D(transform, rootReleaseOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
         break;
       case HerbRootsStateEnum.Active:
-        if ((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null)
-          this.transform.position = initialPosition;
+        if (rootsGeometry != null)
+          transform.position = initialPosition;
         herbRootsComponent.SetState(HerbRootsComponentStateEnum.Active);
         break;
     }
@@ -140,7 +142,7 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
   private void OnEnable()
   {
     GameObject gameObject = new GameObject("[Trigger] Player");
-    gameObject.transform.SetParent(this.transform, false);
+    gameObject.transform.SetParent(transform, false);
     trigger = gameObject.AddComponent<HerbRootsTrigger>();
     trigger.Radius = radius;
     trigger.PlayerEnterEvent += OnPlayerEnter;
@@ -170,9 +172,9 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
   {
     trigger.PlayerEnterEvent -= OnPlayerEnter;
     trigger.PlayerExitEvent -= OnPlayerExit;
-    UnityEngine.Object.Destroy((UnityEngine.Object) trigger.gameObject);
-    UnityEngine.Object.Destroy((UnityEngine.Object) attractAudiosource);
-    UnityEngine.Object.Destroy((UnityEngine.Object) enterTriggerAudiosource);
+    Destroy(trigger.gameObject);
+    Destroy(attractAudiosource);
+    Destroy(enterTriggerAudiosource);
   }
 
   public void PlayGiveBloodSound()
@@ -182,7 +184,7 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
 
   private void OnPlayerEnter()
   {
-    SoundUtility.PlayAudioClip3D(this.transform, enterTriggerOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
+    SoundUtility.PlayAudioClip3D(transform, enterTriggerOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
     if (state != HerbRootsStateEnum.Sleeping)
       return;
     herbRootsComponent?.FireOnTriggerEnterEvent();
@@ -233,7 +235,7 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
           break;
         }
         float t = (float) (1.0 - activationTimeLeft / (double) activationTime);
-        if ((UnityEngine.Object) rootsGeometry != (UnityEngine.Object) null)
+        if (rootsGeometry != null)
           rootsGeometry.transform.position = Vector3.Lerp(initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f), initialPosition, t);
         break;
       case HerbRootsStateEnum.Active:
@@ -258,7 +260,7 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
 
   private void UpdateAudioEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (attractAudiosource.maxDistance * attractAudiosource.maxDistance);
+    bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (attractAudiosource.maxDistance * attractAudiosource.maxDistance);
     if (attractAudiosource.enabled == flag)
       return;
     attractAudiosource.enabled = flag;
@@ -270,8 +272,8 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
       return;
     HerbRootsGroupDebug.DrawHeader();
     GizmoService service = ServiceLocator.GetService<GizmoService>();
-    service.DrawCircle(this.transform.position, radius, Color.blue);
-    string str = string.Format("{0}: - {1}, state = {2}", typeof (HerbRoots).Name, (object) this.gameObject.name, state);
+    service.DrawCircle(transform.position, radius, Color.blue);
+    string str = string.Format("{0}: - {1}, state = {2}", typeof (HerbRoots).Name, gameObject.name, state);
     switch (state)
     {
       case HerbRootsStateEnum.Sleeping:
@@ -287,10 +289,10 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
         service.DrawText(str ?? "", Color.red);
         break;
     }
-    for (int index = 0; index < this.transform.childCount; ++index)
+    for (int index = 0; index < transform.childCount; ++index)
     {
-      Transform child = this.transform.GetChild(index);
-      if (!((UnityEngine.Object) child.GetComponentNonAlloc<HerbRootsSpawnPoint>() == (UnityEngine.Object) null))
+      Transform child = transform.GetChild(index);
+      if (!(child.GetComponentNonAlloc<HerbRootsSpawnPoint>() == null))
       {
         service.DrawBox(child.position + new Vector3(0.025f, 0.0f, 0.025f), child.position + Vector3.up + new Vector3(-0.025f, 0.0f, -0.025f), Color.white);
         service.DrawCircle(child.position, 0.2f, Color.white);
@@ -301,7 +303,7 @@ public class HerbRoots : MonoBehaviour, IEntityAttachable
 
   private void OnDrawGizmos()
   {
-    UnityEngine.Gizmos.color = Color.blue;
-    UnityEngine.Gizmos.DrawWireSphere(this.transform.position, radius);
+    Gizmos.color = Color.blue;
+    Gizmos.DrawWireSphere(transform.position, radius);
   }
 }

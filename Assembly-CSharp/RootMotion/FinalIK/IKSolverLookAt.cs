@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -23,11 +24,7 @@ namespace RootMotion.FinalIK
     public float clampWeightEyes = 0.5f;
     [Range(0.0f, 2f)]
     public int clampSmoothing = 2;
-    public AnimationCurve spineWeightCurve = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.3f),
-      new Keyframe(1f, 1f)
-    });
+    public AnimationCurve spineWeightCurve = new AnimationCurve(new Keyframe(0.0f, 0.3f), new Keyframe(1f, 1f));
     public Vector3 spineTargetOffset;
     private Vector3[] spineForwards = new Vector3[0];
     private Vector3[] headForwards = new Vector3[1];
@@ -103,7 +100,7 @@ namespace RootMotion.FinalIK
         spine[index].StoreDefaultLocalState();
       for (int index = 0; index < eyes.Length; ++index)
         eyes[index].StoreDefaultLocalState();
-      if (head == null || !((UnityEngine.Object) head.transform != (UnityEngine.Object) null))
+      if (head == null || !(head.transform != null))
         return;
       head.StoreDefaultLocalState();
     }
@@ -116,7 +113,7 @@ namespace RootMotion.FinalIK
         spine[index].FixTransform();
       for (int index = 0; index < eyes.Length; ++index)
         eyes[index].FixTransform();
-      if (head == null || !((UnityEngine.Object) head.transform != (UnityEngine.Object) null))
+      if (head == null || !(head.transform != null))
         return;
       head.FixTransform();
     }
@@ -144,13 +141,13 @@ namespace RootMotion.FinalIK
         return false;
       }
       Transform transform1 = ContainsDuplicateBone(spine);
-      if ((UnityEngine.Object) transform1 != (UnityEngine.Object) null)
+      if (transform1 != null)
       {
         message = transform1.name + " is represented multiple times in a single IK chain. Can't initiate solver.";
         return false;
       }
       Transform transform2 = ContainsDuplicateBone(eyes);
-      if (!((UnityEngine.Object) transform2 != (UnityEngine.Object) null))
+      if (!(transform2 != null))
         return true;
       message = transform2.name + " is represented multiple times in a single IK chain. Can't initiate solver.";
       return false;
@@ -158,7 +155,7 @@ namespace RootMotion.FinalIK
 
     public override Point[] GetPoints()
     {
-      Point[] points = new Point[spine.Length + eyes.Length + ((UnityEngine.Object) head.transform != (UnityEngine.Object) null ? 1 : 0)];
+      Point[] points = new Point[spine.Length + eyes.Length + (head.transform != null ? 1 : 0)];
       for (int index = 0; index < spine.Length; ++index)
         points[index] = spine[index];
       int index1 = 0;
@@ -167,7 +164,7 @@ namespace RootMotion.FinalIK
         points[length] = eyes[index1];
         ++index1;
       }
-      if ((UnityEngine.Object) head.transform != (UnityEngine.Object) null)
+      if (head.transform != null)
         points[points.Length - 1] = head;
       return points;
     }
@@ -176,15 +173,15 @@ namespace RootMotion.FinalIK
     {
       foreach (LookAtBone point in spine)
       {
-        if ((UnityEngine.Object) point.transform == (UnityEngine.Object) transform)
+        if (point.transform == transform)
           return point;
       }
       foreach (LookAtBone eye in eyes)
       {
-        if ((UnityEngine.Object) eye.transform == (UnityEngine.Object) transform)
+        if (eye.transform == transform)
           return eye;
       }
-      return (UnityEngine.Object) head.transform == (UnityEngine.Object) transform ? head : (Point) null;
+      return head.transform == transform ? head : (Point) null;
     }
 
     public bool SetChain(Transform[] spine, Transform head, Transform[] eyes, Transform root)
@@ -202,9 +199,9 @@ namespace RootMotion.FinalIK
       {
         if (spine.Length != 0)
           IKPosition = spine[spine.Length - 1].transform.position + root.forward * 3f;
-        else if ((UnityEngine.Object) head.transform != (UnityEngine.Object) null)
+        else if (head.transform != null)
           IKPosition = head.transform.position + root.forward * 3f;
-        else if (eyes.Length != 0 && (UnityEngine.Object) eyes[0].transform != (UnityEngine.Object) null)
+        else if (eyes.Length != 0 && eyes[0].transform != null)
           IKPosition = eyes[0].transform.position + root.forward * 3f;
       }
       foreach (LookAtBone lookAtBone in spine)
@@ -227,7 +224,7 @@ namespace RootMotion.FinalIK
       if (IKPositionWeight <= 0.0)
         return;
       IKPositionWeight = Mathf.Clamp(IKPositionWeight, 0.0f, 1f);
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
         IKPosition = target.position;
       SolveSpine();
       SolveHead();
@@ -244,7 +241,7 @@ namespace RootMotion.FinalIK
           return true;
         for (int index = 0; index < spine.Length; ++index)
         {
-          if (spine[index] == null || (UnityEngine.Object) spine[index].transform == (UnityEngine.Object) null)
+          if (spine[index] == null || spine[index].transform == null)
             return false;
         }
         return true;
@@ -264,13 +261,13 @@ namespace RootMotion.FinalIK
 
     private bool headIsValid => head != null;
 
-    private bool headIsEmpty => (UnityEngine.Object) head.transform == (UnityEngine.Object) null;
+    private bool headIsEmpty => head.transform == null;
 
     private void SolveHead()
     {
       if (headWeight <= 0.0 || headIsEmpty)
         return;
-      Vector3 baseForward = spine.Length == 0 || !((UnityEngine.Object) spine[spine.Length - 1].transform != (UnityEngine.Object) null) ? head.forward : spine[spine.Length - 1].forward;
+      Vector3 baseForward = spine.Length == 0 || !(spine[spine.Length - 1].transform != null) ? head.forward : spine[spine.Length - 1].forward;
       Vector3 a = baseForward;
       Vector3 vector3 = IKPosition - head.transform.position;
       Vector3 normalized1 = vector3.normalized;
@@ -291,7 +288,7 @@ namespace RootMotion.FinalIK
           return true;
         for (int index = 0; index < eyes.Length; ++index)
         {
-          if (eyes[index] == null || (UnityEngine.Object) eyes[index].transform == (UnityEngine.Object) null)
+          if (eyes[index] == null || eyes[index].transform == null)
             return false;
         }
         return true;
@@ -306,7 +303,7 @@ namespace RootMotion.FinalIK
         return;
       for (int index = 0; index < eyes.Length; ++index)
       {
-        GetForwards(ref eyeForward, (UnityEngine.Object) head.transform != (UnityEngine.Object) null ? head.forward : eyes[index].forward, (IKPosition - eyes[index].transform.position).normalized, 1, clampWeightEyes);
+        GetForwards(ref eyeForward, head.transform != null ? head.forward : eyes[index].forward, (IKPosition - eyes[index].transform.position).normalized, 1, clampWeightEyes);
         eyes[index].LookAt(eyeForward[0], eyesWeight * IKPositionWeight);
       }
     }
@@ -324,7 +321,7 @@ namespace RootMotion.FinalIK
           forwards[index] = baseForward;
         return forwards;
       }
-      float num1 = (float) (1.0 - (double) Vector3.Angle(baseForward, targetForward) / 180.0);
+      float num1 = (float) (1.0 - Vector3.Angle(baseForward, targetForward) / 180.0);
       float num2 = clamp > 0.0 ? Mathf.Clamp((float) (1.0 - (clamp - (double) num1) / (1.0 - num1)), 0.0f, 1f) : 1f;
       float num3 = clamp > 0.0 ? Mathf.Clamp(num1 / clamp, 0.0f, 1f) : 1f;
       for (int index = 0; index < clampSmoothing; ++index)
@@ -373,7 +370,7 @@ namespace RootMotion.FinalIK
 
       public void Initiate(Transform root)
       {
-        if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
+        if (transform == null)
           return;
         axis = Quaternion.Inverse(transform.rotation) * root.forward;
       }

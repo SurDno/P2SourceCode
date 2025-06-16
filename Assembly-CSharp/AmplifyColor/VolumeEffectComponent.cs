@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -41,7 +42,7 @@ namespace AmplifyColor
       {
         if (componentField.blendFlag)
         {
-          FieldInfo field = ((object) c).GetType().GetField(componentField.fieldName);
+          FieldInfo field = c.GetType().GetField(componentField.fieldName);
           VolumeEffectField volumeEffectField = VolumeEffectField.IsValidType(field.FieldType.FullName) ? new VolumeEffectField(field, c) : null;
           if (volumeEffectField != null)
             fields.Add(volumeEffectField);
@@ -56,7 +57,7 @@ namespace AmplifyColor
         VolumeEffectFieldFlags fieldFlags = componentField;
         if (fieldFlags.blendFlag && !fields.Exists(s => s.fieldName == fieldFlags.fieldName))
         {
-          FieldInfo field = ((object) c).GetType().GetField(fieldFlags.fieldName);
+          FieldInfo field = c.GetType().GetField(fieldFlags.fieldName);
           VolumeEffectField volumeEffectField = VolumeEffectField.IsValidType(field.FieldType.FullName) ? new VolumeEffectField(field, c) : null;
           if (volumeEffectField != null)
             fields.Add(volumeEffectField);
@@ -76,7 +77,7 @@ namespace AmplifyColor
 
     public static FieldInfo[] ListAcceptableFields(Component c)
     {
-      return (UnityEngine.Object) c == (UnityEngine.Object) null ? new FieldInfo[0] : ((object) c).GetType().GetFields().Where(f => VolumeEffectField.IsValidType(f.FieldType.FullName)).ToArray();
+      return c == null ? new FieldInfo[0] : c.GetType().GetFields().Where(f => VolumeEffectField.IsValidType(f.FieldType.FullName)).ToArray();
     }
 
     public string[] GetFieldNames()

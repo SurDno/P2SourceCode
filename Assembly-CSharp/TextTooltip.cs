@@ -1,4 +1,7 @@
-﻿public class TextTooltip : 
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class TextTooltip : 
   MonoBehaviour,
   IPointerEnterHandler,
   IEventSystemHandler,

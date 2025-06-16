@@ -7,6 +7,10 @@ using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -30,11 +34,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     private Button[] buttons;
     private int curSelectedIndex;
     [SerializeField]
-    private Image unityImage = (Image) null;
+    private Image unityImage;
     [SerializeField]
-    private Text unityName = (Text) null;
+    private Text unityName;
     [SerializeField]
-    private bool useBigPicture = false;
+    private bool useBigPicture;
     private IStorableComponent target;
     private bool submitSubscribed;
 
@@ -66,16 +70,16 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     private void Build()
     {
-      Sprite sprite = (Sprite) null;
-      bool flag = (UnityEngine.Object) unityImage != (UnityEngine.Object) null;
+      Sprite sprite = null;
+      bool flag = unityImage != null;
       if (this.target == null)
       {
         buttonWear.gameObject.SetActive(false);
         buttonUse.gameObject.SetActive(false);
         buttonPourOut.gameObject.SetActive(false);
         buttonSplit.gameObject.SetActive(false);
-        if ((UnityEngine.Object) unityName != (UnityEngine.Object) null)
-          unityName.text = (string) null;
+        if (unityName != null)
+          unityName.text = null;
       }
       else
       {
@@ -83,7 +87,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
         buttonUse.gameObject.SetActive(StorableComponentUtility.IsUsable(this.target));
         buttonPourOut.gameObject.SetActive(StorableComponentUtility.IsBottled(this.target));
         buttonSplit.gameObject.SetActive(StorableComponentUtility.IsSplittable(this.target));
-        if ((UnityEngine.Object) unityName != (UnityEngine.Object) null)
+        if (unityName != null)
           unityName.text = ServiceLocator.GetService<LocalizationService>().GetText(this.target.Title);
         if (flag)
         {
@@ -95,22 +99,22 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       if (flag)
       {
         unityImage.sprite = sprite;
-        unityImage.gameObject.SetActive((UnityEngine.Object) sprite != (UnityEngine.Object) null);
+        unityImage.gameObject.SetActive(sprite != null);
       }
-      LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) this.transform);
+      LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform) transform);
     }
 
     public static ContextMenuWindowNew Instantiate(GameObject prefab)
     {
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Object.Instantiate(prefab);
       gameObject.name = prefab.name;
       ContextMenuWindowNew component = gameObject.GetComponent<ContextMenuWindowNew>();
-      component.buttonInvestigate.onClick.AddListener(new UnityAction(component.Investigate));
-      component.buttonDrop.onClick.AddListener(new UnityAction(component.Drop));
-      component.buttonWear.onClick.AddListener(new UnityAction(component.Wear));
-      component.buttonUse.onClick.AddListener(new UnityAction(component.Use));
-      component.buttonPourOut.onClick.AddListener(new UnityAction(component.PourOut));
-      component.buttonSplit.onClick.AddListener(new UnityAction(component.Split));
+      component.buttonInvestigate.onClick.AddListener(component.Investigate);
+      component.buttonDrop.onClick.AddListener(component.Drop);
+      component.buttonWear.onClick.AddListener(component.Wear);
+      component.buttonUse.onClick.AddListener(component.Use);
+      component.buttonPourOut.onClick.AddListener(component.PourOut);
+      component.buttonSplit.onClick.AddListener(component.Split);
       return component;
     }
 
@@ -130,14 +134,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       service.AddListener(GameActionType.Cancel, OnClosePress, true);
       service.AddListener(GameActionType.LStickUp, OnNavigate, true);
       service.AddListener(GameActionType.LStickDown, OnNavigate, true);
-      if ((UnityEngine.Object) selectedLine != (UnityEngine.Object) null)
+      if (selectedLine != null)
         selectedLine.gameObject.SetActive(false);
-      this.StartCoroutine(AfterEnabled());
+      StartCoroutine(AfterEnabled());
     }
 
     private IEnumerator AfterEnabled()
     {
-      yield return (object) new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
       OnJoystick(InputService.Instance.JoystickUsed);
     }
 
@@ -159,7 +163,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
         }
         --curSelectedIndex;
         OnNavigate(GameActionType.LStickDown, true);
-        if (!((UnityEngine.Object) selectedLine != (UnityEngine.Object) null))
+        if (!(selectedLine != null))
           return;
         selectedLine.gameObject.SetActive(true);
         selectedLine.transform.SetParent(buttons[curSelectedIndex].transform, false);
@@ -175,8 +179,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
           ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, OnSubmit);
           submitSubscribed = false;
         }
-        EventSystem.current.SetSelectedGameObject((GameObject) null);
-        if ((UnityEngine.Object) selectedLine != (UnityEngine.Object) null)
+        EventSystem.current.SetSelectedGameObject(null);
+        if (selectedLine != null)
           selectedLine.gameObject.SetActive(false);
       }
     }
@@ -205,7 +209,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       }
       while (!buttons[curSelectedIndex].gameObject.activeSelf);
       EventSystem.current.SetSelectedGameObject(buttons[curSelectedIndex].gameObject);
-      if ((UnityEngine.Object) selectedLine != (UnityEngine.Object) null)
+      if (selectedLine != null)
       {
         selectedLine.gameObject.SetActive(true);
         selectedLine.transform.SetParent(buttons[curSelectedIndex].transform, false);

@@ -7,6 +7,8 @@ using Engine.Common.Components.Storable;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Connections;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 public class StorageAnimator : MonoBehaviour, IEntityAttachable
 {
@@ -52,7 +54,7 @@ public class StorageAnimator : MonoBehaviour, IEntityAttachable
       {
         foreach (ContainerAnimator animator in containerInfo.Animators)
         {
-          if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+          if (animator != null)
             animator.IsOpened = container.OpenState.Value == ContainerOpenStateEnum.Open;
         }
       }

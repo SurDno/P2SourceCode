@@ -6,6 +6,7 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {

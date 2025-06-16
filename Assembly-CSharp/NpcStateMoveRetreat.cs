@@ -8,6 +8,8 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services.Gizmos;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateMoveRetreat : INpcState
 {
@@ -64,7 +66,7 @@ public class NpcStateMoveRetreat : INpcState
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
     }
     else
     {
@@ -82,7 +84,7 @@ public class NpcStateMoveRetreat : INpcState
         }
         else
         {
-          Debug.Log((object) "Can't sample navmesh", (UnityEngine.Object) GameObject);
+          Debug.Log("Can't sample navmesh", GameObject);
           Status = NpcStateStatusEnum.Failed;
           return;
         }
@@ -98,7 +100,7 @@ public class NpcStateMoveRetreat : INpcState
         retreatAngle = retreatDirection.Value;
         behavior.StartMovement(GetRetreatDirection(retreatAngle));
         timeLeftToNextBestRetreatDirectionCheck = 0.5f;
-        if (!((UnityEngine.Object) weaponService != (UnityEngine.Object) null))
+        if (!(weaponService != null))
           return;
         weaponService.Weapon = WeaponEnum.Unknown;
       }
@@ -111,7 +113,7 @@ public class NpcStateMoveRetreat : INpcState
       return;
     agent.areaMask = prevAreaMask;
     agent.enabled = agentWasEnabled;
-    if (!((UnityEngine.Object) weaponService != (UnityEngine.Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = npcState.Weapon;
   }
@@ -135,20 +137,20 @@ public class NpcStateMoveRetreat : INpcState
       return;
     if (Status != 0)
     {
-      if (!((UnityEngine.Object) target != (UnityEngine.Object) null))
+      if (!(target != null))
         return;
       behavior.Move(GetRetreatDirection(retreatAngle), 0.0f);
     }
-    else if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+    else if (target == null)
     {
-      Debug.LogWarning((object) "Null target");
+      Debug.LogWarning("Null target");
       Status = NpcStateStatusEnum.Failed;
     }
     else
     {
       Vector3 position1 = target.position;
       Vector3 position2 = GameObject.transform.position;
-      if ((double) (position2 - position1).magnitude > retreatDistance)
+      if ((position2 - position1).magnitude > (double) retreatDistance)
       {
         Status = NpcStateStatusEnum.Success;
       }
@@ -221,7 +223,7 @@ public class NpcStateMoveRetreat : INpcState
   public IEnumerator ExecuteSecond(float delay, Action action)
   {
     float time = Time.unscaledTime;
-    while (time + (double) delay > (double) Time.unscaledTime)
+    while (time + (double) delay > Time.unscaledTime)
     {
       Action action1 = action;
       if (action1 != null)

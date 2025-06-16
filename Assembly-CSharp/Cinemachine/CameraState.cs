@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Cinemachine
 {
@@ -43,7 +45,7 @@ namespace Cinemachine
     {
       get
       {
-        return (double) Mathf.Abs(Lens.Dutch) > 9.9999997473787516E-05 ? CorrectedOrientation * Quaternion.AngleAxis(Lens.Dutch, Vector3.forward) : CorrectedOrientation;
+        return Mathf.Abs(Lens.Dutch) > 9.9999997473787516E-05 ? CorrectedOrientation * Quaternion.AngleAxis(Lens.Dutch, Vector3.forward) : CorrectedOrientation;
       }
     }
 
@@ -81,11 +83,11 @@ namespace Cinemachine
           return mCustom3;
         default:
           index -= 4;
-          return m_CustomOverflow != null && index < m_CustomOverflow.Count ? m_CustomOverflow[index] : new CustomBlendable((UnityEngine.Object) null, 0.0f);
+          return m_CustomOverflow != null && index < m_CustomOverflow.Count ? m_CustomOverflow[index] : new CustomBlendable(null, 0.0f);
       }
     }
 
-    private int FindCustomBlendable(UnityEngine.Object custom)
+    private int FindCustomBlendable(Object custom)
     {
       if (mCustom0.m_Custom == custom)
         return 0;
@@ -165,7 +167,7 @@ namespace Cinemachine
           t1 = Mathf.Abs((float) ((lens.FieldOfView - (double) fieldOfView1) / (fieldOfView2 - (double) fieldOfView1)));
         }
         cameraState.ReferenceLookAt = Vector3.Lerp(stateA.ReferenceLookAt, stateB.ReferenceLookAt, t1);
-        if ((double) Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation) > 9.9999997473787516E-05)
+        if (Quaternion.Angle(stateA.RawOrientation, stateB.RawOrientation) > 9.9999997473787516E-05)
           vector3 = cameraState.ReferenceLookAt - cameraState.CorrectedPosition;
       }
       if (vector3.AlmostZero())
@@ -210,16 +212,16 @@ namespace Cinemachine
       float num2 = 179f;
       float num3 = Mathf.Lerp(dA, dB, t);
       if (num3 > 9.9999997473787516E-05)
-        num2 = (float) (2.0 * (double) Mathf.Atan(num1 / (2f * num3)) * 57.295780181884766);
+        num2 = (float) (2.0 * Mathf.Atan(num1 / (2f * num3)) * 57.295780181884766);
       return Mathf.Clamp(num2, Mathf.Min(fovA, fovB), Mathf.Max(fovA, fovB));
     }
 
     public struct CustomBlendable
     {
-      public UnityEngine.Object m_Custom;
+      public Object m_Custom;
       public float m_Weight;
 
-      public CustomBlendable(UnityEngine.Object custom, float weight)
+      public CustomBlendable(Object custom, float weight)
       {
         m_Custom = custom;
         m_Weight = weight;

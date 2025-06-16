@@ -1,4 +1,6 @@
-﻿namespace FlowCanvas.Nodes
+﻿using UnityEngine;
+
+namespace FlowCanvas.Nodes
 {
   public class ExtractKeyFrame : ExtractorNode<Keyframe, float, float, float, float>
   {

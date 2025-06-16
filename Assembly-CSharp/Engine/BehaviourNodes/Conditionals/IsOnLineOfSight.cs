@@ -9,6 +9,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -33,44 +34,44 @@ namespace Engine.BehaviourNodes.Conditionals
     [DataWriteProxy]
     [CopyableProxy()]
     [SerializeField]
-    public LayerMask physicsLayer = (LayerMask) (LayerMaskUtility.GetMask((LayerMask) 0) | LayerMaskUtility.GetMask((LayerMask) 9) | LayerMaskUtility.GetMask((LayerMask) 14));
+    public LayerMask physicsLayer = LayerMaskUtility.GetMask(0) | LayerMaskUtility.GetMask(9) | LayerMaskUtility.GetMask(14);
     private Pivot pivot;
 
     public override void OnAwake()
     {
       pivot = gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        Debug.LogErrorFormat("{0} doesnt' contain {1} unity component", (object) gameObject.name, (object) typeof (Pivot).Name);
+        Debug.LogErrorFormat("{0} doesnt' contain {1} unity component", gameObject.name, typeof (Pivot).Name);
       }
       else
       {
-        if (!((UnityEngine.Object) pivot.Head == (UnityEngine.Object) null))
+        if (!(pivot.Head == null))
           return;
-        Debug.LogWarningFormat("{0} Pivot doesnt' contain Head GameObject", (object) gameObject.name);
+        Debug.LogWarningFormat("{0} Pivot doesnt' contain Head GameObject", gameObject.name);
       }
     }
 
     public override void OnStart()
     {
-      if (!((UnityEngine.Object) Target.Value == (UnityEngine.Object) null))
+      if (!(Target.Value == null))
         return;
-      Debug.LogWarningFormat("{0} Target is null", (object) gameObject.name);
+      Debug.LogWarningFormat("{0} Target is null", gameObject.name);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null || (double) (Target.Value.transform.position - gameObject.transform.position).magnitude > RaycastDistance)
+      if (pivot == null || Target.Value == null || (Target.Value.transform.position - gameObject.transform.position).magnitude > (double) RaycastDistance)
         return TaskStatus.Failure;
-      Vector3 origin = !((UnityEngine.Object) pivot.Head != (UnityEngine.Object) null) ? gameObject.transform.position : pivot.Head.transform.position;
+      Vector3 origin = !(pivot.Head != null) ? gameObject.transform.position : pivot.Head.transform.position;
       Pivot component = gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
       {
         Debug.LogErrorFormat("{0} doesnt' contain Pivot unity component");
         return TaskStatus.Failure;
       }
-      Vector3 vector3 = !((UnityEngine.Object) component.Head != (UnityEngine.Object) null) ? gameObject.transform.position : component.Head.transform.position;
-      return Physics.Raycast(origin, vector3 - origin, RaycastDistance, (int) physicsLayer, QueryTriggerInteraction.Ignore) ? TaskStatus.Failure : TaskStatus.Success;
+      Vector3 vector3 = !(component.Head != null) ? gameObject.transform.position : component.Head.transform.position;
+      return Physics.Raycast(origin, vector3 - origin, RaycastDistance, physicsLayer, QueryTriggerInteraction.Ignore) ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)

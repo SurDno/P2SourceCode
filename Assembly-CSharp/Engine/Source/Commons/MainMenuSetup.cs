@@ -6,6 +6,7 @@ using Engine.Impl.Weather;
 using Engine.Proxy.Weather;
 using Engine.Source.Services.Templates;
 using Engine.Source.Services.Utilities;
+using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -13,9 +14,9 @@ namespace Engine.Source.Commons
   {
     public static void SetupMainMenuSettings()
     {
-      if ((UnityEngine.Object) GameCamera.Instance == (UnityEngine.Object) null)
+      if (GameCamera.Instance == null)
       {
-        Debug.LogError((object) "Game camera not found");
+        Debug.LogError("Game camera not found");
       }
       else
       {
@@ -24,7 +25,7 @@ namespace Engine.Source.Commons
         string path = AssetDatabaseService.Instance.GetPath(id);
         if (path.IsNullOrEmpty())
         {
-          Debug.LogError((object) ("Menu weather not found, id : " + id));
+          Debug.LogError("Menu weather not found, id : " + id);
         }
         else
         {
@@ -33,9 +34,9 @@ namespace Engine.Source.Commons
             return;
           WeatherSnapshotUtility.CopyFrom(snapshot);
           TOD_Sky instance = TOD_Sky.Instance;
-          if ((UnityEngine.Object) instance == (UnityEngine.Object) null)
+          if (instance == null)
           {
-            Debug.LogError((object) "Tod not found");
+            Debug.LogError("Tod not found");
           }
           else
           {

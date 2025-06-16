@@ -1,4 +1,5 @@
-﻿using UnityStandardAssets.ImageEffects;
+﻿using UnityEngine;
+using UnityStandardAssets.ImageEffects;
 
 [ExecuteInEditMode]
 public class WaveDistortion : ImageEffectBase
@@ -20,14 +21,14 @@ public class WaveDistortion : ImageEffectBase
   {
     if (intensity == 0.0)
     {
-      Graphics.Blit((Texture) source, destination);
+      Graphics.Blit(source, destination);
     }
     else
     {
       material.SetFloat("_Intensity", intensity);
       material.SetFloat("_NoiseScale", noiseScale);
       material.SetFloat("_NoiseSpeed", noiseSpeed);
-      Graphics.Blit((Texture) source, destination, material);
+      Graphics.Blit(source, destination, material);
     }
   }
 }

@@ -1,8 +1,8 @@
-﻿using Cofe.Loggers;
-using Cofe.Utility;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Cofe.Loggers;
+using Cofe.Utility;
 
 namespace Engine.Common.Services
 {
@@ -15,71 +15,71 @@ namespace Engine.Common.Services
     public static object GetService(Type type)
     {
       object service;
-      lock (ServiceLocator.lockObject)
-        ServiceLocator.serviceMap.TryGetValue(type, out service);
+      lock (lockObject)
+        serviceMap.TryGetValue(type, out service);
       return service;
     }
 
     public static T GetService<T>() where T : class
     {
       object service;
-      lock (ServiceLocator.lockObject)
-        ServiceLocator.serviceMap.TryGetValue(typeof (T), out service);
+      lock (lockObject)
+        serviceMap.TryGetValue(typeof (T), out service);
       return service as T;
     }
 
     public static void AddService(Type[] types, object service)
     {
-      lock (ServiceLocator.lockObject)
+      lock (lockObject)
       {
-        ServiceLocator.services.Add(service);
-        ServiceLocator.services.Sort((Comparison<object>) ((a, b) => a.GetType().Name.CompareTo(b.GetType().Name)));
+        services.Add(service);
+        services.Sort((a, b) => a.GetType().Name.CompareTo(b.GetType().Name));
         Type type1 = service.GetType();
         foreach (Type type2 in types)
         {
           object obj;
-          if (ServiceLocator.serviceMap.TryGetValue(type2, out obj))
-            Logger.AddWarning("Exist service , face : " + (object) type2 + " , type : " + (object) obj.GetType());
+          if (serviceMap.TryGetValue(type2, out obj))
+            Logger.AddWarning("Exist service , face : " + type2 + " , type : " + obj.GetType());
           if (!TypeUtility.IsAssignableFrom(type2, type1))
-            Logger.AddError("Wrong service type, original : " + (object) type1 + " , target : " + (object) type2);
+            Logger.AddError("Wrong service type, original : " + type1 + " , target : " + type2);
           else
-            ServiceLocator.serviceMap[type2] = service;
+            serviceMap[type2] = service;
         }
       }
     }
 
     public static void RemoveService(object instance)
     {
-      lock (ServiceLocator.lockObject)
+      lock (lockObject)
       {
 label_2:
-        foreach (KeyValuePair<Type, object> service in ServiceLocator.serviceMap)
+        foreach (KeyValuePair<Type, object> service in serviceMap)
         {
           if (service.Value == instance)
           {
-            ServiceLocator.serviceMap.Remove(service.Key);
+            serviceMap.Remove(service.Key);
             goto label_2;
           }
         }
-        if (!ServiceLocator.services.Remove(instance))
+        if (!services.Remove(instance))
           return;
-        ServiceLocator.services.Sort((Comparison<object>) ((a, b) => a.GetType().Name.CompareTo(b.GetType().Name)));
+        services.Sort((a, b) => a.GetType().Name.CompareTo(b.GetType().Name));
       }
     }
 
     public static void Clear()
     {
-      lock (ServiceLocator.lockObject)
+      lock (lockObject)
       {
-        ServiceLocator.serviceMap.Clear();
-        ServiceLocator.services.Clear();
+        serviceMap.Clear();
+        services.Clear();
       }
     }
 
     public static IEnumerable<object> GetServices()
     {
-      lock (ServiceLocator.lockObject)
-        return (IEnumerable<object>) ServiceLocator.services.ToList<object>();
+      lock (lockObject)
+        return services.ToList();
     }
   }
 }

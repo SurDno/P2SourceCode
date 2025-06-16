@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -50,7 +51,7 @@ namespace Cinemachine
         case 7:
           return m_Weight7;
         default:
-          Debug.LogError((object) ("CinemachineMixingCamera: Invalid index: " + index));
+          Debug.LogError("CinemachineMixingCamera: Invalid index: " + index);
           return 0.0f;
       }
     }
@@ -84,7 +85,7 @@ namespace Cinemachine
           m_Weight7 = w;
           break;
         default:
-          Debug.LogError((object) ("CinemachineMixingCamera: Invalid index: " + index));
+          Debug.LogError("CinemachineMixingCamera: Invalid index: " + index);
           break;
       }
     }
@@ -94,7 +95,7 @@ namespace Cinemachine
       int index;
       if (m_indexMap.TryGetValue(vcam, out index))
         return GetWeight(index);
-      Debug.LogError((object) ("CinemachineMixingCamera: Invalid child: " + ((Object) vcam != (Object) null ? vcam.Name : "(null)")));
+      Debug.LogError("CinemachineMixingCamera: Invalid child: " + (vcam != null ? vcam.Name : "(null)"));
       return 0.0f;
     }
 
@@ -104,7 +105,7 @@ namespace Cinemachine
       if (m_indexMap.TryGetValue(vcam, out index))
         SetWeight(index, w);
       else
-        Debug.LogError((object) ("CinemachineMixingCamera: Invalid child: " + ((Object) vcam != (Object) null ? vcam.Name : "(null)")));
+        Debug.LogError("CinemachineMixingCamera: Invalid child: " + (vcam != null ? vcam.Name : "(null)"));
     }
 
     private ICinemachineCamera LiveChild { set; get; }
@@ -174,9 +175,9 @@ namespace Cinemachine
         return;
       m_indexMap = new Dictionary<CinemachineVirtualCameraBase, int>();
       List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
-      foreach (CinemachineVirtualCameraBase componentsInChild in this.GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
+      foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
-        if ((Object) componentsInChild.transform.parent == (Object) this.transform)
+        if (componentsInChild.transform.parent == transform)
         {
           int count = virtualCameraBaseList.Count;
           virtualCameraBaseList.Add(componentsInChild);

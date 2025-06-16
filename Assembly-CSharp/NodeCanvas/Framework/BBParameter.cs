@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using ParadoxNotion;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace NodeCanvas.Framework
 {
@@ -98,10 +99,10 @@ namespace NodeCanvas.Framework
       get => _bb;
       set
       {
-        if (!((UnityEngine.Object) _bb != (UnityEngine.Object) value))
+        if (!(_bb != value))
           return;
         _bb = value;
-        varRef = (UnityEngine.Object) value != (UnityEngine.Object) null ? ResolveReference(_bb, true) : null;
+        varRef = value != null ? ResolveReference(_bb, true) : null;
       }
     }
 
@@ -152,7 +153,7 @@ namespace NodeCanvas.Framework
     {
       string name = this.name;
       Variable variable = null;
-      if ((UnityEngine.Object) targetBlackboard == (UnityEngine.Object) null)
+      if (targetBlackboard == null)
         return null;
       if (useID && targetVariableID != null)
         variable = targetBlackboard.GetVariableByID(targetVariableID);
@@ -169,16 +170,16 @@ namespace NodeCanvas.Framework
         return null;
       }
       string name = this.name;
-      string str = (UnityEngine.Object) targetBB != (UnityEngine.Object) null ? targetBB.name : string.Empty;
-      if ((UnityEngine.Object) targetBB == (UnityEngine.Object) null)
+      string str = targetBB != null ? targetBB.name : string.Empty;
+      if (targetBB == null)
       {
         varRef = null;
-        Debug.LogError((object) string.Format("Parameter '{0}' failed to promote to a variable, because Blackboard named '{1}' could not be found.", name, str));
+        Debug.LogError(string.Format("Parameter '{0}' failed to promote to a variable, because Blackboard named '{1}' could not be found.", name, str));
         return null;
       }
       varRef = targetBB.AddVariable(name, varType);
       if (varRef == null)
-        Debug.LogError((object) string.Format("Parameter {0} (of type '{1}') failed to promote to a Variable in Blackboard '{2}'.", name, varType.FriendlyName(), str));
+        Debug.LogError(string.Format("Parameter {0} (of type '{1}') failed to promote to a Variable in Blackboard '{2}'.", name, varType.FriendlyName(), str));
       return varRef;
     }
 

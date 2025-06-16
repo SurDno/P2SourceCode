@@ -9,6 +9,9 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Effects
 {
@@ -52,19 +55,19 @@ namespace Engine.Source.Effects
       ParametersComponent component = item.GetComponent<ParametersComponent>();
       if (component == null)
       {
-        Debug.LogWarning((object) string.Format("{0} has no {1}", typeof (RemoveEntityIfDurabilityZeroEffect), typeof (ParametersComponent).Name));
+        Debug.LogWarning(string.Format("{0} has no {1}", typeof (RemoveEntityIfDurabilityZeroEffect), typeof (ParametersComponent).Name));
         return false;
       }
       IParameter<float> byName = component.GetByName<float>(ParameterNameEnum.Durability);
       if (byName == null)
       {
-        Debug.LogWarning((object) string.Format("{0} has no durability parameter", typeof (RemoveEntityIfDurabilityZeroEffect)));
+        Debug.LogWarning(string.Format("{0} has no durability parameter", typeof (RemoveEntityIfDurabilityZeroEffect)));
         return false;
       }
       if (byName.Value <= 0.0)
         CoroutineService.Instance.WaitFrame((Action) (() =>
         {
-          if ((bool) (UnityEngine.Object) removeSound.Value)
+          if ((bool) (Object) removeSound.Value)
             SoundUtility.PlayAudioClip2D(removeSound.Value, removeSoundMixer.Value, 1f, 0.0f);
           item.Dispose();
         }));

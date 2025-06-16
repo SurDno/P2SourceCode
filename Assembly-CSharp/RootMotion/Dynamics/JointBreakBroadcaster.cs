@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   public class JointBreakBroadcaster : MonoBehaviour
   {
@@ -11,7 +13,7 @@
 
     private void OnJointBreak()
     {
-      if (!this.enabled)
+      if (!enabled)
         return;
       puppetMaster.RemoveMuscleRecursive(puppetMaster.muscles[muscleIndex].joint, true, true, MuscleRemoveMode.Numb);
     }

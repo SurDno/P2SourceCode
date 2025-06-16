@@ -15,17 +15,17 @@
 
     public override void OnDisable()
     {
-      GraphicsUtils.Destroy((Object) m_SpectrumLut);
-      m_SpectrumLut = (Texture2D) null;
+      GraphicsUtils.Destroy(m_SpectrumLut);
+      m_SpectrumLut = null;
     }
 
     public override void Prepare(Material uberMaterial)
     {
       ChromaticAberrationModel.Settings settings = model.settings;
       Texture2D texture2D1 = settings.spectralTexture;
-      if ((Object) texture2D1 == (Object) null)
+      if (texture2D1 == null)
       {
-        if ((Object) m_SpectrumLut == (Object) null)
+        if (m_SpectrumLut == null)
         {
           Texture2D texture2D2 = new Texture2D(3, 1, TextureFormat.RGB24, false);
           texture2D2.name = "Chromatic Aberration Spectrum Lookup";
@@ -46,7 +46,7 @@
       }
       uberMaterial.EnableKeyword("CHROMATIC_ABERRATION");
       uberMaterial.SetFloat(Uniforms._ChromaticAberration_Amount, settings.intensity * 0.03f);
-      uberMaterial.SetTexture(Uniforms._ChromaticAberration_Spectrum, (Texture) texture2D1);
+      uberMaterial.SetTexture(Uniforms._ChromaticAberration_Spectrum, texture2D1);
     }
 
     private static class Uniforms

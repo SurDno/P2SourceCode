@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -7,7 +8,7 @@ namespace Cinemachine
   public sealed class CinemachineBlenderSettings : ScriptableObject
   {
     [Tooltip("The array containing explicitly defined blends between two Virtual Cameras")]
-    public CustomBlend[] m_CustomBlends = null;
+    public CustomBlend[] m_CustomBlends;
     public const string kBlendFromAnyCameraLabel = "**ANY CAMERA**";
 
     public AnimationCurve GetBlendCurveForVirtualCameras(
@@ -15,8 +16,8 @@ namespace Cinemachine
       string toCameraName,
       AnimationCurve defaultCurve)
     {
-      AnimationCurve animationCurve1 = (AnimationCurve) null;
-      AnimationCurve animationCurve2 = (AnimationCurve) null;
+      AnimationCurve animationCurve1 = null;
+      AnimationCurve animationCurve2 = null;
       if (m_CustomBlends != null)
       {
         for (int index = 0; index < m_CustomBlends.Length; ++index)

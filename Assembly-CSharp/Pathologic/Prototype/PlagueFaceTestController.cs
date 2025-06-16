@@ -1,4 +1,7 @@
-﻿namespace Pathologic.Prototype
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Pathologic.Prototype
 {
   public class PlagueFaceTestController : MonoBehaviour
   {

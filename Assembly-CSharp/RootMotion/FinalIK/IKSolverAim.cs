@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -33,14 +34,14 @@ namespace RootMotion.FinalIK
 
     protected override void OnInitiate()
     {
-      if ((firstInitiation || !Application.isPlaying) && (UnityEngine.Object) transform != (UnityEngine.Object) null)
+      if ((firstInitiation || !Application.isPlaying) && transform != null)
       {
         IKPosition = transform.position + transformAxis * 3f;
         polePosition = transform.position + transformPoleAxis * 3f;
       }
       for (int index = 0; index < bones.Length; ++index)
       {
-        if ((UnityEngine.Object) bones[index].rotationLimit != (UnityEngine.Object) null)
+        if (bones[index].rotationLimit != null)
           bones[index].rotationLimit.Disable();
       }
       step = 1f / bones.Length;
@@ -65,25 +66,25 @@ namespace RootMotion.FinalIK
       }
       else
       {
-        if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+        if (target != null)
           IKPosition = target.position;
-        if ((UnityEngine.Object) poleTarget != (UnityEngine.Object) null)
+        if (poleTarget != null)
           polePosition = poleTarget.position;
         if (XY)
           IKPosition.z = bones[0].transform.position.z;
         if (IKPositionWeight <= 0.0)
           return;
         IKPositionWeight = Mathf.Clamp(IKPositionWeight, 0.0f, 1f);
-        if ((UnityEngine.Object) transform != (UnityEngine.Object) lastTransform)
+        if (transform != lastTransform)
         {
           transformLimit = transform.GetComponent<RotationLimit>();
-          if ((UnityEngine.Object) transformLimit != (UnityEngine.Object) null)
+          if (transformLimit != null)
             transformLimit.enabled = false;
           lastTransform = transform;
         }
-        if ((UnityEngine.Object) transformLimit != (UnityEngine.Object) null)
+        if (transformLimit != null)
           transformLimit.Apply();
-        if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
+        if (transform == null)
         {
           if (Warning.logged)
             return;
@@ -122,7 +123,7 @@ namespace RootMotion.FinalIK
         return IKPosition;
       if (clampWeight >= 1.0)
         return transform.position + transformAxis * (IKPosition - transform.position).magnitude;
-      float num1 = (float) (1.0 - (double) Vector3.Angle(transformAxis, IKPosition - transform.position) / 180.0);
+      float num1 = (float) (1.0 - Vector3.Angle(transformAxis, IKPosition - transform.position) / 180.0);
       float num2 = clampWeight > 0.0 ? Mathf.Clamp((float) (1.0 - (clampWeight - (double) num1) / (1.0 - num1)), 0.0f, 1f) : 1f;
       float num3 = clampWeight > 0.0 ? Mathf.Clamp(num1 / clampWeight, 0.0f, 1f) : 1f;
       for (int index = 0; index < clampSmoothing; ++index)
@@ -162,7 +163,7 @@ namespace RootMotion.FinalIK
           bone.transform.rotation = Quaternion.Lerp(Quaternion.identity, rotation, weight * poleWeight) * bone.transform.rotation;
         }
       }
-      if (!useRotationLimits || !((UnityEngine.Object) bone.rotationLimit != (UnityEngine.Object) null))
+      if (!useRotationLimits || !(bone.rotationLimit != null))
         return;
       bone.rotationLimit.Apply();
     }

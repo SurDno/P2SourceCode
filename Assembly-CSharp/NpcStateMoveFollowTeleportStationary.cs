@@ -2,6 +2,7 @@
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common.Components.MessangerStationary;
 using Inspectors;
+using UnityEngine;
 
 public class NpcStateMoveFollowTeleportStationary : INpcState
 {
@@ -38,7 +39,7 @@ public class NpcStateMoveFollowTeleportStationary : INpcState
       return;
     wasRestartBehaviourAfterTeleport = npcState.RestartBehaviourAfterTeleport;
     Animator animator = pivot.GetAnimator();
-    if (!((Object) animator != (Object) null))
+    if (!(animator != null))
       return;
     AnimatorState45 animatorState = AnimatorState45.GetAnimatorState(animator);
     if (animatorState != null)

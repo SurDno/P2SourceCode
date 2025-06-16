@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using FlowCanvas.Nodes;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -10,7 +11,7 @@ namespace Engine.Source.Blueprints
     public Animator Value()
     {
       UnityEngine.Camera camera = GameCamera.Instance.Camera;
-      return (Object) camera != (Object) null ? camera.GetComponent<Animator>() : (Animator) null;
+      return camera != null ? camera.GetComponent<Animator>() : null;
     }
   }
 }

@@ -1,5 +1,6 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -18,8 +19,8 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void Awake()
     {
-      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
-      this.masterVolumeView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      layout = Instantiate(listLayoutPrefab, transform, false);
+      this.masterVolumeView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.masterVolumeView.SetName("{UI.Menu.Main.Settings.Audio.Master.Volume}");
       this.masterVolumeView.SetMinValue(0.0f);
       this.masterVolumeView.SetMaxValue(1f);
@@ -28,7 +29,7 @@ namespace Engine.Impl.UI.Menu.Main
       this.masterVolumeView.SetValueValidationFunction(ValueRound, 0.05f);
       FloatSettingsValueView masterVolumeView = this.masterVolumeView;
       masterVolumeView.VisibleValueChangeEvent = masterVolumeView.VisibleValueChangeEvent + OnAutoValueChange;
-      this.musicVolumeView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.musicVolumeView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.musicVolumeView.SetName("{UI.Menu.Main.Settings.Audio.Music.Volume}");
       this.musicVolumeView.SetMinValue(0.0f);
       this.musicVolumeView.SetMaxValue(1f);
@@ -37,7 +38,7 @@ namespace Engine.Impl.UI.Menu.Main
       this.musicVolumeView.SetValueValidationFunction(ValueRound, 0.05f);
       FloatSettingsValueView musicVolumeView = this.musicVolumeView;
       musicVolumeView.VisibleValueChangeEvent = musicVolumeView.VisibleValueChangeEvent + OnAutoValueChange;
-      this.effectsVolumeView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.effectsVolumeView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.effectsVolumeView.SetName("{UI.Menu.Main.Settings.Audio.Effects.Volume}");
       this.effectsVolumeView.SetMinValue(0.0f);
       this.effectsVolumeView.SetMaxValue(1f);
@@ -46,7 +47,7 @@ namespace Engine.Impl.UI.Menu.Main
       this.effectsVolumeView.SetValueValidationFunction(ValueRound, 0.05f);
       FloatSettingsValueView effectsVolumeView = this.effectsVolumeView;
       effectsVolumeView.VisibleValueChangeEvent = effectsVolumeView.VisibleValueChangeEvent + OnEffectVolumeChange;
-      this.voiceVolumeView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.voiceVolumeView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.voiceVolumeView.SetName("{UI.Menu.Main.Settings.Audio.Voice.Volume}");
       this.voiceVolumeView.SetMinValue(0.0f);
       this.voiceVolumeView.SetMaxValue(1f);
@@ -55,12 +56,12 @@ namespace Engine.Impl.UI.Menu.Main
       this.voiceVolumeView.SetValueValidationFunction(ValueRound, 0.05f);
       FloatSettingsValueView voiceVolumeView = this.voiceVolumeView;
       voiceVolumeView.VisibleValueChangeEvent = voiceVolumeView.VisibleValueChangeEvent + OnVoiceVolumeChange;
-      subtitlesEnabledView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      subtitlesEnabledView = Instantiate(boolValueViewPrefab, layout.Content, false);
       subtitlesEnabledView.SetName("{UI.Menu.Main.Settings.Audio.Subtitles}");
       subtitlesEnabledView.SetSetting(InstanceByRequest<SubtitlesGameSettings>.Instance.SubtitlesEnabled);
       BoolSettingsValueView subtitlesEnabledView1 = subtitlesEnabledView;
       subtitlesEnabledView1.VisibleValueChangeEvent = subtitlesEnabledView1.VisibleValueChangeEvent + OnAutoValueChange;
-      dialogSubtitlesEnabledView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      dialogSubtitlesEnabledView = Instantiate(boolValueViewPrefab, layout.Content, false);
       dialogSubtitlesEnabledView.SetName("{UI.Menu.Main.Settings.Audio.DialogSubtitles}");
       dialogSubtitlesEnabledView.SetSetting(InstanceByRequest<SubtitlesGameSettings>.Instance.DialogSubtitlesEnabled);
       BoolSettingsValueView subtitlesEnabledView2 = dialogSubtitlesEnabledView;

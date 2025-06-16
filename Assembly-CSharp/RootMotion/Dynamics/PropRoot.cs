@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   [HelpURL("http://root-motion.com/puppetmasterdox/html/page6.html")]
   [AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Prop Root")]
@@ -27,7 +29,7 @@
 
     public void DropImmediate()
     {
-      if ((Object) lastProp == (Object) null)
+      if (lastProp == null)
         return;
       puppetMaster.RemoveMuscleRecursive(lastProp.muscle, true);
       lastProp.Drop();
@@ -37,14 +39,14 @@
 
     private void Awake()
     {
-      if (!((Object) currentProp != (Object) null))
+      if (!(currentProp != null))
         return;
       currentProp.StartPickedUp(this);
     }
 
     private void Update()
     {
-      if (!fixedUpdateCalled || !((Object) currentProp != (Object) null) || !((Object) lastProp == (Object) currentProp) || !((Object) currentProp.muscle.connectedBody == (Object) null))
+      if (!fixedUpdateCalled || !(currentProp != null) || !(lastProp == currentProp) || !(currentProp.muscle.connectedBody == null))
         return;
       currentProp.Drop();
       currentProp = null;
@@ -54,16 +56,16 @@
     private void FixedUpdate()
     {
       fixedUpdateCalled = true;
-      if ((Object) currentProp == (Object) lastProp)
+      if (currentProp == lastProp)
         return;
-      if ((Object) currentProp == (Object) null)
+      if (currentProp == null)
       {
         puppetMaster.RemoveMuscleRecursive(lastProp.muscle, true);
         lastProp.Drop();
       }
-      if ((Object) lastProp == (Object) null)
+      if (lastProp == null)
         AttachProp(currentProp);
-      if ((Object) lastProp != (Object) null && (Object) currentProp != (Object) null)
+      if (lastProp != null && currentProp != null)
       {
         puppetMaster.RemoveMuscleRecursive(lastProp.muscle, true);
         AttachProp(currentProp);
@@ -73,11 +75,11 @@
 
     private void AttachProp(Prop prop)
     {
-      prop.transform.position = this.transform.position;
-      prop.transform.rotation = this.transform.rotation;
+      prop.transform.position = transform.position;
+      prop.transform.rotation = transform.rotation;
       prop.PickUp(this);
-      puppetMaster.AddMuscle(prop.muscle, prop.transform, connectTo, this.transform, prop.muscleProps, forceLayers: prop.forceLayers);
-      if (!((Object) prop.additionalPin != (Object) null) || !((Object) prop.additionalPinTarget != (Object) null))
+      puppetMaster.AddMuscle(prop.muscle, prop.transform, connectTo, transform, prop.muscleProps, forceLayers: prop.forceLayers);
+      if (!(prop.additionalPin != null) || !(prop.additionalPinTarget != null))
         return;
       puppetMaster.AddMuscle(prop.additionalPin, prop.additionalPinTarget, prop.muscle.GetComponent<Rigidbody>(), prop.transform, new Muscle.Props(prop.additionalPinWeight, 0.0f, 0.0f, 0.0f, false, Muscle.Group.Prop), true, prop.forceLayers);
     }

@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableDeactivating : HideableView
   {
@@ -7,10 +9,10 @@
 
     protected override void ApplyVisibility()
     {
-      if ((Object) target != (Object) null)
+      if (target != null)
         target.SetActive(Visible);
       else
-        this.gameObject.SetActive(Visible);
+        gameObject.SetActive(Visible);
     }
   }
 }

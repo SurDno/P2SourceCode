@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class HUDWeaponsView : EntityView
 {

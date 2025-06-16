@@ -42,7 +42,7 @@ namespace Engine.Source.Services
     {
       get
       {
-        if ((UnityEngine.Object) map == (UnityEngine.Object) null)
+        if (map == null)
           map = (MMWindow) ServiceLocator.GetService<UIService>().Get<IMMWindow>();
         return map;
       }

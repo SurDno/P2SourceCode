@@ -5,6 +5,7 @@ using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
 using Scripts.Behaviours.LoadControllers;
+using UnityEngine;
 
 public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, IUpdatable
 {
@@ -33,24 +34,24 @@ public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, 
 
   private bool IsLoadCondition(Vector3 position)
   {
-    return DistanceToSegment(position - this.transform.position, segmentStart, segmentEnd) < (insideIndoor ? loadIndoorDistance : (double) loadDistance);
+    return DistanceToSegment(position - transform.position, segmentStart, segmentEnd) < (insideIndoor ? loadIndoorDistance : (double) loadDistance);
   }
 
   private bool IsUnloadCondition(Vector3 position)
   {
-    return DistanceToSegment(position - this.transform.position, segmentStart, segmentEnd) > (double) unloadDistance;
+    return DistanceToSegment(position - transform.position, segmentStart, segmentEnd) > (double) unloadDistance;
   }
 
   private void CheckAndFix()
   {
     if (loadIndoorDistance > (double) loadDistance)
     {
-      Debug.LogError((object) "loadIndoorDistance > loadDistance", (UnityEngine.Object) this.gameObject);
+      Debug.LogError("loadIndoorDistance > loadDistance", gameObject);
       loadIndoorDistance = loadDistance;
     }
     if (loadDistance <= (double) unloadDistance)
       return;
-    Debug.LogError((object) "loadDistance > unloadDistance", (UnityEngine.Object) this.gameObject);
+    Debug.LogError("loadDistance > unloadDistance", gameObject);
     unloadDistance = loadDistance + 5f;
   }
 
@@ -104,7 +105,7 @@ public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, 
     if (component != null)
       insideIndoor = component.IsIndoor;
     else
-      Debug.LogError((object) ("LocationItemComponent not found, owner : " + player.GetInfo()));
+      Debug.LogError("LocationItemComponent not found, owner : " + player.GetInfo());
   }
 
   public float DistanceToSegment(Vector3 p, Vector3 s0, Vector3 s1)
@@ -120,7 +121,7 @@ public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, 
   private void OnDrawGizmosSelected()
   {
     Gizmos.color = Color.white;
-    Gizmos.DrawLine(this.transform.position + segmentStart, this.transform.position + segmentEnd);
+    Gizmos.DrawLine(transform.position + segmentStart, transform.position + segmentEnd);
     Gizmos.color = Color.red;
     DrawGizmoCapsule(loadDistance);
     Gizmos.color = Color.gray;
@@ -133,7 +134,7 @@ public class LoadByDistanceFromSegment : BaseLoadByDistance, IEntityAttachable, 
   {
     Vector3 normalized = (segmentEnd - segmentStart).normalized;
     Vector3 vector3_1 = Vector3.Cross(Vector3.up, normalized);
-    Vector3 position = this.transform.position;
+    Vector3 position = transform.position;
     for (int index = 0; index < 20; ++index)
     {
       float f1 = 0.157079637f * index;

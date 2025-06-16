@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Engine.Impl.Tasks;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Behaviours.Unity.Mecanim
 {
@@ -32,7 +33,7 @@ namespace Engine.Behaviours.Unity.Mecanim
     {
       get
       {
-        if ((UnityEngine.Object) Animator == (UnityEngine.Object) null)
+        if (Animator == null)
           return false;
         int tagHash = Animator.GetCurrentAnimatorStateInfo(0).tagHash;
         return tagHash == moveTagHash || tagHash == moveStartTagHash || tagHash == moveStopTagHash;
@@ -194,7 +195,7 @@ namespace Engine.Behaviours.Unity.Mecanim
 
     public static AnimatorState45 GetAnimatorState(Animator animator)
     {
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      if (animator == null)
         return new AnimatorState45();
       AnimatorState45 animatorState;
       if (!animatorStates.TryGetValue(animator, out animatorState))

@@ -1,4 +1,7 @@
-﻿namespace AmplifyBloom
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace AmplifyBloom
 {
   public class DemoUIElement : MonoBehaviour
   {
@@ -9,7 +12,7 @@
 
     public void Init()
     {
-      m_text = this.transform.GetComponentInChildren<Text>();
+      m_text = transform.GetComponentInChildren<Text>();
       m_unselectedColor = m_text.color;
     }
 

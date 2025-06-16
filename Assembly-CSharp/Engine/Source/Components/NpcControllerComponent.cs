@@ -13,6 +13,8 @@ using Engine.Source.Commons.Parameters;
 using Engine.Source.Components.Crowds;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Components
 {
@@ -194,7 +196,7 @@ namespace Engine.Source.Components
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player == null)
       {
-        Debug.LogError((object) ("Player not found : " + Owner.GetInfo()));
+        Debug.LogError("Player not found : " + Owner.GetInfo());
       }
       else
       {
@@ -217,7 +219,7 @@ namespace Engine.Source.Components
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player == null)
       {
-        Debug.LogError((object) ("Player not found : " + Owner.GetInfo()));
+        Debug.LogError("Player not found : " + Owner.GetInfo());
       }
       else
       {
@@ -232,7 +234,7 @@ namespace Engine.Source.Components
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player == null)
       {
-        Debug.LogError((object) ("Player not found : " + Owner.GetInfo()));
+        Debug.LogError("Player not found : " + Owner.GetInfo());
       }
       else
       {
@@ -263,13 +265,13 @@ namespace Engine.Source.Components
       if (byName1 != null)
       {
         IParameter parameter = states.FirstOrDefault(o => o.Name == ParameterNameEnum.Customization);
-        byName1.Value = parameter != null ? ((IParameter<int>) parameter).Value : UnityEngine.Random.Range(byName1.MinValue, byName1.MaxValue + 1);
+        byName1.Value = parameter != null ? ((IParameter<int>) parameter).Value : Random.Range(byName1.MinValue, byName1.MaxValue + 1);
       }
       IParameter<int> byName2 = parameters.GetByName<int>(ParameterNameEnum.Model);
       if (byName2 == null)
         return;
       IParameter parameter1 = states.FirstOrDefault(o => o.Name == ParameterNameEnum.Model);
-      byName2.Value = parameter1 != null ? ((IParameter<int>) parameter1).Value : UnityEngine.Random.Range(byName2.MinValue, byName2.MaxValue + 1);
+      byName2.Value = parameter1 != null ? ((IParameter<int>) parameter1).Value : Random.Range(byName2.MinValue, byName2.MaxValue + 1);
     }
 
     public void ComputeShoot(NpcControllerComponent target)

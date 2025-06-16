@@ -1,5 +1,4 @@
 ﻿using System;
-using BehaviorDesigner.Runtime;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
@@ -32,22 +31,22 @@ namespace Engine.Source.Proxies
 
     public void DataWrite(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<ExternalBehaviorTree>(writer, "BehaviorTree", behaviorTreeResource);
+      UnityDataWriteUtility.Write(writer, "BehaviorTree", behaviorTreeResource);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
-      behaviorTreeResource = UnityDataReadUtility.Read<ExternalBehaviorTree>(reader, "BehaviorTree", behaviorTreeResource);
+      behaviorTreeResource = UnityDataReadUtility.Read(reader, "BehaviorTree", behaviorTreeResource);
     }
 
     public void StateSave(IDataWriter writer)
     {
-      UnityDataWriteUtility.Write<ExternalBehaviorTree>(writer, "BehaviorTreeResource", behaviorTreeResource);
+      UnityDataWriteUtility.Write(writer, "BehaviorTreeResource", behaviorTreeResource);
     }
 
     public void StateLoad(IDataReader reader, Type type)
     {
-      behaviorTreeResource = UnityDataReadUtility.Read<ExternalBehaviorTree>(reader, "BehaviorTreeResource", behaviorTreeResource);
+      behaviorTreeResource = UnityDataReadUtility.Read(reader, "BehaviorTreeResource", behaviorTreeResource);
     }
   }
 }

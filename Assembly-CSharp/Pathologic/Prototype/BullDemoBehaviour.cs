@@ -1,4 +1,6 @@
-﻿namespace Pathologic.Prototype
+﻿using UnityEngine;
+
+namespace Pathologic.Prototype
 {
   public class BullDemoBehaviour : StateMachineBehaviour
   {

@@ -8,6 +8,7 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Difficulties;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -125,7 +126,7 @@ namespace Engine.Source.Effects
           this.lastTime += interval;
           if (lastTime == (double) this.lastTime)
           {
-            Debug.LogError((object) ("Error compute effects, effect name : " + Name + " , target : " + Target.GetInfo()));
+            Debug.LogError("Error compute effects, effect name : " + Name + " , target : " + Target.GetInfo());
             break;
           }
           ComputeEffect();

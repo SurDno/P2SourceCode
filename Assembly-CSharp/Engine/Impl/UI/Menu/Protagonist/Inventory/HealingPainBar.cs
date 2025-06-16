@@ -1,4 +1,8 @@
-﻿namespace Engine.Impl.UI.Menu.Protagonist.Inventory
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
   public class HealingPainBar : MonoBehaviour
   {

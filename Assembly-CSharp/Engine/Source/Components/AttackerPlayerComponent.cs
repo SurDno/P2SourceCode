@@ -19,6 +19,7 @@ using Engine.Source.Commons;
 using Engine.Source.Inventory;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -120,7 +121,7 @@ namespace Engine.Source.Components
     private void OnInventoryChanged(IStorableComponent storable, IInventoryComponent container)
     {
       UIWindow active = ServiceLocator.GetService<UIService>().Active;
-      if ((UnityEngine.Object) active != (UnityEngine.Object) null && active is IBaseInventoryWindow)
+      if (active != null && active is IBaseInventoryWindow)
         return;
       ApplyInventoryChange();
     }
@@ -142,7 +143,7 @@ namespace Engine.Source.Components
         currentWeapon = 0;
       else if (avaliableWeapons[currentWeapon] == WeaponKind.Unknown)
         currentWeapon = avaliableWeapons[1] == 0 ? (avaliableWeapons[2] == 0 ? (avaliableWeapons[3] == 0 ? 0 : 3) : 2) : 1;
-      if (!((UnityEngine.Object) playerWeaponService != (UnityEngine.Object) null) || !IsUnholstered || !IsUnholstered)
+      if (!(playerWeaponService != null) || !IsUnholstered || !IsUnholstered)
         return;
       playerWeaponService.SetWeapon(avaliableWeapons[currentWeapon], avaliableWeaponItems[currentWeapon]);
       if (avaliableWeapons[currentWeapon] == WeaponKind.Unknown)
@@ -234,7 +235,7 @@ namespace Engine.Source.Components
     {
       get
       {
-        return (UnityEngine.Object) playerWeaponService != (UnityEngine.Object) null ? playerWeaponService.KindBase : WeaponKind.Unknown;
+        return playerWeaponService != null ? playerWeaponService.KindBase : WeaponKind.Unknown;
       }
     }
 
@@ -284,7 +285,7 @@ namespace Engine.Source.Components
         playerWeaponService.SetWeapon(avaliableWeapons[0], avaliableWeaponItems[0]);
       }
       else
-        Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon1"));
+        Debug.LogError(typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon1");
     }
 
     public void WeaponFirearmUnholster()
@@ -295,7 +296,7 @@ namespace Engine.Source.Components
         playerWeaponService.SetWeapon(avaliableWeapons[1], avaliableWeaponItems[1]);
       }
       else
-        Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon2"));
+        Debug.LogError(typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon2");
     }
 
     public void WeaponMeleeUnholster()
@@ -306,7 +307,7 @@ namespace Engine.Source.Components
         playerWeaponService.SetWeapon(avaliableWeapons[2], avaliableWeaponItems[2]);
       }
       else
-        Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon3"));
+        Debug.LogError(typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon3");
     }
 
     public void WeaponLampUnholster()
@@ -317,7 +318,7 @@ namespace Engine.Source.Components
         playerWeaponService.SetWeapon(avaliableWeapons[3], avaliableWeaponItems[3]);
       }
       else
-        Debug.LogError((object) (typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon4"));
+        Debug.LogError(typeof (AttackerPlayerComponent).Name + " has no weapon in slot Weapon4");
     }
 
     public bool Reaction(IEntity target, NPCAttackKind attackKind, int randomSubkind)
@@ -329,10 +330,10 @@ namespace Engine.Source.Components
     private void OnGameObjectChangedEvent()
     {
       IEntityView owner = (IEntityView) Owner;
-      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null || (UnityEngine.Object) playerWeaponService != (UnityEngine.Object) null)
+      if (owner.GameObject == null || playerWeaponService != null)
         return;
       playerWeaponService = owner.GameObject.GetComponent<PlayerWeaponServiceNew>();
-      if ((UnityEngine.Object) playerWeaponService == (UnityEngine.Object) null)
+      if (playerWeaponService == null)
         return;
       playerWeaponService.SetWeapon(WeaponKind.Unknown, null);
       playerWeaponService.WeaponHolsterStartEvent += weapon =>
@@ -360,7 +361,7 @@ namespace Engine.Source.Components
 
     public void Clear()
     {
-      if (!((UnityEngine.Object) ((IEntityView) Owner).GameObject == (UnityEngine.Object) null))
+      if (!(((IEntityView) Owner).GameObject == null))
         ;
     }
 
@@ -369,17 +370,17 @@ namespace Engine.Source.Components
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         return;
       IEntityView owner = (IEntityView) Owner;
-      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null || !((UnityEngine.Object) owner.GameObject.GetComponent<Animator>() == (UnityEngine.Object) null))
+      if (owner.GameObject == null || !(owner.GameObject.GetComponent<Animator>() == null))
         ;
     }
 
     public void LateUpdate()
     {
       IEntityView owner = (IEntityView) Owner;
-      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null || (UnityEngine.Object) owner.GameObject.GetComponent<Animator>() == (UnityEngine.Object) null)
+      if (owner.GameObject == null || owner.GameObject.GetComponent<Animator>() == null)
         return;
       PivotPlayer component = owner.GameObject.GetComponent<PivotPlayer>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
       component.ApplyWeaponTransform(playerWeaponService.KindBase);
     }

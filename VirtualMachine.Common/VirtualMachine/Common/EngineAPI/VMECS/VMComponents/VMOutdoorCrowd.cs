@@ -35,7 +35,7 @@ namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Outdoor crowd entity adding error at {0}: {1} !", Parent.Name, ex.ToString()));
+        Logger.AddError(string.Format("Outdoor crowd entity adding error at {0}: {1} !", Parent.Name, ex));
       }
     }
 

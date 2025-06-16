@@ -4,6 +4,8 @@ using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -35,10 +37,10 @@ namespace Engine.Behaviours.Engines.Controllers
 
     protected void Start()
     {
-      pivot = this.gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      pivot = gameObject.GetComponent<Pivot>();
+      if (pivot == null)
       {
-        Debug.LogError((object) ("Please move " + typeof (NpcStepsController).Name + " to root of prefab and make sure " + typeof (Pivot).Name + " is also at the same level."), (UnityEngine.Object) this.gameObject);
+        Debug.LogError("Please move " + typeof (NpcStepsController).Name + " to root of prefab and make sure " + typeof (Pivot).Name + " is also at the same level.", gameObject);
       }
       else
       {
@@ -50,7 +52,7 @@ namespace Engine.Behaviours.Engines.Controllers
 
     protected void OnDestroy()
     {
-      if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null))
+      if (!(pivot != null))
         return;
       pivot.IndoorChangedEvent -= Pivot_IndoorChangedEvent;
     }
@@ -64,7 +66,7 @@ namespace Engine.Behaviours.Engines.Controllers
     protected void AnimatorEvent(string data)
     {
       string str = data;
-      if (!(str == "Skeleton.Humanoid.Foot_Left") && !(str == "Skeleton.Humanoid.Foot_Right") || !DetectorUtility.CheckDistance(EngineApplication.PlayerPosition, this.transform.position, ExternalSettingsInstance<ExternalCommonSettings>.Instance.StepsDistance))
+      if (!(str == "Skeleton.Humanoid.Foot_Left") && !(str == "Skeleton.Humanoid.Foot_Right") || !DetectorUtility.CheckDistance(EngineApplication.PlayerPosition, transform.position, ExternalSettingsInstance<ExternalCommonSettings>.Instance.StepsDistance))
         return;
       OnStep(data, Indoor);
     }

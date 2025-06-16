@@ -1,4 +1,5 @@
-﻿using Engine.Impl.UI.Controls;
+﻿using UnityEngine;
+using Gradient = Engine.Impl.UI.Controls.Gradient;
 
 public class HUDStamina : MonoBehaviour
 {
@@ -40,7 +41,7 @@ public class HUDStamina : MonoBehaviour
   {
     bool flag1 = Value < (double) MaxValue;
     canvasGroup.alpha = Mathf.MoveTowards(canvasGroup.alpha, flag1 ? 1f : 0.0f, Time.unscaledDeltaTime / (flag1 ? mainFade.x : mainFade.y));
-    if ((double) canvasGroup.alpha > 0.0)
+    if (canvasGroup.alpha > 0.0)
     {
       canvasGroup.gameObject.SetActive(true);
       float x = 1f - MaxValue;
@@ -58,7 +59,7 @@ public class HUDStamina : MonoBehaviour
       if (flag3)
         labelFadingIn = true;
       markerLabel.alpha = Mathf.MoveTowards(markerLabel.alpha, labelFadingIn ? 1f : 0.0f, Time.unscaledDeltaTime / (labelFadingIn ? mainFade.x : mainFade.y));
-      if ((double) markerLabel.alpha == 1.0)
+      if (markerLabel.alpha == 1.0)
         labelFadingIn = false;
       if (Alert)
         SetBlinkPhase(blinkPhase + Time.deltaTime * blinkRate);

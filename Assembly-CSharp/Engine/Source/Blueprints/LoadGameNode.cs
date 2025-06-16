@@ -4,6 +4,7 @@ using Engine.Source.Services.Profiles;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -21,7 +22,7 @@ namespace Engine.Source.Blueprints
       if (ProfilesUtility.IsSaveExist(lastSaveName))
         service.RestartGameWithSave(lastSaveName);
       else
-        Debug.LogError((object) ("Save file name not found : " + lastSaveName));
+        Debug.LogError("Save file name not found : " + lastSaveName);
       output.Call();
     }
   }

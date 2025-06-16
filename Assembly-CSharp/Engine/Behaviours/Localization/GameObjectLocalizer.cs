@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
 
 namespace Engine.Behaviours.Localization
 {
@@ -17,7 +18,7 @@ namespace Engine.Behaviours.Localization
       for (int index = 0; index < languages.Length; ++index)
       {
         LanguageItem language = languages[index];
-        if ((UnityEngine.Object) language.GameObject != (UnityEngine.Object) null)
+        if (language.GameObject != null)
           language.GameObject.SetActive(language.Language == currentLanguage);
       }
     }

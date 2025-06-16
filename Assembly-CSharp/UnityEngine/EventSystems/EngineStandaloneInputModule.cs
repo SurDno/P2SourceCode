@@ -16,12 +16,12 @@ namespace UnityEngine.EventSystems
     public override void ActivateModule()
     {
       base.ActivateModule();
-      GameObject selectedGameObject = this.eventSystem.currentSelectedGameObject;
-      if ((Object) selectedGameObject == (Object) null)
-        selectedGameObject = this.eventSystem.lastSelectedGameObject;
-      if ((Object) selectedGameObject == (Object) null)
-        selectedGameObject = this.eventSystem.firstSelectedGameObject;
-      this.eventSystem.SetSelectedGameObject(selectedGameObject, this.GetBaseEventData());
+      GameObject selectedGameObject = eventSystem.currentSelectedGameObject;
+      if (selectedGameObject == null)
+        selectedGameObject = eventSystem.lastSelectedGameObject;
+      if (selectedGameObject == null)
+        selectedGameObject = eventSystem.firstSelectedGameObject;
+      eventSystem.SetSelectedGameObject(selectedGameObject, GetBaseEventData());
     }
 
     public override void DeactivateModule()
@@ -33,7 +33,7 @@ namespace UnityEngine.EventSystems
     public override void Process()
     {
       bool selectedObject = SendUpdateEventToSelectedObject();
-      if (this.eventSystem.sendNavigationEvents && !selectedObject)
+      if (eventSystem.sendNavigationEvents && !selectedObject)
         SendSubmitEventToSelectedObject();
       ProcessMouseEvent();
       ComputeJoystick();
@@ -41,15 +41,15 @@ namespace UnityEngine.EventSystems
 
     protected bool SendSubmitEventToSelectedObject()
     {
-      return !((Object) this.eventSystem.currentSelectedGameObject == (Object) null) && this.GetBaseEventData().used;
+      return !(eventSystem.currentSelectedGameObject == null) && GetBaseEventData().used;
     }
 
     protected bool SendUpdateEventToSelectedObject()
     {
-      if ((Object) this.eventSystem.currentSelectedGameObject == (Object) null)
+      if (eventSystem.currentSelectedGameObject == null)
         return false;
-      BaseEventData baseEventData = this.GetBaseEventData();
-      ExecuteEvents.Execute<IUpdateSelectedHandler>(this.eventSystem.currentSelectedGameObject, baseEventData, ExecuteEvents.updateSelectedHandler);
+      BaseEventData baseEventData = GetBaseEventData();
+      ExecuteEvents.Execute(eventSystem.currentSelectedGameObject, baseEventData, ExecuteEvents.updateSelectedHandler);
       return baseEventData.used;
     }
 
@@ -71,7 +71,7 @@ namespace UnityEngine.EventSystems
       ProcessDrag(pointerEventData.GetButtonState(PointerEventData.InputButton.Middle).eventData.buttonData);
       if (Mathf.Approximately(eventData.buttonData.scrollDelta.sqrMagnitude, 0.0f))
         return;
-      ExecuteEvents.ExecuteHierarchy<IScrollHandler>(ExecuteEvents.GetEventHandler<IScrollHandler>(eventData.buttonData.pointerCurrentRaycast.gameObject), (BaseEventData) eventData.buttonData, ExecuteEvents.scrollHandler);
+      ExecuteEvents.ExecuteHierarchy(ExecuteEvents.GetEventHandler<IScrollHandler>(eventData.buttonData.pointerCurrentRaycast.gameObject), eventData.buttonData, ExecuteEvents.scrollHandler);
     }
 
     private static bool UseMouse(bool pressed, bool released, PointerEventData pointerData)
@@ -91,12 +91,12 @@ namespace UnityEngine.EventSystems
         buttonData.useDragThreshold = true;
         buttonData.pressPosition = buttonData.position;
         buttonData.pointerPressRaycast = buttonData.pointerCurrentRaycast;
-        DeselectIfSelectionChanged(gameObject1, (BaseEventData) buttonData);
-        GameObject gameObject2 = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(gameObject1, (BaseEventData) buttonData, ExecuteEvents.pointerDownHandler);
-        if ((Object) gameObject2 == (Object) null)
+        DeselectIfSelectionChanged(gameObject1, buttonData);
+        GameObject gameObject2 = ExecuteEvents.ExecuteHierarchy(gameObject1, buttonData, ExecuteEvents.pointerDownHandler);
+        if (gameObject2 == null)
           gameObject2 = ExecuteEvents.GetEventHandler<IPointerClickHandler>(gameObject1);
         float unscaledTime = Time.unscaledTime;
-        if ((Object) gameObject2 == (Object) buttonData.lastPress)
+        if (gameObject2 == buttonData.lastPress)
         {
           if (unscaledTime - buttonData.clickTime < 0.30000001192092896)
             ++buttonData.clickCount;
@@ -110,28 +110,28 @@ namespace UnityEngine.EventSystems
         buttonData.rawPointerPress = gameObject1;
         buttonData.clickTime = unscaledTime;
         buttonData.pointerDrag = ExecuteEvents.GetEventHandler<IDragHandler>(gameObject1);
-        if ((Object) buttonData.pointerDrag != (Object) null)
-          ExecuteEvents.Execute<IInitializePotentialDragHandler>(buttonData.pointerDrag, (BaseEventData) buttonData, ExecuteEvents.initializePotentialDrag);
+        if (buttonData.pointerDrag != null)
+          ExecuteEvents.Execute(buttonData.pointerDrag, buttonData, ExecuteEvents.initializePotentialDrag);
       }
       if (!data.ReleasedThisFrame())
         return;
-      ExecuteEvents.Execute<IPointerUpHandler>(buttonData.pointerPress, (BaseEventData) buttonData, ExecuteEvents.pointerUpHandler);
+      ExecuteEvents.Execute(buttonData.pointerPress, buttonData, ExecuteEvents.pointerUpHandler);
       GameObject eventHandler = ExecuteEvents.GetEventHandler<IPointerClickHandler>(gameObject1);
-      if ((Object) buttonData.pointerPress == (Object) eventHandler && buttonData.eligibleForClick)
-        ExecuteEvents.Execute<IPointerClickHandler>(buttonData.pointerPress, (BaseEventData) buttonData, ExecuteEvents.pointerClickHandler);
-      else if ((Object) buttonData.pointerDrag != (Object) null)
-        ExecuteEvents.ExecuteHierarchy<IDropHandler>(gameObject1, (BaseEventData) buttonData, ExecuteEvents.dropHandler);
+      if (buttonData.pointerPress == eventHandler && buttonData.eligibleForClick)
+        ExecuteEvents.Execute(buttonData.pointerPress, buttonData, ExecuteEvents.pointerClickHandler);
+      else if (buttonData.pointerDrag != null)
+        ExecuteEvents.ExecuteHierarchy(gameObject1, buttonData, ExecuteEvents.dropHandler);
       buttonData.eligibleForClick = false;
-      buttonData.pointerPress = (GameObject) null;
-      buttonData.rawPointerPress = (GameObject) null;
-      if ((Object) buttonData.pointerDrag != (Object) null && buttonData.dragging)
-        ExecuteEvents.Execute<IEndDragHandler>(buttonData.pointerDrag, (BaseEventData) buttonData, ExecuteEvents.endDragHandler);
+      buttonData.pointerPress = null;
+      buttonData.rawPointerPress = null;
+      if (buttonData.pointerDrag != null && buttonData.dragging)
+        ExecuteEvents.Execute(buttonData.pointerDrag, buttonData, ExecuteEvents.endDragHandler);
       buttonData.dragging = false;
-      buttonData.pointerDrag = (GameObject) null;
-      if ((Object) gameObject1 != (Object) buttonData.pointerEnter)
+      buttonData.pointerDrag = null;
+      if (gameObject1 != buttonData.pointerEnter)
       {
-        this.HandlePointerExitAndEnter(buttonData, (GameObject) null);
-        this.HandlePointerExitAndEnter(buttonData, gameObject1);
+        HandlePointerExitAndEnter(buttonData, null);
+        HandlePointerExitAndEnter(buttonData, gameObject1);
       }
     }
 

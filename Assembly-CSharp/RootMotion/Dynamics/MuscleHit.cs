@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   public struct MuscleHit
   {

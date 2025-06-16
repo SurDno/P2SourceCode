@@ -1,5 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Common.Components.AttackerPlayer;
+using UnityEngine;
 
 public class DiseasedEnemy : NPCEnemy
 {
@@ -31,9 +32,9 @@ public class DiseasedEnemy : NPCEnemy
   {
     if (IsDead || IsFaint)
       return;
-    Vector3 vector3 = this.transform.InverseTransformDirection(-enemy.transform.forward);
+    Vector3 vector3 = transform.InverseTransformDirection(-enemy.transform.forward);
     float num = Mathf.Atan2(vector3.x, vector3.z) * 57.29578f;
-    if (!((Object) animator != (Object) null))
+    if (!(animator != null))
       return;
     animator.SetTrigger("Fight.Triggers/Push");
     animator.SetFloat("Fight.PushAngle", num);

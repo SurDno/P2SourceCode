@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -35,7 +36,7 @@ namespace RootMotion.Dynamics
         {
           for (int muscleIndex = 0; muscleIndex < puppet.puppetMaster.muscles.Length; ++muscleIndex)
           {
-            if ((UnityEngine.Object) puppet.puppetMaster.muscles[muscleIndex].joint == (UnityEngine.Object) muscle)
+            if (puppet.puppetMaster.muscles[muscleIndex].joint == muscle)
             {
               puppet.Boost(muscleIndex, immunity, impulseMlp, boostParents, boostChildren);
               break;

@@ -1,12 +1,14 @@
-﻿namespace AmplifyBloom
+﻿using UnityEngine.UI;
+
+namespace AmplifyBloom
 {
   public sealed class DemoUISlider : DemoUIElement
   {
-    public bool SingleStep = false;
+    public bool SingleStep;
     private Slider m_slider;
     private bool m_lastStep;
 
-    private void Start() => m_slider = this.GetComponent<Slider>();
+    private void Start() => m_slider = GetComponent<Slider>();
 
     public override void DoAction(DemoUIElementAction action, params object[] vars)
     {

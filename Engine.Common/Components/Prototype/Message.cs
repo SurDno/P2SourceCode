@@ -3,7 +3,7 @@
   public class Message
   {
     public object Content;
-    public Message.Kind Type;
+    public Kind Type;
 
     public enum Kind
     {

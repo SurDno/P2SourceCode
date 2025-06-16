@@ -1,4 +1,5 @@
 ﻿using Engine.Common;
+using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {
@@ -14,7 +15,7 @@ namespace Engine.Source.Services.CameraServices
 
     public void Update(IEntity target, GameObject gameObjectTarget)
     {
-      if ((Object) gameObjectTarget == (Object) null)
+      if (gameObjectTarget == null)
         return;
       GameCamera.Instance.CameraTransform.position = gameObjectTarget.transform.position;
       GameCamera.Instance.CameraTransform.rotation = gameObjectTarget.transform.rotation;

@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(menuName = "Data/Sound Collection")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(menuName = "Data/Sound Collection")]
 public class SoundCollection : ScriptableObject
 {
   [SerializeField]
@@ -12,7 +14,7 @@ public class SoundCollection : ScriptableObject
     switch (length)
     {
       case 0:
-        return (AudioClip) null;
+        return null;
       case 1:
         clip = clips[0];
         break;

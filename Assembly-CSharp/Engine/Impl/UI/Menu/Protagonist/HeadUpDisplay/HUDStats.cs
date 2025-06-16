@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using Engine.Behaviours.Localization;
 using Engine.Common.Components.Parameters;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
 {
@@ -80,7 +83,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
       for (int index = 0; index < stats.Length; ++index)
       {
         statMap[stats[index].Name] = index;
-        GameObject gameObject1 = UnityEngine.Object.Instantiate<GameObject>(namePrototype.gameObject);
+        GameObject gameObject1 = Instantiate(namePrototype.gameObject);
         gameObject1.name = namePrototype.name + " " + stats[index].Name;
         gameObject1.transform.SetParent(fadedLayer.transform, false);
         nameCanvasGroup[index] = gameObject1.GetComponent<CanvasGroup>();
@@ -88,7 +91,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
         gameObject1.GetComponent<Text>().text = stats[index].Name.ToString();
         gameObject1.GetComponent<Localizer>().Signature = str;
         gameObject1.SetActive(false);
-        GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(barPrototype.gameObject);
+        GameObject gameObject2 = Instantiate(barPrototype.gameObject);
         gameObject2.name = barPrototype.name + " " + stats[index].Name;
         gameObject2.transform.SetParent(fadedLayer.transform, false);
         barCanvasGroup[index] = gameObject2.GetComponent<CanvasGroup>();
@@ -124,13 +127,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
         case Animation.Idle:
           for (int index = 0; index < stats.Length; ++index)
           {
-            if (visibility[index] && (double) Mathf.Abs(bars[index].CurrentValue - stats[index].Value) >= alertedValueChange)
+            if (visibility[index] && Mathf.Abs(bars[index].CurrentValue - stats[index].Value) >= (double) alertedValueChange)
             {
               currentAnimation = Animation.Alert;
               animatedStatIndex = index;
               animationPhase = 0.0f;
-              barCanvasGroup[index].transform.SetParent(this.transform);
-              nameCanvasGroup[index].transform.SetParent(this.transform);
+              barCanvasGroup[index].transform.SetParent(transform);
+              nameCanvasGroup[index].transform.SetParent(transform);
               break;
             }
             bool flag = stats[index].IsReversed ? stats[index].Value > (double) stats[index].VisibilityThreshold : stats[index].Value < (double) stats[index].VisibilityThreshold;
@@ -144,8 +147,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
               nameCanvasGroup[index].alpha = 0.0f;
               barCanvasGroup[index].gameObject.SetActive(true);
               nameCanvasGroup[index].gameObject.SetActive(true);
-              barCanvasGroup[index].transform.SetParent(this.transform);
-              nameCanvasGroup[index].transform.SetParent(this.transform);
+              barCanvasGroup[index].transform.SetParent(transform);
+              nameCanvasGroup[index].transform.SetParent(transform);
               break;
             }
             if (!flag && visibility[index])

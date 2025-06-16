@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Common.Services;
+using UnityEngine;
 
 namespace Engine.Behaviours.Localization
 {
@@ -10,7 +11,7 @@ namespace Engine.Behaviours.Localization
 
     protected override Sprite GetSprite(LanguageEnum language)
     {
-      Sprite sprite1 = (Sprite) null;
+      Sprite sprite1 = null;
       for (int index = 0; index < sprites.Length; ++index)
       {
         LanguageSprite sprite2 = sprites[index];

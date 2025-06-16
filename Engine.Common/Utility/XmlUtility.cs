@@ -1,6 +1,6 @@
-﻿using Cofe.Utility;
-using System.IO;
+﻿using System.IO;
 using System.Xml;
+using Cofe.Utility;
 
 namespace Engine.Common.Utility
 {
@@ -9,7 +9,7 @@ namespace Engine.Common.Utility
     public static XmlDocument CreateDocument()
     {
       XmlDocument document = new XmlDocument();
-      document.AppendChild((XmlNode) document.CreateXmlDeclaration("1.0", "UTF-8", (string) null));
+      document.AppendChild(document.CreateXmlDeclaration("1.0", "UTF-8", null));
       return document;
     }
 
@@ -29,21 +29,21 @@ namespace Engine.Common.Utility
     public static XmlElement CreateNode(this XmlDocument doc, string name)
     {
       XmlElement element = doc.CreateElement(name);
-      doc.AppendChild((XmlNode) element);
+      doc.AppendChild(element);
       return element;
     }
 
     public static XmlElement CreateNode(this XmlElement node, string name)
     {
       XmlElement element = node.OwnerDocument.CreateElement(name);
-      node.AppendChild((XmlNode) element);
+      node.AppendChild(element);
       return element;
     }
 
     public static XmlElement CreateNode(this XmlElement node, string name, string value)
     {
       XmlElement element = node.OwnerDocument.CreateElement(name);
-      node.AppendChild((XmlNode) element);
+      node.AppendChild(element);
       if (!value.IsNullOrEmpty())
         element.InnerText = value;
       return element;

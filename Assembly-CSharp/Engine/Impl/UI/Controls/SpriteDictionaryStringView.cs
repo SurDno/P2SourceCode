@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SpriteDictionaryStringView : StringView
   {
@@ -13,9 +15,9 @@
 
     protected override void ApplyStringValue()
     {
-      if (dictionary == null || (Object) view == (Object) null)
+      if (dictionary == null || view == null)
         return;
-      Sprite sprite = (Sprite) null;
+      Sprite sprite = null;
       foreach (StringSpritePair stringSpritePair in dictionary)
       {
         if (stringSpritePair.Key == StringValue)

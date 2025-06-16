@@ -4,6 +4,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services.Detectablies;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -36,7 +37,7 @@ namespace Engine.Source.Services
       ILocationItemComponent component = detectable.GetComponent<ILocationItemComponent>();
       if (component == null)
       {
-        Debug.LogError((object) ("ILocationItemComponent not found in " + detectable.Owner.GetInfo()));
+        Debug.LogError("ILocationItemComponent not found in " + detectable.Owner.GetInfo());
       }
       else
       {

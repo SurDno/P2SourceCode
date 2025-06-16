@@ -8,7 +8,7 @@
 
     public override bool active => model.enabled && !context.interrupted;
 
-    public override void OnDisable() => noiseTextures = (Texture2D[]) null;
+    public override void OnDisable() => noiseTextures = null;
 
     private void LoadNoiseTextures()
     {
@@ -27,7 +27,7 @@
         LoadNoiseTextures();
       Texture2D noiseTexture = noiseTextures[textureIndex];
       uberMaterial.EnableKeyword("DITHERING");
-      uberMaterial.SetTexture(Uniforms._DitheringTex, (Texture) noiseTexture);
+      uberMaterial.SetTexture(Uniforms._DitheringTex, noiseTexture);
       uberMaterial.SetVector(Uniforms._DitheringCoords, new Vector4(context.width / (float) noiseTexture.width, context.height / (float) noiseTexture.height, z, w));
     }
 

@@ -1,4 +1,6 @@
-﻿namespace Cinemachine
+﻿using UnityEngine;
+
+namespace Cinemachine
 {
   [DocumentationSorting(23f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -11,7 +13,7 @@
     [Tooltip("The Horizontal axis.  Value is -180..180.  Controls the horizontal orientation")]
     public AxisState m_HorizontalAxis = new AxisState(300f, 0.1f, 0.1f, 0.0f, "Mouse X", false);
 
-    public override bool IsValid => this.enabled;
+    public override bool IsValid => enabled;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 

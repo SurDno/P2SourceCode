@@ -2,6 +2,7 @@
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components.Crowds
 {
@@ -37,7 +38,7 @@ namespace Engine.Source.Components.Crowds
     public void OnCreateEntity(AreaEnum area)
     {
       if (!CanCreateEntity(area))
-        Debug.LogError((object) "Error crowd entity count, context : Outdoor");
+        Debug.LogError("Error crowd entity count, context : Outdoor");
       if (IsLimit(area))
         ++limitEntityCount;
       else

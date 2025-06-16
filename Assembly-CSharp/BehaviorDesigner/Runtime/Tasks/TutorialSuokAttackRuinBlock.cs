@@ -5,6 +5,8 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -30,16 +32,16 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) owner.gameObject == (UnityEngine.Object) null || !owner.gameObject.activeSelf || (UnityEngine.Object) owner?.Enemy == (UnityEngine.Object) null || owner.IsReacting)
+      if (owner.gameObject == null || !owner.gameObject.activeSelf || owner?.Enemy == null || owner.IsReacting)
         return TaskStatus.Failure;
-      if ((double) Time.time < nextAttackTime || (double) (owner.Enemy.transform.position - owner.transform.position).magnitude >= 2.0 || !(owner.Enemy is PlayerEnemy))
+      if (Time.time < (double) nextAttackTime || (owner.Enemy.transform.position - owner.transform.position).magnitude >= 2.0 || !(owner.Enemy is PlayerEnemy))
         return TaskStatus.Running;
       PlayerEnemy enemy = (PlayerEnemy) owner.Enemy;
       if (owner.IsPushing || owner.IsReacting || owner.IsAttacking)
         return TaskStatus.Running;
-      nextAttackTime = Time.time + UnityEngine.Random.Range(4f, 6f);
+      nextAttackTime = Time.time + Random.Range(4f, 6f);
       owner.TriggerAction(WeaponActionEnum.Uppercut);
-      owner.RotationTarget = (Transform) null;
+      owner.RotationTarget = null;
       owner.RotateByPath = false;
       return TaskStatus.Running;
     }

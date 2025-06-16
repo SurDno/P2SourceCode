@@ -7,6 +7,7 @@ using Engine.Source.Settings;
 using Engine.Source.Settings.External;
 using InputServices;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {
@@ -26,12 +27,12 @@ namespace Engine.Source.Services.CameraServices
       simulation = ServiceLocator.GetService<Simulation>();
       currentPosition = Vector3.zero;
       currentVelocity = Vector3.zero;
-      Update(null, (GameObject) null);
+      Update(null, null);
     }
 
     public void Shutdown()
     {
-      Update(null, (GameObject) null);
+      Update(null, null);
       simulation = null;
     }
 
@@ -41,17 +42,17 @@ namespace Engine.Source.Services.CameraServices
       if (this.player == null)
         return;
       IEntityView player = (IEntityView) this.player;
-      if ((Object) player.GameObject == (Object) null)
+      if (player.GameObject == null)
         return;
       InputGameSetting instance = InstanceByRequest<InputGameSetting>.Instance;
       PivotPlayer component = player.GameObject.GetComponent<PivotPlayer>();
-      if ((Object) component != (Object) null)
+      if (component != null)
       {
         Transform transform = player.GameObject.transform;
         if (ExternalSettingsInstance<ExternalInputSettings>.Instance.SmoothMove)
         {
           Vector3 position = transform.position;
-          if ((double) (position - currentPosition).magnitude > 1.0)
+          if ((position - currentPosition).magnitude > 1.0)
           {
             currentPosition = position;
             currentVelocity = Vector3.zero;

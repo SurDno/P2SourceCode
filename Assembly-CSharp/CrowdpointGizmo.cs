@@ -1,3 +1,5 @@
-﻿public class CrowdpointGizmo : MonoBehaviour
+﻿using UnityEngine;
+
+public class CrowdpointGizmo : MonoBehaviour
 {
 }

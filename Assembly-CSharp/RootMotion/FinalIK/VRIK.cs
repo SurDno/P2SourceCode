@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -14,13 +15,13 @@ namespace RootMotion.FinalIK
     [ContextMenu("User Manual")]
     protected override void OpenUserManual()
     {
-      Debug.Log((object) "Sorry, VRIK User Manual is not finished yet.");
+      Debug.Log("Sorry, VRIK User Manual is not finished yet.");
     }
 
     [ContextMenu("Scrpt Reference")]
     protected override void OpenScriptReference()
     {
-      Debug.Log((object) "Sorry, VRIK Script reference is not finished yet.");
+      Debug.Log("Sorry, VRIK Script reference is not finished yet.");
     }
 
     [ContextMenu("TUTORIAL VIDEO (STEAMVR SETUP)")]
@@ -32,7 +33,7 @@ namespace RootMotion.FinalIK
     [ContextMenu("Auto-detect References")]
     public void AutoDetectReferences()
     {
-      References.AutoDetectReferences(this.transform, out references);
+      References.AutoDetectReferences(transform, out references);
     }
 
     [ContextMenu("Guess Hand Orientations")]
@@ -111,7 +112,7 @@ namespace RootMotion.FinalIK
       {
         get
         {
-          return !((UnityEngine.Object) root == (UnityEngine.Object) null) && !((UnityEngine.Object) pelvis == (UnityEngine.Object) null) && !((UnityEngine.Object) spine == (UnityEngine.Object) null) && !((UnityEngine.Object) head == (UnityEngine.Object) null) && !((UnityEngine.Object) leftUpperArm == (UnityEngine.Object) null) && !((UnityEngine.Object) leftForearm == (UnityEngine.Object) null) && !((UnityEngine.Object) leftHand == (UnityEngine.Object) null) && !((UnityEngine.Object) rightUpperArm == (UnityEngine.Object) null) && !((UnityEngine.Object) rightForearm == (UnityEngine.Object) null) && !((UnityEngine.Object) rightHand == (UnityEngine.Object) null) && !((UnityEngine.Object) leftThigh == (UnityEngine.Object) null) && !((UnityEngine.Object) leftCalf == (UnityEngine.Object) null) && !((UnityEngine.Object) leftFoot == (UnityEngine.Object) null) && !((UnityEngine.Object) rightThigh == (UnityEngine.Object) null) && !((UnityEngine.Object) rightCalf == (UnityEngine.Object) null) && !((UnityEngine.Object) rightFoot == (UnityEngine.Object) null);
+          return !(root == null) && !(pelvis == null) && !(spine == null) && !(head == null) && !(leftUpperArm == null) && !(leftForearm == null) && !(leftHand == null) && !(rightUpperArm == null) && !(rightForearm == null) && !(rightHand == null) && !(leftThigh == null) && !(leftCalf == null) && !(leftFoot == null) && !(rightThigh == null) && !(rightCalf == null) && !(rightFoot == null);
         }
       }
 
@@ -119,7 +120,7 @@ namespace RootMotion.FinalIK
       {
         get
         {
-          return !((UnityEngine.Object) root != (UnityEngine.Object) null) && !((UnityEngine.Object) pelvis != (UnityEngine.Object) null) && !((UnityEngine.Object) spine != (UnityEngine.Object) null) && !((UnityEngine.Object) chest != (UnityEngine.Object) null) && !((UnityEngine.Object) neck != (UnityEngine.Object) null) && !((UnityEngine.Object) head != (UnityEngine.Object) null) && !((UnityEngine.Object) leftShoulder != (UnityEngine.Object) null) && !((UnityEngine.Object) leftUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) leftForearm != (UnityEngine.Object) null) && !((UnityEngine.Object) leftHand != (UnityEngine.Object) null) && !((UnityEngine.Object) rightShoulder != (UnityEngine.Object) null) && !((UnityEngine.Object) rightUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) rightForearm != (UnityEngine.Object) null) && !((UnityEngine.Object) rightHand != (UnityEngine.Object) null) && !((UnityEngine.Object) leftThigh != (UnityEngine.Object) null) && !((UnityEngine.Object) leftCalf != (UnityEngine.Object) null) && !((UnityEngine.Object) leftFoot != (UnityEngine.Object) null) && !((UnityEngine.Object) leftToes != (UnityEngine.Object) null) && !((UnityEngine.Object) rightThigh != (UnityEngine.Object) null) && !((UnityEngine.Object) rightCalf != (UnityEngine.Object) null) && !((UnityEngine.Object) rightFoot != (UnityEngine.Object) null) && !((UnityEngine.Object) rightToes != (UnityEngine.Object) null);
+          return !(root != null) && !(pelvis != null) && !(spine != null) && !(chest != null) && !(neck != null) && !(head != null) && !(leftShoulder != null) && !(leftUpperArm != null) && !(leftForearm != null) && !(leftHand != null) && !(rightShoulder != null) && !(rightUpperArm != null) && !(rightForearm != null) && !(rightHand != null) && !(leftThigh != null) && !(leftCalf != null) && !(leftFoot != null) && !(leftToes != null) && !(rightThigh != null) && !(rightCalf != null) && !(rightFoot != null) && !(rightToes != null);
         }
       }
 
@@ -127,9 +128,9 @@ namespace RootMotion.FinalIK
       {
         references = new References();
         Animator componentInChildren = root.GetComponentInChildren<Animator>();
-        if ((UnityEngine.Object) componentInChildren == (UnityEngine.Object) null || !componentInChildren.isHuman)
+        if (componentInChildren == null || !componentInChildren.isHuman)
         {
-          Debug.LogWarning((object) "VRIK needs a Humanoid Animator to auto-detect biped references. Please assign references manually.");
+          Debug.LogWarning("VRIK needs a Humanoid Animator to auto-detect biped references. Please assign references manually.");
           return false;
         }
         references.root = root;

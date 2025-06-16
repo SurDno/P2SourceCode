@@ -2,6 +2,7 @@
 using System.Globalization;
 using Cofe.Meta;
 using Cofe.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -29,7 +30,7 @@ namespace Engine.Source.Services.Consoles.Binds
       SRDebug.Instance.HideDebugPanel();
       string fileName = DateTime.Now.ToString(CultureInfo.InvariantCulture) + ".png";
       fileName = fileName.Replace("/", "_").Replace(":", "_");
-      CoroutineService.Instance.WaitFrame(() => ScreenCapture.CaptureScreenshot(fileName, superSize));
+      CoroutineService.Instance.WaitFrame((Action) (() => ScreenCapture.CaptureScreenshot(fileName, superSize)));
       return command + " " + fileName;
     }
   }

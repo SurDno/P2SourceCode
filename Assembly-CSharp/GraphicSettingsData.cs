@@ -1,4 +1,6 @@
-﻿public class GraphicSettingsData : ScriptableObjectInstance<GraphicSettingsData>
+﻿using UnityEngine;
+
+public class GraphicSettingsData : ScriptableObjectInstance<GraphicSettingsData>
 {
   [Space]
   [SerializeField]

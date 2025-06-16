@@ -1,4 +1,6 @@
-﻿public class PlagueCloud : MonoBehaviour
+﻿using UnityEngine;
+
+public class PlagueCloud : MonoBehaviour
 {
   [Header("Settings")]
   public PlagueCloudParticlesSettings InvisibleSettings;
@@ -29,21 +31,21 @@
 
   private void Update()
   {
-    if (Movement == MovementType.Custom || Movement == MovementType.TowardTransform && (Object) TargetTransform == (Object) null)
+    if (Movement == MovementType.Custom || Movement == MovementType.TowardTransform && TargetTransform == null)
       return;
-    Vector3 position = this.transform.position;
+    Vector3 position = transform.position;
     Vector3 vector3 = Movement == MovementType.TowardTransform ? TargetTransform.position : TargetPosition;
     Vector3 a = Vector3.MoveTowards(position, vector3, MovementSpeed * Time.deltaTime);
-    this.transform.position = a;
-    if ((double) Vector3.Distance(a, vector3) <= 0.5)
+    transform.position = a;
+    if (Vector3.Distance(a, vector3) <= 0.5)
       return;
-    this.transform.LookAt(vector3);
+    transform.LookAt(vector3);
   }
 
   private void UpdateState()
   {
     if (particles == null)
-      particles = this.GetComponentsInChildren<PlagueCloudParticles>();
+      particles = GetComponentsInChildren<PlagueCloudParticles>();
     for (int index = 0; index < particles.Length; ++index)
     {
       switch (visibility)

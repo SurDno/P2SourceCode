@@ -4,6 +4,8 @@ using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
 using Engine.Source.Services;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BoundCharactersStateChangeView : MonoBehaviour
 {
@@ -19,7 +21,7 @@ public class BoundCharactersStateChangeView : MonoBehaviour
 
   public event Action FinishedEvent;
 
-  private void Awake() => skipButton.onClick.AddListener(new UnityAction(Skip));
+  private void Awake() => skipButton.onClick.AddListener(Skip);
 
   public void Show()
   {
@@ -48,7 +50,7 @@ public class BoundCharactersStateChangeView : MonoBehaviour
     {
       BoundCharacterComponent character = characters[0];
       characters.RemoveAt(0);
-      characterView = UnityEngine.Object.Instantiate<BoundCharacterStateChangeView>(characterViewPrefab, this.transform, false);
+      characterView = Instantiate(characterViewPrefab, transform, false);
       if (onCurrentCharacterEndAction == null)
         onCurrentCharacterEndAction = OnCurrentCharacterEnd;
       characterView.FinishEvent += onCurrentCharacterEndAction;
@@ -61,7 +63,7 @@ public class BoundCharactersStateChangeView : MonoBehaviour
 
   private void OnCurrentCharacterEnd()
   {
-    UnityEngine.Object.Destroy((UnityEngine.Object) characterView.gameObject);
+    Destroy(characterView.gameObject);
     characterView = null;
     TryNextCharacter();
   }
@@ -73,7 +75,7 @@ public class BoundCharactersStateChangeView : MonoBehaviour
     for (int index = 0; index < characters.Count; ++index)
       characters[index].PreRollStateStored = false;
     characters.Clear();
-    if (!((UnityEngine.Object) characterView != (UnityEngine.Object) null))
+    if (!(characterView != null))
       return;
     characterView.Finish();
   }

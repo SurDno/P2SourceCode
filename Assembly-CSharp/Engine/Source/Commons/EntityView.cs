@@ -1,5 +1,6 @@
 ﻿using System;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -28,7 +29,7 @@ namespace Engine.Source.Commons
         }
         catch (Exception ex)
         {
-          Debug.LogError((object) ("Error invoke listener, target : " + invocation.Target.GetInfo() + " , owner : " + this.GetInfo() + " , ex : " + ex));
+          Debug.LogError("Error invoke listener, target : " + invocation.Target.GetInfo() + " , owner : " + this.GetInfo() + " , ex : " + ex);
         }
       }
     }

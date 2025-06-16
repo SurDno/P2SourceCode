@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BasePoseSaver : MonoBehaviour
 {
@@ -6,11 +7,11 @@ public class BasePoseSaver : MonoBehaviour
 
   public void CommitBones()
   {
-    Transform[] componentsInChildren = this.gameObject.GetComponentsInChildren<Transform>();
+    Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
     List<BonePose> bonePoseList = new List<BonePose>();
     foreach (Transform bx in componentsInChildren)
     {
-      if ((Object) bx != (Object) this.transform)
+      if (bx != transform)
       {
         BonePose bonePose = new BonePose();
         bonePose.InitializeBone(bx);

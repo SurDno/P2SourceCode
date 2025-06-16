@@ -1,4 +1,8 @@
-﻿namespace SRDebugger.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace SRDebugger.UI.Controls
 {
   public class MultiTapButton : Button
   {
@@ -9,7 +13,7 @@
 
     public override void OnPointerClick(PointerEventData eventData)
     {
-      if ((double) Time.unscaledTime - _lastTap > ResetTime)
+      if (Time.unscaledTime - (double) _lastTap > ResetTime)
         _tapCount = 0;
       _lastTap = Time.unscaledTime;
       ++_tapCount;

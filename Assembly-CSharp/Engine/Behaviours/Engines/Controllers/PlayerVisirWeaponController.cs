@@ -7,6 +7,7 @@ using Engine.Common.Components.AttackerPlayer;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
+using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -64,9 +65,9 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       this.entity = entity;
       pivot = gameObject.GetComponent<PivotPlayer>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        Debug.LogErrorFormat("{0} has no {1} unity component", (object) gameObject.name, (object) typeof (PivotPlayer).Name);
+        Debug.LogErrorFormat("{0} has no {1} unity component", gameObject.name, typeof (PivotPlayer).Name);
       }
       else
       {
@@ -76,7 +77,7 @@ namespace Engine.Behaviours.Engines.Controllers
         detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
         if (detectable != null)
           return;
-        Debug.LogWarningFormat("{0} doesn't have {1} engine component", (object) gameObject.name, (object) typeof (IDetectableComponent).Name);
+        Debug.LogWarningFormat("{0} doesn't have {1} engine component", gameObject.name, typeof (IDetectableComponent).Name);
       }
     }
 

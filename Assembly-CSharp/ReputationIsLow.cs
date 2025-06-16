@@ -12,6 +12,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [TaskDescription("Player reputation is low")]
 [TaskCategory("Pathologic")]
@@ -33,14 +34,14 @@ public class ReputationIsLow : Conditional, IStub, ISerializeDataWrite, ISeriali
     entity = EntityUtility.GetEntity(gameObject);
     if (entity == null)
     {
-      Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+      Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
     }
     else
     {
       navigation = entity.GetComponent<NavigationComponent>();
       if (navigation != null)
         return;
-      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", (object) gameObject.name, (object) typeof (INavigationComponent).Name);
+      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", gameObject.name, typeof (INavigationComponent).Name);
     }
   }
 

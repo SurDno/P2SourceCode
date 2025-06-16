@@ -5,6 +5,8 @@ using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Connections;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -58,13 +60,13 @@ namespace Scripts.Tools.Serializations.Converters
       return child == null ? new Typed<T>() : new Typed<T>(DefaultDataReadUtility.Read(child, "Id", value.Id));
     }
 
-    public static UnitySubAsset<T> Read<T>(IDataReader reader, string name, UnitySubAsset<T> value) where T : UnityEngine.Object
+    public static UnitySubAsset<T> Read<T>(IDataReader reader, string name, UnitySubAsset<T> value) where T : Object
     {
       IDataReader child = reader.GetChild(name);
       return child == null ? new UnitySubAsset<T>() : new UnitySubAsset<T>(DefaultDataReadUtility.Read(child, "Id", value.Id), DefaultDataReadUtility.Read(child, "Name", value.Name));
     }
 
-    public static UnityAsset<T> Read<T>(IDataReader reader, string name, UnityAsset<T> value) where T : UnityEngine.Object
+    public static UnityAsset<T> Read<T>(IDataReader reader, string name, UnityAsset<T> value) where T : Object
     {
       IDataReader child = reader.GetChild(name);
       return child == null ? new UnityAsset<T>() : new UnityAsset<T>(DefaultDataReadUtility.Read(child, "Id", value.Id));
@@ -116,7 +118,7 @@ namespace Scripts.Tools.Serializations.Converters
       IDataReader reader,
       string name,
       List<UnitySubAsset<T>> value)
-      where T : UnityEngine.Object
+      where T : Object
     {
       value.Clear();
       foreach (IDataReader child in reader.GetChild(name).GetChilds())
@@ -132,7 +134,7 @@ namespace Scripts.Tools.Serializations.Converters
       IDataReader reader,
       string name,
       List<UnityAsset<T>> value)
-      where T : UnityEngine.Object
+      where T : Object
     {
       value.Clear();
       foreach (IDataReader child in reader.GetChild(name).GetChilds())

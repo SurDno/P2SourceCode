@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cofe.Utility;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles
 {
@@ -46,7 +47,7 @@ namespace Engine.Source.Services.Consoles
     public static void RegisterCommand(string name, Func<string, ConsoleParameter[], string> func)
     {
       if (commands.ContainsKey(name))
-        Debug.LogError((object) ("Command exist : " + name));
+        Debug.LogError("Command exist : " + name);
       else
         commands.Add(name, func);
     }

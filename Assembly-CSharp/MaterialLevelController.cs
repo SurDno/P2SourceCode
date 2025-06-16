@@ -1,9 +1,11 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+
+[ExecuteInEditMode]
 public class MaterialLevelController : MonoBehaviour
 {
   private static MaterialPropertyBlock propertyBlock;
   [Range(0.0f, 1f)]
-  public float Level = 0.0f;
+  public float Level;
 
   private void OnEnable() => UpdateMaterial();
 
@@ -11,8 +13,8 @@ public class MaterialLevelController : MonoBehaviour
 
   private void UpdateMaterial()
   {
-    Renderer component = this.GetComponent<Renderer>();
-    if ((Object) component == (Object) null)
+    Renderer component = GetComponent<Renderer>();
+    if (component == null)
       return;
     if (Level > 0.0)
     {

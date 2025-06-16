@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -10,14 +11,14 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.SkipAnimation();
     }
 
     protected override void ApplyStringValue()
     {
-      if ((Object) view == (Object) null)
+      if (view == null)
         return;
       if (Application.isPlaying)
       {

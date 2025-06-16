@@ -1,4 +1,6 @@
-﻿namespace FirstPersonController
+﻿using UnityEngine;
+
+namespace FirstPersonController
 {
   [RequireComponent(typeof (CharacterController))]
   public class FirstPersonController : MonoBehaviour
@@ -47,7 +49,7 @@
 
     private void Start()
     {
-      m_CharacterController = this.GetComponent<CharacterController>();
+      m_CharacterController = GetComponent<CharacterController>();
       m_Camera = Camera.main;
       m_OriginalCameraPosition = m_Camera.transform.localPosition;
       m_FovKick.Setup(m_Camera);
@@ -55,7 +57,7 @@
       m_StepCycle = 0.0f;
       m_NextStep = m_StepCycle / 2f;
       m_Jumping = false;
-      m_MouseLook.Init(this.transform, m_Camera.transform);
+      m_MouseLook.Init(transform, m_Camera.transform);
     }
 
     private void Update()
@@ -65,7 +67,7 @@
         m_Jump = Input.GetKeyDown(KeyCode.Space);
       if (!m_PreviouslyGrounded && m_CharacterController.isGrounded)
       {
-        this.StartCoroutine(m_JumpBob.DoBobCycle());
+        StartCoroutine(m_JumpBob.DoBobCycle());
         m_MoveDir.y = 0.0f;
         m_Jumping = false;
       }
@@ -78,9 +80,9 @@
     {
       float speed;
       GetInput(out speed);
-      Vector3 vector = this.transform.forward * m_Input.y + this.transform.right * m_Input.x;
+      Vector3 vector = transform.forward * m_Input.y + transform.right * m_Input.x;
       RaycastHit hitInfo;
-      Physics.SphereCast(this.transform.position, m_CharacterController.radius, Vector3.down, out hitInfo, m_CharacterController.height / 2f, -1, QueryTriggerInteraction.Ignore);
+      Physics.SphereCast(transform.position, m_CharacterController.radius, Vector3.down, out hitInfo, m_CharacterController.height / 2f, -1, QueryTriggerInteraction.Ignore);
       Vector3 normalized = Vector3.ProjectOnPlane(vector, hitInfo.normal).normalized;
       m_MoveDir.x = normalized.x * speed;
       m_MoveDir.z = normalized.z * speed;
@@ -104,7 +106,7 @@
 
     private void ProgressStepCycle(float speed)
     {
-      if ((double) m_CharacterController.velocity.sqrMagnitude > 0.0 && ((double) m_Input.x != 0.0 || (double) m_Input.y != 0.0))
+      if (m_CharacterController.velocity.sqrMagnitude > 0.0 && (m_Input.x != 0.0 || m_Input.y != 0.0))
         m_StepCycle += (m_CharacterController.velocity.magnitude + speed * (m_IsWalking ? 1f : m_RunstepLenghten)) * Time.fixedDeltaTime;
       if (m_StepCycle <= (double) m_NextStep)
         return;
@@ -116,7 +118,7 @@
       if (!m_UseHeadBob)
         return;
       Vector3 localPosition;
-      if ((double) m_CharacterController.velocity.magnitude > 0.0 && m_CharacterController.isGrounded)
+      if (m_CharacterController.velocity.magnitude > 0.0 && m_CharacterController.isGrounded)
       {
         m_Camera.transform.localPosition = m_HeadBob.DoHeadBob(m_CharacterController.velocity.magnitude + speed * (m_IsWalking ? 1f : m_RunstepLenghten));
         localPosition = m_Camera.transform.localPosition with
@@ -148,23 +150,23 @@
       m_IsWalking = !Input.GetKey(KeyCode.LeftShift);
       speed = m_IsWalking ? m_WalkSpeed : m_RunSpeed;
       m_Input = new Vector2(x, y);
-      if ((double) m_Input.sqrMagnitude > 1.0)
+      if (m_Input.sqrMagnitude > 1.0)
         m_Input.Normalize();
-      if (m_IsWalking == isWalking || !m_UseFovKick || (double) m_CharacterController.velocity.sqrMagnitude <= 0.0)
+      if (m_IsWalking == isWalking || !m_UseFovKick || m_CharacterController.velocity.sqrMagnitude <= 0.0)
         return;
-      this.StopAllCoroutines();
-      this.StartCoroutine(!m_IsWalking ? m_FovKick.FOVKickUp() : m_FovKick.FOVKickDown());
+      StopAllCoroutines();
+      StartCoroutine(!m_IsWalking ? m_FovKick.FOVKickUp() : m_FovKick.FOVKickDown());
     }
 
     private void RotateView()
     {
-      m_MouseLook.LookRotation(this.transform, m_Camera.transform);
+      m_MouseLook.LookRotation(transform, m_Camera.transform);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
       Rigidbody attachedRigidbody = hit.collider.attachedRigidbody;
-      if (m_CollisionFlags == CollisionFlags.Below || (Object) attachedRigidbody == (Object) null || attachedRigidbody.isKinematic)
+      if (m_CollisionFlags == CollisionFlags.Below || attachedRigidbody == null || attachedRigidbody.isKinematic)
         return;
       attachedRigidbody.AddForceAtPosition(m_CharacterController.velocity * 0.1f, hit.point, ForceMode.Impulse);
     }

@@ -28,7 +28,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
       DefaultDataWriteUtility.Write(writer, "Instant", instant);
       DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteUnityArray<ExternalBehaviorTree>(writer, "ExternalBehaviors", externalBehaviors);
+      BehaviorTreeDataWriteUtility.WriteUnityArray(writer, "ExternalBehaviors", externalBehaviors);
       BehaviorTreeDataWriteUtility.WriteSharedArray(writer, "Variables", variables);
       DefaultDataWriteUtility.Write(writer, "Collapsed", collapsed);
     }
@@ -40,7 +40,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
       instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
       disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      externalBehaviors = BehaviorTreeDataReadUtility.ReadUnityArray<ExternalBehaviorTree>(reader, "ExternalBehaviors", externalBehaviors);
+      externalBehaviors = BehaviorTreeDataReadUtility.ReadUnityArray(reader, "ExternalBehaviors", externalBehaviors);
       variables = BehaviorTreeDataReadUtility.ReadSharedArray(reader, "Variables", variables);
       collapsed = DefaultDataReadUtility.Read(reader, "Collapsed", collapsed);
     }

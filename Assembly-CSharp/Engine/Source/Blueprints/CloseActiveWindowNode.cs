@@ -21,7 +21,7 @@ namespace Engine.Source.Blueprints
     private IEnumerator Route(FlowOutput output)
     {
       UIService uiService = ServiceLocator.GetService<UIService>();
-      while ((Object) uiService.Active != (Object) null && !(uiService.Active is IHudWindow) && !(uiService.Active is IDialogWindow))
+      while (uiService.Active != null && !(uiService.Active is IHudWindow) && !(uiService.Active is IDialogWindow))
       {
         uiService.Pop();
         while (uiService.IsTransition)

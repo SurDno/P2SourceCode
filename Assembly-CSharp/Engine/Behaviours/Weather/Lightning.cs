@@ -1,4 +1,7 @@
-﻿namespace Engine.Behaviours.Weather
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+namespace Engine.Behaviours.Weather
 {
   [RequireComponent(typeof (Animator))]
   [RequireComponent(typeof (AudioSource))]
@@ -279,24 +282,24 @@
 
     public void Start()
     {
-      animator = this.gameObject.GetComponent<Animator>();
-      if ((Object) animator == (Object) null)
+      animator = gameObject.GetComponent<Animator>();
+      if (animator == null)
         throw null;
-      light = this.gameObject.GetComponent<Light>();
-      if ((Object) light == (Object) null)
+      light = gameObject.GetComponent<Light>();
+      if (light == null)
         throw null;
-      audioSource = this.gameObject.GetComponent<AudioSource>();
-      if ((Object) audioSource == (Object) null)
+      audioSource = gameObject.GetComponent<AudioSource>();
+      if (audioSource == null)
         throw null;
       UnityEngine.Camera main = UnityEngine.Camera.main;
-      if ((Object) main == (Object) null)
+      if (main == null)
         throw null;
-      distance = (main.transform.position - this.transform.position).magnitude;
+      distance = (main.transform.position - transform.position).magnitude;
       float delay = distance / 331f;
       audioSource.clip = audios[Random.Range(0, audios.Length)];
       audioSource.PlayDelayed(delay);
       flashType = Random.Range(0, lightningFlash.GetLength(0));
-      this.gameObject.name = "Lightning_" + index;
+      gameObject.name = "Lightning_" + index;
       ++index;
     }
 
@@ -304,8 +307,8 @@
     {
       if (isEnded)
       {
-        this.gameObject.SetActive(false);
-        Object.Destroy((Object) this.gameObject);
+        gameObject.SetActive(false);
+        Destroy(gameObject);
       }
       else
       {
@@ -323,9 +326,9 @@
           isEnded = true;
         elapsed += Time.deltaTime;
         UnityEngine.Camera main = UnityEngine.Camera.main;
-        if ((Object) main == (Object) null)
+        if (main == null)
           return;
-        this.gameObject.transform.LookAt(this.gameObject.transform.position + main.transform.rotation * Vector3.back, main.transform.rotation * Vector3.up);
+        gameObject.transform.LookAt(gameObject.transform.position + main.transform.rotation * Vector3.back, main.transform.rotation * Vector3.up);
       }
     }
   }

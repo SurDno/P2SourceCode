@@ -1,5 +1,7 @@
 ﻿using System;
 using SRF;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRDebugger.UI.Profiler
 {
@@ -12,7 +14,7 @@ namespace SRDebugger.UI.Profiler
 
     private void Update()
     {
-      if ((double) Time.realtimeSinceStartup <= nextUpdate)
+      if (Time.realtimeSinceStartup <= (double) nextUpdate)
         return;
       Refresh();
     }

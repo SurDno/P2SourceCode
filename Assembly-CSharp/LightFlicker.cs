@@ -1,4 +1,6 @@
-﻿public class LightFlicker : MonoBehaviour
+﻿using UnityEngine;
+
+public class LightFlicker : MonoBehaviour
 {
   private float baseIntensity;
   public bool flicker = true;
@@ -7,7 +9,7 @@
 
   private void Awake()
   {
-    lightComp = this.gameObject.GetComponent<Light>();
+    lightComp = gameObject.GetComponent<Light>();
     baseIntensity = lightComp.intensity;
   }
 

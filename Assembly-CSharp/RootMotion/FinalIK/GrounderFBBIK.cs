@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -43,7 +44,7 @@ namespace RootMotion.FinalIK
 
     private bool IsReadyToInitiate()
     {
-      return !((UnityEngine.Object) ik == (UnityEngine.Object) null) && ik.solver.initiated;
+      return !(ik == null) && ik.solver.initiated;
     }
 
     private void Update()
@@ -77,7 +78,7 @@ namespace RootMotion.FinalIK
       if (!firstSolve)
         return;
       firstSolve = false;
-      if (!this.enabled || weight <= 0.0)
+      if (!enabled || weight <= 0.0)
         return;
       if (OnPreGrounder != null)
         OnPreGrounder();
@@ -106,18 +107,18 @@ namespace RootMotion.FinalIK
 
     private void OnDrawGizmosSelected()
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
-        ik = this.GetComponent<FullBodyBipedIK>();
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
-        ik = this.GetComponentInParent<FullBodyBipedIK>();
-      if (!((UnityEngine.Object) ik == (UnityEngine.Object) null))
+      if (ik == null)
+        ik = GetComponent<FullBodyBipedIK>();
+      if (ik == null)
+        ik = GetComponentInParent<FullBodyBipedIK>();
+      if (!(ik == null))
         return;
-      ik = this.GetComponentInChildren<FullBodyBipedIK>();
+      ik = GetComponentInChildren<FullBodyBipedIK>();
     }
 
     private void OnDestroy()
     {
-      if (!initiated || !((UnityEngine.Object) ik != (UnityEngine.Object) null))
+      if (!initiated || !(ik != null))
         return;
       IKSolverFullBodyBiped solver = ik.solver;
       solver.OnPreUpdate = solver.OnPreUpdate - OnSolverUpdate;

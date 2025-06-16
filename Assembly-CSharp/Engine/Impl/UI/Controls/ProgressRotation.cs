@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressRotation : ProgressView
   {
@@ -9,7 +11,7 @@
 
     protected override void ApplyProgress()
     {
-      this.transform.localEulerAngles = Vector3.Lerp(minRotation, maxRotation, Progress);
+      transform.localEulerAngles = Vector3.Lerp(minRotation, maxRotation, Progress);
     }
 
     public override void SkipAnimation()

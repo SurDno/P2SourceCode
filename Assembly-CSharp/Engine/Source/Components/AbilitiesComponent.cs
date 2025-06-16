@@ -8,6 +8,7 @@ using Engine.Source.Commons;
 using Engine.Source.Commons.Abilities;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -30,12 +31,12 @@ namespace Engine.Source.Components
       {
         if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
+          Debug.LogError("Template not found, owner : " + Owner.GetInfo());
           return true;
         }
         if (template.GetComponent<AbilitiesComponent>() != null)
           return false;
-        Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
+        Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
         return true;
       }
     }

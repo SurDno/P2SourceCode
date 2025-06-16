@@ -4,6 +4,8 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class InteractableWindow : MonoBehaviour
 {
@@ -65,7 +67,7 @@ public class InteractableWindow : MonoBehaviour
       if (index < length)
       {
         if (index >= _spawnedTitleList.Count)
-          _spawnedTitleList.Add(Object.Instantiate<Title>(titlePrefab, textGroupContainer));
+          _spawnedTitleList.Add(Instantiate(titlePrefab, textGroupContainer));
         Title spawnedTitle = _spawnedTitleList[index];
         if (!spawnedTitle.gameObject.activeSelf)
           spawnedTitle.gameObject.SetActive(true);

@@ -2,6 +2,7 @@
 using NodeCanvas.Framework;
 using ParadoxNotion;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {

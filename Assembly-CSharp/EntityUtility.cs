@@ -4,6 +4,7 @@ using Engine.Common;
 using Engine.Common.Components;
 using Engine.Impl.Services.HierarchyServices;
 using Engine.Source.Commons;
+using UnityEngine;
 
 public static class EntityUtility
 {
@@ -24,12 +25,12 @@ public static class EntityUtility
 
   public static IEntity GetEntity(GameObject gameObject)
   {
-    if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+    if (gameObject != null)
     {
       EngineGameObject engineGameObject = gameObject.GetComponentNonAlloc<EngineGameObject>();
-      if ((UnityEngine.Object) engineGameObject == (UnityEngine.Object) null && (UnityEngine.Object) gameObject.GetComponentNonAlloc<EntityUtilityBinder>() != (UnityEngine.Object) null)
+      if (engineGameObject == null && gameObject.GetComponentNonAlloc<EntityUtilityBinder>() != null)
         engineGameObject = gameObject.GetComponentInParent<EngineGameObject>();
-      if ((UnityEngine.Object) engineGameObject != (UnityEngine.Object) null)
+      if (engineGameObject != null)
         return engineGameObject.Owner;
     }
     return null;
@@ -62,7 +63,7 @@ public static class EntityUtility
       if (hierarchyItem == null)
       {
         if (child.GetComponent<IInventoryComponent>() == null)
-          Debug.LogError((object) ("Hierarchy item not found, child : " + child.GetInfo() + " , parent : " + entity.GetInfo()));
+          Debug.LogError("Hierarchy item not found, child : " + child.GetInfo() + " , parent : " + entity.GetInfo());
       }
       else if (hierarchyItem.Container == null)
       {

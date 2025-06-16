@@ -2,6 +2,9 @@
 using Engine.Behaviours.Localization;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Settings;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public abstract class SettingsValueView<T> : 
   MonoBehaviour,
@@ -53,7 +56,7 @@ public abstract class SettingsValueView<T> :
       if (interactable == value)
         return;
       interactable = value;
-      if (!((UnityEngine.Object) interactableView != (UnityEngine.Object) null))
+      if (!(interactableView != null))
         return;
       interactableView.Visible = interactable;
     }
@@ -67,7 +70,7 @@ public abstract class SettingsValueView<T> :
       if (selected == value)
         return;
       selected = value;
-      if (!((UnityEngine.Object) selectedView != (UnityEngine.Object) null))
+      if (!(selectedView != null))
         return;
       selectedView.Visible = value;
     }
@@ -91,7 +94,7 @@ public abstract class SettingsValueView<T> :
 
   public void SetName(string signature)
   {
-    if (!((UnityEngine.Object) nameText != (UnityEngine.Object) null))
+    if (!(nameText != null))
       return;
     nameText.Signature = signature;
   }
@@ -108,7 +111,7 @@ public abstract class SettingsValueView<T> :
 
   public abstract void DecrementValue();
 
-  public bool IsActive() => this.gameObject.activeInHierarchy;
+  public bool IsActive() => gameObject.activeInHierarchy;
 
   public void OnSelect()
   {

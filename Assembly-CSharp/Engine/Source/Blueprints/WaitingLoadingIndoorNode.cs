@@ -9,6 +9,7 @@ using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -19,7 +20,7 @@ namespace Engine.Source.Blueprints
     {
       base.RegisterPorts();
       FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(WaitingLoading(output))));
+      AddFlowInput("In", () => StartCoroutine(WaitingLoading(output)));
     }
 
     private IEnumerator WaitingLoading(FlowOutput output)
@@ -28,7 +29,7 @@ namespace Engine.Source.Blueprints
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player == null)
       {
-        Debug.LogError((object) "player == null");
+        Debug.LogError("player == null");
         output.Call();
       }
       else
@@ -36,7 +37,7 @@ namespace Engine.Source.Blueprints
         LocationItemComponent locationItem = player.GetComponent<LocationItemComponent>();
         if (locationItem == null)
         {
-          Debug.LogError((object) "locationItem == null");
+          Debug.LogError("locationItem == null");
           output.Call();
         }
         else
@@ -48,7 +49,7 @@ namespace Engine.Source.Blueprints
           }
           else
           {
-            Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(" , location ").GetInfo(location.Owner));
+            Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(" , location ").GetInfo(location.Owner));
             do
             {
               yield return null;
@@ -67,7 +68,7 @@ namespace Engine.Source.Blueprints
       if (location.IsHibernation)
       {
         if (WaitingLoadingUtility.Logs.Add(location.Owner))
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Waiting loading indoor : ").GetInfo(location.Owner));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("Waiting loading indoor : ").GetInfo(location.Owner));
         return false;
       }
       foreach (ILocationComponent child in ((LocationComponent) location).Childs)

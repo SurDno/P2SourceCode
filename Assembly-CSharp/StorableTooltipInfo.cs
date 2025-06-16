@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Generator;
 using Inspectors;
+using UnityEngine;
 
 [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
 public class StorableTooltipInfo

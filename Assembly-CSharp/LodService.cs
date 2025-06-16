@@ -11,6 +11,7 @@ using Engine.Source.Services.Saves;
 using Engine.Source.Settings;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
 
 [RuntimeService(typeof (LodService))]
 public class LodService : IInitialisable, IUpdatable, ISavesController
@@ -61,7 +62,7 @@ public class LodService : IInitialisable, IUpdatable, ISavesController
     float minValue = aiLodDistance.MinValue;
     foreach (Slot registeredLod in registeredLods)
     {
-      if (!((UnityEngine.Object) registeredLod.npcState == (UnityEngine.Object) null) && UpdaterLodState(registeredLod, lodDistance, minValue, angle, position, forward))
+      if (!(registeredLod.npcState == null) && UpdaterLodState(registeredLod, lodDistance, minValue, angle, position, forward))
         registeredLod.npcState.OnLodStateChanged(registeredLod.Enabled);
     }
   }
@@ -101,7 +102,7 @@ public class LodService : IInitialisable, IUpdatable, ISavesController
       return;
     for (int index = 0; index < registeredLods.Count; ++index)
     {
-      if ((UnityEngine.Object) registeredLods[index].npcState == (UnityEngine.Object) npcState)
+      if (registeredLods[index].npcState == npcState)
       {
         registeredLods[index].npcState.OnLodStateChanged(false);
         registeredLods.RemoveAt(index);

@@ -1,11 +1,13 @@
-﻿namespace StateSetters
+﻿using UnityEngine;
+
+namespace StateSetters
 {
   public abstract class MaterialPropertyItemController : IStateSetterItemController
   {
     public void Apply(StateSetterItem item, float value)
     {
       MeshRenderer objectValue1 = item.ObjectValue1 as MeshRenderer;
-      if ((Object) objectValue1 == (Object) null)
+      if (objectValue1 == null)
         return;
       Material[] materialArray = Application.isPlaying ? objectValue1.materials : objectValue1.sharedMaterials;
       int intValue1 = item.IntValue1;

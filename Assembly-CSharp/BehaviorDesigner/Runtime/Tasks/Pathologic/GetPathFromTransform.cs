@@ -7,6 +7,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -44,7 +45,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     {
       success = false;
       PathPart component1 = Target.Value.GetComponent<PathPart>();
-      if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
+      if (component1 != null)
       {
         Result.Value = component1.PointsList;
         success = true;
@@ -52,7 +53,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       else
       {
         PatrolPath component2 = Target.Value.GetComponent<PatrolPath>();
-        if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
+        if (component2 != null)
         {
           List<Transform> presetPath = component2.GetPresetPath(PointIndex.Value, InversePath.Value);
           if (presetPath != null)
@@ -62,7 +63,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
             return;
           }
         }
-        Debug.LogError((object) (gameObject.name + "  has wrong path!"));
+        Debug.LogError(gameObject.name + "  has wrong path!");
       }
     }
 

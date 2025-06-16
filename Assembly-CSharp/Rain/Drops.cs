@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Rain
 {
@@ -19,7 +20,7 @@ namespace Rain
     {
       if (_activeMeshes == 0)
       {
-        Debug.LogError((object) "Drops : Trying to decrease active mesh count when it is aready zero.");
+        Debug.LogError("Drops : Trying to decrease active mesh count when it is aready zero.");
       }
       else
       {
@@ -50,14 +51,14 @@ namespace Rain
     {
       DropsMesh dropsMesh = dropsMeshes[_dropMeshToUpdate];
       RainManager instance = RainManager.Instance;
-      int num1 = !((UnityEngine.Object) instance != (UnityEngine.Object) null) ? 0 : Mathf.RoundToInt(instance.actualRainIntensity * maxParticles / dropsMeshes.Length);
+      int num1 = !(instance != null) ? 0 : Mathf.RoundToInt(instance.actualRainIntensity * maxParticles / dropsMeshes.Length);
       if (num1 > 0)
       {
         float num2 = Mathf.Lerp(nearRadius, farRadius, _dropMeshToUpdate / (float) (dropsMeshes.Length - 1));
-        if ((UnityEngine.Object) dropsMesh == (UnityEngine.Object) null)
+        if (dropsMesh == null)
         {
-          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(dropsMeshes[0].gameObject);
-          gameObject.transform.SetParent(this.transform, false);
+          GameObject gameObject = Instantiate(dropsMeshes[0].gameObject);
+          gameObject.transform.SetParent(transform, false);
           gameObject.name = "Drops Mesh " + _dropMeshToUpdate;
           DropsMesh component = gameObject.GetComponent<DropsMesh>();
           component.count = num1;
@@ -84,7 +85,7 @@ namespace Rain
       }
       else if (_dropMeshToUpdate == 0)
       {
-        if ((UnityEngine.Object) dropsMesh == (UnityEngine.Object) null)
+        if (dropsMesh == null)
           throw new Exception("updatingMesh == null");
         if (dropsMesh.gameObject.activeSelf)
         {
@@ -92,9 +93,9 @@ namespace Rain
           DecreaseActiveMeshCount();
         }
       }
-      else if ((UnityEngine.Object) dropsMesh != (UnityEngine.Object) null)
+      else if (dropsMesh != null)
       {
-        UnityEngine.Object.Destroy((UnityEngine.Object) dropsMesh.gameObject);
+        Destroy(dropsMesh.gameObject);
         dropsMeshes[_dropMeshToUpdate] = null;
         DecreaseActiveMeshCount();
       }
@@ -102,7 +103,7 @@ namespace Rain
       if (_dropMeshToUpdate >= dropsMeshes.Length)
         _dropMeshToUpdate = 0;
       _animationPhase += Time.deltaTime / animationLength;
-      double num3 = (double) Mathf.Repeat(_animationPhase, 1f);
+      double num3 = Mathf.Repeat(_animationPhase, 1f);
       _material.SetFloat("_Phase", _animationPhase);
     }
   }

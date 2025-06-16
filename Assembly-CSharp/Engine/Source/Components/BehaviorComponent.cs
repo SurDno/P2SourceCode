@@ -12,6 +12,7 @@ using Engine.Source.BehaviorNodes;
 using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -121,7 +122,7 @@ namespace Engine.Source.Components
       set
       {
         geometryVisible = value;
-        if (!((UnityEngine.Object) behavior != (UnityEngine.Object) null))
+        if (!(behavior != null))
           return;
         behavior.GeometryVisible = geometryVisible;
       }
@@ -156,12 +157,12 @@ namespace Engine.Source.Components
     public void SendEvent(string name)
     {
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       if (needUpdate)
         UpdateData(true);
       BehaviorTree component = gameObject.GetComponent<BehaviorTree>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return;
       component.SendEvent(name);
     }
@@ -169,14 +170,14 @@ namespace Engine.Source.Components
     public void SendEvent<T>(string name, T arg1)
     {
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       if (needUpdate)
         UpdateData(true);
       BehaviorTree component = gameObject.GetComponent<BehaviorTree>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return;
-      component.SendEvent(name, (object) arg1);
+      component.SendEvent<object>(name, arg1);
     }
 
     public override void OnAdded()
@@ -199,14 +200,14 @@ namespace Engine.Source.Components
 
     private void WorldPauseHandler()
     {
-      if ((UnityEngine.Object) behaviorTree != (UnityEngine.Object) null)
+      if (behaviorTree != null)
       {
         if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
           behaviorTree.DisableBehavior(true);
         else
           behaviorTree.EnableBehavior();
       }
-      if (!((UnityEngine.Object) behavior != (UnityEngine.Object) null))
+      if (!(behavior != null))
         return;
       behavior.IsPaused = InstanceByRequest<EngineApplication>.Instance.IsPaused;
     }
@@ -214,7 +215,7 @@ namespace Engine.Source.Components
     private void OnGameObjectChangedEvent()
     {
       IEntityView owner = (IEntityView) Owner;
-      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null)
+      if (owner.GameObject == null)
       {
         behavior = null;
       }
@@ -222,7 +223,7 @@ namespace Engine.Source.Components
       {
         UpdateData(false);
         behavior = owner.GameObject.GetComponent<EngineBehavior>();
-        if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
+        if (behavior == null)
           return;
         behavior.Gait = EngineBehavior.GaitType.Walk;
         WorldPauseHandler();
@@ -256,20 +257,20 @@ namespace Engine.Source.Components
       {
         ServiceCache.OptimizationService.FrameHasSpike = true;
         needUpdate = false;
-        if ((UnityEngine.Object) this.behaviorTree != (UnityEngine.Object) null)
+        if (this.behaviorTree != null)
         {
           behaviorTree.UnregisterEvent("Ability", new Action<object, object>(AbilityEvent));
           behaviorTree = null;
         }
         GameObject gameObject = ((IEntityView) Owner).GameObject;
-        if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+        if (gameObject == null)
           return;
         this.behaviorTree = gameObject.GetComponent<BehaviorTree>();
-        if ((UnityEngine.Object) this.behaviorTree == (UnityEngine.Object) null)
+        if (this.behaviorTree == null)
           return;
         this.behaviorTree.RegisterEvent("Ability", new Action<object, object>(AbilityEvent));
         ExternalBehaviorTree externalBehaviorTree = ((BehaviorObject) BehaviorObject)?.ExternalBehaviorTree;
-        if ((UnityEngine.Object) this.behaviorTree.ExternalBehaviorTree != (UnityEngine.Object) externalBehaviorTree)
+        if (this.behaviorTree.ExternalBehaviorTree != externalBehaviorTree)
           this.behaviorTree.ExternalBehaviorTree = externalBehaviorTree;
         if (values.Count != 0)
         {

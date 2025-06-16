@@ -1,45 +1,19 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Color Adjustments/Color Correction (Curves, Saturation)")]
   public class ColorCorrectionCurves : PostEffectsBase
   {
-    public AnimationCurve redChannel = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.0f),
-      new Keyframe(1f, 1f)
-    });
-    public AnimationCurve greenChannel = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.0f),
-      new Keyframe(1f, 1f)
-    });
-    public AnimationCurve blueChannel = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.0f),
-      new Keyframe(1f, 1f)
-    });
-    public bool useDepthCorrection = false;
-    public AnimationCurve zCurve = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.0f),
-      new Keyframe(1f, 1f)
-    });
-    public AnimationCurve depthRedChannel = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.0f),
-      new Keyframe(1f, 1f)
-    });
-    public AnimationCurve depthGreenChannel = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.0f),
-      new Keyframe(1f, 1f)
-    });
-    public AnimationCurve depthBlueChannel = new AnimationCurve(new Keyframe[2]
-    {
-      new Keyframe(0.0f, 0.0f),
-      new Keyframe(1f, 1f)
-    });
+    public AnimationCurve redChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve greenChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve blueChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public bool useDepthCorrection;
+    public AnimationCurve zCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve depthRedChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve depthGreenChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
+    public AnimationCurve depthBlueChannel = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 1f));
     private Material ccMaterial;
     private Material ccDepthMaterial;
     private Material selectiveCcMaterial;
@@ -47,14 +21,14 @@
     private Texture2D rgbDepthChannelTex;
     private Texture2D zCurveTex;
     public float saturation = 1f;
-    public bool selectiveCc = false;
+    public bool selectiveCc;
     public Color selectiveFromColor = Color.white;
     public Color selectiveToColor = Color.white;
     public ColorCorrectionMode mode;
     public bool updateTextures = true;
-    public Shader colorCorrectionCurvesShader = (Shader) null;
-    public Shader simpleColorCorrectionCurvesShader = (Shader) null;
-    public Shader colorCorrectionSelectiveShader = (Shader) null;
+    public Shader colorCorrectionCurvesShader;
+    public Shader simpleColorCorrectionCurvesShader;
+    public Shader colorCorrectionSelectiveShader;
     private bool updateTexturesOnStartup = true;
 
     private new void Start()
@@ -123,7 +97,7 @@
     {
       if (!CheckResources())
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -133,29 +107,29 @@
           updateTexturesOnStartup = false;
         }
         if (useDepthCorrection)
-          this.GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
+          GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
         RenderTexture renderTexture = destination;
         if (selectiveCc)
           renderTexture = RenderTexture.GetTemporary(source.width, source.height);
         if (useDepthCorrection)
         {
-          ccDepthMaterial.SetTexture("_RgbTex", (Texture) rgbChannelTex);
-          ccDepthMaterial.SetTexture("_ZCurve", (Texture) zCurveTex);
-          ccDepthMaterial.SetTexture("_RgbDepthTex", (Texture) rgbDepthChannelTex);
+          ccDepthMaterial.SetTexture("_RgbTex", rgbChannelTex);
+          ccDepthMaterial.SetTexture("_ZCurve", zCurveTex);
+          ccDepthMaterial.SetTexture("_RgbDepthTex", rgbDepthChannelTex);
           ccDepthMaterial.SetFloat("_Saturation", saturation);
-          Graphics.Blit((Texture) source, renderTexture, ccDepthMaterial);
+          Graphics.Blit(source, renderTexture, ccDepthMaterial);
         }
         else
         {
-          ccMaterial.SetTexture("_RgbTex", (Texture) rgbChannelTex);
+          ccMaterial.SetTexture("_RgbTex", rgbChannelTex);
           ccMaterial.SetFloat("_Saturation", saturation);
-          Graphics.Blit((Texture) source, renderTexture, ccMaterial);
+          Graphics.Blit(source, renderTexture, ccMaterial);
         }
         if (!selectiveCc)
           return;
         selectiveCcMaterial.SetColor("selColor", selectiveFromColor);
         selectiveCcMaterial.SetColor("targetColor", selectiveToColor);
-        Graphics.Blit((Texture) renderTexture, destination, selectiveCcMaterial);
+        Graphics.Blit(renderTexture, destination, selectiveCcMaterial);
         RenderTexture.ReleaseTemporary(renderTexture);
       }
     }

@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(fileName = "KeepDistance", menuName = "Pathologic2/States/Keep distance", order = 101)]
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "KeepDistance", menuName = "Pathologic2/States/Keep distance", order = 101)]
 public class KeepDistanceDescription : ScriptableObject
 {
   [Tooltip("NPC стремится сохранять эту дистанцию")]

@@ -5,6 +5,8 @@ using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using FlowCanvas;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace ParadoxNotion.Services
 {
@@ -38,10 +40,10 @@ namespace ParadoxNotion.Services
     {
       get
       {
-        if ((UnityEngine.Object) _current == (UnityEngine.Object) null && !isQuiting)
+        if (_current == null && !isQuiting)
         {
-          _current = UnityEngine.Object.FindObjectOfType<BlueprintManager>();
-          if ((UnityEngine.Object) _current == (UnityEngine.Object) null)
+          _current = FindObjectOfType<BlueprintManager>();
+          if (_current == null)
             _current = UnityFactory.GetOrCreateGroup("[Blueprints]").AddComponent<BlueprintManager>();
         }
         return _current;
@@ -68,9 +70,9 @@ namespace ParadoxNotion.Services
     private void Awake()
     {
       updater = new ReduceUpdateProxy<Graph>(graphs, this, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintUpdateDelay);
-      if ((UnityEngine.Object) _current != (UnityEngine.Object) null && (UnityEngine.Object) _current != (UnityEngine.Object) this)
+      if (_current != null && _current != this)
       {
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) this.gameObject);
+        DestroyImmediate(gameObject);
       }
       else
       {

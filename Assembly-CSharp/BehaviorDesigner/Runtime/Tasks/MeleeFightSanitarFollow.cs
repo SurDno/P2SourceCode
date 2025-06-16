@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -55,17 +57,17 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if (followTime.Value > 0.0 && startTime + (double) waitDuration < (double) Time.time)
+      if (followTime.Value > 0.0 && startTime + (double) waitDuration < Time.time)
         return TaskStatus.Success;
-      if ((UnityEngine.Object) description == (UnityEngine.Object) null)
+      if (description == null)
       {
-        Debug.LogWarning((object) (typeof (MeleeFightSanitarFollow).Name + " has no " + typeof (SanitarFollowDescription).Name + " attached"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(typeof (MeleeFightSanitarFollow).Name + " has no " + typeof (SanitarFollowDescription).Name + " attached", gameObject);
         return TaskStatus.Failure;
       }
-      owner.RotationTarget = (Transform) null;
+      owner.RotationTarget = null;
       owner.RotateByPath = false;
       owner.RetreatAngle = new float?();
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target.Value == null)
         return TaskStatus.Success;
       UpdatePath();
       Vector3 vector3 = Target.Value.position - owner.transform.position;
@@ -75,14 +77,14 @@ namespace BehaviorDesigner.Runtime.Tasks
       {
         if (!agent.hasPath)
           return TaskStatus.Running;
-        if ((double) agent.remainingDistance > description.RunDistance)
+        if (agent.remainingDistance > (double) description.RunDistance)
         {
           owner.RotationTarget = Target.Value;
           owner.RotateByPath = true;
           owner.RetreatAngle = new float?();
         }
       }
-      desiredWalkSpeed = (double) agent.remainingDistance <= description.KeepDistance ? ((double) agent.remainingDistance <= description.RetreatDistance ? -1f : 0.0f) : ((double) agent.remainingDistance > description.RunDistance ? 2f : 1f);
+      desiredWalkSpeed = agent.remainingDistance <= (double) description.KeepDistance ? (agent.remainingDistance <= (double) description.RetreatDistance ? -1f : 0.0f) : (agent.remainingDistance > (double) description.RunDistance ? 2f : 1f);
       owner.DesiredWalkSpeed = desiredWalkSpeed;
       owner.RotationTarget = Target.Value;
       agent.nextPosition = animator.rootPosition;
@@ -91,7 +93,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private void UpdatePath()
     {
-      if ((double) (lastPlayerPosition - Target.Value.position).magnitude <= description.RetreatDistance)
+      if ((lastPlayerPosition - Target.Value.position).magnitude <= (double) description.RetreatDistance)
         return;
       if (!agent.isOnNavMesh)
         agent.Warp(transform.position);
@@ -110,7 +112,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "Aim", Aim);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "FollowTime", followTime);
-      BehaviorTreeDataWriteUtility.WriteUnity<SanitarFollowDescription>(writer, "Description", description);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Description", description);
     }
 
     public new void DataRead(IDataReader reader, Type type)
@@ -123,7 +125,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
       Aim = BehaviorTreeDataReadUtility.ReadShared(reader, "Aim", Aim);
       followTime = BehaviorTreeDataReadUtility.ReadShared(reader, "FollowTime", followTime);
-      description = BehaviorTreeDataReadUtility.ReadUnity<SanitarFollowDescription>(reader, "Description", description);
+      description = BehaviorTreeDataReadUtility.ReadUnity(reader, "Description", description);
     }
   }
 }

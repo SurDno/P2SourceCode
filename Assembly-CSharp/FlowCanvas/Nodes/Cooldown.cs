@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -21,7 +22,7 @@ namespace FlowCanvas.Nodes
     public override void OnGraphStarted()
     {
       current = 0.0f;
-      coroutine = (Coroutine) null;
+      coroutine = null;
     }
 
     public override void OnGraphStoped()
@@ -29,7 +30,7 @@ namespace FlowCanvas.Nodes
       if (coroutine == null)
         return;
       StopCoroutine(coroutine);
-      coroutine = (Coroutine) null;
+      coroutine = null;
       current = 0.0f;
     }
 
@@ -38,7 +39,7 @@ namespace FlowCanvas.Nodes
       FlowOutput o = AddFlowOutput("Out");
       FlowOutput ready = AddFlowOutput("Ready");
       ValueInput<float> time = AddValueInput<float>("Time");
-      AddValueOutput("Current", (ValueHandler<float>) (() => Mathf.Max(current, 0.0f)));
+      AddValueOutput("Current", () => Mathf.Max(current, 0.0f));
       AddFlowInput("In", () =>
       {
         if (current > 0.0 || coroutine != null)
@@ -52,7 +53,7 @@ namespace FlowCanvas.Nodes
         if (coroutine == null)
           return;
         StopCoroutine(coroutine);
-        coroutine = (Coroutine) null;
+        coroutine = null;
         current = 0.0f;
       });
     }
@@ -66,7 +67,7 @@ namespace FlowCanvas.Nodes
         current -= Time.deltaTime;
         yield return null;
       }
-      coroutine = (Coroutine) null;
+      coroutine = null;
       ready.Call();
     }
   }

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -13,7 +14,7 @@ namespace RootMotion.FinalIK
       {
         if (Warning.logged)
           return;
-        Warning.Log("Amplifier needs the Fix Transforms option of the FBBIK to be set to true. Otherwise it might amplify to infinity, should the animator of the character stop because of culling.", this.transform);
+        Warning.Log("Amplifier needs the Fix Transforms option of the FBBIK to be set to true. Otherwise it might amplify to infinity, should the animator of the character stop because of culling.", transform);
       }
       else
       {
@@ -43,7 +44,7 @@ namespace RootMotion.FinalIK
 
       public void Update(IKSolverFullBodyBiped solver, float w, float deltaTime)
       {
-        if ((UnityEngine.Object) transform == (UnityEngine.Object) null || (UnityEngine.Object) relativeTo == (UnityEngine.Object) null)
+        if (transform == null || relativeTo == null)
           return;
         Vector3 vector3_1 = relativeTo.InverseTransformDirection(transform.position - relativeTo.position);
         if (firstUpdate)

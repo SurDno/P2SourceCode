@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideablePulse : HideableView
   {
@@ -12,7 +14,7 @@
 
     private void Update()
     {
-      if ((Object) view == (Object) null)
+      if (view == null)
         return;
       float progress = view.Progress;
       float num;
@@ -42,7 +44,7 @@
     {
       base.SkipAnimation();
       goesUp = Visible;
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.Progress = 0.0f;
     }

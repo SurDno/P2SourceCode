@@ -1,4 +1,6 @@
-﻿namespace RootMotion
+﻿using UnityEngine;
+
+namespace RootMotion
 {
   public static class Warning
   {
@@ -17,7 +19,7 @@
     {
       if (!logInEditMode && !Application.isPlaying || logged)
         return;
-      Debug.LogWarning((object) message, (Object) context);
+      Debug.LogWarning(message, context);
       logged = true;
     }
 

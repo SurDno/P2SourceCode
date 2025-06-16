@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Engine.Common;
 using Engine.Source.Commons;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class FlockController : MonoBehaviour, IUpdatable
 {
@@ -26,7 +28,7 @@ public class FlockController : MonoBehaviour, IUpdatable
   public float _maxSpeed = 10f;
   public float _diveValue = 7f;
   public float _diveFrequency = 0.5f;
-  public float _soarFrequency = 0.0f;
+  public float _soarFrequency;
   public float _soarMaxTime;
   public float _minDamping = 1f;
   public float _maxDamping = 2f;
@@ -80,7 +82,7 @@ public class FlockController : MonoBehaviour, IUpdatable
     if (!_slowSpawn)
       AddChild(_childAmount);
     if (_randomPositionTimer > 0.0)
-      this.InvokeRepeating("SetFlockRandomPosition", _randomPositionTimer, _randomPositionTimer);
+      InvokeRepeating("SetFlockRandomPosition", _randomPositionTimer, _randomPositionTimer);
     SetFlockRandomPosition();
     UpdatePlayer();
   }
@@ -94,8 +96,8 @@ public class FlockController : MonoBehaviour, IUpdatable
   {
     for (int index = 0; index < amount; ++index)
     {
-      FlockChild flockChild = UnityEngine.Object.Instantiate<FlockChild>(_childPrefab);
-      flockChild.transform.SetParent(this.transform, false);
+      FlockChild flockChild = Instantiate(_childPrefab);
+      flockChild.transform.SetParent(transform, false);
       flockChild.Initialise(this);
       childs.Add(flockChild);
     }
@@ -107,7 +109,7 @@ public class FlockController : MonoBehaviour, IUpdatable
     {
       FlockChild child = childs[childs.Count - 1];
       childs.RemoveAt(childs.Count - 1);
-      UnityEngine.Object.Destroy((UnityEngine.Object) child.gameObject);
+      Destroy(child.gameObject);
     }
   }
 
@@ -127,28 +129,28 @@ public class FlockController : MonoBehaviour, IUpdatable
 
   public void SetFlockRandomPosition()
   {
-    targetPosition.x = UnityEngine.Random.Range(-_positionSphereWidth, _positionSphereWidth);
-    targetPosition.y = UnityEngine.Random.Range(-_positionSphereHeight, _positionSphereHeight);
-    targetPosition.z = UnityEngine.Random.Range(-_positionSphereDepth, _positionSphereDepth);
+    targetPosition.x = Random.Range(-_positionSphereWidth, _positionSphereWidth);
+    targetPosition.y = Random.Range(-_positionSphereHeight, _positionSphereHeight);
+    targetPosition.z = Random.Range(-_positionSphereDepth, _positionSphereDepth);
     targetPosition += playerOffset;
     if (!_forceChildWaypoints)
       return;
     for (int index = 0; index < childs.Count; ++index)
-      childs[index].Wander(UnityEngine.Random.value * _forcedRandomDelay);
+      childs[index].Wander(Random.value * _forcedRandomDelay);
   }
 
   public void DestroyBirds()
   {
     for (int index = 0; index < childs.Count; ++index)
-      UnityEngine.Object.Destroy((UnityEngine.Object) childs[index].gameObject);
+      Destroy(childs[index].gameObject);
     _childAmount = 0;
     childs.Clear();
   }
 
   public void ComputeUpdate()
   {
-    if (this.transform.rotation != Quaternion.identity)
-      this.transform.rotation = Quaternion.identity;
+    if (transform.rotation != Quaternion.identity)
+      transform.rotation = Quaternion.identity;
     UpdateChildAmount();
     UpdatePlayer();
   }
@@ -158,14 +160,14 @@ public class FlockController : MonoBehaviour, IUpdatable
     if (!_moveToPlayer)
       return;
     Vector3 playerPosition = EngineApplication.PlayerPosition;
-    playerOffset = new Vector3(playerPosition.x - this.transform.position.x, playerYOffset, playerPosition.z - this.transform.position.z);
+    playerOffset = new Vector3(playerPosition.x - transform.position.x, playerYOffset, playerPosition.z - transform.position.z);
   }
 
   private void OnDrawGizmosSelected()
   {
     Gizmos.color = Color.blue;
-    Gizmos.DrawWireCube(this.transform.position + targetPosition, new Vector3(_spawnSphereWidth * 2f, _spawnSphereHeight * 2f, _spawnSphereDepth * 2f));
+    Gizmos.DrawWireCube(transform.position + targetPosition, new Vector3(_spawnSphereWidth * 2f, _spawnSphereHeight * 2f, _spawnSphereDepth * 2f));
     Gizmos.color = Color.cyan;
-    Gizmos.DrawWireCube(this.transform.position + playerOffset, new Vector3(_positionSphereWidth * 2f, _positionSphereHeight * 2f, _positionSphereDepth * 2f));
+    Gizmos.DrawWireCube(transform.position + playerOffset, new Vector3(_positionSphereWidth * 2f, _positionSphereHeight * 2f, _positionSphereDepth * 2f));
   }
 }

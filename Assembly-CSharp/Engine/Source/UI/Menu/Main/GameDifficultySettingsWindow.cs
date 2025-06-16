@@ -10,7 +10,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      RegisterLayer((IGameDifficultySettingsWindow) this);
+      RegisterLayer<IGameDifficultySettingsWindow>(this);
     }
   }
 }

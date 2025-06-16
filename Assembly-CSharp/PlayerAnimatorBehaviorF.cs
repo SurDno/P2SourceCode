@@ -1,3 +1,5 @@
-﻿public class PlayerAnimatorBehaviorF : StateMachineBehaviour
+﻿using UnityEngine;
+
+public class PlayerAnimatorBehaviorF : StateMachineBehaviour
 {
 }

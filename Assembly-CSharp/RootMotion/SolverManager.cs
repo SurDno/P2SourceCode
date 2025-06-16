@@ -1,4 +1,6 @@
-﻿namespace RootMotion
+﻿using UnityEngine;
+
+namespace RootMotion
 {
   public class SolverManager : MonoBehaviour
   {
@@ -12,8 +14,8 @@
 
     public void Disable()
     {
-      Debug.Log((object) "IK.Disable() is deprecated. Use enabled = false instead", (Object) this.transform);
-      this.enabled = false;
+      Debug.Log("IK.Disable() is deprecated. Use enabled = false instead", transform);
+      enabled = false;
     }
 
     protected virtual void InitiateSolver()
@@ -41,9 +43,9 @@
     {
       get
       {
-        if ((Object) animator != (Object) null)
+        if (animator != null)
           return animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
-        return (Object) legacy != (Object) null && legacy.animatePhysics;
+        return legacy != null && legacy.animatePhysics;
       }
     }
 
@@ -51,7 +53,7 @@
     {
       if (componentInitiated)
         return;
-      FindAnimatorRecursive(this.transform, true);
+      FindAnimatorRecursive(transform, true);
       InitiateSolver();
       componentInitiated = true;
     }
@@ -71,18 +73,18 @@
       legacy = t.GetComponent<Animation>();
       if (isAnimated)
         return;
-      if ((Object) animator == (Object) null & findInChildren)
+      if (animator == null & findInChildren)
         animator = t.GetComponentInChildren<Animator>();
-      if ((Object) legacy == (Object) null & findInChildren)
+      if (legacy == null & findInChildren)
         legacy = t.GetComponentInChildren<Animation>();
-      if (isAnimated || !((Object) t.parent != (Object) null))
+      if (isAnimated || !(t.parent != null))
         return;
       FindAnimatorRecursive(t.parent, false);
     }
 
     private bool isAnimated
     {
-      get => (Object) animator != (Object) null || (Object) legacy != (Object) null;
+      get => animator != null || legacy != null;
     }
 
     private void FixedUpdate()
@@ -109,7 +111,7 @@
 
     public void UpdateSolverExternal()
     {
-      if (!this.enabled)
+      if (!enabled)
         return;
       skipSolverUpdate = true;
       UpdateSolver();

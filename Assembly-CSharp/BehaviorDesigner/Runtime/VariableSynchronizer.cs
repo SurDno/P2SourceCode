@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -17,7 +18,7 @@ namespace BehaviorDesigner.Runtime
       set
       {
         synchronizedVariables = value;
-        this.enabled = true;
+        enabled = true;
       }
     }
 
@@ -38,7 +39,7 @@ namespace BehaviorDesigner.Runtime
           {
             case SynchronizationType.BehaviorDesigner:
               BehaviorTree targetComponent = synchronizedVariable.targetComponent as BehaviorTree;
-              if ((UnityEngine.Object) targetComponent == (UnityEngine.Object) null)
+              if (targetComponent == null)
               {
                 str = "the target component is not of type BehaviorTree Tree";
                 break;
@@ -48,7 +49,7 @@ namespace BehaviorDesigner.Runtime
                 str = "the target SharedVariable cannot be found";
               break;
             case SynchronizationType.Property:
-              PropertyInfo property = ((object) synchronizedVariable.targetComponent).GetType().GetProperty(synchronizedVariable.targetName);
+              PropertyInfo property = synchronizedVariable.targetComponent.GetType().GetProperty(synchronizedVariable.targetName);
               if (property == null)
               {
                 str = "the property " + synchronizedVariable.targetName + " doesn't exist";
@@ -60,7 +61,7 @@ namespace BehaviorDesigner.Runtime
                 if (getMethod == null)
                   str = "the property has no get method";
                 else
-                  synchronizedVariable.getDelegate = CreateGetDelegate((object) synchronizedVariable.targetComponent, getMethod);
+                  synchronizedVariable.getDelegate = CreateGetDelegate(synchronizedVariable.targetComponent, getMethod);
               }
               else
               {
@@ -68,12 +69,12 @@ namespace BehaviorDesigner.Runtime
                 if (setMethod == null)
                   str = "the property has no set method";
                 else
-                  synchronizedVariable.setDelegate = CreateSetDelegate((object) synchronizedVariable.targetComponent, setMethod);
+                  synchronizedVariable.setDelegate = CreateSetDelegate(synchronizedVariable.targetComponent, setMethod);
               }
               break;
             case SynchronizationType.Animator:
               synchronizedVariable.animator = synchronizedVariable.targetComponent as Animator;
-              if ((UnityEngine.Object) synchronizedVariable.animator == (UnityEngine.Object) null)
+              if (synchronizedVariable.animator == null)
               {
                 str = "the component is not of type Animator";
                 break;
@@ -151,13 +152,13 @@ namespace BehaviorDesigner.Runtime
         }
         if (!string.IsNullOrEmpty(str))
         {
-          Debug.LogError((object) string.Format("Unable to synchronize {0}: {1}", synchronizedVariable.sharedVariable.Name, str));
+          Debug.LogError(string.Format("Unable to synchronize {0}: {1}", synchronizedVariable.sharedVariable.Name, str));
           synchronizedVariables.RemoveAt(index);
         }
       }
       if (synchronizedVariables.Count != 0)
         return;
-      this.enabled = false;
+      enabled = false;
     }
 
     private void Update() => Tick();
@@ -191,13 +192,13 @@ namespace BehaviorDesigner.Runtime
               switch (synchronizedVariable.animatorParameterType)
               {
                 case AnimatorParameterType.Bool:
-                  synchronizedVariable.sharedVariable.SetValue((object) synchronizedVariable.animator.GetBool(synchronizedVariable.targetID));
+                  synchronizedVariable.sharedVariable.SetValue(synchronizedVariable.animator.GetBool(synchronizedVariable.targetID));
                   continue;
                 case AnimatorParameterType.Float:
-                  synchronizedVariable.sharedVariable.SetValue((object) synchronizedVariable.animator.GetFloat(synchronizedVariable.targetID));
+                  synchronizedVariable.sharedVariable.SetValue(synchronizedVariable.animator.GetFloat(synchronizedVariable.targetID));
                   continue;
                 case AnimatorParameterType.Integer:
-                  synchronizedVariable.sharedVariable.SetValue((object) synchronizedVariable.animator.GetInteger(synchronizedVariable.targetID));
+                  synchronizedVariable.sharedVariable.SetValue(synchronizedVariable.animator.GetInteger(synchronizedVariable.targetID));
                   continue;
                 default:
                   continue;

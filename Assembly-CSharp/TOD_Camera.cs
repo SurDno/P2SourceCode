@@ -1,4 +1,6 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+
+[ExecuteInEditMode]
 [RequireComponent(typeof (Camera))]
 [AddComponentMenu("Time of Day/Camera Main Script")]
 public class TOD_Camera : MonoBehaviour
@@ -8,8 +10,8 @@ public class TOD_Camera : MonoBehaviour
   public Vector3 DomePosOffset = Vector3.zero;
   public bool DomeScaleToFarClip = true;
   public float DomeScaleFactor = 0.95f;
-  private Camera cameraComponent = (Camera) null;
-  private Transform cameraTransform = (Transform) null;
+  private Camera cameraComponent;
+  private Transform cameraTransform;
 
   public bool HDR => (bool) (Object) cameraComponent && cameraComponent.allowHDR;
 
@@ -20,8 +22,8 @@ public class TOD_Camera : MonoBehaviour
 
   protected void OnEnable()
   {
-    cameraComponent = this.GetComponent<Camera>();
-    cameraTransform = this.GetComponent<Transform>();
+    cameraComponent = GetComponent<Camera>();
+    cameraTransform = GetComponent<Transform>();
   }
 
   protected void Update()

@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Menu.Protagonist.MindMap
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Menu.Protagonist.MindMap
 {
   public class MapNodeInfoView : MonoBehaviour
   {
@@ -10,8 +13,8 @@
 
     public void Hide()
     {
-      followedRect = (RectTransform) null;
-      this.gameObject.SetActive(false);
+      followedRect = null;
+      gameObject.SetActive(false);
     }
 
     public void Show(RectTransform followedRect, string text, bool hasMindMapNode)
@@ -19,7 +22,7 @@
       this.followedRect = followedRect;
       textView.text = text;
       mindMapCallTooltip.SetActive(hasMindMapNode);
-      this.gameObject.SetActive(true);
+      gameObject.SetActive(true);
       UpdatePosition();
     }
 
@@ -27,15 +30,15 @@
 
     private void UpdatePosition()
     {
-      RectTransform transform1 = (RectTransform) this.transform;
-      RectTransform transform2 = (RectTransform) this.GetComponentInParent<Canvas>().transform;
+      RectTransform transform1 = (RectTransform) transform;
+      RectTransform transform2 = (RectTransform) GetComponentInParent<Canvas>().transform;
       Vector2 vector2 = new Vector2(transform2.sizeDelta.x, transform2.sizeDelta.y);
-      Vector2 position = (Vector2) followedRect.position;
+      Vector2 position = followedRect.position;
       position.x = Mathf.Round(position.x);
       position.y = Mathf.Round(position.y);
       position.x /= transform2.localScale.x;
       position.y /= transform2.localScale.y;
-      transform1.pivot = new Vector2((double) position.x > (double) vector2.x * 0.699999988079071 ? 1f : 0.0f, (double) position.y > (double) vector2.y * 0.30000001192092896 ? 1f : 0.0f);
+      transform1.pivot = new Vector2(position.x > vector2.x * 0.699999988079071 ? 1f : 0.0f, position.y > vector2.y * 0.30000001192092896 ? 1f : 0.0f);
       transform1.anchoredPosition = position;
     }
   }

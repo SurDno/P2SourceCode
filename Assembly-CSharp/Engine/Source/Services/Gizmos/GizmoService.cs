@@ -3,6 +3,7 @@ using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Utility;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services.Gizmos
 {
@@ -54,7 +55,7 @@ namespace Engine.Source.Services.Gizmos
       if (initialise)
         return;
       UnityEngine.Camera camera = GameCamera.Instance.Camera;
-      if ((UnityEngine.Object) camera == (UnityEngine.Object) null)
+      if (camera == null)
         return;
       gizmoRenderBehaviour = GizmoRenderBehaviour.Create(camera);
       gizmoRenderBehaviourVisible = true;
@@ -66,7 +67,7 @@ namespace Engine.Source.Services.Gizmos
       if (!InstanceByRequest<EngineApplication>.Instance.IsDebug || !Visible || !initialise)
         return;
       draw = true;
-      if ((UnityEngine.Object) lineMaterial == (UnityEngine.Object) null)
+      if (lineMaterial == null)
         CreateLineMaterial();
       DrawShapes();
     }
@@ -307,11 +308,11 @@ namespace Engine.Source.Services.Gizmos
           if (!textGigmo3d.UsePrevPoint)
           {
             Vector3 rhs = textGigmo3d.Position - camera.transform.position;
-            flag = (double) Vector3.Dot(camera.transform.forward, rhs) <= 0.0;
+            flag = Vector3.Dot(camera.transform.forward, rhs) <= 0.0;
             if (!flag)
             {
               Vector3 screenPoint = camera.WorldToScreenPoint(textGigmo3d.Position);
-              screenPoint.y = (float) Screen.height - screenPoint.y;
+              screenPoint.y = Screen.height - screenPoint.y;
               rect = new Rect(screenPoint.x, screenPoint.y, 0.0f, 0.0f);
             }
             else
@@ -321,9 +322,9 @@ namespace Engine.Source.Services.Gizmos
             continue;
           GUIContent content = textGigmo3d.Content;
           Vector2 vector2 = textStyle.CalcSize(content);
-          if ((double) vector2.x != 0.0 && (double) vector2.y != 0.0)
+          if (vector2.x != 0.0 && vector2.y != 0.0)
           {
-            Rect position = textGigmo3d.Corner != TextCorner.Up ? (textGigmo3d.Corner != TextCorner.Down ? (textGigmo3d.Corner != TextCorner.Left ? (textGigmo3d.Corner != TextCorner.Right ? new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) vector2.x / 2.0), (float) ((double) rect.y + (double) rect.height / 2.0 - (double) vector2.y / 2.0), vector2.x, vector2.y) : new Rect(rect.x + rect.width, (float) ((double) rect.y + (double) rect.height / 2.0 - (double) vector2.y / 2.0), vector2.x, vector2.y)) : new Rect(rect.x - vector2.x, (float) ((double) rect.y + (double) rect.height / 2.0 - (double) vector2.y / 2.0), vector2.x, vector2.y)) : new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) vector2.x / 2.0), rect.y + rect.height, vector2.x, vector2.y)) : new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) vector2.x / 2.0), rect.y - vector2.y, vector2.x, vector2.y);
+            Rect position = textGigmo3d.Corner != TextCorner.Up ? (textGigmo3d.Corner != TextCorner.Down ? (textGigmo3d.Corner != TextCorner.Left ? (textGigmo3d.Corner != TextCorner.Right ? new Rect((float) (rect.x + rect.width / 2.0 - vector2.x / 2.0), (float) (rect.y + rect.height / 2.0 - vector2.y / 2.0), vector2.x, vector2.y) : new Rect(rect.x + rect.width, (float) (rect.y + rect.height / 2.0 - vector2.y / 2.0), vector2.x, vector2.y)) : new Rect(rect.x - vector2.x, (float) (rect.y + rect.height / 2.0 - vector2.y / 2.0), vector2.x, vector2.y)) : new Rect((float) (rect.x + rect.width / 2.0 - vector2.x / 2.0), rect.y + rect.height, vector2.x, vector2.y)) : new Rect((float) (rect.x + rect.width / 2.0 - vector2.x / 2.0), rect.y - vector2.y, vector2.x, vector2.y);
             rect = position;
             textStyle.normal.textColor = Color.black;
             GUI.Label(new Rect(position.x + 1f, position.y + 1f, position.width, position.height), content, textStyle);
@@ -336,7 +337,7 @@ namespace Engine.Source.Services.Gizmos
       {
         textStyle.alignment = TextAnchor.UpperLeft;
         textStyle.wordWrap = true;
-        Rect position = new Rect(0.0f, 0.0f, (float) Screen.width, (float) Screen.height);
+        Rect position = new Rect(0.0f, 0.0f, Screen.width, Screen.height);
         foreach (TextGigmo text in texts)
         {
           GUIContent content = text.Content;
@@ -357,10 +358,10 @@ namespace Engine.Source.Services.Gizmos
         Rect rect = new Rect(positionText.Position.x, positionText.Position.y, 0.0f, 0.0f);
         GUIContent content = positionText.Content;
         Vector2 vector2 = textStyle.CalcSize(content);
-        if ((double) vector2.x != 0.0 && (double) vector2.y != 0.0)
+        if (vector2.x != 0.0 && vector2.y != 0.0)
         {
-          Rect position = positionText.Corner != TextCorner.Up ? (positionText.Corner != TextCorner.Down ? (positionText.Corner != TextCorner.Left ? (positionText.Corner != TextCorner.Right ? new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) vector2.x / 2.0), (float) ((double) rect.y + (double) rect.height / 2.0 - (double) vector2.y / 2.0), vector2.x, vector2.y) : new Rect(rect.x + rect.width, (float) ((double) rect.y + (double) rect.height / 2.0 - (double) vector2.y / 2.0), vector2.x, vector2.y)) : new Rect(rect.x - vector2.x, (float) ((double) rect.y + (double) rect.height / 2.0 - (double) vector2.y / 2.0), vector2.x, vector2.y)) : new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) vector2.x / 2.0), rect.y + rect.height, vector2.x, vector2.y)) : new Rect((float) ((double) rect.x + (double) rect.width / 2.0 - (double) vector2.x / 2.0), rect.y - vector2.y, vector2.x, vector2.y);
-          if ((double) positionText.Color.a == 1.0)
+          Rect position = positionText.Corner != TextCorner.Up ? (positionText.Corner != TextCorner.Down ? (positionText.Corner != TextCorner.Left ? (positionText.Corner != TextCorner.Right ? new Rect((float) (rect.x + rect.width / 2.0 - vector2.x / 2.0), (float) (rect.y + rect.height / 2.0 - vector2.y / 2.0), vector2.x, vector2.y) : new Rect(rect.x + rect.width, (float) (rect.y + rect.height / 2.0 - vector2.y / 2.0), vector2.x, vector2.y)) : new Rect(rect.x - vector2.x, (float) (rect.y + rect.height / 2.0 - vector2.y / 2.0), vector2.x, vector2.y)) : new Rect((float) (rect.x + rect.width / 2.0 - vector2.x / 2.0), rect.y + rect.height, vector2.x, vector2.y)) : new Rect((float) (rect.x + rect.width / 2.0 - vector2.x / 2.0), rect.y - vector2.y, vector2.x, vector2.y);
+          if (positionText.Color.a == 1.0)
           {
             textStyle.normal.textColor = Color.black;
             GUI.Label(new Rect(position.x + 1f, position.y + 1f, position.width, position.height), content, textStyle);

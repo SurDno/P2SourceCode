@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Impl.UI.Menu.Protagonist.Inventory.Container;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ContainerResizableWindow : MonoBehaviour
 {
@@ -27,7 +29,7 @@ public class ContainerResizableWindow : MonoBehaviour
     Sprite sprite = active ? activeBorder : inactiveBorder;
     foreach (Image border in borders)
     {
-      if (!((Object) border.sprite == (Object) sprite))
+      if (!(border.sprite == sprite))
         border.sprite = sprite;
     }
   }
@@ -36,13 +38,13 @@ public class ContainerResizableWindow : MonoBehaviour
 
   public void Resize(List<InventoryContainerUI> containers)
   {
-    innerContainer.localPosition = (Vector3) Vector2.zero;
+    innerContainer.localPosition = Vector2.zero;
     Vector2 totalSize = CalculateTotalSize(containers);
     Vector2 vector2 = new Vector2(Mathf.Max(totalSize.x, widthMin), Mathf.Max(totalSize.y, heightMin));
     containerRect.sizeDelta = vector2;
     innerContainer.sizeDelta = vector2;
-    innerContainer.localPosition = (Vector3) Vector2.zero;
-    innerContainer.localPosition = (Vector3) new Vector2((containerRect.rect.center - (CalculateTotalCenter(containers) - (Vector2) this.transform.InverseTransformPoint((Vector3) (Vector2) containerRect.position))).x, 0.0f);
+    innerContainer.localPosition = Vector2.zero;
+    innerContainer.localPosition = new Vector2((containerRect.rect.center - (CalculateTotalCenter(containers) - (Vector2) transform.InverseTransformPoint((Vector2) containerRect.position))).x, 0.0f);
   }
 
   private Vector2 CalculateTotalSize(List<InventoryContainerUI> containers)
@@ -68,7 +70,7 @@ public class ContainerResizableWindow : MonoBehaviour
       Vector2 position = rect.position;
       rect = container.Transform.rect;
       Vector2 size = rect.size;
-      Vector2 vector2_1 = (Vector2) this.transform.InverseTransformPoint((Vector3) (Vector2) container.Content.Transform.position);
+      Vector2 vector2_1 = transform.InverseTransformPoint((Vector2) container.Content.Transform.position);
       Vector2 vector2_2 = position + vector2_1;
       float x = vector2_2.x;
       float? nullable5;

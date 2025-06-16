@@ -44,7 +44,7 @@ namespace Engine.Source.Utility
       if (player == null)
         return;
       EngineBehavior component = ((IEntityView) player).GameObject?.GetComponent<EngineBehavior>();
-      if ((Object) component != (Object) null)
+      if (component != null)
         component.GeometryVisible = show;
     }
   }

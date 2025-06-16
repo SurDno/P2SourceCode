@@ -1,5 +1,6 @@
 ﻿using Engine.Common;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components.Crowds
 {

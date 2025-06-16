@@ -1,6 +1,7 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -13,11 +14,11 @@ namespace Engine.Source.Blueprints
     {
       base.RegisterPorts();
       characterControllerInput = AddValueInput<CharacterController>("Character");
-      AddValueOutput("Velocity", (ValueHandler<Vector3>) (() =>
+      AddValueOutput("Velocity", () =>
       {
         CharacterController characterController = characterControllerInput.value;
-        return (Object) characterController != (Object) null ? characterController.velocity : Vector3.zero;
-      }));
+        return characterController != null ? characterController.velocity : Vector3.zero;
+      });
     }
   }
 }

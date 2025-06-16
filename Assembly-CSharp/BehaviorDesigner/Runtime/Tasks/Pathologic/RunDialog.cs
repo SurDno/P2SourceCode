@@ -10,6 +10,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Engine.Source.Utility;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -41,7 +42,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     {
       failed = false;
       GameObject blueprintPrefab = blueprint.Value;
-      if ((UnityEngine.Object) blueprintPrefab == (UnityEngine.Object) null)
+      if (blueprintPrefab == null)
       {
         Debug.LogWarningFormat(gameObject.name + ": has no blueprint");
         failed = true;

@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page4.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/FABRIK")]

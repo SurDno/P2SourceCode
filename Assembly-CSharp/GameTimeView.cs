@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Behaviours.Localization;
 using Engine.Common.Services;
+using UnityEngine;
 
 [RequireComponent(typeof (Localizer))]
 public class GameTimeView : MonoBehaviour
@@ -11,8 +12,8 @@ public class GameTimeView : MonoBehaviour
 
   private void Redraw()
   {
-    if ((UnityEngine.Object) this.localizer == (UnityEngine.Object) null)
-      this.localizer = this.GetComponent<Localizer>();
+    if (this.localizer == null)
+      this.localizer = GetComponent<Localizer>();
     ITimeService service = ServiceLocator.GetService<ITimeService>();
     TimeSpan gameTime = service.GameTime;
     if (gameTime.Days < 1)

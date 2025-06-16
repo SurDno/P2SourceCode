@@ -1,6 +1,7 @@
 ﻿using BehaviorDesigner.Runtime;
 using Engine.Impl.Services;
 using Engine.Source.Connections;
+using UnityEngine;
 
 public class ResourceFromCodeData : ScriptableObjectInstance<ResourceFromCodeData>
 {

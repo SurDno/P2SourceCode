@@ -5,15 +5,17 @@ using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using NodeCanvas.Framework.Internal;
 using ParadoxNotion.Serialization;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace NodeCanvas.Framework
 {
   public class Blackboard : MonoBehaviour, ISerializationCallbackReceiver
   {
     [SerializeField]
-    private string _serializedBlackboard = null;
+    private string _serializedBlackboard;
     [SerializeField]
-    private List<UnityEngine.Object> _objectReferences = new List<UnityEngine.Object>();
+    private List<Object> _objectReferences = new List<Object>();
     private BlackboardData _blackboard = new BlackboardData();
     private Thread deserializeThread;
 
@@ -44,7 +46,7 @@ namespace NodeCanvas.Framework
           _blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
           if (_blackboard != null)
             return;
-          Debug.LogError((object) "!!!");
+          Debug.LogError("!!!");
           _blackboard = new BlackboardData();
         });
         deserializeThread.Start();
@@ -54,7 +56,7 @@ namespace NodeCanvas.Framework
         _blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
         if (_blackboard == null)
         {
-          Debug.LogError((object) "!!!");
+          Debug.LogError("!!!");
           _blackboard = new BlackboardData();
         }
       }

@@ -4,6 +4,7 @@ using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -23,21 +24,21 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         if (who.value == null)
-          Debug.LogError((object) (typeof (TeleportByTransformNode) + " who.value == null"));
-        else if ((UnityEngine.Object) targetTransform.value == (UnityEngine.Object) null)
-          Debug.LogError((object) (typeof (TeleportByTransformNode) + " targetTransform.value == null"));
+          Debug.LogError(typeof (TeleportByTransformNode) + " who.value == null");
+        else if (targetTransform.value == null)
+          Debug.LogError(typeof (TeleportByTransformNode) + " targetTransform.value == null");
         else if (targetLocation.value == null)
         {
-          Debug.LogError((object) (typeof (TeleportByTransformNode) + " targetLocation.value == null"));
+          Debug.LogError(typeof (TeleportByTransformNode) + " targetLocation.value == null");
         }
         else
         {
           NavigationComponent component = who.value.GetComponent<NavigationComponent>();
           if (component == null)
-            Debug.LogError((object) (typeof (TeleportByTransformNode) + " navigation == null"));
+            Debug.LogError(typeof (TeleportByTransformNode) + " navigation == null");
           else if (wait)
           {
-            Debug.LogError((object) (typeof (TeleportByTransformNode) + " is waiting"));
+            Debug.LogError(typeof (TeleportByTransformNode) + " is waiting");
           }
           else
           {
@@ -55,7 +56,7 @@ namespace Engine.Source.Blueprints
     private void OnTeleport(INavigationComponent owner, IEntity target)
     {
       if (!wait)
-        Debug.LogError((object) "OnTeleport event is not wait");
+        Debug.LogError("OnTeleport event is not wait");
       wait = false;
       owner.OnTeleport -= OnTeleport;
       output.Call();

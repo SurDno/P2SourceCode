@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace SRDebugger
 {
@@ -22,7 +23,7 @@ namespace SRDebugger
     [SerializeField]
     private bool _keyboardModifierControl = true;
     [SerializeField]
-    private bool _keyboardModifierAlt = false;
+    private bool _keyboardModifierAlt;
     [SerializeField]
     private bool _keyboardModifierShift = true;
     [SerializeField]
@@ -38,7 +39,7 @@ namespace SRDebugger
     {
       get
       {
-        if ((UnityEngine.Object) _instance == (UnityEngine.Object) null)
+        if (_instance == null)
           _instance = GetOrCreateInstance();
         if (_instance._keyboardShortcuts != null && _instance._keyboardShortcuts.Length != 0)
           _instance.UpgradeKeyboardShortcuts();
@@ -48,7 +49,7 @@ namespace SRDebugger
 
     private void UpgradeKeyboardShortcuts()
     {
-      Debug.Log((object) "[SRDebugger] Upgrading Settings format");
+      Debug.Log("[SRDebugger] Upgrading Settings format");
       List<KeyboardShortcut> keyboardShortcutList = new List<KeyboardShortcut>();
       for (int index = 0; index < _keyboardShortcuts.Length; ++index)
       {
@@ -131,8 +132,8 @@ namespace SRDebugger
     private static Settings GetOrCreateInstance()
     {
       Settings instance = Resources.Load<Settings>("SRDebugger/Settings");
-      if ((UnityEngine.Object) instance == (UnityEngine.Object) null)
-        instance = ScriptableObject.CreateInstance<Settings>();
+      if (instance == null)
+        instance = CreateInstance<Settings>();
       return instance;
     }
 

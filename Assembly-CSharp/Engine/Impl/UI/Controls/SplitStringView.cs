@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SplitStringView : StringView
   {
@@ -12,7 +14,7 @@
       for (int index = 0; index < views.Length; ++index)
       {
         StringView view = views[index];
-        if ((Object) view != (Object) null)
+        if (view != null)
           view.SkipAnimation();
       }
     }
@@ -24,7 +26,7 @@
       for (int index = 0; index < views.Length; ++index)
       {
         StringView view = views[index];
-        if ((Object) view != (Object) null)
+        if (view != null)
           view.StringValue = StringValue;
       }
     }

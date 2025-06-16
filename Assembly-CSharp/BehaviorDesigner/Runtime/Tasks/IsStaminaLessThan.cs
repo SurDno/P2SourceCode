@@ -9,6 +9,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -28,10 +29,10 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnAwake()
     {
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       EngineGameObject component1 = gameObject.GetComponent<EngineGameObject>();
-      if ((UnityEngine.Object) component1 == (UnityEngine.Object) null)
+      if (component1 == null)
         return;
       IEntity owner = component1.Owner;
       if (owner == null)

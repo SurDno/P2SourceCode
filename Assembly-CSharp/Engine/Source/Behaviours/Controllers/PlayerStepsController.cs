@@ -1,4 +1,6 @@
 ﻿using Engine.Source.Utility;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Behaviours.Controllers
 {
@@ -24,16 +26,16 @@ namespace Engine.Source.Behaviours.Controllers
     protected override void Awake()
     {
       base.Awake();
-      characterController = this.GetComponent<CharacterController>();
+      characterController = GetComponent<CharacterController>();
     }
 
     private void FixedUpdate()
     {
       if (!PlayerUtility.IsPlayerCanControlling)
         return;
-      if ((Object) characterController == (Object) null)
+      if (characterController == null)
       {
-        Debug.LogError((object) "{1} needs to have charackter controller if used as player");
+        Debug.LogError("{1} needs to have charackter controller if used as player");
       }
       else
       {

@@ -2,6 +2,7 @@
 using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
+using UnityEngine;
 
 public class PlayerIsolatedIndoorCheck : EngineDependent
 {
@@ -36,7 +37,7 @@ public class PlayerIsolatedIndoorCheck : EngineDependent
 
   private void ApplyState()
   {
-    if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
+    if (!(view != null))
       return;
     view.Visible = overriden ? overridenIsolatedIndoor : isolatedIndoor;
   }

@@ -17,10 +17,10 @@ namespace Engine.Source.Services.Consoles.Binds
       ConsoleTargetService.AddTarget(typeof (WeatherController).Name, value => ServiceLocator.GetService<IWeatherController>());
       ConsoleTargetService.AddTarget("-weather", value => ServiceLocator.GetService<ITemplateService>().GetTemplates<IWeatherSnapshot>().FirstOrDefault(o => o.Name == value));
       ConsoleTargetService.AddTarget("-weather_layer", value => ServiceLocator.GetService<WeatherController>().Blender.Items.ElementAtOrDefault(DefaultConverter.ParseInt(value)));
-      SetConsoleCommand.AddBind("weather_opacity", true, (Action<IWeatherLayerBlenderItem, float>) ((target, value) => target.SetOpacity(value)));
-      GetConsoleCommand.AddBind("weather_opacity", true, (Func<IWeatherLayerBlenderItem, float>) (target => target.Opacity));
-      SetConsoleCommand.AddBind("weather_enable", true, (Action<WeatherController, bool>) ((target, value) => target.IsEnabled = value));
-      GetConsoleCommand.AddBind("weather_enable", true, (Func<WeatherController, bool>) (target => target.IsEnabled));
+      SetConsoleCommand.AddBind<IWeatherLayerBlenderItem, float>("weather_opacity", true, (target, value) => target.SetOpacity(value));
+      GetConsoleCommand.AddBind<IWeatherLayerBlenderItem, float>("weather_opacity", true, target => target.Opacity);
+      SetConsoleCommand.AddBind<WeatherController, bool>("weather_enable", true, (target, value) => target.IsEnabled = value);
+      GetConsoleCommand.AddBind<WeatherController, bool>("weather_enable", true, target => target.IsEnabled);
       EnumConsoleCommand.AddBind("-weather", (Func<string>) (() =>
       {
         string str = "\nWeather :\n";

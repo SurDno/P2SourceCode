@@ -5,6 +5,7 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -46,7 +47,7 @@ namespace Engine.Source.Debugs
         Handler = handler,
         Visible = new BoolPlayerProperty(name)
       });
-      groups.Sort((a, b) => a.HotKey.CompareTo((object) b.HotKey));
+      groups.Sort((a, b) => a.HotKey.CompareTo(b.HotKey));
     }
 
     [Initialise]

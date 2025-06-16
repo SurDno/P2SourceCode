@@ -1,4 +1,6 @@
-﻿namespace SoundPropagation
+﻿using UnityEngine;
+
+namespace SoundPropagation
 {
   public class SPCell : MonoBehaviour
   {
@@ -13,7 +15,7 @@
     {
       if (initialized)
         return;
-      group = this.GetComponentInParent<SPIndoor>();
+      group = GetComponentInParent<SPIndoor>();
       initialized = true;
     }
 
@@ -30,18 +32,18 @@
     {
       get
       {
-        return (Object) Profile != (Object) null ? Profile.FilteringPerMeter : new Filtering();
+        return Profile != null ? Profile.FilteringPerMeter : new Filtering();
       }
     }
 
     public float LossPerMeter
     {
-      get => (Object) Profile != (Object) null ? Profile.FilteringPerMeter.Loss : 0.0f;
+      get => Profile != null ? Profile.FilteringPerMeter.Loss : 0.0f;
     }
 
     public static SPCell Find(Vector3 position, LayerMask layerMask)
     {
-      int num = Physics.OverlapSphereNonAlloc(position, 1f / 1000f, searchBuffer, (int) layerMask, QueryTriggerInteraction.Collide);
+      int num = Physics.OverlapSphereNonAlloc(position, 1f / 1000f, searchBuffer, layerMask, QueryTriggerInteraction.Collide);
       if (num > 0)
       {
         if (num > 8)
@@ -49,7 +51,7 @@
         for (int index = 0; index < num; ++index)
         {
           SPCell componentInParent = searchBuffer[index].GetComponentInParent<SPCell>();
-          if ((Object) componentInParent != (Object) null)
+          if (componentInParent != null)
             return componentInParent;
         }
       }

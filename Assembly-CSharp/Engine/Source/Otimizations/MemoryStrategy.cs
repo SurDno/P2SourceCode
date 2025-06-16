@@ -1,6 +1,7 @@
 ﻿using Cofe.Utility;
 using Engine.Common.Services;
 using Engine.Source.Settings.External;
+using UnityEngine;
 
 namespace Engine.Source.Otimizations
 {
@@ -19,7 +20,7 @@ namespace Engine.Source.Otimizations
             instance = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MemoryStrategies[strategyIndex];
           if (instance == null)
             instance = ServiceCache.Factory.Create<EmptyMemoryStrategy>();
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Current memory strategy : ").Append(TypeUtility.GetTypeName(instance.GetType())));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("Current memory strategy : ").Append(TypeUtility.GetTypeName(instance.GetType())));
         }
         return instance;
       }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class FlameExplosion : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class FlameExplosion : MonoBehaviour
 
   private void Start()
   {
-    audioSource = this.GetComponent<AudioSource>();
+    audioSource = GetComponent<AudioSource>();
     Vector3 position = this.transform.position;
     Vector3 origin = position - this.transform.forward * rayOriginShift;
     List<FlamePatch> flamePatchList = new List<FlamePatch>();
@@ -32,12 +33,12 @@ public class FlameExplosion : MonoBehaviour
     {
       Vector3 onUnitSphere = Random.onUnitSphere;
       RaycastHit hitInfo;
-      if (Physics.Raycast(origin, onUnitSphere, out hitInfo, radius + rayOriginShift, (int) collisionLayers, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(origin, onUnitSphere, out hitInfo, radius + rayOriginShift, collisionLayers, QueryTriggerInteraction.Ignore))
       {
         float num1 = Vector3.Distance(hitInfo.point, position);
         if (num1 < (double) radius)
         {
-          FlamePatch flamePatch = Object.Instantiate<FlamePatch>(flamePatchPrefab);
+          FlamePatch flamePatch = Instantiate(flamePatchPrefab);
           Transform transform = flamePatch.transform;
           transform.SetParent(this.transform, false);
           transform.position = hitInfo.point;
@@ -58,7 +59,7 @@ public class FlameExplosion : MonoBehaviour
   {
     time += Time.deltaTime;
     float num1 = Mathf.Clamp01(strengthAnimation.Evaluate(time));
-    if ((Object) audioSource != (Object) null)
+    if (audioSource != null)
       audioSource.volume = num1;
     float num2 = Mathf.Clamp01(decalsAnimation.Evaluate(time));
     for (int index = 0; index < patches.Length; ++index)
@@ -68,6 +69,6 @@ public class FlameExplosion : MonoBehaviour
     }
     if (time < (double) decalsAnimation.keys[decalsAnimation.keys.Length - 1].time)
       return;
-    this.gameObject.SetActive(false);
+    gameObject.SetActive(false);
   }
 }

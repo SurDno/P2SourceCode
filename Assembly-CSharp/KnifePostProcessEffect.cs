@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Inspectors;
+using UnityEngine;
 
 [RequireComponent(typeof (AudioSource))]
 public class KnifePostProcessEffect : MonoBehaviour
@@ -17,8 +18,8 @@ public class KnifePostProcessEffect : MonoBehaviour
   [Inspected]
   public void AddRandomScar()
   {
-    Vector3 vector3_1 = this.gameObject.transform.right - this.gameObject.transform.up;
-    Vector3 vector3_2 = this.gameObject.transform.position + this.gameObject.transform.forward + Vector3.up;
+    Vector3 vector3_1 = gameObject.transform.right - gameObject.transform.up;
+    Vector3 vector3_2 = gameObject.transform.position + gameObject.transform.forward + Vector3.up;
   }
 
   public void AddScar(
@@ -27,11 +28,11 @@ public class KnifePostProcessEffect : MonoBehaviour
     float strength,
     float time)
   {
-    Vector3 vector3 = this.gameObject.transform.InverseTransformVector(velocityInWorldSpace);
+    Vector3 vector3 = gameObject.transform.InverseTransformVector(velocityInWorldSpace);
     float magnitude = vector3.magnitude;
     float num = Mathf.Atan2(vector3.y, vector3.x) * 57.29578f;
-    Vector3 viewportPoint = this.gameObject.GetComponent<Camera>().WorldToViewportPoint(positionInWorldSpace);
-    if ((double) viewportPoint.z < 0.0)
+    Vector3 viewportPoint = gameObject.GetComponent<Camera>().WorldToViewportPoint(positionInWorldSpace);
+    if (viewportPoint.z < 0.0)
       viewportPoint *= -1f;
     Vector2 vector2 = new Vector2(Mathf.Clamp(viewportPoint.x, 0.1f, 0.9f), Mathf.Clamp(viewportPoint.y, 0.1f, 0.9f));
     scars.Add(new Scar {
@@ -58,7 +59,7 @@ public class KnifePostProcessEffect : MonoBehaviour
 
   private void Awake()
   {
-    audioSource = this.GetComponent<AudioSource>();
+    audioSource = GetComponent<AudioSource>();
     material = new Material(Shader.Find("Hidden/KnifePostProcessEffectShader"));
     zero = new Scar {
       Position = Vector2.zero,
@@ -74,8 +75,8 @@ public class KnifePostProcessEffect : MonoBehaviour
 
   private void OnRenderImage(RenderTexture src, RenderTexture dest)
   {
-    material.SetFloat("_Aspect", (float) src.width / (float) src.height);
-    Graphics.Blit((Texture) src, dest, material);
+    material.SetFloat("_Aspect", src.width / (float) src.height);
+    Graphics.Blit(src, dest, material);
   }
 
   private void OnPreRender()

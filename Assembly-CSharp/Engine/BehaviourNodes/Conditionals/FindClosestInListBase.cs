@@ -1,6 +1,7 @@
 ﻿using BehaviorDesigner.Runtime;
 using BehaviorDesigner.Runtime.Tasks;
 using Engine.Common.Generator;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -25,7 +26,7 @@ namespace Engine.BehaviourNodes.Conditionals
     {
       if (InputList.Value != null)
         return;
-      Debug.LogWarningFormat("{0}: empty InputList", (object) gameObject.name);
+      Debug.LogWarningFormat("{0}: empty InputList", gameObject.name);
     }
 
     public override TaskStatus OnUpdate()

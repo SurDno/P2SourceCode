@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class AnnoBoneDeformer : IAnnoDeformer
 {
@@ -33,7 +34,7 @@ public class AnnoBoneDeformer : IAnnoDeformer
       visemeBoneDefine.Deform(weight, DeformMemory);
     }
     else
-      Debug.Log((object) ("Can't find viseme " + sLabel));
+      Debug.Log("Can't find viseme " + sLabel);
   }
 
   public void Start()

@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -36,8 +37,8 @@ namespace Engine.Impl.UI.Menu.Main
     {
       graphicsGameSettings = InstanceByRequest<GraphicsGameSettings>.Instance;
       GraphicSettingsData instance = ScriptableObjectInstance<GraphicSettingsData>.Instance;
-      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
-      this.vSyncView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      layout = Instantiate(listLayoutPrefab, transform, false);
+      this.vSyncView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.vSyncView.SetName("{UI.Menu.Main.Settings.Graphics.VSync}");
       this.vSyncView.SetValueNames(new string[5]
       {
@@ -50,7 +51,7 @@ namespace Engine.Impl.UI.Menu.Main
       this.vSyncView.SetSetting(graphicsGameSettings.VSync);
       NamedIntSettingsValueView vSyncView = this.vSyncView;
       vSyncView.VisibleValueChangeEvent = vSyncView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.gammaView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.gammaView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.gammaView.SetName("{UI.Menu.Main.Settings.Graphics.Gamma}");
       this.gammaView.SetMinValue(graphicsGameSettings.Gamma.MinValue);
       this.gammaView.SetMaxValue(graphicsGameSettings.Gamma.MaxValue);
@@ -59,7 +60,7 @@ namespace Engine.Impl.UI.Menu.Main
       this.gammaView.SetValueValidationFunction(SettingsViewUtility.GammaValueValidation, 0.025f);
       FloatSettingsValueView gammaView = this.gammaView;
       gammaView.VisibleValueChangeEvent = gammaView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.fieldOfViewView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.fieldOfViewView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.fieldOfViewView.SetName("{UI.Menu.Main.Settings.Graphics.FieldOfView}");
       this.fieldOfViewView.SetMinValue(graphicsGameSettings.FieldOfView.MinValue);
       this.fieldOfViewView.SetMaxValue(graphicsGameSettings.FieldOfView.MaxValue);
@@ -78,25 +79,25 @@ namespace Engine.Impl.UI.Menu.Main
           str = "<color=" + errorColor.ToRGBHex() + ">" + str + "</color>";
         names1[index] = str;
       }
-      this.textureQualityView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      this.textureQualityView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.textureQualityView.SetName("{UI.Menu.Main.Settings.Graphics.TextureQuality}");
       this.textureQualityView.SetValueNames(names1);
       this.textureQualityView.SetSetting(graphicsGameSettings.TextureQuality);
       NamedIntSettingsValueView textureQualityView = this.textureQualityView;
       textureQualityView.VisibleValueChangeEvent = textureQualityView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      UnityEngine.Object.Instantiate<GameObject>(separatorPrefab, (Transform) layout.Content, false);
+      Instantiate(separatorPrefab, layout.Content, false);
       int length2 = instance.Presets.Length;
       string[] names2 = new string[length2 + 1];
       for (int index = 0; index < length2; ++index)
         names2[index] = "{UI.Menu.Main.Settings.Graphics.Quality." + index + "}";
       names2[length2] = "{UI.Menu.Main.Settings.Graphics.Quality.Custom}";
-      this.qualityView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      this.qualityView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.qualityView.SetName("{UI.Menu.Main.Settings.Graphics.Quality}");
       this.qualityView.SetValueNames(names2);
       NamedIntSettingsValueView qualityView = this.qualityView;
       qualityView.VisibleValueChangeEvent = qualityView.VisibleValueChangeEvent + OnQualityChange;
-      UnityEngine.Object.Instantiate<GameObject>(separatorPrefab, (Transform) layout.Content, false);
-      this.lodView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      Instantiate(separatorPrefab, layout.Content, false);
+      this.lodView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.lodView.SetName("{UI.Menu.Main.Settings.Graphics.LevelOfDetail}");
       this.lodView.SetMinValue(graphicsGameSettings.LevelOfDetails.MinValue);
       this.lodView.SetMaxValue(graphicsGameSettings.LevelOfDetails.MaxValue);
@@ -105,7 +106,7 @@ namespace Engine.Impl.UI.Menu.Main
       this.lodView.SetValueValidationFunction(LodValueValidation, 0.1f);
       FloatSettingsValueView lodView = this.lodView;
       lodView.VisibleValueChangeEvent = lodView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.aiLodDistanceView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.aiLodDistanceView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.aiLodDistanceView.SetName("{UI.Menu.Main.Settings.Graphics.AILodDistance}");
       this.aiLodDistanceView.SetMinValue(graphicsGameSettings.AILodDistance.MinValue);
       this.aiLodDistanceView.SetMaxValue(graphicsGameSettings.AILodDistance.MaxValue);
@@ -114,7 +115,7 @@ namespace Engine.Impl.UI.Menu.Main
       this.aiLodDistanceView.SetValueValidationFunction(SettingsViewUtility.RoundValueTo5, 5f);
       FloatSettingsValueView aiLodDistanceView = this.aiLodDistanceView;
       aiLodDistanceView.VisibleValueChangeEvent = aiLodDistanceView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.anisotropicFilteringView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.anisotropicFilteringView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.anisotropicFilteringView.SetName("{UI.Menu.Main.Settings.Graphics.AnisotropicFiltering}");
       this.anisotropicFilteringView.SetSetting(graphicsGameSettings.AnisotropicFiltering);
       BoolSettingsValueView anisotropicFilteringView = this.anisotropicFilteringView;
@@ -123,13 +124,13 @@ namespace Engine.Impl.UI.Menu.Main
       string[] names3 = new string[length3];
       for (int index = 0; index < length3; ++index)
         names3[index] = "{UI.Menu.Main.Settings.Graphics.ShadowQuality." + index + "}";
-      this.shadowQualityView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      this.shadowQualityView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.shadowQualityView.SetName("{UI.Menu.Main.Settings.Graphics.ShadowQuality}");
       this.shadowQualityView.SetValueNames(names3);
       this.shadowQualityView.SetSetting(graphicsGameSettings.ShadowQuality);
       NamedIntSettingsValueView shadowQualityView = this.shadowQualityView;
       shadowQualityView.VisibleValueChangeEvent = shadowQualityView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.shadowDistanceView = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+      this.shadowDistanceView = Instantiate(floatValueViewPrefab, layout.Content, false);
       this.shadowDistanceView.SetName("{UI.Menu.Main.Settings.Graphics.ShadowDistance}");
       this.shadowDistanceView.SetMinValue(graphicsGameSettings.ShadowDistance.MinValue);
       this.shadowDistanceView.SetMaxValue(graphicsGameSettings.ShadowDistance.MaxValue);
@@ -138,52 +139,52 @@ namespace Engine.Impl.UI.Menu.Main
       this.shadowDistanceView.SetValueValidationFunction(SettingsViewUtility.RoundValueTo5, 5f);
       FloatSettingsValueView shadowDistanceView = this.shadowDistanceView;
       shadowDistanceView.VisibleValueChangeEvent = shadowDistanceView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.contactShadowsView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.contactShadowsView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.contactShadowsView.SetName("{UI.Menu.Main.Settings.Graphics.ContactShadows}");
       this.contactShadowsView.SetSetting(graphicsGameSettings.ContactShadows);
       BoolSettingsValueView contactShadowsView = this.contactShadowsView;
       contactShadowsView.VisibleValueChangeEvent = contactShadowsView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.aoFieldsView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.aoFieldsView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.aoFieldsView.SetName("{UI.Menu.Main.Settings.Graphics.AOFields}");
       this.aoFieldsView.SetSetting(graphicsGameSettings.AOFields);
       BoolSettingsValueView aoFieldsView = this.aoFieldsView;
       aoFieldsView.VisibleValueChangeEvent = aoFieldsView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.ssaoView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.ssaoView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.ssaoView.SetName("{UI.Menu.Main.Settings.Graphics.SSAO}");
       this.ssaoView.SetSetting(graphicsGameSettings.SSAO);
       BoolSettingsValueView ssaoView = this.ssaoView;
       ssaoView.VisibleValueChangeEvent = ssaoView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.antialiasingView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.antialiasingView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.antialiasingView.SetName("{UI.Menu.Main.Settings.Graphics.Antialiasing}");
       this.antialiasingView.SetSetting(graphicsGameSettings.Antialiasing);
       BoolSettingsValueView antialiasingView = this.antialiasingView;
       antialiasingView.VisibleValueChangeEvent = antialiasingView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.additionalReflectionsView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.additionalReflectionsView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.additionalReflectionsView.SetName("{UI.Menu.Main.Settings.Graphics.AdditionalReflections}");
       this.additionalReflectionsView.SetSetting(graphicsGameSettings.AdditionalReflections);
       BoolSettingsValueView additionalReflectionsView = this.additionalReflectionsView;
       additionalReflectionsView.VisibleValueChangeEvent = additionalReflectionsView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.ssrView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.ssrView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.ssrView.SetName("{UI.Menu.Main.Settings.Graphics.SSR}");
       this.ssrView.SetSetting(graphicsGameSettings.SSR);
       BoolSettingsValueView ssrView = this.ssrView;
       ssrView.VisibleValueChangeEvent = ssrView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.dofView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.dofView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.dofView.SetName("{UI.Menu.Main.Settings.Graphics.DepthOfField}");
       this.dofView.SetSetting(graphicsGameSettings.DOF);
       BoolSettingsValueView dofView = this.dofView;
       dofView.VisibleValueChangeEvent = dofView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.motionBlurView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.motionBlurView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.motionBlurView.SetName("{UI.Menu.Main.Settings.Graphics.MotionBlur}");
       this.motionBlurView.SetSetting(graphicsGameSettings.MotionBlur);
       BoolSettingsValueView motionBlurView = this.motionBlurView;
       motionBlurView.VisibleValueChangeEvent = motionBlurView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.softParticlesView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      this.softParticlesView = Instantiate(boolValueViewPrefab, layout.Content, false);
       this.softParticlesView.SetName("{UI.Menu.Main.Settings.Graphics.SoftParticles}");
       this.softParticlesView.SetSetting(graphicsGameSettings.SoftParticles);
       BoolSettingsValueView softParticlesView = this.softParticlesView;
       softParticlesView.VisibleValueChangeEvent = softParticlesView.VisibleValueChangeEvent + GraphicSettingsHelper.OnAutoValueChange;
-      this.volumetricLightingView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      this.volumetricLightingView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       this.volumetricLightingView.SetName("{UI.Menu.Main.Settings.Graphics.VolumetricLighting}");
       this.volumetricLightingView.SetValueNames(new string[4]
       {

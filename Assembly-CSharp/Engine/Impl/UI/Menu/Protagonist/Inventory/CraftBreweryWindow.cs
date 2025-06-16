@@ -12,6 +12,7 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -45,7 +46,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       actors.Add(Actor);
       Build2();
       CreateContainers();
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
       {
         HideInfoWindow();
         selectedStorable.SetSelected(false);
@@ -54,7 +55,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       foreach (ItemSelector ingredientSelector in ingredientSelectors)
       {
         StorableUI storableByComponent = GetStorableByComponent(ingredientSelector.Item);
-        if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
+        if (storableByComponent != null)
         {
           selectedStorable = storableByComponent;
           OnSelectObject(selectedStorable.gameObject);
@@ -74,9 +75,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickUp, NavigateOnSlots);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, NavigateOnSlots);
       isSlotNavigationEnabled = true;
-      if ((UnityEngine.Object) lastBrewingSlot == (UnityEngine.Object) null)
+      if (lastBrewingSlot == null)
         lastBrewingSlot = brewingSlotAnchors.Where(anchor => anchor.Slot.IsSlotAvailable).Last();
-      if ((UnityEngine.Object) lastBrewingSlot != (UnityEngine.Object) null)
+      if (lastBrewingSlot != null)
       {
         lastBrewingSlot.Slot.SetEnabled(true);
         lastBrewingSlot.Slot.SetSelected(true);
@@ -125,7 +126,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           CurrentMode = Modes.Craft;
         if (currentBrewingSlotIndex == -1)
           currentBrewingSlotIndex = activeBrewingSlots.Count - 1;
-        if ((UnityEngine.Object) lastBrewingSlot != (UnityEngine.Object) null)
+        if (lastBrewingSlot != null)
         {
           if (!lastBrewingSlot.Slot.IsEnabled)
             lastBrewingSlot.Slot.SetEnabled(true);
@@ -140,14 +141,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (!InputService.Instance.JoystickUsed || !down)
         return false;
-      if (currentBrewingSlotIndex != -1 && currentBrewingSlotIndex < activeBrewingSlots.Count && (UnityEngine.Object) activeBrewingSlots[currentBrewingSlotIndex] != (UnityEngine.Object) null)
+      if (currentBrewingSlotIndex != -1 && currentBrewingSlotIndex < activeBrewingSlots.Count && activeBrewingSlots[currentBrewingSlotIndex] != null)
         activeBrewingSlots[currentBrewingSlotIndex]?.Slot.SetSelected(false);
       currentBrewingSlotIndex += type == GameActionType.RStickUp ? 1 : -1;
       if (currentBrewingSlotIndex < 0)
         currentBrewingSlotIndex = currentBrewingSlotIndex = activeBrewingSlots.Count - 1;
       if (currentBrewingSlotIndex > activeBrewingSlots.Count - 1)
         currentBrewingSlotIndex = 0;
-      if ((UnityEngine.Object) activeBrewingSlots[currentBrewingSlotIndex] != (UnityEngine.Object) null)
+      if (activeBrewingSlots[currentBrewingSlotIndex] != null)
       {
         activeBrewingSlots[currentBrewingSlotIndex].Slot.SetSelected(true);
         if (activeBrewingSlots[currentBrewingSlotIndex].Slot.IsSlotAvailable)
@@ -186,7 +187,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       foreach (CraftBrewingSlotAnchor activeBrewingSlot in activeBrewingSlots)
       {
-        if ((UnityEngine.Object) activeBrewingSlot.Slot == (UnityEngine.Object) slot)
+        if (activeBrewingSlot.Slot == slot)
         {
           lastBrewingSlot = activeBrewingSlot;
           break;
@@ -197,7 +198,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void SlotItemTaken(CraftBrewingSlot slot)
     {
-      if ((UnityEngine.Object) lastBrewingSlot == (UnityEngine.Object) slot)
+      if (lastBrewingSlot == slot)
         lastBrewingSlot = null;
       if (activeBrewingSlots.Count == 0)
         activeBrewingSlots = brewingSlotAnchors.Where(anchor => anchor.Slot.IsSlotAvailable).ToList();
@@ -312,7 +313,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         IStorableComponent component = entity.GetComponent<IStorableComponent>();
         SetItemTimer(component, recipe.Time);
         Target.AddItem(component, targetContainer);
-        if ((UnityEngine.Object) craftAudio != (UnityEngine.Object) null)
+        if (craftAudio != null)
           PlayAudio(craftAudio);
       }
       OnInvalidate();
@@ -412,7 +413,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      RegisterLayer((ICraftBreweryWindow) this);
+      RegisterLayer<ICraftBreweryWindow>(this);
       foreach (ItemSelector ingredientSelector in ingredientSelectors)
         ingredientSelector.ChangeItemEvent += OnIngredientChange;
       foreach (CraftBrewingSlotAnchor brewingSlotAnchor in brewingSlotAnchors)

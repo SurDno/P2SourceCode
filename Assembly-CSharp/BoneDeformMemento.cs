@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BoneDeformMemento
 {
@@ -44,7 +45,7 @@ public class BoneDeformMemento
   {
     foreach (DeformData bone in BoneDeformation)
     {
-      if ((Object) bone.bone == (Object) theBone)
+      if (bone.bone == theBone)
         return bone;
     }
     DeformData bone1 = new DeformData();
@@ -55,7 +56,7 @@ public class BoneDeformMemento
 
   public class DeformData
   {
-    public Transform bone = (Transform) null;
+    public Transform bone;
     public float tx;
     public float ty;
     public float tz;

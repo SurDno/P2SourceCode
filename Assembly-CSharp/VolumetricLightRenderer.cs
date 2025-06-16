@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 [RequireComponent(typeof (Camera))]
 public class VolumetricLightRenderer : MonoBehaviour
@@ -46,38 +48,38 @@ public class VolumetricLightRenderer : MonoBehaviour
   {
     if (Resolution == VolumtericResolution.Quarter)
       return _quarterDepthBuffer;
-    return Resolution == VolumtericResolution.Half ? _halfDepthBuffer : (RenderTexture) null;
+    return Resolution == VolumtericResolution.Half ? _halfDepthBuffer : null;
   }
 
   public static Texture GetDefaultSpotCookie() => _defaultSpotCookie;
 
   private void Awake()
   {
-    _camera = this.GetComponent<Camera>();
+    _camera = GetComponent<Camera>();
     if (_camera.actualRenderingPath == RenderingPath.Forward)
       _camera.depthTextureMode = DepthTextureMode.Depth;
     _currentResolution = Resolution;
     Shader shader1 = Shader.Find("Hidden/BlitAdd");
-    _blitAddMaterial = !((UnityEngine.Object) shader1 == (UnityEngine.Object) null) ? new Material(shader1) : throw new Exception("Critical Error: \"Hidden/BlitAdd\" shader is missing. Make sure it is included in \"Always Included Shaders\" in ProjectSettings/Graphics.");
+    _blitAddMaterial = !(shader1 == null) ? new Material(shader1) : throw new Exception("Critical Error: \"Hidden/BlitAdd\" shader is missing. Make sure it is included in \"Always Included Shaders\" in ProjectSettings/Graphics.");
     Shader shader2 = Shader.Find("Hidden/BilateralBlur");
-    _bilateralBlurMaterial = !((UnityEngine.Object) shader2 == (UnityEngine.Object) null) ? new Material(shader2) : throw new Exception("Critical Error: \"Hidden/BilateralBlur\" shader is missing. Make sure it is included in \"Always Included Shaders\" in ProjectSettings/Graphics.");
+    _bilateralBlurMaterial = !(shader2 == null) ? new Material(shader2) : throw new Exception("Critical Error: \"Hidden/BilateralBlur\" shader is missing. Make sure it is included in \"Always Included Shaders\" in ProjectSettings/Graphics.");
     _preLightPass = new CommandBuffer();
     _preLightPass.name = "PreLight";
     ChangeResolution();
-    if ((UnityEngine.Object) _pointLightMesh == (UnityEngine.Object) null)
+    if (_pointLightMesh == null)
     {
       GameObject primitive = GameObject.CreatePrimitive(PrimitiveType.Sphere);
       _pointLightMesh = primitive.GetComponent<MeshFilter>().sharedMesh;
-      UnityEngine.Object.Destroy((UnityEngine.Object) primitive);
+      Destroy(primitive);
     }
-    if ((UnityEngine.Object) _spotLightMesh == (UnityEngine.Object) null)
+    if (_spotLightMesh == null)
       _spotLightMesh = CreateSpotLightMesh();
-    if ((UnityEngine.Object) _lightMaterial == (UnityEngine.Object) null)
+    if (_lightMaterial == null)
     {
       Shader shader3 = Shader.Find("Sandbox/VolumetricLight");
-      _lightMaterial = !((UnityEngine.Object) shader3 == (UnityEngine.Object) null) ? new Material(shader3) : throw new Exception("Critical Error: \"Sandbox/VolumetricLight\" shader is missing. Make sure it is included in \"Always Included Shaders\" in ProjectSettings/Graphics.");
+      _lightMaterial = !(shader3 == null) ? new Material(shader3) : throw new Exception("Critical Error: \"Sandbox/VolumetricLight\" shader is missing. Make sure it is included in \"Always Included Shaders\" in ProjectSettings/Graphics.");
     }
-    if ((UnityEngine.Object) _defaultSpotCookie == (UnityEngine.Object) null)
+    if (_defaultSpotCookie == null)
       _defaultSpotCookie = DefaultSpotCookie;
     LoadNoise3dTexture();
     GenerateDitherTexture();
@@ -103,15 +105,15 @@ public class VolumetricLightRenderer : MonoBehaviour
   {
     int width1 = Mathf.Max(1, _camera.pixelWidth);
     int height1 = Mathf.Max(1, _camera.pixelHeight);
-    if ((UnityEngine.Object) _volumeLightTexture != (UnityEngine.Object) null)
-      UnityEngine.Object.Destroy((UnityEngine.Object) _volumeLightTexture);
+    if (_volumeLightTexture != null)
+      Destroy(_volumeLightTexture);
     _volumeLightTexture = new RenderTexture(width1, height1, 0, RenderTextureFormat.ARGBHalf);
     _volumeLightTexture.name = "VolumeLightBuffer";
     _volumeLightTexture.filterMode = FilterMode.Bilinear;
-    if ((UnityEngine.Object) _halfDepthBuffer != (UnityEngine.Object) null)
-      UnityEngine.Object.Destroy((UnityEngine.Object) _halfDepthBuffer);
-    if ((UnityEngine.Object) _halfVolumeLightTexture != (UnityEngine.Object) null)
-      UnityEngine.Object.Destroy((UnityEngine.Object) _halfVolumeLightTexture);
+    if (_halfDepthBuffer != null)
+      Destroy(_halfDepthBuffer);
+    if (_halfVolumeLightTexture != null)
+      Destroy(_halfVolumeLightTexture);
     if (Resolution == VolumtericResolution.Half || Resolution == VolumtericResolution.Quarter)
     {
       int width2 = Mathf.Max(1, width1 / 2);
@@ -124,10 +126,10 @@ public class VolumetricLightRenderer : MonoBehaviour
       _halfDepthBuffer.Create();
       _halfDepthBuffer.filterMode = FilterMode.Point;
     }
-    if ((UnityEngine.Object) _quarterVolumeLightTexture != (UnityEngine.Object) null)
-      UnityEngine.Object.Destroy((UnityEngine.Object) _quarterVolumeLightTexture);
-    if ((UnityEngine.Object) _quarterDepthBuffer != (UnityEngine.Object) null)
-      UnityEngine.Object.Destroy((UnityEngine.Object) _quarterDepthBuffer);
+    if (_quarterVolumeLightTexture != null)
+      Destroy(_quarterVolumeLightTexture);
+    if (_quarterDepthBuffer != null)
+      Destroy(_quarterDepthBuffer);
     if (Resolution != VolumtericResolution.Quarter)
       return;
     int width3 = Mathf.Max(1, width1 / 4);
@@ -163,14 +165,14 @@ public class VolumetricLightRenderer : MonoBehaviour
     bool flag = SystemInfo.graphicsShaderLevel > 40;
     if (Resolution == VolumtericResolution.Quarter)
     {
-      Texture source = (Texture) null;
+      Texture source = null;
       _preLightPass.Blit(source, (RenderTargetIdentifier) (Texture) _halfDepthBuffer, _bilateralBlurMaterial, flag ? 4 : 10);
       _preLightPass.Blit(source, (RenderTargetIdentifier) (Texture) _quarterDepthBuffer, _bilateralBlurMaterial, flag ? 6 : 11);
       _preLightPass.SetRenderTarget((RenderTargetIdentifier) (Texture) _quarterVolumeLightTexture);
     }
     else if (Resolution == VolumtericResolution.Half)
     {
-      _preLightPass.Blit((Texture) null, (RenderTargetIdentifier) (Texture) _halfDepthBuffer, _bilateralBlurMaterial, flag ? 4 : 10);
+      _preLightPass.Blit(null, (RenderTargetIdentifier) (Texture) _halfDepthBuffer, _bilateralBlurMaterial, flag ? 4 : 10);
       _preLightPass.SetRenderTarget((RenderTargetIdentifier) (Texture) _halfVolumeLightTexture);
     }
     else
@@ -189,40 +191,40 @@ public class VolumetricLightRenderer : MonoBehaviour
     {
       RenderTexture temporary = RenderTexture.GetTemporary(_quarterVolumeLightTexture.width, _quarterVolumeLightTexture.height, 0, RenderTextureFormat.ARGBHalf);
       temporary.filterMode = FilterMode.Bilinear;
-      Graphics.Blit((Texture) _quarterVolumeLightTexture, temporary, _bilateralBlurMaterial, 8);
-      Graphics.Blit((Texture) temporary, _quarterVolumeLightTexture, _bilateralBlurMaterial, 9);
-      Graphics.Blit((Texture) _quarterVolumeLightTexture, _volumeLightTexture, _bilateralBlurMaterial, 7);
+      Graphics.Blit(_quarterVolumeLightTexture, temporary, _bilateralBlurMaterial, 8);
+      Graphics.Blit(temporary, _quarterVolumeLightTexture, _bilateralBlurMaterial, 9);
+      Graphics.Blit(_quarterVolumeLightTexture, _volumeLightTexture, _bilateralBlurMaterial, 7);
       RenderTexture.ReleaseTemporary(temporary);
     }
     else if (Resolution == VolumtericResolution.Half)
     {
       RenderTexture temporary = RenderTexture.GetTemporary(_halfVolumeLightTexture.width, _halfVolumeLightTexture.height, 0, RenderTextureFormat.ARGBHalf);
       temporary.filterMode = FilterMode.Bilinear;
-      Graphics.Blit((Texture) _halfVolumeLightTexture, temporary, _bilateralBlurMaterial, 2);
-      Graphics.Blit((Texture) temporary, _halfVolumeLightTexture, _bilateralBlurMaterial, 3);
-      Graphics.Blit((Texture) _halfVolumeLightTexture, _volumeLightTexture, _bilateralBlurMaterial, 5);
+      Graphics.Blit(_halfVolumeLightTexture, temporary, _bilateralBlurMaterial, 2);
+      Graphics.Blit(temporary, _halfVolumeLightTexture, _bilateralBlurMaterial, 3);
+      Graphics.Blit(_halfVolumeLightTexture, _volumeLightTexture, _bilateralBlurMaterial, 5);
       RenderTexture.ReleaseTemporary(temporary);
     }
     else
     {
       RenderTexture temporary = RenderTexture.GetTemporary(_volumeLightTexture.width, _volumeLightTexture.height, 0, RenderTextureFormat.ARGBHalf);
       temporary.filterMode = FilterMode.Bilinear;
-      Graphics.Blit((Texture) _volumeLightTexture, temporary, _bilateralBlurMaterial, 0);
-      Graphics.Blit((Texture) temporary, _volumeLightTexture, _bilateralBlurMaterial, 1);
+      Graphics.Blit(_volumeLightTexture, temporary, _bilateralBlurMaterial, 0);
+      Graphics.Blit(temporary, _volumeLightTexture, _bilateralBlurMaterial, 1);
       RenderTexture.ReleaseTemporary(temporary);
     }
-    _blitAddMaterial.SetTexture("_Source", (Texture) source);
-    Graphics.Blit((Texture) _volumeLightTexture, destination, _blitAddMaterial, 0);
+    _blitAddMaterial.SetTexture("_Source", source);
+    Graphics.Blit(_volumeLightTexture, destination, _blitAddMaterial, 0);
   }
 
   private void UpdateMaterialParameters()
   {
-    _bilateralBlurMaterial.SetTexture("_HalfResDepthBuffer", (Texture) _halfDepthBuffer);
-    _bilateralBlurMaterial.SetTexture("_HalfResColor", (Texture) _halfVolumeLightTexture);
-    _bilateralBlurMaterial.SetTexture("_QuarterResDepthBuffer", (Texture) _quarterDepthBuffer);
-    _bilateralBlurMaterial.SetTexture("_QuarterResColor", (Texture) _quarterVolumeLightTexture);
-    Shader.SetGlobalTexture("_DitherTexture", (Texture) _ditheringTexture);
-    Shader.SetGlobalTexture("_NoiseTexture", (Texture) _noiseTexture);
+    _bilateralBlurMaterial.SetTexture("_HalfResDepthBuffer", _halfDepthBuffer);
+    _bilateralBlurMaterial.SetTexture("_HalfResColor", _halfVolumeLightTexture);
+    _bilateralBlurMaterial.SetTexture("_QuarterResDepthBuffer", _quarterDepthBuffer);
+    _bilateralBlurMaterial.SetTexture("_QuarterResColor", _quarterVolumeLightTexture);
+    Shader.SetGlobalTexture("_DitherTexture", _ditheringTexture);
+    Shader.SetGlobalTexture("_NoiseTexture", _noiseTexture);
   }
 
   private void LoadNoise3dTexture()
@@ -273,7 +275,7 @@ public class VolumetricLightRenderer : MonoBehaviour
 
   private void GenerateDitherTexture()
   {
-    if ((UnityEngine.Object) _ditheringTexture != (UnityEngine.Object) null)
+    if (_ditheringTexture != null)
       return;
     int num1 = 8;
     _ditheringTexture = new Texture2D(num1, num1, TextureFormat.Alpha8, false, true);
@@ -683,7 +685,7 @@ public class VolumetricLightRenderer : MonoBehaviour
       vector3Array[index + 2] = new Vector3(-Mathf.Cos(f) * z, Mathf.Sin(f) * z, z);
       color32Array[index + 2] = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
       vector3Array[index + 2 + 16] = new Vector3(-Mathf.Cos(f), Mathf.Sin(f), 1f);
-      color32Array[index + 2 + 16] = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, (byte) 0);
+      color32Array[index + 2 + 16] = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, 0);
       vector3Array[index + 2 + 32] = new Vector3(-Mathf.Cos(f) * z, Mathf.Sin(f) * z, 1f);
       color32Array[index + 2 + 32] = new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, byte.MaxValue);
       f += num1;

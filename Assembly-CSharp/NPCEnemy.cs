@@ -6,6 +6,7 @@ using Engine.Common.Components.AttackerPlayer;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 [RequireComponent(typeof (NPCWeaponService))]
 [RequireComponent(typeof (Pivot))]
@@ -23,7 +24,7 @@ public class NPCEnemy : EnemyBase
   [Header("Other")]
   [Tooltip("Обычно реакции на удары накладываются аддитивно, чтобы проигрываться поверх боевых. Но для персонажей, которые не дерутся могут применяться неаддитивные анимации реакций. В этих анимациях возможны сильные смещения.")]
   [SerializeField]
-  private bool nonAdditiveReaction = false;
+  private bool nonAdditiveReaction;
   private FightAnimatorBehavior.AnimatorState fightAnimatorState;
   private AnimatorState45 animatorState;
   private float staggerTimeLeft;
@@ -38,11 +39,11 @@ public class NPCEnemy : EnemyBase
 
   public float TimeFromLastHit { get; private set; }
 
-  public override Vector3 Velocity => this.GetComponent<Rigidbody>().velocity;
+  public override Vector3 Velocity => GetComponent<Rigidbody>().velocity;
 
   public void TriggerAction(WeaponActionEnum weaponAction)
   {
-    if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+    if (weaponService != null)
       weaponService.TriggerAction(weaponAction);
     if (weaponAction != WeaponActionEnum.JabAttack && weaponAction != WeaponActionEnum.KnockDown && weaponAction != WeaponActionEnum.StepAttack && weaponAction != WeaponActionEnum.Uppercut)
       return;
@@ -52,7 +53,7 @@ public class NPCEnemy : EnemyBase
   public void TriggerThrowBomb(int range)
   {
     currentWalkSpeed = 0.0f;
-    if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
+    if (!(animator != null))
       return;
     animator.SetFloat("Fight.WalkSpeed", 0.0f);
     animatorState.SetTrigger("Fight.Triggers/ThrowBomb");
@@ -103,11 +104,11 @@ public class NPCEnemy : EnemyBase
   {
     get
     {
-      return (UnityEngine.Object) animator != (UnityEngine.Object) null ? (float) animator.GetInteger("Fight.ContrReaction1") : 0.0f;
+      return animator != null ? animator.GetInteger("Fight.ContrReaction1") : 0.0f;
     }
     set
     {
-      if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
+      if (!(animator != null))
         return;
       animator.SetFloat("Fight.ContrReaction", value);
       animator.SetInteger("Fight.ContrReaction1", (int) value);
@@ -161,28 +162,28 @@ public class NPCEnemy : EnemyBase
 
   private void ApplyCurrentBlockStance()
   {
-    if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
+    if (!(animator != null))
       return;
     animator.SetFloat("Fight.BlockStance", BlockStance ? 1f : 0.0f);
   }
 
   private void UpdateBlockStance()
   {
-    if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
+    if (!(animator != null))
       return;
     animator.SetFloat("Fight.BlockStance", Mathf.MoveTowards(animator.GetFloat("Fight.BlockStance"), BlockStance ? 1f : 0.0f, Time.deltaTime / 0.5f));
   }
 
   private void Start()
   {
-    if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+    if (weaponService != null)
     {
       weaponService.WeaponShootEvent += OnWeaponShot;
       weaponService.Weapon = WeaponEnum.Unknown;
     }
     fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
     animatorState = AnimatorState45.GetAnimatorState(animator);
-    if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+    if (animator != null)
     {
       animator.SetLayerWeight(animator.GetLayerIndex("Fight Push Reaction Layer"), 1f);
       animator.SetBool("Setup/NonAdditiveReactions", nonAdditiveReaction);
@@ -207,9 +208,9 @@ public class NPCEnemy : EnemyBase
     }
     UpdatePunches();
     UpdateBlockStance();
-    if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
-      animator.SetFloat("Fight.Random", UnityEngine.Random.value);
-    this.transform.rotation = Quaternion.Euler(0.0f, this.transform.rotation.eulerAngles.y, 0.0f);
+    if (animator != null)
+      animator.SetFloat("Fight.Random", Random.value);
+    transform.rotation = Quaternion.Euler(0.0f, transform.rotation.eulerAngles.y, 0.0f);
     BlockType = BlockTypeEnum.NotBlocking;
     if (BlockStance)
       BlockType = BlockTypeEnum.Block;
@@ -221,7 +222,7 @@ public class NPCEnemy : EnemyBase
       BlockType = BlockTypeEnum.Surrender;
     UpdateRotation();
     currentWalkSpeed = Mathf.MoveTowards(currentWalkSpeed, desiredWalkSpeed, Time.deltaTime / 0.25f);
-    if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+    if (animator != null)
       animator.SetFloat("Fight.WalkSpeed", currentWalkSpeed);
     AttackCooldownTimeLeft -= Time.deltaTime;
     TimeFromLastHit += Time.deltaTime;
@@ -235,7 +236,7 @@ public class NPCEnemy : EnemyBase
 
   private void SetRotation(Quaternion newRotation)
   {
-    this.transform.rotation = Quaternion.Euler(0.0f, newRotation.eulerAngles.y, 0.0f);
+    transform.rotation = Quaternion.Euler(0.0f, newRotation.eulerAngles.y, 0.0f);
   }
 
   public float GetAimingRotationDelta() => aimingDeltaRotation;
@@ -250,31 +251,31 @@ public class NPCEnemy : EnemyBase
 
   private void UpdateRotation()
   {
-    if (IsDead || InstanceByRequest<EngineApplication>.Instance.IsPaused || (UnityEngine.Object) RotationTarget == (UnityEngine.Object) null || fightAnimatorState.Condition == FightAnimatorBehavior.AnimatorState.NPCCondition.EscapeBegin || fightAnimatorState.IsStagger)
+    if (IsDead || InstanceByRequest<EngineApplication>.Instance.IsPaused || RotationTarget == null || fightAnimatorState.Condition == FightAnimatorBehavior.AnimatorState.NPCCondition.EscapeBegin || fightAnimatorState.IsStagger)
       return;
     float? retreatAngle = RetreatAngle;
     if (!retreatAngle.HasValue)
     {
       if (RotateByPath)
       {
-        SetRotation(Quaternion.RotateTowards(this.transform.rotation, Quaternion.LookRotation(agent.steeringTarget - this.transform.position), rotationSpeed * Time.deltaTime));
+        SetRotation(Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(agent.steeringTarget - transform.position), rotationSpeed * Time.deltaTime));
       }
       else
       {
-        Vector3 forward = RotationTarget.position - this.transform.position;
+        Vector3 forward = RotationTarget.position - transform.position;
         if (forward == Vector3.zero)
           return;
         float magnitude = forward.magnitude;
         forward.Normalize();
-        Quaternion newRotation = Quaternion.RotateTowards(this.transform.rotation, Quaternion.AngleAxis(0.0f, Vector3.up) * Quaternion.LookRotation(forward), rotationSpeed * Time.deltaTime);
+        Quaternion newRotation = Quaternion.RotateTowards(transform.rotation, Quaternion.AngleAxis(0.0f, Vector3.up) * Quaternion.LookRotation(forward), rotationSpeed * Time.deltaTime);
         if (isAiming)
-          aimingDeltaRotation += Mathf.Abs(newRotation.eulerAngles.y - this.transform.rotation.eulerAngles.y);
+          aimingDeltaRotation += Mathf.Abs(newRotation.eulerAngles.y - transform.rotation.eulerAngles.y);
         SetRotation(newRotation);
       }
     }
     else
     {
-      Vector3 vector3 = RotationTarget.position - this.transform.position;
+      Vector3 vector3 = RotationTarget.position - transform.position;
       if (vector3 == Vector3.zero)
         return;
       vector3.Normalize();
@@ -288,17 +289,17 @@ public class NPCEnemy : EnemyBase
         quaternion1 = quaternion2 * quaternion3;
       }
       float rotationSpeed = this.rotationSpeed;
-      float num1 = Mathf.InverseLerp(0.0f, 40f, Quaternion.Angle(this.transform.rotation, quaternion1));
+      float num1 = Mathf.InverseLerp(0.0f, 40f, Quaternion.Angle(transform.rotation, quaternion1));
       float num2 = Mathf.Lerp(0.0f, 1f, num1 * num1);
       float num3 = rotationSpeed * num2;
       if (fightAnimatorState.Condition == FightAnimatorBehavior.AnimatorState.NPCCondition.Escape)
-        SetRotation(Quaternion.RotateTowards(this.transform.rotation, quaternion1, num3 * Time.deltaTime));
+        SetRotation(Quaternion.RotateTowards(transform.rotation, quaternion1, num3 * Time.deltaTime));
     }
   }
 
   public override void OnExternalAnimatorMove()
   {
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
       return;
     float num = Time.deltaTime;
     if (animator.updateMode == AnimatorUpdateMode.AnimatePhysics)
@@ -306,21 +307,21 @@ public class NPCEnemy : EnemyBase
     if (agent.isActiveAndEnabled && agent.isOnNavMesh)
     {
       Vector3 vector3_1 = Vector3.zero;
-      if ((UnityEngine.Object) Enemy != (UnityEngine.Object) null)
+      if (Enemy != null)
         vector3_1 = Enemy.CalculateRepulseVelocity(this) * num;
-      Vector3 vector3_2 = this.gameObject.transform.position + animator.deltaPosition + vector3_1;
+      Vector3 vector3_2 = gameObject.transform.position + animator.deltaPosition + vector3_1;
       vector3_2.y = Mathf.MoveTowards(vector3_2.y, agent.nextPosition.y, num * 0.1f);
       agent.nextPosition = vector3_2;
-      this.gameObject.transform.position = agent.nextPosition;
+      gameObject.transform.position = agent.nextPosition;
     }
-    this.gameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * animator.angularVelocity.y * num, Vector3.up);
+    gameObject.transform.rotation *= Quaternion.AngleAxis(57.29578f * animator.angularVelocity.y * num, Vector3.up);
   }
 
   private void QuickBlock(EnemyBase enemy, ReactionType reactionType, WeaponEnum weapon)
   {
     if (CantBlock)
       return;
-    float num = UnityEngine.Random.value;
+    float num = Random.value;
     if (weapon == WeaponEnum.Hands || weapon == WeaponEnum.Flashlight)
     {
       if (num < (double) DodgeProbability)
@@ -349,10 +350,10 @@ public class NPCEnemy : EnemyBase
       return false;
     }
     float num = 1.5f;
-    float y = Vector3.Cross(-enemy.transform.forward, this.transform.forward).y;
+    float y = Vector3.Cross(-enemy.transform.forward, transform.forward).y;
     bool flag1 = y < 0.0;
-    bool flag2 = PathfindingHelper.IsFreeSpace(this.transform.position, this.transform.position - this.transform.forward * num);
-    if ((double) Mathf.Abs(y) < 0.3 & flag2)
+    bool flag2 = PathfindingHelper.IsFreeSpace(transform.position, transform.position - transform.forward * num);
+    if (Mathf.Abs(y) < 0.3 & flag2)
     {
       animatorState.SetTrigger("Fight.Triggers/DodgeBack");
       pivot.PlaySound(Pivot.SoundEnum.StepBack);
@@ -361,7 +362,7 @@ public class NPCEnemy : EnemyBase
     }
     if (flag1)
     {
-      if (PathfindingHelper.IsFreeSpace(this.transform.position, this.transform.position + this.transform.right * num))
+      if (PathfindingHelper.IsFreeSpace(transform.position, transform.position + transform.right * num))
       {
         animatorState.SetTrigger("Fight.Triggers/DodgeRight");
         pivot.PlaySound(Pivot.SoundEnum.StrafeRight);
@@ -369,7 +370,7 @@ public class NPCEnemy : EnemyBase
         return true;
       }
     }
-    else if (PathfindingHelper.IsFreeSpace(this.transform.position, this.transform.position - this.transform.right * num))
+    else if (PathfindingHelper.IsFreeSpace(transform.position, transform.position - transform.right * num))
     {
       animatorState.SetTrigger("Fight.Triggers/DodgeLeft");
       pivot.PlaySound(Pivot.SoundEnum.StrafeLeft);
@@ -413,20 +414,20 @@ public class NPCEnemy : EnemyBase
   private void ReactionBase(float reactionLayerWeight, EnemyBase enemy, ReactionType reactionType)
   {
     ApplyCurrentBlockStance();
-    if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+    if (weaponService != null)
       weaponService.ReactionLayerWeight = reactionLayerWeight;
     float fightReactionX;
     float fightReactionY;
     CaclulateRection(enemy, reactionType, out fightReactionX, out fightReactionY);
-    if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+    if (animator != null)
     {
       animator.SetFloat("Fight.ReactionY", fightReactionY);
       animator.SetFloat("Fight.ReactionX", fightReactionX);
     }
     if (animatorState != null && CanPlayReactionAnimation)
       animatorState.SetTrigger("Fight.Triggers/Reaction");
-    if ((bool) (UnityEngine.Object) pivot)
-      pivot.RagdollApplyImpulseToHead(25f * this.transform.TransformVector(new Vector3(-fightReactionX, 0.0f, -fightReactionY)));
+    if ((bool) (Object) pivot)
+      pivot.RagdollApplyImpulseToHead(25f * transform.TransformVector(new Vector3(-fightReactionX, 0.0f, -fightReactionY)));
     weaponService.PunchReaction(reactionType);
   }
 
@@ -436,11 +437,11 @@ public class NPCEnemy : EnemyBase
     out float fightReactionX,
     out float fightReactionY)
   {
-    Vector3 normalized = (enemy.transform.position - this.transform.position).normalized;
-    float y = Vector3.Cross(normalized, this.transform.forward).y;
-    if ((double) Vector3.Dot(normalized, this.transform.forward) > 0.0)
+    Vector3 normalized = (enemy.transform.position - transform.position).normalized;
+    float y = Vector3.Cross(normalized, transform.forward).y;
+    if (Vector3.Dot(normalized, transform.forward) > 0.0)
     {
-      if ((double) Mathf.Abs(y) < (double) Mathf.Sin(0.87266463f))
+      if (Mathf.Abs(y) < (double) Mathf.Sin(0.87266463f))
       {
         fightReactionX = 0.0f;
         fightReactionY = 1f;
@@ -461,14 +462,14 @@ public class NPCEnemy : EnemyBase
 
   public override void Prepunch(ReactionType reactionType, WeaponEnum weapon, EnemyBase enemy)
   {
-    if (IsCombatIgnored || (UnityEngine.Object) weaponService == (UnityEngine.Object) null || weaponService.Weapon == WeaponEnum.Unknown)
+    if (IsCombatIgnored || weaponService == null || weaponService.Weapon == WeaponEnum.Unknown)
       return;
     FireWasWasPrepunchEvent();
     if (BlockStance || fightAnimatorState.IsCheating || fightAnimatorState.IsAttacking || IsQuickBlock)
       return;
     animatorState.SetTrigger("Fight.Triggers/CancelAttack");
     prePunchEnemy = enemy;
-    if ((double) UnityEngine.Random.value >= QuickBlockProbability)
+    if (Random.value >= (double) QuickBlockProbability)
       return;
     QuickBlock(enemy, reactionType, weapon);
   }
@@ -478,12 +479,12 @@ public class NPCEnemy : EnemyBase
     WeaponEnum weapon,
     EnemyBase enemy)
   {
-    if (IsCombatIgnored || (UnityEngine.Object) weaponService == (UnityEngine.Object) null || weaponService.Weapon == WeaponEnum.Unknown || IsSurrender || BlockStance || fightAnimatorState.IsCheating || fightAnimatorState.IsAttacking || IsQuickBlock)
+    if (IsCombatIgnored || weaponService == null || weaponService.Weapon == WeaponEnum.Unknown || IsSurrender || BlockStance || fightAnimatorState.IsCheating || fightAnimatorState.IsAttacking || IsQuickBlock)
       return;
     animatorState.ResetAllTriggers();
     animatorState.SetTrigger("Fight.Triggers/CancelAttack");
     prePunchEnemy = enemy;
-    if ((double) UnityEngine.Random.value >= QuickBlockProbability * (double) DodgeProbability)
+    if (Random.value >= QuickBlockProbability * (double) DodgeProbability)
       return;
     Dodge(enemy);
   }
@@ -701,13 +702,13 @@ public class NPCEnemy : EnemyBase
       animatorState.SetTrigger("Fight.Triggers/CancelAttack");
       animatorState.SetTrigger("Fight.Triggers/Stagger");
     }
-    if ((UnityEngine.Object) pivot != (UnityEngine.Object) null)
+    if (pivot != null)
     {
       pivot.PlaySound(Pivot.SoundEnum.StaggerVocal);
       pivot.PlaySound(Pivot.SoundEnum.BlockHitted);
       pivot.PlaySound(Pivot.SoundEnum.FaceHitted);
     }
-    if (!((UnityEngine.Object) enemy != (UnityEngine.Object) null))
+    if (!(enemy != null))
       return;
     FireWasStaggeredEvent(enemy);
   }
@@ -717,7 +718,7 @@ public class NPCEnemy : EnemyBase
     if (IsDead || IsFaint)
       return;
     animatorState.SetTrigger("Fight.Triggers/CancelAttack");
-    if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+    if (animator != null)
     {
       animator.SetFloat("Fight.ReactionY", 1f);
       animator.SetFloat("Fight.ReactionX", 0.0f);
@@ -729,7 +730,7 @@ public class NPCEnemy : EnemyBase
 
   public override void PushMove(Vector3 direction)
   {
-    this.gameObject.GetComponent<Rigidbody>().AddForce(direction, ForceMode.Impulse);
+    gameObject.GetComponent<Rigidbody>().AddForce(direction, ForceMode.Impulse);
   }
 
   public void Fire() => animatorState.SetTrigger("Fight.Triggers/Fire");

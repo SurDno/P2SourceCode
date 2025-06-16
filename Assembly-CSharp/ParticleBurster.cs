@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Audio;
 
 public class ParticleBurster : MonoBehaviour
 {
@@ -10,9 +12,9 @@ public class ParticleBurster : MonoBehaviour
   {
     for (int index = 0; index < Bursts.Length; ++index)
       Bursts[index].System.Emit(Bursts[index].Count);
-    if (!((UnityEngine.Object) AudioSource != (UnityEngine.Object) null) || !((UnityEngine.Object) AudioSource.clip != (UnityEngine.Object) null))
+    if (!(AudioSource != null) || !(AudioSource.clip != null))
       return;
-    if ((UnityEngine.Object) mixer != (UnityEngine.Object) null)
+    if (mixer != null)
       AudioSource.outputAudioMixerGroup = mixer;
     AudioSource.PlayOneShot(AudioSource.clip);
   }

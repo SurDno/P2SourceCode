@@ -493,7 +493,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", Name, engDynGuid, ex.ToString()));
+          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", Name, engDynGuid, ex));
         }
       }
       else
@@ -506,7 +506,7 @@ namespace PLVirtualMachine.Common.EngineAPI.VMECS
         }
         catch (Exception ex)
         {
-          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", Name, engDynGuid, ex.ToString()));
+          Logger.AddError(string.Format("Object {0} with id {1} engine instancing error: {2}", Name, engDynGuid, ex));
         }
       }
     }

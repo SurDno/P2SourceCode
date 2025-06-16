@@ -1,4 +1,5 @@
 ﻿using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -18,9 +19,9 @@ namespace FlowCanvas.Nodes
     protected override void RegisterPorts()
     {
       hit = AddFlowOutput("Collider Hit");
-      AddValueOutput("Other", (ValueHandler<GameObject>) (() => hitInfo.gameObject));
-      AddValueOutput("Collision Point", (ValueHandler<Vector3>) (() => hitInfo.point));
-      AddValueOutput("Collision Info", (ValueHandler<ControllerColliderHit>) (() => hitInfo));
+      AddValueOutput("Other", () => hitInfo.gameObject);
+      AddValueOutput("Collision Point", () => hitInfo.point);
+      AddValueOutput("Collision Info", () => hitInfo);
     }
 
     private void OnControllerColliderHit(ControllerColliderHit hitInfo)

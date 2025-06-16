@@ -3,6 +3,9 @@ using Engine.Common.Services;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -18,7 +21,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     private bool isCanceled;
     private IStorableComponent target;
     [SerializeField]
-    private Slider unitySlider = (Slider) null;
+    private Slider unitySlider;
     [SerializeField]
     private Image itemImage;
     [SerializeField]
@@ -58,15 +61,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     protected override void Awake()
     {
       base.Awake();
-      buttonSelect.onClick.AddListener(new UnityAction(Select));
-      buttonCancel.onClick.AddListener(new UnityAction(Cancel));
-      unitySlider.onValueChanged.AddListener(new UnityAction<float>(OnSliderValueChange));
+      buttonSelect.onClick.AddListener(Select);
+      buttonCancel.onClick.AddListener(Cancel);
+      unitySlider.onValueChanged.AddListener(OnSliderValueChange);
     }
 
     protected override void OnEnable()
     {
       base.OnEnable();
-      if ((UnityEngine.Object) EventSystem.current == (UnityEngine.Object) null)
+      if (EventSystem.current == null)
         return;
       ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Cancel, BasicListener);
       InputService.Instance.onJoystickUsedChanged += OnJoystick;
@@ -164,12 +167,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     {
       if (actor == null || actor.IsDisposed)
         return;
-      itemAmountText.text = "× " + Mathf.RoundToInt(unitySlider.value).ToString();
+      itemAmountText.text = "× " + Mathf.RoundToInt(unitySlider.value);
     }
 
     public static SplitGraphic Instantiate(GameObject prefab)
     {
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Object.Instantiate(prefab);
       gameObject.name = prefab.name;
       return gameObject.GetComponent<SplitGraphic>();
     }

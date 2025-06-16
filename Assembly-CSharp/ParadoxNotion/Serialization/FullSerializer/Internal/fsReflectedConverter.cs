@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using Object = UnityEngine.Object;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal
 {
@@ -17,7 +18,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal
       fsMetaType fsMetaType = fsMetaType.Get(Serializer.Config, instance.GetType());
       fsMetaType.EmitAotData();
       object context = null;
-      if (!fsGlobalConfig.SerializeDefaultValues && !(instance is UnityEngine.Object))
+      if (!fsGlobalConfig.SerializeDefaultValues && !(instance is Object))
         context = fsMetaType.CreateInstance();
       for (int index = 0; index < fsMetaType.Properties.Length; ++index)
       {

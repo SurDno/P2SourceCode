@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Reflection;
 using ParadoxNotion.Serialization.FullSerializer.Internal;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization
 {

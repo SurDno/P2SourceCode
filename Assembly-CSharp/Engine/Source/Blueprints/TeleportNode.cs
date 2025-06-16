@@ -3,6 +3,7 @@ using Engine.Common.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -27,7 +28,7 @@ namespace Engine.Source.Blueprints
           return;
         if (wait)
         {
-          Debug.LogWarning((object) (typeof (TeleportNode) + " is waiting"));
+          Debug.LogWarning(typeof (TeleportNode) + " is waiting");
         }
         else
         {

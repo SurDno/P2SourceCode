@@ -4,6 +4,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateMoveBase : INpcState
 {
@@ -90,7 +92,7 @@ public class NpcStateMoveBase : INpcState
       return false;
     prevAreaMask = agent.areaMask;
     agentWasEnabled = agent.enabled;
-    if ((Object) rigidbody != (Object) null)
+    if (rigidbody != null)
     {
       rigidbodyWasKinematic = rigidbody.isKinematic;
       rigidbody.isKinematic = false;
@@ -100,14 +102,14 @@ public class NpcStateMoveBase : INpcState
     Status = NpcStateStatusEnum.Running;
     if (npcState.Owner == null)
     {
-      Debug.LogWarning((object) (GameObject.name + " : entity not found"));
+      Debug.LogWarning(GameObject.name + " : entity not found");
       Status = NpcStateStatusEnum.Failed;
       return false;
     }
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
       Status = NpcStateStatusEnum.Failed;
       return false;
     }
@@ -123,7 +125,7 @@ public class NpcStateMoveBase : INpcState
       else
         Status = NpcStateStatusEnum.Failed;
     }
-    if ((Object) weaponService != (Object) null)
+    if (weaponService != null)
       weaponService.Weapon = WeaponEnum.Unknown;
     return true;
   }
@@ -134,13 +136,13 @@ public class NpcStateMoveBase : INpcState
       return;
     agent.areaMask = prevAreaMask;
     agent.enabled = agentWasEnabled;
-    if ((Object) rigidbody != (Object) null)
+    if (rigidbody != null)
     {
       rigidbody.isKinematic = rigidbodyWasKinematic;
       rigidbody.useGravity = rigidbodyWasGravity;
     }
     DoShutdown();
-    if (!((Object) weaponService != (Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = npcState.Weapon;
   }
@@ -164,7 +166,7 @@ public class NpcStateMoveBase : INpcState
       return;
     if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
     {
-      if (!((Object) agent != (Object) null))
+      if (!(agent != null))
         return;
       agent.velocity = Vector3.zero;
     }
@@ -194,9 +196,9 @@ public class NpcStateMoveBase : INpcState
   {
     if (agent.pathPending)
       return;
-    if ((double) Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
+    if (Random.value < Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), (Object) GameObject);
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), GameObject);
       Vector3 destination = agent.destination;
       agent.ResetPath();
       agent.SetDestination(destination);
@@ -209,17 +211,17 @@ public class NpcStateMoveBase : INpcState
       agent.SetDestination(destination);
       state = StateEnum.WaitingPath;
     }
-    else if (!NavMeshUtility.HasPathNoGarbage(agent) || (double) Random.value < (double) Time.deltaTime / 0.5 && !NavMeshUtility.HasPathWithGarbage(agent))
+    else if (!NavMeshUtility.HasPathNoGarbage(agent) || Random.value < Time.deltaTime / 0.5 && !NavMeshUtility.HasPathWithGarbage(agent))
     {
-      Debug.LogWarningFormat("{0} : agent.path.corners.Length == 0, distance to destination = {1}", (object) GameObject.name, (object) (GameObject.transform.position - agent.destination).magnitude);
+      Debug.LogWarningFormat("{0} : agent.path.corners.Length == 0, distance to destination = {1}", GameObject.name, (GameObject.transform.position - agent.destination).magnitude);
       CompleteTask(false);
     }
     else
     {
       float stoppingDistance = agent.stoppingDistance;
-      if ((double) agent.desiredVelocity.magnitude < 0.0099999997764825821)
+      if (agent.desiredVelocity.magnitude < 0.0099999997764825821)
       {
-        if ((double) agent.remainingDistance < stoppingDistance)
+        if (agent.remainingDistance < (double) stoppingDistance)
           CompleteTask(false);
         Vector3 destination = agent.destination;
         agent.ResetPath();
@@ -235,15 +237,15 @@ public class NpcStateMoveBase : INpcState
 
   private void OnUpdateMove()
   {
-    if ((double) Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
+    if (Random.value < Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), (Object) GameObject);
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), GameObject);
       state = StateEnum.StopAndRestartPath;
     }
     else
     {
       float num = agent.stoppingDistance * 3f;
-      if (!agent.hasPath || !behavior.Move(agent.desiredVelocity, agent.remainingDistance) || (double) agent.remainingDistance >= num)
+      if (!agent.hasPath || !behavior.Move(agent.desiredVelocity, agent.remainingDistance) || agent.remainingDistance >= (double) num)
         return;
       agent.ResetPath();
       state = StateEnum.Done;

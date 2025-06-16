@@ -1,4 +1,5 @@
 ﻿using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -9,9 +10,9 @@ namespace FlowCanvas.Nodes
 
     public override T Invoke(GameObject gameObject)
     {
-      if ((Object) gameObject == (Object) null)
+      if (gameObject == null)
         return default (T);
-      if ((Object) _component == (Object) null || (Object) _component.gameObject != (Object) gameObject)
+      if (_component == null || _component.gameObject != gameObject)
         _component = gameObject.GetComponent<T>();
       return _component;
     }

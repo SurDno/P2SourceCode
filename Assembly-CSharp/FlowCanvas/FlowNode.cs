@@ -9,6 +9,7 @@ using NodeCanvas;
 using NodeCanvas.Framework;
 using ParadoxNotion;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas
 {
@@ -113,15 +114,15 @@ namespace FlowCanvas
 
     public void AssignSelfInstancePort()
     {
-      if ((UnityEngine.Object) graphAgent == (UnityEngine.Object) null)
+      if (graphAgent == null)
         return;
       ValueInput valueInput = inputPorts.Values.OfType<ValueInput>().FirstOrDefault();
       if (valueInput == null || valueInput.isConnected || !valueInput.isDefaultValue)
         return;
       if (valueInput.type == typeof (GameObject))
-        valueInput.serializedValue = (object) graphAgent.gameObject;
+        valueInput.serializedValue = graphAgent.gameObject;
       if (typeof (Component).RTIsAssignableFrom(valueInput.type))
-        valueInput.serializedValue = (object) graphAgent.GetComponent(valueInput.type);
+        valueInput.serializedValue = graphAgent.GetComponent(valueInput.type);
     }
 
     public void GatherPorts()
@@ -229,7 +230,7 @@ namespace FlowCanvas
     {
       if (!prop.CanRead)
       {
-        Debug.LogError((object) "Property is write only");
+        Debug.LogError("Property is write only");
         return null;
       }
       NameAttribute attribute = prop.RTGetAttribute<NameAttribute>(false);
@@ -253,7 +254,7 @@ namespace FlowCanvas
       status = Status.Failure;
       if (error == null)
         return;
-      Debug.LogError((object) string.Format("<b>Flow Execution Error:</b> '{0}' - '{1}'", name, error), (UnityEngine.Object) graph.agent);
+      Debug.LogError(string.Format("<b>Flow Execution Error:</b> '{0}' - '{1}'", name, error), graph.agent);
     }
 
     public void SetStatus(Status status) => this.status = status;

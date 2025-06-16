@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -11,17 +12,17 @@ namespace Cinemachine
   {
     [Tooltip("Default object for the camera children to look at (the aim target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
     [NoSaveDuringPlay]
-    public Transform m_LookAt = (Transform) null;
+    public Transform m_LookAt;
     [Tooltip("Default object for the camera children wants to move with (the body target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
     [NoSaveDuringPlay]
-    public Transform m_Follow = (Transform) null;
+    public Transform m_Follow;
     [Space]
     [Tooltip("The state machine whose state changes will drive this camera's choice of active child")]
     public Animator m_AnimatedTarget;
     [Tooltip("Which layer in the target state machine to observe")]
     public int m_LayerIndex;
     [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
-    public bool m_ShowDebugText = false;
+    public bool m_ShowDebugText;
     [Tooltip("Force all child cameras to be enabled.  This is useful if animating them in Timeline, but consumes extra resources")]
     public bool m_EnableAllChildCameras;
     [SerializeField]
@@ -34,10 +35,10 @@ namespace Cinemachine
     [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Camera children")]
     public CinemachineBlendDefinition m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.EaseInOut, 0.5f);
     [Tooltip("This is the asset which contains custom settings for specific child blends")]
-    public CinemachineBlenderSettings m_CustomBlends = null;
+    public CinemachineBlenderSettings m_CustomBlends;
     [HideInInspector]
     [SerializeField]
-    public ParentHash[] m_ParentHash = null;
+    public ParentHash[] m_ParentHash;
     private CameraState m_State = CameraState.Default;
     private float mActivationTime;
     private Instruction mActiveInstruction;
@@ -100,9 +101,9 @@ namespace Cinemachine
         for (int index = 0; index < m_ChildCameras.Length; ++index)
         {
           CinemachineVirtualCameraBase childCamera = m_ChildCameras[index];
-          if ((UnityEngine.Object) childCamera != (UnityEngine.Object) null)
+          if (childCamera != null)
           {
-            bool flag = m_EnableAllChildCameras || (UnityEngine.Object) childCamera == (UnityEngine.Object) virtualCameraBase;
+            bool flag = m_EnableAllChildCameras || childCamera == virtualCameraBase;
             if (flag != childCamera.VirtualCameraGameObject.activeInHierarchy)
             {
               childCamera.gameObject.SetActive(flag);
@@ -176,9 +177,9 @@ namespace Cinemachine
       if (m_ChildCameras != null && mInstructionDictionary != null && mStateParentLookup != null)
         return;
       List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
-      foreach (CinemachineVirtualCameraBase componentsInChild in this.GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
+      foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
-        if ((UnityEngine.Object) componentsInChild.transform.parent == (UnityEngine.Object) this.transform)
+        if (componentsInChild.transform.parent == transform)
           virtualCameraBaseList.Add(componentsInChild);
       }
       m_ChildCameras = virtualCameraBaseList.ToArray();
@@ -192,7 +193,7 @@ namespace Cinemachine
       mInstructionDictionary = new Dictionary<int, int>();
       for (int index = 0; index < m_Instructions.Length; ++index)
       {
-        if ((UnityEngine.Object) m_Instructions[index].m_VirtualCamera != (UnityEngine.Object) null && (UnityEngine.Object) m_Instructions[index].m_VirtualCamera.transform.parent != (UnityEngine.Object) this.transform)
+        if (m_Instructions[index].m_VirtualCamera != null && m_Instructions[index].m_VirtualCamera.transform.parent != transform)
           m_Instructions[index].m_VirtualCamera = null;
         mInstructionDictionary[m_Instructions[index].m_FullHash] = index;
       }
@@ -214,7 +215,7 @@ namespace Cinemachine
         return null;
       }
       CinemachineVirtualCameraBase childCamera = m_ChildCameras[0];
-      if ((UnityEngine.Object) m_AnimatedTarget == (UnityEngine.Object) null || !m_AnimatedTarget.gameObject.activeSelf || (UnityEngine.Object) m_AnimatedTarget.runtimeAnimatorController == (UnityEngine.Object) null || m_LayerIndex < 0 || m_LayerIndex >= m_AnimatedTarget.layerCount)
+      if (m_AnimatedTarget == null || !m_AnimatedTarget.gameObject.activeSelf || m_AnimatedTarget.runtimeAnimatorController == null || m_LayerIndex < 0 || m_LayerIndex >= m_AnimatedTarget.layerCount)
       {
         mActivationTime = 0.0f;
         return childCamera;
@@ -265,7 +266,7 @@ namespace Cinemachine
       if (!mInstructionDictionary.ContainsKey(key))
         return mActivationTime != 0.0 ? mActiveInstruction.m_VirtualCamera : childCamera;
       Instruction instruction = m_Instructions[mInstructionDictionary[key]];
-      if ((UnityEngine.Object) instruction.m_VirtualCamera == (UnityEngine.Object) null)
+      if (instruction.m_VirtualCamera == null)
         instruction.m_VirtualCamera = childCamera;
       if (deltaTime >= 0.0 && mActivationTime > 0.0 && (instruction.m_ActivateAfter > 0.0 || time - (double) mActivationTime < mActiveInstruction.m_MinDuration && instruction.m_VirtualCamera.Priority <= mActiveInstruction.m_VirtualCamera.Priority))
       {
@@ -290,9 +291,9 @@ namespace Cinemachine
           if (index1 >= 0)
           {
             clip = clips[index2];
-            double weight1 = (double) clip.weight;
+            double weight1 = clip.weight;
             clip = clips[index1];
-            double weight2 = (double) clip.weight;
+            double weight2 = clip.weight;
             num = weight1 > weight2 ? 1 : 0;
           }
           else
@@ -304,7 +305,7 @@ namespace Cinemachine
         if (index1 >= 0)
         {
           clip = clips[index1];
-          num1 = (double) clip.weight > 0.0 ? 1 : 0;
+          num1 = clip.weight > 0.0 ? 1 : 0;
         }
         else
           num1 = 0;
@@ -325,7 +326,7 @@ namespace Cinemachine
       out float duration)
     {
       AnimationCurve defaultCurve = m_DefaultBlend.BlendCurve;
-      if ((UnityEngine.Object) m_CustomBlends != (UnityEngine.Object) null)
+      if (m_CustomBlends != null)
         defaultCurve = m_CustomBlends.GetBlendCurveForVirtualCameras(fromKey != null ? fromKey.Name : string.Empty, toKey != null ? toKey.Name : string.Empty, defaultCurve);
       Keyframe[] keys = defaultCurve.keys;
       duration = keys == null || keys.Length == 0 ? 0.0f : keys[keys.Length - 1].time;

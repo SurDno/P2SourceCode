@@ -54,18 +54,18 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner.Enemy == null)
         return TaskStatus.Failure;
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         return TaskStatus.Running;
-      if ((UnityEngine.Object) owner.gameObject == (UnityEngine.Object) null || !owner.gameObject.activeSelf)
+      if (owner.gameObject == null || !owner.gameObject.activeSelf)
         return TaskStatus.Failure;
       Vector3 vector3 = owner.Enemy.transform.position - owner.transform.position;
       if (attackInited)
         aimingTimePassed += deltaTime;
       if (shotDone)
         cooldownTimePassed += deltaTime;
-      if ((!attackInited || shotDone && !owner.IsAttacking) && (double) vector3.magnitude < cancelRange)
+      if ((!attackInited || shotDone && !owner.IsAttacking) && vector3.magnitude < (double) cancelRange)
       {
         owner.SetAiming(false);
         return TaskStatus.Success;
@@ -81,7 +81,7 @@ namespace BehaviorDesigner.Runtime.Tasks
         aimingTimePassed = 0.0f;
         owner.SetAiming(true);
       }
-      if (attackInited && !shotDone && (aimingTimePassed >= (double) aimingTime || (double) vector3.magnitude < cancelRange && aimingTimePassed > (double) aimingTimeMinimum))
+      if (attackInited && !shotDone && (aimingTimePassed >= (double) aimingTime || vector3.magnitude < (double) cancelRange && aimingTimePassed > (double) aimingTimeMinimum))
       {
         owner.TriggerAction(WeaponActionEnum.RifleFire);
         shotDone = true;
@@ -92,27 +92,27 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private bool CheckShootingLine()
     {
-      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner.Enemy == null)
         return false;
       Vector3 position = this.gameObject.transform.position;
       Vector3 direction = this.gameObject.transform.forward;
       Pivot component = this.gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null && (UnityEngine.Object) component.ShootStart != (UnityEngine.Object) null)
+      if (component != null && component.ShootStart != null)
       {
         position = component.ShootStart.transform.position;
         GameObject chest = owner.Enemy.GetComponent<Pivot>()?.Chest;
-        if ((UnityEngine.Object) chest != (UnityEngine.Object) null)
+        if (chest != null)
           direction = (chest.transform.position - component.ShootStart.transform.position).normalized;
       }
       LayerMask triggerInteractLayer = ScriptableObjectInstance<GameSettingsData>.Instance.TriggerInteractLayer;
       LayerMask ragdollLayer = ScriptableObjectInstance<GameSettingsData>.Instance.RagdollLayer;
       List<RaycastHit> result = new List<RaycastHit>();
-      PhysicsUtility.Raycast(result, position, direction, 50f, -1 ^ (int) triggerInteractLayer ^ (int) ragdollLayer, QueryTriggerInteraction.Ignore);
+      PhysicsUtility.Raycast(result, position, direction, 50f, -1 ^ triggerInteractLayer ^ ragdollLayer, QueryTriggerInteraction.Ignore);
       for (int index = 0; index < result.Count; ++index)
       {
         GameObject gameObject = result[index].collider.gameObject;
-        if (!((UnityEngine.Object) gameObject == (UnityEngine.Object) this.gameObject))
-          return (UnityEngine.Object) gameObject == (UnityEngine.Object) owner.Enemy.gameObject;
+        if (!(gameObject == this.gameObject))
+          return gameObject == owner.Enemy.gameObject;
       }
       return false;
     }

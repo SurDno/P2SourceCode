@@ -10,6 +10,7 @@ using Engine.Source.Services.Inputs;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
+using UnityEngine;
 
 namespace ParadoxNotion.AOT
 {
@@ -60,7 +61,7 @@ namespace ParadoxNotion.AOT
     {
       FlowNode flowNode = null;
       flowNode.AddValueOutput((string) o, (ValueHandler<BlockTypeEnum>) o, (string) o);
-      flowNode.AddValueOutput<IntensityParameter<Color>>((string) o, (ValueHandler<IntensityParameter<Color>>) o, (string) o);
+      flowNode.AddValueOutput((string) o, (ValueHandler<IntensityParameter<Color>>) o, (string) o);
       flowNode.AddValueOutput((string) o, (ValueHandler<UiEffectType>) o, (string) o);
       flowNode.AddValueOutput((string) o, (ValueHandler<ActionEnum>) o, (string) o);
       flowNode.AddValueOutput((string) o, (ValueHandler<DiseasedStateEnum>) o, (string) o);

@@ -1,4 +1,5 @@
 ﻿using Engine.Behaviours.Engines.Controllers;
+using UnityEngine;
 
 public class NPCRifleWeaponController : NPCWeaponControllerBase
 {
@@ -9,7 +10,7 @@ public class NPCRifleWeaponController : NPCWeaponControllerBase
   public override void Initialise(NPCWeaponService service)
   {
     base.Initialise(service);
-    if ((Object) service.Rifle != (Object) null)
+    if (service.Rifle != null)
     {
       rifleObject = service.Rifle.GetComponent<RifleObject>();
       IndoorChanged();
@@ -20,7 +21,7 @@ public class NPCRifleWeaponController : NPCWeaponControllerBase
 
   public override void IndoorChanged()
   {
-    if (!((Object) rifleObject != (Object) null) || !((Object) service != (Object) null))
+    if (!(rifleObject != null) || !(service != null))
       return;
     rifleObject.SetIndoor(service.IsIndoor);
   }
@@ -36,7 +37,7 @@ public class NPCRifleWeaponController : NPCWeaponControllerBase
 
   protected override void SetLayers(float weight, bool immediate = false)
   {
-    if ((Object) service == (Object) null)
+    if (service == null)
       return;
     if (walkLayerIndex != -1)
       service.AddNeededLayer(walkLayerIndex, weight);
@@ -67,7 +68,7 @@ public class NPCRifleWeaponController : NPCWeaponControllerBase
 
   private void SetRiflePose()
   {
-    if (!((Object) animator != (Object) null))
+    if (!(animator != null))
       return;
     animator.SetFloat("Fight.RifleHold", layersWeight);
   }
@@ -76,11 +77,11 @@ public class NPCRifleWeaponController : NPCWeaponControllerBase
   {
     if (data.StartsWith("Rifle.Fire"))
     {
-      if ((Object) rifleObject != (Object) null)
+      if (rifleObject != null)
         rifleObject.Shoot();
       owner.SetAiming(false);
     }
-    if (data.StartsWith("Rifle.Reload") && (Object) rifleObject != (Object) null)
+    if (data.StartsWith("Rifle.Reload") && rifleObject != null)
       rifleObject.Reload();
     base.OnAnimatorEvent(data);
   }

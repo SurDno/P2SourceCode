@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public class TOD_Time : MonoBehaviour
 {
@@ -8,11 +9,11 @@ public class TOD_Time : MonoBehaviour
   [Tooltip("Progress time at runtime.")]
   public bool ProgressTime = true;
   [Tooltip("Set the date to the current device date on start.")]
-  public bool UseDeviceDate = false;
+  public bool UseDeviceDate;
   [Tooltip("Set the time to the current device time on start.")]
-  public bool UseDeviceTime = false;
+  public bool UseDeviceTime;
   [Tooltip("Apply the time curve when progressing time.")]
-  public bool UseTimeCurve = false;
+  public bool UseTimeCurve;
   [Tooltip("Time progression curve.")]
   public AnimationCurve TimeCurve = AnimationCurve.Linear(0.0f, 0.0f, 24f, 24f);
   private TOD_Sky sky;
@@ -147,12 +148,12 @@ public class TOD_Time : MonoBehaviour
       if (index > 0)
       {
         Keyframe key2 = keys[index - 1];
-        key1.inTangent = (float) (((double) key1.value - (double) key2.value) / ((double) key1.time - (double) key2.time));
+        key1.inTangent = (float) ((key1.value - (double) key2.value) / (key1.time - (double) key2.time));
       }
       if (index < keys.Length - 1)
       {
         Keyframe key3 = keys[index + 1];
-        key1.outTangent = (float) (((double) key3.value - (double) key1.value) / ((double) key3.time - (double) key1.time));
+        key1.outTangent = (float) ((key3.value - (double) key1.value) / (key3.time - (double) key1.time));
       }
       keys[index] = key1;
     }
@@ -168,9 +169,9 @@ public class TOD_Time : MonoBehaviour
     float time1 = -0.01f;
     for (int time2 = 0; time2 < 25; ++time2)
     {
-      time1 = Mathf.Max(time1 + 0.01f, source.Evaluate((float) time2));
-      keys1[time2] = new Keyframe((float) time2, time1);
-      keys2[time2] = new Keyframe(time1, (float) time2);
+      time1 = Mathf.Max(time1 + 0.01f, source.Evaluate(time2));
+      keys1[time2] = new Keyframe(time2, time1);
+      keys2[time2] = new Keyframe(time1, time2);
     }
     CalculateLinearTangents(keys1);
     CalculateLinearTangents(keys2);
@@ -180,7 +181,7 @@ public class TOD_Time : MonoBehaviour
 
   protected void Awake()
   {
-    sky = this.GetComponent<TOD_Sky>();
+    sky = GetComponent<TOD_Sky>();
     if (UseDeviceDate)
     {
       sky.Cycle.Year = DateTime.Now.Year;

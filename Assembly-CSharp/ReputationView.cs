@@ -7,6 +7,7 @@ using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Engine.Source.Services;
 using Engine.Source.Services.Saves;
+using UnityEngine;
 
 public class ReputationView : MonoBehaviour
 {
@@ -57,8 +58,8 @@ public class ReputationView : MonoBehaviour
     RectTransform otherLayout)
   {
     this.regionId = regionId;
-    currentRect.SetParent((Transform) currentLayout, false);
-    otherRect.SetParent((Transform) otherLayout, false);
+    currentRect.SetParent(currentLayout, false);
+    otherRect.SetParent(otherLayout, false);
     UpdateRegion();
   }
 
@@ -123,7 +124,7 @@ public class ReputationView : MonoBehaviour
       if (region.Reputation != null)
         region.Reputation.ChangeValueEvent -= SetValue;
       else
-        Debug.LogError((object) "region.Reputation == null , разобраться");
+        Debug.LogError("region.Reputation == null , разобраться");
     }
     region = newRegion;
     if (region == null)

@@ -16,7 +16,7 @@ namespace Engine.Source.Commons
     {
       get
       {
-        if ((Object) externalBehaviorTree == (Object) null)
+        if (externalBehaviorTree == null)
           externalBehaviorTree = AssetDatabaseService.Instance.Load<ExternalBehaviorTree>(AssetDatabaseService.Instance.GetPath(Id));
         return externalBehaviorTree;
       }

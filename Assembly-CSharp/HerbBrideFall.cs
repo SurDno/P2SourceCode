@@ -1,9 +1,12 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Common.Services;
+using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Services.CameraServices;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class HerbBrideFall : MonoBehaviour
 {
@@ -35,20 +38,20 @@ public class HerbBrideFall : MonoBehaviour
   private void Start()
   {
     IsGame = SceneManager.GetActiveScene().name != "TermitnikFall";
-    initialRotation = this.transform.rotation;
-    initialPosition = this.transform.position;
-    pivot = this.GetComponent<Pivot>();
+    initialRotation = transform.rotation;
+    initialPosition = transform.position;
+    pivot = GetComponent<Pivot>();
     animator = pivot.GetAnimator();
-    audioSource = this.GetComponent<AudioSource>();
+    audioSource = GetComponent<AudioSource>();
     pivot.GetAnimatorEventProxy().AnimatorMoveEvent += HerbBrideFall_AnimatorMoveEvent;
-    collider = this.GetComponent<Collider>();
+    collider = GetComponent<Collider>();
     SetState(StateEnum.Waiting);
   }
 
   private void HerbBrideFall_AnimatorMoveEvent()
   {
-    this.transform.position += animator.deltaPosition;
-    this.transform.rotation *= animator.deltaRotation;
+    transform.position += animator.deltaPosition;
+    transform.rotation *= animator.deltaRotation;
   }
 
   private void SetState(StateEnum state)
@@ -58,7 +61,7 @@ public class HerbBrideFall : MonoBehaviour
       case StateEnum.Waiting:
         animator.SetTrigger("Triggers/Reset");
         animator.ResetTrigger("Triggers/Fall");
-        this.transform.SetPositionAndRotation(initialPosition, initialRotation);
+        transform.SetPositionAndRotation(initialPosition, initialRotation);
         break;
       case StateEnum.Falling:
         if (IsGame)
@@ -106,12 +109,12 @@ public class HerbBrideFall : MonoBehaviour
 
   private void UpdateTermitnikAudio()
   {
-    if ((UnityEngine.Object) termitnikAudiosource == (UnityEngine.Object) null)
+    if (termitnikAudiosource == null)
       return;
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
+    if (playerGameObject == null)
       return;
-    float magnitude = (playerGameObject.transform.position - this.transform.position).magnitude;
+    float magnitude = (playerGameObject.transform.position - transform.position).magnitude;
     if (state == StateEnum.Waiting)
     {
       termitnikAudiosource.spatialBlend = Mathf.Clamp01(magnitude / 50f);
@@ -130,12 +133,12 @@ public class HerbBrideFall : MonoBehaviour
 
   private void UpdateCryingAudio()
   {
-    if ((UnityEngine.Object) womanCryAudiosource == (UnityEngine.Object) null)
+    if (womanCryAudiosource == null)
       return;
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
+    if (playerGameObject == null)
       return;
-    float magnitude = (playerGameObject.transform.position - this.transform.position).magnitude;
+    float magnitude = (playerGameObject.transform.position - transform.position).magnitude;
     if (state == StateEnum.Waiting)
     {
       womanCryAudiosource.volume = 1f;
@@ -156,7 +159,7 @@ public class HerbBrideFall : MonoBehaviour
     int num = Physics.OverlapSphereNonAlloc(animator.gameObject.transform.position, 3f, colliders);
     for (int index = 0; index < num; ++index)
     {
-      if ((UnityEngine.Object) colliders[index].gameObject.GetComponent<TerrainCollider>() != (UnityEngine.Object) null)
+      if (colliders[index].gameObject.GetComponent<TerrainCollider>() != null)
         return true;
     }
     return false;
@@ -166,7 +169,7 @@ public class HerbBrideFall : MonoBehaviour
   {
     if (!IsGame)
       return Camera.main;
-    return ServiceLocator.GetService<CameraService>().Kind != CameraKindEnum.FirstPerson_Controlling ? (Camera) null : GameCamera.Instance.Camera;
+    return ServiceLocator.GetService<CameraService>().Kind != CameraKindEnum.FirstPerson_Controlling ? null : GameCamera.Instance.Camera;
   }
 
   private GameObject GetPlayerGameObject()
@@ -180,10 +183,10 @@ public class HerbBrideFall : MonoBehaviour
   {
     Camera camera = GetCamera();
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((UnityEngine.Object) camera == (UnityEngine.Object) null || (UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
+    if (camera == null || playerGameObject == null)
       return;
     Vector3 forward = camera.transform.forward;
-    Vector3 vector3_1 = this.transform.position + 1f * this.transform.forward;
+    Vector3 vector3_1 = transform.position + 1f * transform.forward;
     Vector3 vector3_2 = playerGameObject.transform.position + Vector3.up + forward * 1f;
     Vector3 vector3_3 = vector3_2 - vector3_1;
     float magnitude = vector3_3.magnitude;
@@ -199,16 +202,16 @@ public class HerbBrideFall : MonoBehaviour
   {
     Camera camera = GetCamera();
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((UnityEngine.Object) camera == (UnityEngine.Object) null || (UnityEngine.Object) playerGameObject == (UnityEngine.Object) null)
+    if (camera == null || playerGameObject == null)
       return;
     Vector3 forward = camera.transform.forward;
-    Vector3 origin = this.transform.position + 1f * this.transform.forward;
+    Vector3 origin = transform.position + 1f * transform.forward;
     Vector3 vector3 = playerGameObject.transform.position + Vector3.up + forward * 1f - origin;
     float magnitude = vector3.magnitude;
     Vector3 direction = vector3 / magnitude;
     if (magnitude > (double) maxPlayerDistance)
       lookTime = 0.0f;
-    else if ((double) Vector3.Dot(-direction, forward) < (double) Mathf.Cos(0.5235988f))
+    else if (Vector3.Dot(-direction, forward) < (double) Mathf.Cos(0.5235988f))
     {
       lookTime = 0.0f;
     }
@@ -217,7 +220,7 @@ public class HerbBrideFall : MonoBehaviour
       RaycastHit hitInfo;
       if (Physics.Raycast(origin, direction, out hitInfo, magnitude))
       {
-        Debug.Log((object) hitInfo.collider.gameObject);
+        Debug.Log(hitInfo.collider.gameObject);
         lookTime = 0.0f;
       }
       else

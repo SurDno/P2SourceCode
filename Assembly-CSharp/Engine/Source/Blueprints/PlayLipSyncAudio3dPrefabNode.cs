@@ -10,6 +10,8 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using SoundPropagation;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -47,21 +49,21 @@ namespace Engine.Source.Blueprints
         else
         {
           Transform target = targetInput.value;
-          if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+          if (target == null)
           {
             output.Call();
           }
           else
           {
             GameObject prefab = prefabInput.value;
-            if ((UnityEngine.Object) prefab == (UnityEngine.Object) null)
+            if (prefab == null)
             {
               output.Call();
             }
             else
             {
               AudioMixerGroup mixer = mixerInput.value;
-              if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+              if (mixer == null)
               {
                 output.Call();
               }
@@ -75,7 +77,7 @@ namespace Engine.Source.Blueprints
                 else
                 {
                   AudioClip clip = lipSyncInfo.Clip.Value;
-                  if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
+                  if (clip == null)
                   {
                     output.Call();
                   }
@@ -101,9 +103,9 @@ namespace Engine.Source.Blueprints
         y = 0.0f
       };
       Vector3 position = target.position with { y = 0.0f };
-      if (!forcedSubtitles.value && (double) (playerPosition - position).magnitude > ExternalSettingsInstance<ExternalCommonSettings>.Instance.BleuprintSubtitlesDistanceMax)
+      if (!forcedSubtitles.value && (playerPosition - position).magnitude > (double) ExternalSettingsInstance<ExternalCommonSettings>.Instance.BleuprintSubtitlesDistanceMax)
         return;
-      ServiceLocator.GetService<SubtitlesService>().AddSubtitles(null, tag, state, (UnityEngine.Object) graphAgent);
+      ServiceLocator.GetService<SubtitlesService>().AddSubtitles(null, tag, state, graphAgent);
     }
   }
 }

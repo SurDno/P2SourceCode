@@ -10,6 +10,8 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using FlowCanvas;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -43,13 +45,13 @@ namespace BehaviorDesigner.Runtime.Tasks
       IEntity entity = EntityUtility.GetEntity(gameObject);
       if (entity == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
         blueprintController = null;
       }
       else
       {
         blueprintController = BlueprintServiceUtility.Start(bluerintPrefab.Value, entity, null, null);
-        if (!(bool) (UnityEngine.Object) blueprintController)
+        if (!(bool) (Object) blueprintController)
           return;
         blueprintController.SendEvent("Start");
       }
@@ -57,16 +59,16 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnEnd()
     {
-      if (!(bool) (UnityEngine.Object) blueprintController)
+      if (!(bool) (Object) blueprintController)
         return;
       blueprintController.SendEvent("End");
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) blueprintController == (UnityEngine.Object) null)
+      if (blueprintController == null)
         return TaskStatus.Failure;
-      return waitDuration != 0.0 && startTime + (double) waitDuration < (double) Time.time ? TaskStatus.Success : TaskStatus.Running;
+      return waitDuration != 0.0 && startTime + (double) waitDuration < Time.time ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public override void OnPause(bool paused)

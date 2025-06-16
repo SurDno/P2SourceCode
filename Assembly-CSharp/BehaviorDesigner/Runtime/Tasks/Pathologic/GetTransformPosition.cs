@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -30,23 +31,23 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target.Value == null)
       {
-        Debug.LogWarningFormat("{0}: null Target", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: null Target", gameObject.name);
       }
       else
       {
         Vector3 vector3 = Result.Value;
         if (true)
           return;
-        Debug.LogWarningFormat("{0}: null Result", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: null Result", gameObject.name);
       }
     }
 
     public override TaskStatus OnUpdate()
     {
       int num;
-      if (!((UnityEngine.Object) Target.Value == (UnityEngine.Object) null))
+      if (!(Target.Value == null))
       {
         Vector3 vector3 = Result.Value;
         num = 0;

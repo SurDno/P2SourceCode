@@ -18,6 +18,7 @@ using Engine.Source.Reputations;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -273,7 +274,7 @@ namespace Engine.Source.Components
       LocationComponent parentComponent = LocationItemUtility.FindParentComponent<LocationComponent>(target.Owner);
       if (parentComponent == null)
       {
-        Debug.LogError((object) "location == null, Разобраться");
+        Debug.LogError("location == null, Разобраться");
         return false;
       }
       return ((LocationComponent) parentComponent.LogicLocation).LocationType == LocationType.Indoor;
@@ -386,13 +387,13 @@ namespace Engine.Source.Components
     public IEnumerable<IRegionComponent> GetNearRegions(IRegionComponent currentRegion)
     {
       RegionMesh regionMesh = ((RegionComponent) currentRegion).RegionMesh;
-      if ((UnityEngine.Object) regionMesh != (UnityEngine.Object) null)
+      if (regionMesh != null)
       {
         RegionMesh[] regionMeshArray = regionMesh.NearRegions;
         for (int index = 0; index < regionMeshArray.Length; ++index)
         {
           RegionMesh nearRegion = regionMeshArray[index];
-          if (!((UnityEngine.Object) nearRegion == (UnityEngine.Object) null))
+          if (!(nearRegion == null))
           {
             RegionComponent near = RegionUtility.GetRegionByName(nearRegion.Region);
             if (near != null)
@@ -656,7 +657,7 @@ namespace Engine.Source.Components
       if (!PlatformUtility.IsChangeLocationLoadingWindow(region))
         return;
       GameObject locationBlueprint = ScriptableObjectInstance<ResourceFromCodeData>.Instance.ChangeLocationBlueprint;
-      if ((UnityEngine.Object) locationBlueprint != (UnityEngine.Object) null)
+      if (locationBlueprint != null)
         BlueprintServiceUtility.Start(locationBlueprint, Owner, null, "ChangeLocationBlueprint");
     }
 

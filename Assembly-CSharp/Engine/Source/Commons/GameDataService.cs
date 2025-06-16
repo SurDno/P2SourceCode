@@ -1,5 +1,6 @@
 ﻿using Cofe.Utility;
 using Scripts.Data;
+using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -15,7 +16,7 @@ namespace Engine.Source.Commons
     public void SetCurrentGameData(string projectName)
     {
       currentGameData = !projectName.IsNullOrEmpty() ? BuildSettingsUtility.GetGameData(projectName) : null;
-      Debug.Log((object) ("GameDataService : SetCurrentGameData : " + projectName));
+      Debug.Log("GameDataService : SetCurrentGameData : " + projectName);
     }
   }
 }

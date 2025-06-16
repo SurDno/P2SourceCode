@@ -1,4 +1,5 @@
 ﻿using Engine.Source.Commons;
+using UnityEngine;
 
 namespace Engine.Behaviours.Components
 {
@@ -8,7 +9,7 @@ namespace Engine.Behaviours.Components
 
     private void OnPauseEvent()
     {
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      if (animator == null)
         return;
       if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
         animator.SetFloat("Mecanim.Speed", 0.0f);
@@ -18,8 +19,8 @@ namespace Engine.Behaviours.Components
 
     private void OnEnable()
     {
-      animator = this.GetComponent<Animator>();
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      animator = GetComponent<Animator>();
+      if (animator == null)
         return;
       InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += OnPauseEvent;
       OnPauseEvent();
@@ -27,7 +28,7 @@ namespace Engine.Behaviours.Components
 
     private void OnDisable()
     {
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      if (animator == null)
         return;
       InstanceByRequest<EngineApplication>.Instance.OnPauseEvent -= OnPauseEvent;
     }

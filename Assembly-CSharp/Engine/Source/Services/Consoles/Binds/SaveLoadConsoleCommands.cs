@@ -7,6 +7,7 @@ using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Profiles;
 using Engine.Source.Services.Saves;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -55,7 +56,7 @@ namespace Engine.Source.Services.Consoles.Binds
                 service2.StartGameWithSave(str);
             }
             else
-              Debug.LogError((object) ("Save file name not found : " + str));
+              Debug.LogError("Save file name not found : " + str);
             break;
         }
       }));

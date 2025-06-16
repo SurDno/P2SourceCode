@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -9,7 +10,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
       GUIStyleState model,
       Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + SerializeMember<Texture2D>(serialized, null, "background", model.background) + SerializeMember<Color>(serialized, null, "textColor", model.textColor);
+      return fsResult.Success + SerializeMember(serialized, null, "background", model.background) + SerializeMember(serialized, null, "textColor", model.textColor);
     }
 
     protected override fsResult DoDeserialize(
@@ -28,7 +29,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new GUIStyleState();
+      return new GUIStyleState();
     }
   }
 }

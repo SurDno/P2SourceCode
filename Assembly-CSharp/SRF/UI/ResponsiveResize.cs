@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRF.UI
 {
@@ -15,7 +17,7 @@ namespace SRF.UI
       for (int index1 = 0; index1 < Elements.Length; ++index1)
       {
         Element element = Elements[index1];
-        if (!((UnityEngine.Object) element.Target == (UnityEngine.Object) null))
+        if (!(element.Target == null))
         {
           float num = float.MinValue;
           float size = -1f;
@@ -32,7 +34,7 @@ namespace SRF.UI
           {
             element.Target.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, size);
             LayoutElement component = element.Target.GetComponent<LayoutElement>();
-            if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+            if (component != null)
               component.preferredWidth = size;
           }
         }

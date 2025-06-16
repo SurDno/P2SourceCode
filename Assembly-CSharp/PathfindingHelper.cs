@@ -3,6 +3,8 @@ using System.Collections;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
+using UnityEngine;
+using UnityEngine.AI;
 
 public static class PathfindingHelper
 {
@@ -56,8 +58,8 @@ public static class PathfindingHelper
       Vector3 to = -(Quaternion.AngleAxis(angle, Vector3.up) * from);
       NavMeshHit hit;
       float num6 = !NavMesh.Raycast(myTansform.position, myTansform.position + to * retreatSearchDistance, out hit, -1) ? retreatSearchDistance : hit.distance;
-      float num7 = Mathf.Sin((float) (0.5 * (double) Vector3.Angle(from, to) * (Math.PI / 180.0)));
-      float num8 = Mathf.Cos((float) (0.5 * (double) Vector3.Angle(myTansform.forward, to) * (Math.PI / 180.0)));
+      float num7 = Mathf.Sin((float) (0.5 * Vector3.Angle(from, to) * (Math.PI / 180.0)));
+      float num8 = Mathf.Cos((float) (0.5 * Vector3.Angle(myTansform.forward, to) * (Math.PI / 180.0)));
       float num9 = hit.distance * num7 * num8 * num8;
       if (InstanceByRequest<EngineApplication>.Instance.IsDebug)
       {
@@ -79,7 +81,7 @@ public static class PathfindingHelper
   private static IEnumerator ExecuteSecond(float delay, Action action)
   {
     float time = Time.unscaledTime;
-    while (time + (double) delay > (double) Time.unscaledTime)
+    while (time + (double) delay > Time.unscaledTime)
     {
       Action action1 = action;
       if (action1 != null)

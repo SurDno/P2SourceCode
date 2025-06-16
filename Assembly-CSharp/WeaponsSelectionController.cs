@@ -5,6 +5,7 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.Settings.External;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
 
 public class WeaponsSelectionController : MonoBehaviour
 {
@@ -48,7 +49,7 @@ public class WeaponsSelectionController : MonoBehaviour
     OnDisable();
     if (_waitCoroutine == null)
       return;
-    this.StopCoroutine(_waitCoroutine);
+    StopCoroutine(_waitCoroutine);
   }
 
   private bool OnBumper(GameActionType type, bool down)
@@ -65,7 +66,7 @@ public class WeaponsSelectionController : MonoBehaviour
           ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.RStickDown, OnStickMove, true);
         }
         if (_waitCoroutine != null)
-          this.StopCoroutine(_waitCoroutine);
+          StopCoroutine(_waitCoroutine);
         _currentView.Show();
         if (!_currentView.Attacker.IsUnholstered)
         {
@@ -90,7 +91,7 @@ public class WeaponsSelectionController : MonoBehaviour
           _currentView.Attacker.ToggleCurrentWeapon();
           wasWeaponChanged = false;
         }
-        _waitCoroutine = this.StartCoroutine(WaitBeforeHide(1f));
+        _waitCoroutine = StartCoroutine(WaitBeforeHide(1f));
         ExternalSettingsInstance<ExternalInputSettings>.Instance.JoystickSensitivity = _sensativity;
         return true;
       }
@@ -103,7 +104,7 @@ public class WeaponsSelectionController : MonoBehaviour
     if (!PlayerUtility.IsPlayerCanControlling || !InputService.Instance.JoystickUsed)
       return false;
     if (_waitCoroutine != null)
-      this.StopCoroutine(_waitCoroutine);
+      StopCoroutine(_waitCoroutine);
     if (down)
     {
       _currentView.Show();
@@ -114,7 +115,7 @@ public class WeaponsSelectionController : MonoBehaviour
       }
       return OnStickMove(type, down);
     }
-    _waitCoroutine = this.StartCoroutine(WaitBeforeHide(1f));
+    _waitCoroutine = StartCoroutine(WaitBeforeHide(1f));
     return true;
   }
 
@@ -185,11 +186,11 @@ public class WeaponsSelectionController : MonoBehaviour
       seconds -= Time.deltaTime;
       yield return null;
     }
-    if ((UnityEngine.Object) _currentView != (UnityEngine.Object) null)
+    if (_currentView != null)
     {
       _currentView.Hide();
       wasWeaponChanged = false;
     }
-    _waitCoroutine = (Coroutine) null;
+    _waitCoroutine = null;
   }
 }

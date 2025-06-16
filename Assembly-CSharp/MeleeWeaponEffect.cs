@@ -1,8 +1,9 @@
 ﻿using Inspectors;
+using UnityEngine;
 
 public class MeleeWeaponEffect : MonoBehaviour
 {
-  private static MaterialPropertyBlock propertyBlock = (MaterialPropertyBlock) null;
+  private static MaterialPropertyBlock propertyBlock;
   private static int propertyID;
   [SerializeField]
   private EnemyBase attacker;
@@ -45,7 +46,7 @@ public class MeleeWeaponEffect : MonoBehaviour
     if (value == (double) splatLevel)
       return;
     splatLevel = value;
-    if ((UnityEngine.Object) splatRenderer == (UnityEngine.Object) null)
+    if (splatRenderer == null)
       return;
     if (propertyBlock == null)
     {
@@ -54,7 +55,7 @@ public class MeleeWeaponEffect : MonoBehaviour
     }
     if (value == 0.0)
     {
-      splatRenderer.SetPropertyBlock((MaterialPropertyBlock) null);
+      splatRenderer.SetPropertyBlock(null);
     }
     else
     {

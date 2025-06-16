@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -11,10 +13,10 @@
     public float lumThreshold = 0.2f;
     public float edgeExp = 1f;
     public float sampleDist = 1f;
-    public float edgesOnly = 0.0f;
+    public float edgesOnly;
     public Color edgesOnlyBgColor = Color.white;
     public Shader edgeDetectShader;
-    private Material edgeDetectMaterial = (Material) null;
+    private Material edgeDetectMaterial;
     private EdgeDetectMode oldMode = EdgeDetectMode.SobelDepthThin;
 
     public override bool CheckResources()
@@ -35,13 +37,13 @@
     {
       if (mode == EdgeDetectMode.SobelDepth || mode == EdgeDetectMode.SobelDepthThin)
       {
-        this.GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
+        GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
       }
       else
       {
         if (mode != EdgeDetectMode.TriangleDepthNormals && mode != EdgeDetectMode.RobertsCrossDepthNormals)
           return;
-        this.GetComponent<Camera>().depthTextureMode |= DepthTextureMode.DepthNormals;
+        GetComponent<Camera>().depthTextureMode |= DepthTextureMode.DepthNormals;
       }
     }
 
@@ -52,7 +54,7 @@
     {
       if (!CheckResources())
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -60,10 +62,10 @@
         edgeDetectMaterial.SetVector("_Sensitivity", new Vector4(vector2.x, vector2.y, 1f, vector2.y));
         edgeDetectMaterial.SetFloat("_BgFade", edgesOnly);
         edgeDetectMaterial.SetFloat("_SampleDistance", sampleDist);
-        edgeDetectMaterial.SetVector("_BgColor", (Vector4) edgesOnlyBgColor);
+        edgeDetectMaterial.SetVector("_BgColor", edgesOnlyBgColor);
         edgeDetectMaterial.SetFloat("_Exponent", edgeExp);
         edgeDetectMaterial.SetFloat("_Threshold", lumThreshold);
-        Graphics.Blit((Texture) source, destination, edgeDetectMaterial, (int) mode);
+        Graphics.Blit(source, destination, edgeDetectMaterial, (int) mode);
       }
     }
 

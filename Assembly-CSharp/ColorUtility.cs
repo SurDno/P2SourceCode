@@ -1,4 +1,6 @@
-﻿public static class ColorUtility
+﻿using UnityEngine;
+
+public static class ColorUtility
 {
   public static string ToRGBHex(this Color c)
   {

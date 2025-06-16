@@ -1,4 +1,5 @@
 ﻿using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -10,7 +11,7 @@ namespace FlowCanvas.Nodes
 
     protected override void RegisterPorts()
     {
-      AddValueOutput("Value", (ValueHandler<GameObject>) (() => (bool) (Object) graphAgent ? graphAgent.gameObject : (GameObject) null));
+      AddValueOutput("Value", () => (bool) (Object) graphAgent ? graphAgent.gameObject : null);
     }
 
     public override void SetVariable(object o)

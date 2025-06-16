@@ -21,6 +21,8 @@ using Engine.Source.OutdoorCrowds;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Components
 {
@@ -173,7 +175,7 @@ namespace Engine.Source.Components
               OnCreateEntity(waitingPoint.Template);
               break;
             }
-            Debug.LogError((object) ("OnCreateEntity not listener, owner : " + Owner.GetInfo()));
+            Debug.LogError("OnCreateEntity not listener, owner : " + Owner.GetInfo());
             break;
           }
         }
@@ -188,7 +190,7 @@ namespace Engine.Source.Components
       for (int index = 0; index < points.Count; ++index)
       {
         OutdoorPointInfo point = points[index];
-        if (point.Entity != null && ((IEntityView) point.Entity).IsAttached && (flag || (double) (((IEntityView) point.Entity).Position - EngineApplication.PlayerPosition).magnitude > ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.CrowdDestroyDistance))
+        if (point.Entity != null && ((IEntityView) point.Entity).IsAttached && (flag || (((IEntityView) point.Entity).Position - EngineApplication.PlayerPosition).magnitude > (double) ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.CrowdDestroyDistance))
         {
           RemoveEntity(point);
           break;
@@ -203,7 +205,7 @@ namespace Engine.Source.Components
       OutdoorCrowdData outdoorCrowdData = data.Value;
       if (outdoorCrowdData == null)
       {
-        Debug.LogError((object) ("Data not found , owner : " + Owner.GetInfo()));
+        Debug.LogError("Data not found , owner : " + Owner.GetInfo());
       }
       else
       {
@@ -211,7 +213,7 @@ namespace Engine.Source.Components
         RegionComponent regionByName = RegionUtility.GetRegionByName(region);
         if (regionByName == null)
         {
-          Debug.LogError((object) string.Format("Region not found : {0} , owner : {1}", region, Owner.GetInfo()));
+          Debug.LogError(string.Format("Region not found : {0} , owner : {1}", region, Owner.GetInfo()));
         }
         else
         {
@@ -223,7 +225,7 @@ namespace Engine.Source.Components
               CrowdPointsComponent_ChangePointsEvent(targetCrowdPointsComponent, targetCrowdPointsComponent.PointsReady);
           }
           else
-            Debug.LogError((object) ("CrowdPointsComponent not found : " + Owner.GetInfo()));
+            Debug.LogError("CrowdPointsComponent not found : " + Owner.GetInfo());
           targetRegionComponent = regionByName.GetComponent<RegionComponent>();
           if (targetRegionComponent != null)
           {
@@ -231,7 +233,7 @@ namespace Engine.Source.Components
             TargetRegionComponent_ChangeDiseaseEvent(targetRegionComponent.DiseaseLevel.Value);
           }
           else
-            Debug.LogError((object) ("RegionComponent not found : " + Owner.GetInfo()));
+            Debug.LogError("RegionComponent not found : " + Owner.GetInfo());
         }
       }
     }
@@ -260,7 +262,7 @@ namespace Engine.Source.Components
       CrowdUtility.SetAsCrowd(entity);
       if (points.FirstOrDefault(o => o.Entity == entity) != null)
       {
-        Debug.LogError((object) ("Entity already added : " + entity.GetInfo()));
+        Debug.LogError("Entity already added : " + entity.GetInfo());
       }
       else
       {
@@ -268,7 +270,7 @@ namespace Engine.Source.Components
         this.waitingPoint = null;
         if (waitingPoint == null)
         {
-          Debug.LogError((object) ("Point not found : " + Owner.GetInfo()));
+          Debug.LogError("Point not found : " + Owner.GetInfo());
         }
         else
         {
@@ -278,7 +280,7 @@ namespace Engine.Source.Components
           if (component1 != null)
             component1.AttachToCrowd(Owner, waitingPoint);
           else
-            Debug.LogError((object) ("CrowdItemComponent not found : " + entity.GetInfo()));
+            Debug.LogError("CrowdItemComponent not found : " + entity.GetInfo());
           foreach (ICrowdContextComponent component2 in entity.GetComponents<ICrowdContextComponent>())
             component2.RestoreState(waitingPoint.States, false);
           waitingPoint.States.Clear();
@@ -292,7 +294,7 @@ namespace Engine.Source.Components
             component3.TeleportTo(parentComponent, waitingPoint.Position, waitingPoint.Rotation);
           }
           else
-            Debug.LogError((object) ("NavigationComponent not found : " + entity.GetInfo()));
+            Debug.LogError("NavigationComponent not found : " + entity.GetInfo());
           if (!IsAvailable)
             RemoveEntity(waitingPoint);
           else
@@ -324,7 +326,7 @@ namespace Engine.Source.Components
       OutdoorCrowdLayout outdoorCrowdLayout = outdoorCrowdData.Layouts.FirstOrDefaultNoAlloc(o => o.Layout == layout);
       if (outdoorCrowdLayout == null)
       {
-        Debug.LogError((object) (string.Format("Layout {0} not found, ", layout) + Owner.GetInfo()));
+        Debug.LogError(string.Format("Layout {0} not found, ", layout) + Owner.GetInfo());
       }
       else
       {
@@ -332,7 +334,7 @@ namespace Engine.Source.Components
         OutdoorCrowdState outdoorCrowdState = outdoorCrowdLayout.States.FirstOrDefaultNoAlloc(o => o.State == stateName);
         if (outdoorCrowdState == null)
         {
-          Debug.LogWarning((object) (string.Format("State {0} not found in layout {1} , ", stateName, layout) + Owner.GetInfo()));
+          Debug.LogWarning(string.Format("State {0} not found in layout {1} , ", stateName, layout) + Owner.GetInfo());
         }
         else
         {
@@ -403,7 +405,7 @@ label_26:
     private int GetCount(OutdoorCrowdTemplate template, bool isDay)
     {
       OutdoorCrowdTemplateCount crowdTemplateCount = isDay ? template.Day : template.Night;
-      return UnityEngine.Random.Range(crowdTemplateCount.Min, crowdTemplateCount.Max + 1);
+      return Random.Range(crowdTemplateCount.Min, crowdTemplateCount.Max + 1);
     }
 
     private void OnEnableChangedEvent() => OnInvalidate();

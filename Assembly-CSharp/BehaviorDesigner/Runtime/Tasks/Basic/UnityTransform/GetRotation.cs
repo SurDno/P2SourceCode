@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityTransform
 {
@@ -57,7 +58,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityTransform
     public override void OnStart()
     {
       GameObject defaultGameObject = GetDefaultGameObject(targetGameObject.Value);
-      if (!((UnityEngine.Object) defaultGameObject != (UnityEngine.Object) prevGameObject))
+      if (!(defaultGameObject != prevGameObject))
         return;
       targetTransform = defaultGameObject.GetComponent<Transform>();
       prevGameObject = defaultGameObject;
@@ -65,9 +66,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityTransform
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) targetTransform == (UnityEngine.Object) null)
+      if (targetTransform == null)
       {
-        Debug.LogWarning((object) "Transform is null");
+        Debug.LogWarning("Transform is null");
         return TaskStatus.Failure;
       }
       storeValue.Value = targetTransform.rotation;
@@ -77,7 +78,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityTransform
     public override void OnReset()
     {
       targetGameObject = null;
-      storeValue = (SharedQuaternion) Quaternion.identity;
+      storeValue = Quaternion.identity;
     }
   }
 }

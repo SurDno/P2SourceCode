@@ -770,7 +770,7 @@ label_8:
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Cannot add item {0} to storage {1}, error: {2}", storage.Owner, storable.Owner, ex.ToString()));
+        Logger.AddError(string.Format("Cannot add item {0} to storage {1}, error: {2}", storage.Owner, storable.Owner, ex));
       }
       return false;
     }

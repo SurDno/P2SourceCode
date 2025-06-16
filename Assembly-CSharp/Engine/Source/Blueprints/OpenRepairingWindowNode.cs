@@ -1,5 +1,4 @@
-﻿using System;
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Source.Services.Utilities;
@@ -24,11 +23,11 @@ namespace Engine.Source.Blueprints
         IEntity target = targetInput.value;
         if (target == null)
           return;
-        UIServiceUtility.PushWindow(output, (Action<IRepairingWindow>) (window =>
+        UIServiceUtility.PushWindow<IRepairingWindow>(output, window =>
         {
           window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
           window.Target = target;
-        }));
+        });
       });
       targetInput = AddValueInput<IEntity>("Target");
     }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Pathologic.Prototype
 {
@@ -53,11 +54,11 @@ namespace Pathologic.Prototype
     public static Vector3 GetScale(Matrix4x4 m)
     {
       Vector4 column = m.GetColumn(0);
-      double magnitude1 = (double) column.magnitude;
+      double magnitude1 = column.magnitude;
       column = m.GetColumn(1);
-      double magnitude2 = (double) column.magnitude;
+      double magnitude2 = column.magnitude;
       column = m.GetColumn(2);
-      double magnitude3 = (double) column.magnitude;
+      double magnitude3 = column.magnitude;
       return new Vector3((float) magnitude1, (float) magnitude2, (float) magnitude3);
     }
 

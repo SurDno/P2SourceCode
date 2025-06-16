@@ -1,4 +1,6 @@
-﻿using System;
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MapItemView : 
   MonoBehaviour,
@@ -23,7 +25,7 @@ public class MapItemView :
 
   public bool IsRegion => isRegion;
 
-  public Vector2 WorldPosition => (Vector2) this.transform.TransformPoint(Vector3.zero);
+  public Vector2 WorldPosition => transform.TransformPoint(Vector3.zero);
 
   public void SetHightlight(bool value)
   {
@@ -32,10 +34,10 @@ public class MapItemView :
     highlighted = value;
     if (highlighted)
       CreateHoverImage();
-    else if ((UnityEngine.Object) hoverImage != (UnityEngine.Object) null)
+    else if (hoverImage != null)
     {
-      UnityEngine.Object.Destroy((UnityEngine.Object) hoverImage.gameObject);
-      hoverImage = (Image) null;
+      Destroy(hoverImage.gameObject);
+      hoverImage = null;
     }
     UpdateColors();
   }
@@ -79,7 +81,7 @@ public class MapItemView :
 
   public void Initialize(MapWindow mapView, IMapItem item, Color baseColor, Color activeColor)
   {
-    Initialize(mapView, item, (Sprite) null, baseColor, activeColor, baseColor, activeColor);
+    Initialize(mapView, item, null, baseColor, activeColor, baseColor, activeColor);
   }
 
   public void OnZoomChange(float value)
@@ -92,13 +94,13 @@ public class MapItemView :
   {
     if (isRegion)
     {
-      this.GetComponent<Image>().color = Color.Lerp(baseColor, nearBaseColor, zoom);
-      if (!((UnityEngine.Object) hoverImage != (UnityEngine.Object) null))
+      GetComponent<Image>().color = Color.Lerp(baseColor, nearBaseColor, zoom);
+      if (!(hoverImage != null))
         return;
       hoverImage.color = Color.Lerp(activeColor, nearActiveColor, zoom);
     }
     else
-      this.GetComponent<Image>().color = highlighted ? Color.Lerp(activeColor, nearActiveColor, zoom) : Color.Lerp(baseColor, nearBaseColor, zoom);
+      GetComponent<Image>().color = highlighted ? Color.Lerp(activeColor, nearActiveColor, zoom) : Color.Lerp(baseColor, nearBaseColor, zoom);
   }
 
   public void OnPointerEnter(PointerEventData eventData) => HoverStart();
@@ -109,13 +111,9 @@ public class MapItemView :
 
   private void CreateHoverImage()
   {
-    if ((UnityEngine.Object) activeSprite == (UnityEngine.Object) null)
+    if (activeSprite == null)
       return;
-    GameObject gameObject = new GameObject("Hover", new Type[2]
-    {
-      typeof (RectTransform),
-      typeof (Image)
-    });
+    GameObject gameObject = new GameObject("Hover", typeof (RectTransform), typeof (Image));
     RectTransform transform = (RectTransform) gameObject.transform;
     transform.SetParent(this.transform, false);
     transform.localRotation = Quaternion.identity;

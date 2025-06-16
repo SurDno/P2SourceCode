@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Components.Regions;
 using RegionReputation;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -16,7 +17,7 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyProgress()
     {
-      if (!((Object) view != (Object) null) || !((Object) settings != (Object) null))
+      if (!(view != null) || !(settings != null))
         return;
       view.StringValue = settings.GetReputationName(regionName, Progress);
     }

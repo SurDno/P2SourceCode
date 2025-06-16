@@ -5,6 +5,8 @@ using Cofe.Serializations.Data;
 using Engine.Common;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Connections;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -71,7 +73,7 @@ namespace Scripts.Tools.Serializations.Converters
       writer.End(name, true);
     }
 
-    public static void Write<T>(IDataWriter writer, string name, UnitySubAsset<T> value) where T : UnityEngine.Object
+    public static void Write<T>(IDataWriter writer, string name, UnitySubAsset<T> value) where T : Object
     {
       writer.Begin(name, null, true);
       DefaultDataWriteUtility.Write(writer, "Id", value.Id);
@@ -79,7 +81,7 @@ namespace Scripts.Tools.Serializations.Converters
       writer.End(name, true);
     }
 
-    public static void Write<T>(IDataWriter writer, string name, UnityAsset<T> value) where T : UnityEngine.Object
+    public static void Write<T>(IDataWriter writer, string name, UnityAsset<T> value) where T : Object
     {
       writer.Begin(name, null, true);
       DefaultDataWriteUtility.Write(writer, "Id", value.Id);
@@ -97,7 +99,7 @@ namespace Scripts.Tools.Serializations.Converters
     {
       writer.Begin(name, null, true);
       foreach (GradientAlphaKey gradientAlphaKey in value)
-        UnityDataWriteUtility.Write(writer, "Item", gradientAlphaKey);
+        Write(writer, "Item", gradientAlphaKey);
       writer.End(name, true);
     }
 
@@ -105,7 +107,7 @@ namespace Scripts.Tools.Serializations.Converters
     {
       writer.Begin(name, null, true);
       foreach (GradientColorKey gradientColorKey in value)
-        UnityDataWriteUtility.Write(writer, "Item", gradientColorKey);
+        Write(writer, "Item", gradientColorKey);
       writer.End(name, true);
     }
 

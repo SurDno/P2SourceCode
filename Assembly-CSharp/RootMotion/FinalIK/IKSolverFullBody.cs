@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -26,7 +27,7 @@ namespace RootMotion.FinalIK
     {
       for (int index = 0; index < effectors.Length; ++index)
       {
-        if ((UnityEngine.Object) effectors[index].bone == (UnityEngine.Object) t)
+        if (effectors[index].bone == t)
           return effectors[index];
       }
       return null;
@@ -44,7 +45,7 @@ namespace RootMotion.FinalIK
       {
         for (int index = 0; index < chain[chainIndex].nodes.Length; ++index)
         {
-          if ((UnityEngine.Object) chain[chainIndex].nodes[index].transform == (UnityEngine.Object) transform)
+          if (chain[chainIndex].nodes[index].transform == transform)
             return chainIndex;
         }
       }
@@ -86,7 +87,7 @@ namespace RootMotion.FinalIK
       {
         for (int index2 = 0; index2 < chain[index1].nodes.Length; ++index2)
         {
-          if ((UnityEngine.Object) chain[index1].nodes[index2].transform == (UnityEngine.Object) transform)
+          if (chain[index1].nodes[index2].transform == transform)
             return chain[index1].nodes[index2];
         }
       }

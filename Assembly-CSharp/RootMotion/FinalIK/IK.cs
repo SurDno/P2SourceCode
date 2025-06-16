@@ -17,7 +17,7 @@
     {
       if (GetIKSolver().initiated)
         return;
-      GetIKSolver().Initiate(this.transform);
+      GetIKSolver().Initiate(transform);
     }
 
     protected override void FixTransforms()

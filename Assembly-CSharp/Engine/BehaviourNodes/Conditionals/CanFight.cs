@@ -22,7 +22,7 @@ namespace Engine.BehaviourNodes.Conditionals
   {
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) gameObject.GetComponent<EnemyBase>() == (UnityEngine.Object) null)
+      if (gameObject.GetComponent<EnemyBase>() == null)
         return TaskStatus.Failure;
       CombatStyleEnum styleName = CombatStyleEnum.Default;
       IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;

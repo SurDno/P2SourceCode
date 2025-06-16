@@ -12,6 +12,7 @@ using Engine.Source.Components.Regions;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -39,11 +40,11 @@ namespace Engine.Source.Components
         return;
       if (area < AreaEnum.__EndMasks)
       {
-        if (region == null || !((UnityEngine.Object) region.RegionMesh != (UnityEngine.Object) null))
+        if (region == null || !(region.RegionMesh != null))
           return;
         for (int index = 0; index < count; ++index)
           result.Add(new CrowdPointInfo {
-            GameObject = (GameObject) null,
+            GameObject = null,
             Rotation = Quaternion.identity,
             Area = area,
             NotReady = true
@@ -55,7 +56,7 @@ namespace Engine.Source.Components
           return;
         foreach (CrowdPointInfo point in points)
         {
-          if (area == point.Area && (UnityEngine.Object) point.GameObject != (UnityEngine.Object) null && point.GameObject.activeInHierarchy)
+          if (area == point.Area && point.GameObject != null && point.GameObject.activeInHierarchy)
             result.Add(point);
         }
       }
@@ -87,7 +88,7 @@ namespace Engine.Source.Components
         if (RegionUtility.GetRegionByPosition(point) == region)
           return;
       }
-      Debug.LogError((object) ("Nav mesh point not found , region : " + region.Owner.GetInfo() + " , area : " + area));
+      Debug.LogError("Nav mesh point not found , region : " + region.Owner.GetInfo() + " , area : " + area);
     }
 
     public override void OnAdded()
@@ -126,7 +127,7 @@ namespace Engine.Source.Components
         else
         {
           GameObject gameObject = ((IEntityView) Owner).GameObject;
-          if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+          if (gameObject != null)
             ComputeGameObject(gameObject);
         }
         PointsReady = true;
@@ -141,7 +142,7 @@ namespace Engine.Source.Components
     {
       crowdPointsTempList.Clear();
       Transform transform = go.transform;
-      go.GetComponentsInChildren<CrowdPoint>(crowdPointsTempList);
+      go.GetComponentsInChildren(crowdPointsTempList);
       foreach (CrowdPoint crowdPointsTemp in crowdPointsTempList)
         points.Add(new CrowdPointInfo {
           GameObject = crowdPointsTemp.gameObject,

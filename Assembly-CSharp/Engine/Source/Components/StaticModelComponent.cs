@@ -11,6 +11,8 @@ using Engine.Services.Engine.Assets;
 using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Engine.Source.Components
 {
@@ -129,7 +131,7 @@ namespace Engine.Source.Components
         if (container == null)
           throw new Exception("Container not found for connection id : " + Connection.Id + " , owner : " + Owner.GetInfo());
         SceneObjectContainer sceneContainer = SceneObjectContainer.GetContainer(sceneAsset.Scene);
-        if ((UnityEngine.Object) sceneContainer == (UnityEngine.Object) null)
+        if (sceneContainer == null)
           throw new Exception(typeof (SceneObjectContainer).Name + " not found, path : " + sceneAsset.Path + " , owner : " + Owner.GetInfo());
         if (relativePosition)
           MoveToPosition();
@@ -144,9 +146,9 @@ namespace Engine.Source.Components
             if (item != null)
             {
               GameObject go = sceneContainer.GetGameObject(item.Reference.Id);
-              if ((UnityEngine.Object) go == (UnityEngine.Object) null)
+              if (go == null)
               {
-                Debug.LogError((object) ("Map entity not found : " + child.GetInfo()));
+                Debug.LogError("Map entity not found : " + child.GetInfo());
               }
               else
               {
@@ -154,7 +156,7 @@ namespace Engine.Source.Components
                 EntityViewUtility.FromTransformToData(child);
                 yield return null;
                 item = null;
-                go = (GameObject) null;
+                go = null;
                 child = null;
               }
             }
@@ -229,7 +231,7 @@ namespace Engine.Source.Components
       {
         if (hierachyContainer.GetItemByTemplateId(child.TemplateId) != null)
         {
-          ((IEntityViewSetter) child).GameObject = (GameObject) null;
+          ((IEntityViewSetter) child).GameObject = null;
           if (child.Childs != null)
             CleanupHierarchy(child.Childs, hierachyContainer);
         }

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class BlendRigger : MonoBehaviour
 {
@@ -10,7 +11,7 @@ public class BlendRigger : MonoBehaviour
   public VisemeBlendDefine[] Poses;
   [HideInInspector]
   public string editorSelected;
-  private AnnoBlendDeformer rtBlendDeformer = null;
+  private AnnoBlendDeformer rtBlendDeformer;
 
   private void Start() => InitializeRuntimeDeformer();
 
@@ -18,8 +19,8 @@ public class BlendRigger : MonoBehaviour
   {
     if (rtBlendDeformer != null || Poses == null)
       return;
-    if ((Object) skinnedMesh == (Object) null)
-      skinnedMesh = this.GetComponent<SkinnedMeshRenderer>();
+    if (skinnedMesh == null)
+      skinnedMesh = GetComponent<SkinnedMeshRenderer>();
     MouthRiggerBlends.UpdateBlendIndices(skinnedMesh, Poses);
     rtBlendDeformer = new AnnoBlendDeformer(Poses, MouthRiggerBlends.GetActiveBlendIndices(skinnedMesh, Poses), skinnedMesh);
   }
@@ -82,7 +83,7 @@ public class BlendRigger : MonoBehaviour
   {
     if (Poses == null)
     {
-      Debug.Log((object) "GetPose problem: no poses?");
+      Debug.Log("GetPose problem: no poses?");
       return null;
     }
     foreach (VisemeBlendDefine pose in Poses)

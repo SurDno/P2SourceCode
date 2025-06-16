@@ -1,21 +1,23 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRF.UI.Layout
 {
   [AddComponentMenu("SRF/UI/Layout/Flow Layout Group")]
   public class FlowLayoutGroup : LayoutGroup
   {
-    private readonly IList<RectTransform> _rowList = (IList<RectTransform>) new List<RectTransform>();
+    private readonly IList<RectTransform> _rowList = new List<RectTransform>();
     private float _layoutHeight;
-    public bool ChildForceExpandHeight = false;
-    public bool ChildForceExpandWidth = false;
-    public float Spacing = 0.0f;
+    public bool ChildForceExpandHeight;
+    public bool ChildForceExpandWidth;
+    public float Spacing;
 
     protected bool IsCenterAlign
     {
       get
       {
-        return this.childAlignment == TextAnchor.LowerCenter || this.childAlignment == TextAnchor.MiddleCenter || this.childAlignment == TextAnchor.UpperCenter;
+        return childAlignment == TextAnchor.LowerCenter || childAlignment == TextAnchor.MiddleCenter || childAlignment == TextAnchor.UpperCenter;
       }
     }
 
@@ -23,7 +25,7 @@ namespace SRF.UI.Layout
     {
       get
       {
-        return this.childAlignment == TextAnchor.LowerRight || this.childAlignment == TextAnchor.MiddleRight || this.childAlignment == TextAnchor.UpperRight;
+        return childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.MiddleRight || childAlignment == TextAnchor.UpperRight;
       }
     }
 
@@ -31,7 +33,7 @@ namespace SRF.UI.Layout
     {
       get
       {
-        return this.childAlignment == TextAnchor.MiddleLeft || this.childAlignment == TextAnchor.MiddleRight || this.childAlignment == TextAnchor.MiddleCenter;
+        return childAlignment == TextAnchor.MiddleLeft || childAlignment == TextAnchor.MiddleRight || childAlignment == TextAnchor.MiddleCenter;
       }
     }
 
@@ -39,41 +41,41 @@ namespace SRF.UI.Layout
     {
       get
       {
-        return this.childAlignment == TextAnchor.LowerLeft || this.childAlignment == TextAnchor.LowerRight || this.childAlignment == TextAnchor.LowerCenter;
+        return childAlignment == TextAnchor.LowerLeft || childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.LowerCenter;
       }
     }
 
     public override void CalculateLayoutInputHorizontal()
     {
       base.CalculateLayoutInputHorizontal();
-      this.SetLayoutInputForAxis(GetGreatestMinimumChildWidth() + (float) this.padding.left + (float) this.padding.right, -1f, -1f, 0);
+      SetLayoutInputForAxis(GetGreatestMinimumChildWidth() + padding.left + padding.right, -1f, -1f, 0);
     }
 
     public override void SetLayoutHorizontal()
     {
-      double num = SetLayout(this.rectTransform.rect.width, 0, false);
+      double num = SetLayout(rectTransform.rect.width, 0, false);
     }
 
     public override void SetLayoutVertical()
     {
-      double num = SetLayout(this.rectTransform.rect.width, 1, false);
+      double num = SetLayout(rectTransform.rect.width, 1, false);
     }
 
     public override void CalculateLayoutInputVertical()
     {
-      _layoutHeight = SetLayout(this.rectTransform.rect.width, 1, true);
+      _layoutHeight = SetLayout(rectTransform.rect.width, 1, true);
     }
 
     public float SetLayout(float width, int axis, bool layoutInput)
     {
-      float height = this.rectTransform.rect.height;
-      float num1 = this.rectTransform.rect.width - (float) this.padding.left - (float) this.padding.right;
-      float yOffset = IsLowerAlign ? (float) this.padding.bottom : (float) this.padding.top;
+      float height = rectTransform.rect.height;
+      float num1 = rectTransform.rect.width - padding.left - padding.right;
+      float yOffset = IsLowerAlign ? padding.bottom : (float) padding.top;
       float rowWidth1 = 0.0f;
       float num2 = 0.0f;
-      for (int index = 0; index < this.rectChildren.Count; ++index)
+      for (int index = 0; index < rectChildren.Count; ++index)
       {
-        RectTransform rectChild = this.rectChildren[IsLowerAlign ? this.rectChildren.Count - 1 - index : index];
+        RectTransform rectChild = rectChildren[IsLowerAlign ? rectChildren.Count - 1 - index : index];
         float preferredSize1 = LayoutUtility.GetPreferredSize(rectChild, 0);
         float preferredSize2 = LayoutUtility.GetPreferredSize(rectChild, 1);
         float num3 = Mathf.Min(preferredSize1, num1);
@@ -85,7 +87,7 @@ namespace SRF.UI.Layout
           if (!layoutInput)
           {
             float rowVerticalOffset = CalculateRowVerticalOffset(height, yOffset, num2);
-            LayoutRow(_rowList, rowWidth2, num2, num1, (float) this.padding.left, rowVerticalOffset, axis);
+            LayoutRow(_rowList, rowWidth2, num2, num1, padding.left, rowVerticalOffset, axis);
           }
           _rowList.Clear();
           yOffset = yOffset + num2 + Spacing;
@@ -100,12 +102,12 @@ namespace SRF.UI.Layout
       if (!layoutInput)
       {
         float rowVerticalOffset = CalculateRowVerticalOffset(height, yOffset, num2);
-        LayoutRow(_rowList, rowWidth1, num2, num1, (float) this.padding.left, rowVerticalOffset, axis);
+        LayoutRow(_rowList, rowWidth1, num2, num1, padding.left, rowVerticalOffset, axis);
       }
       _rowList.Clear();
-      float num4 = yOffset + num2 + (IsLowerAlign ? (float) this.padding.top : (float) this.padding.bottom);
+      float num4 = yOffset + num2 + (IsLowerAlign ? padding.top : (float) padding.bottom);
       if (layoutInput && axis == 1)
-        this.SetLayoutInputForAxis(num4, num4, -1f, axis);
+        SetLayoutInputForAxis(num4, num4, -1f, axis);
       return num4;
     }
 
@@ -137,7 +139,7 @@ namespace SRF.UI.Layout
         int num2 = 0;
         for (int index = 0; index < _rowList.Count; ++index)
         {
-          if ((double) LayoutUtility.GetFlexibleWidth(_rowList[index]) > 0.0)
+          if (LayoutUtility.GetFlexibleWidth(_rowList[index]) > 0.0)
             ++num2;
         }
         if (num2 > 0)
@@ -147,7 +149,7 @@ namespace SRF.UI.Layout
       {
         RectTransform row = _rowList[IsLowerAlign ? _rowList.Count - 1 - index : index];
         float preferredSize = LayoutUtility.GetPreferredSize(row, 0);
-        if ((double) LayoutUtility.GetFlexibleWidth(row) > 0.0)
+        if (LayoutUtility.GetFlexibleWidth(row) > 0.0)
           preferredSize += num1;
         float size1 = LayoutUtility.GetPreferredSize(row, 1);
         if (ChildForceExpandHeight)
@@ -159,9 +161,9 @@ namespace SRF.UI.Layout
         else if (IsLowerAlign)
           pos2 += rowHeight - size1;
         if (axis == 0)
-          this.SetChildAlongAxis(row, 0, pos1, size2);
+          SetChildAlongAxis(row, 0, pos1, size2);
         else
-          this.SetChildAlongAxis(row, 1, pos2, size1);
+          SetChildAlongAxis(row, 1, pos2, size1);
         pos1 += size2 + Spacing;
       }
     }
@@ -169,8 +171,8 @@ namespace SRF.UI.Layout
     public float GetGreatestMinimumChildWidth()
     {
       float b = 0.0f;
-      for (int index = 0; index < this.rectChildren.Count; ++index)
-        b = Mathf.Max(LayoutUtility.GetMinWidth(this.rectChildren[index]), b);
+      for (int index = 0; index < rectChildren.Count; ++index)
+        b = Mathf.Max(LayoutUtility.GetMinWidth(rectChildren[index]), b);
       return b;
     }
   }

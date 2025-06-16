@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using Engine.Source.Audio;
+using UnityEngine;
 
 public class LipsyncMicRecorder : MonoBehaviour
 {
@@ -12,14 +14,14 @@ public class LipsyncMicRecorder : MonoBehaviour
   private State state = State.off;
   private int m_cursor;
   private List<float[]> m_RecordBuffers = new List<float[]>();
-  private string deviceName = null;
+  private string deviceName;
 
   public event StateChanged StateChangeListeners;
 
   private void Start()
   {
     foreach (string device in Microphone.devices)
-      Debug.Log((object) ("Microphone " + device));
+      Debug.Log("Microphone " + device);
     if (Microphone.devices.Length != 0)
       deviceName = Microphone.devices[0];
     LipsyncPlugin.LoadSpeechHmm(Hmm);
@@ -69,10 +71,10 @@ public class LipsyncMicRecorder : MonoBehaviour
 
   public int sampleRate
   {
-    get => (Object) src.clip == (Object) null ? 22050 : src.clip.frequency;
+    get => src.clip == null ? 22050 : src.clip.frequency;
   }
 
-  public int numChannels => (Object) src.clip == (Object) null ? 1 : src.clip.channels;
+  public int numChannels => src.clip == null ? 1 : src.clip.channels;
 
   public void StartRecording(bool bRealtime, bool bLipsyncWhenFinished)
   {
@@ -82,14 +84,14 @@ public class LipsyncMicRecorder : MonoBehaviour
     m_RecordBuffers.Clear();
     src.mute = true;
     src.clip = Microphone.Start(deviceName, true, m_maxSeconds, 44100);
-    if ((Object) src.clip == (Object) null)
+    if (src.clip == null)
       return;
     src.loop = true;
     do
       ;
     while (Microphone.GetPosition(deviceName) <= 0);
     src.PlayAndCheck();
-    if (bRealtime && (Object) src.clip != (Object) null)
+    if (bRealtime && src.clip != null)
     {
       LipsyncPlugin.SetRtLatency(latency);
       LipsyncPlugin.SetRtArticWindowMilli(markerWindow);
@@ -138,7 +140,7 @@ public class LipsyncMicRecorder : MonoBehaviour
 
   private void CreateClipFromBuffers()
   {
-    if ((Object) src.clip == (Object) null)
+    if (src.clip == null)
       return;
     float[] pcm = PCM;
     src.clip = AudioClip.Create("Microphone", pcm.Length / src.clip.channels, src.clip.channels, src.clip.frequency, false, false);

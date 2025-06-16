@@ -1,4 +1,6 @@
-﻿public class WeaponServiceBase : MonoBehaviour
+﻿using UnityEngine;
+
+public class WeaponServiceBase : MonoBehaviour
 {
   public virtual WeaponEnum Weapon { get; set; }
 

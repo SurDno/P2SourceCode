@@ -7,6 +7,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -31,19 +32,19 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override void OnStart()
     {
-      if (!((UnityEngine.Object) Target.Value == (UnityEngine.Object) null))
+      if (!(Target.Value == null))
         return;
-      Debug.LogWarningFormat("{0}: null Target", (object) gameObject.name);
+      Debug.LogWarningFormat("{0}: null Target", gameObject.name);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target.Value == null)
         return TaskStatus.Failure;
       Pivot componentInChildren = Target.Value.GetComponentInChildren<Pivot>();
-      if ((UnityEngine.Object) componentInChildren == (UnityEngine.Object) null || (UnityEngine.Object) componentInChildren.Chest == (UnityEngine.Object) null)
+      if (componentInChildren == null || componentInChildren.Chest == null)
       {
-        Debug.LogWarningFormat("{0}: no puppet master inside", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: no puppet master inside", gameObject.name);
         return TaskStatus.Failure;
       }
       Result.Value = componentInChildren.Chest.transform;

@@ -8,6 +8,7 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Difficulties;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {

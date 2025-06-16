@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 using UnityEngine.PostProcessing;
 
 public class PostProcessingStackOverride : MonoBehaviour
@@ -33,47 +34,47 @@ public class PostProcessingStackOverride : MonoBehaviour
 
   public PostProcessingStackOverride NestedOverride
   {
-    get => this.nestedOverride;
-    set => this.nestedOverride = value;
+    get => nestedOverride;
+    set => nestedOverride = value;
   }
 
-  public AntialiasingOverride Antialiasing => this.antialiasing;
+  public AntialiasingOverride Antialiasing => antialiasing;
 
   public AmbientOcclusionOverride AmbientOcclusion
   {
-    get => this.ambientOcclusion;
+    get => ambientOcclusion;
   }
 
   public ScreenSpaceReflectionOverride ScreenSpaceReflection
   {
-    get => this.screenSpaceReflection;
+    get => screenSpaceReflection;
   }
 
-  public DepthOfFieldOverride DepthOfField => this.depthOfField;
+  public DepthOfFieldOverride DepthOfField => depthOfField;
 
-  public MotionBlurOverride MotionBlur => this.motionBlur;
+  public MotionBlurOverride MotionBlur => motionBlur;
 
-  public ColorGradingOverride ColorGrading => this.colorGrading;
+  public ColorGradingOverride ColorGrading => colorGrading;
 
   public ChromaticAberrationOverride ChromaticAberration
   {
-    get => this.chromaticAberration;
+    get => chromaticAberration;
   }
 
-  public VignetteOverride Vignette => this.vignette;
+  public VignetteOverride Vignette => vignette;
 
   public void ApplyTo(PostProcessingProfile source, PostProcessingProfile target)
   {
-    if ((UnityEngine.Object) this.nestedOverride != (UnityEngine.Object) null)
-      this.nestedOverride.ApplyTo(source, target);
-    this.antialiasing.Apply(source.antialiasing, ref target.antialiasing, ref this.antialiasingModel);
-    this.ambientOcclusion.Apply(source.ambientOcclusion, ref target.ambientOcclusion, ref this.ambientOcclusionModel);
-    this.screenSpaceReflection.Apply(source.screenSpaceReflection, ref target.screenSpaceReflection, ref this.screenSpaceReflectionModel);
-    this.depthOfField.Apply(source.depthOfField, ref target.depthOfField, ref this.depthOfFieldModel);
-    this.motionBlur.Apply(source.motionBlur, ref target.motionBlur, ref this.motionBlurModel);
-    this.colorGrading.Apply(source.colorGrading, ref target.colorGrading, ref this.colorGradingModel);
-    this.chromaticAberration.Apply(source.chromaticAberration, ref target.chromaticAberration, ref this.chromaticAberrationModel);
-    this.vignette.Apply(source.vignette, ref target.vignette, ref this.vignetteModel);
+    if (nestedOverride != null)
+      nestedOverride.ApplyTo(source, target);
+    antialiasing.Apply(source.antialiasing, ref target.antialiasing, ref antialiasingModel);
+    ambientOcclusion.Apply(source.ambientOcclusion, ref target.ambientOcclusion, ref ambientOcclusionModel);
+    screenSpaceReflection.Apply(source.screenSpaceReflection, ref target.screenSpaceReflection, ref screenSpaceReflectionModel);
+    depthOfField.Apply(source.depthOfField, ref target.depthOfField, ref depthOfFieldModel);
+    motionBlur.Apply(source.motionBlur, ref target.motionBlur, ref motionBlurModel);
+    colorGrading.Apply(source.colorGrading, ref target.colorGrading, ref colorGradingModel);
+    chromaticAberration.Apply(source.chromaticAberration, ref target.chromaticAberration, ref chromaticAberrationModel);
+    vignette.Apply(source.vignette, ref target.vignette, ref vignetteModel);
   }
 
   [Serializable]
@@ -84,18 +85,18 @@ public class PostProcessingStackOverride : MonoBehaviour
 
     public void Apply(T source, ref T target, ref T local)
     {
-      if (this.Override)
+      if (Override)
       {
-        if ((object) local == null)
+        if (local == null)
           local = new T();
-        if ((object) target != (object) local)
+        if (target != local)
           target = local;
-        local.enabled = this.Enabled;
-        this.ApplySettings(source, local);
+        local.enabled = Enabled;
+        ApplySettings(source, local);
       }
       else
       {
-        if ((object) target != (object) local)
+        if (target != local)
           return;
         target = source;
       }
@@ -156,10 +157,10 @@ public class PostProcessingStackOverride : MonoBehaviour
     {
       DepthOfFieldModel.Settings settings = source.settings with
       {
-        focusDistance = this.FocusDistance,
-        aperture = this.Aperture,
-        useCameraFov = this.UseCameraFov,
-        focalLength = this.FocalLength
+        focusDistance = FocusDistance,
+        aperture = Aperture,
+        useCameraFov = UseCameraFov,
+        focalLength = FocalLength
       };
       target.settings = settings;
     }
@@ -176,7 +177,7 @@ public class PostProcessingStackOverride : MonoBehaviour
     {
       MotionBlurModel.Settings settings = source.settings with
       {
-        shutterAngle = this.ShutterAngle
+        shutterAngle = ShutterAngle
       };
       target.settings = settings;
     }
@@ -192,8 +193,8 @@ public class PostProcessingStackOverride : MonoBehaviour
     {
       ColorGradingModel.Settings settings = source.settings with
       {
-        basic = this.Basic,
-        channelMixer = this.ChannelMixer
+        basic = Basic,
+        channelMixer = ChannelMixer
       };
       target.settings = settings;
     }
@@ -213,7 +214,7 @@ public class PostProcessingStackOverride : MonoBehaviour
     {
       ChromaticAberrationModel.Settings settings = source.settings with
       {
-        intensity = this.Intensity
+        intensity = Intensity
       };
       target.settings = settings;
     }
@@ -233,8 +234,8 @@ public class PostProcessingStackOverride : MonoBehaviour
     {
       VignetteModel.Settings settings = source.settings with
       {
-        color = this.Color,
-        intensity = this.Intensity
+        color = Color,
+        intensity = Intensity
       };
       target.settings = settings;
     }

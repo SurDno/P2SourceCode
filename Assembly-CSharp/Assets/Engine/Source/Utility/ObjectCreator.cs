@@ -1,4 +1,6 @@
-﻿namespace Assets.Engine.Source.Utility
+﻿using UnityEngine;
+
+namespace Assets.Engine.Source.Utility
 {
   public static class ObjectCreator
   {

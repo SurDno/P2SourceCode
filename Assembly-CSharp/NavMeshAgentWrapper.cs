@@ -1,4 +1,6 @@
 ﻿using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NavMeshAgentWrapper
 {

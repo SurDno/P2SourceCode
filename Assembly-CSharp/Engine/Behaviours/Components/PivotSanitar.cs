@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Engine.Behaviours.Engines.Controllers;
 using Engine.Common;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Engine.Behaviours.Components
 {
@@ -11,7 +13,7 @@ namespace Engine.Behaviours.Components
   {
     [SerializeField]
     [FormerlySerializedAs("FlamethrowerPS")]
-    private Flamethrower flamethrowerPS = null;
+    private Flamethrower flamethrowerPS;
     private Transform flamethrowerPSParent;
     private Vector3 flamethrowerLocalPosition;
     private Quaternion flamethrowerLocalRotation;
@@ -72,7 +74,7 @@ namespace Engine.Behaviours.Components
       get => targetObject;
       set
       {
-        if ((UnityEngine.Object) targetObject == (UnityEngine.Object) null)
+        if (targetObject == null)
           aimingTime = 0.0f;
         targetObject = value;
       }
@@ -82,12 +84,12 @@ namespace Engine.Behaviours.Components
     {
       get
       {
-        if ((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null && Flamethrower)
+        if (flamethrowerPS != null && Flamethrower)
         {
           foreach (IFlamable flamable in flamethrowerPS.MovablesHit)
           {
             IFlamable movable = flamable;
-            if (movable != null && !((UnityEngine.Object) movable.gameObject == (UnityEngine.Object) null))
+            if (movable != null && !(movable.gameObject == null))
             {
               IEntity entityMovable = EntityUtility.GetEntity(movable.gameObject);
               if (entityMovable != null)
@@ -104,7 +106,7 @@ namespace Engine.Behaviours.Components
     {
       set
       {
-        if (!((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null))
+        if (!(flamethrowerPS != null))
           return;
         flamethrowerPS.SetIndoor(value);
       }
@@ -112,33 +114,33 @@ namespace Engine.Behaviours.Components
 
     private void Awake()
     {
-      animator = this.gameObject.GetComponent<Pivot>().GetAnimator();
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      animator = gameObject.GetComponent<Pivot>().GetAnimator();
+      if (animator == null)
       {
-        Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", (object) this.gameObject.name, (object) typeof (Animator).Name);
+        Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", gameObject.name, typeof (Animator).Name);
       }
       else
       {
         animatorState = FightAnimatorBehavior.GetAnimatorState(animator);
-        if (!((UnityEngine.Object) flamethrowerPS == (UnityEngine.Object) null))
+        if (!(flamethrowerPS == null))
           return;
-        Debug.LogWarningFormat("{0}: doesn't contain FlamethrowerPS", (object) this.gameObject.name);
+        Debug.LogWarningFormat("{0}: doesn't contain FlamethrowerPS", gameObject.name);
       }
     }
 
     private void Start()
     {
-      if (!((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null))
+      if (!(flamethrowerPS != null))
         return;
       flamethrowerLocalPosition = flamethrowerPS.transform.localPosition;
       flamethrowerLocalRotation = flamethrowerPS.transform.localRotation;
       flamethrowerPSParent = flamethrowerPS.transform.parent;
-      flamethrowerPS.transform.parent = (Transform) null;
+      flamethrowerPS.transform.parent = null;
     }
 
     private void Update()
     {
-      if ((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null)
+      if (flamethrowerPS != null)
       {
         flamethrowerPS.Fire = flamethrower;
         flamethrowerPS.transform.position = flamethrowerPSParent.TransformPoint(flamethrowerLocalPosition);
@@ -150,9 +152,9 @@ namespace Engine.Behaviours.Components
 
     private void OnDestroy()
     {
-      if (!((UnityEngine.Object) flamethrowerPS != (UnityEngine.Object) null))
+      if (!(flamethrowerPS != null))
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) flamethrowerPS.gameObject);
+      Destroy(flamethrowerPS.gameObject);
     }
   }
 }

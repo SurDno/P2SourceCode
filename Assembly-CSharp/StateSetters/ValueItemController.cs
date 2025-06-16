@@ -1,4 +1,5 @@
 ﻿using Engine.Source.Behaviours;
+using UnityEngine;
 
 namespace StateSetters
 {
@@ -8,7 +9,7 @@ namespace StateSetters
     public void Apply(StateSetterItem item, float value)
     {
       Object objectValue1 = item.ObjectValue1;
-      if (objectValue1 == (Object) null || !(objectValue1 is IValueController valueController))
+      if (objectValue1 == null || !(objectValue1 is IValueController valueController))
         return;
       valueController.Value = value;
     }

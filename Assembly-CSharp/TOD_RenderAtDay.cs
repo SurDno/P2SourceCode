@@ -1,11 +1,13 @@
-﻿[RequireComponent(typeof (Renderer))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (Renderer))]
 public class TOD_RenderAtDay : MonoBehaviour
 {
   private Renderer rendererComponent;
 
   protected void Start()
   {
-    rendererComponent = this.GetComponent<Renderer>();
+    rendererComponent = GetComponent<Renderer>();
     rendererComponent.enabled = TOD_Sky.Instance.IsDay;
   }
 

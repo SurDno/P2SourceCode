@@ -4,6 +4,7 @@ using Engine.Source.Settings;
 using Engine.Source.Settings.External;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {

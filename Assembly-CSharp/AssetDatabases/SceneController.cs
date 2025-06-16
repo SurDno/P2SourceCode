@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Reflection;
 using Engine.Source.Settings.External;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace AssetDatabases
 {
@@ -22,12 +24,12 @@ namespace AssetDatabases
 
     static SceneController()
     {
-      SceneManager.sceneLoaded += new UnityAction<Scene, LoadSceneMode>(OnSceneLoaded);
+      SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(MethodBase.GetCurrentMethod().Name).Append(" , scene : ").Append(scene.name));
+      Debug.Log(ObjectInfoUtility.GetStream().Append(MethodBase.GetCurrentMethod().Name).Append(" , scene : ").Append(scene.name));
       scenes.Add(scene);
       UpdateScenes();
     }

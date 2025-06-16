@@ -7,6 +7,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components.Maps
 {

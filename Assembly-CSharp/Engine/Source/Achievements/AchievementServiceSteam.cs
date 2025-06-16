@@ -4,6 +4,7 @@ using System.Linq;
 using Engine.Source.Commons;
 using Facepunch.Steamworks;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Achievements
 {
@@ -23,15 +24,15 @@ namespace Engine.Source.Achievements
       uint steamAppId = AchievementUtility.GetSteamAppId();
       if (steamAppId == 0U)
       {
-        Debug.LogWarning((object) "Steam AppId not found");
+        Debug.LogWarning("Steam AppId not found");
       }
       else
       {
-        Debug.Log((object) ("Steam AppId: " + steamAppId));
+        Debug.Log("Steam AppId: " + steamAppId);
         Config.ForUnity(Application.platform.ToString());
         Client client = new Client(steamAppId);
         if (Client.Instance == null)
-          Debug.LogWarning((object) "Error starting Steam!");
+          Debug.LogWarning("Error starting Steam!");
         else
           InstanceByRequest<EngineApplication>.Instance.OnApplicationQuit += OnApplicationQuit;
       }
@@ -66,12 +67,12 @@ namespace Engine.Source.Achievements
       Achievement achievement = Client.Instance.Achievements.All.FirstOrDefault(o => o.Id == id);
       if (achievement == null)
       {
-        Debug.LogError((object) ("Achievement not found : " + id));
+        Debug.LogError("Achievement not found : " + id);
       }
       else
       {
         achievement.Trigger();
-        Debug.Log((object) ("Unlock achievement : " + id));
+        Debug.Log("Unlock achievement : " + id);
       }
     }
 
@@ -81,7 +82,7 @@ namespace Engine.Source.Achievements
         return;
       Achievement achievement = Client.Instance.Achievements.All.FirstOrDefault(o => o.Id == id);
       if (achievement == null)
-        Debug.LogError((object) ("Achievement not found : " + id));
+        Debug.LogError("Achievement not found : " + id);
       else
         achievement.Reset();
     }

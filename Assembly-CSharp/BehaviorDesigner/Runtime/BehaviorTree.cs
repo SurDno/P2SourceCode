@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Utility;
+using UnityEngine;
 using Action = System.Action;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -27,7 +29,7 @@ namespace BehaviorDesigner.Runtime
     private bool initialized;
     private Dictionary<Task, Dictionary<string, object>> defaultValues;
     private Dictionary<string, object> defaultVariableValues;
-    private Dictionary<string, List<TaskCoroutine>> activeTaskCoroutines = null;
+    private Dictionary<string, List<TaskCoroutine>> activeTaskCoroutines;
     private Dictionary<Type, Dictionary<string, Delegate>> eventTable;
 
     public event BehaviorHandler OnBehaviorStart;
@@ -87,9 +89,9 @@ namespace BehaviorDesigner.Runtime
       set => behaviorSource = value;
     }
 
-    public UnityEngine.Object GetObject() => (UnityEngine.Object) this;
+    public Object GetObject() => this;
 
-    public string GetOwnerName() => this.gameObject.name;
+    public string GetOwnerName() => gameObject.name;
 
     public TaskStatus ExecutionStatus
     {
@@ -169,7 +171,7 @@ namespace BehaviorDesigner.Runtime
         {
           SharedVariable sharedVariable = value as SharedVariable;
           if (!TypeUtility.IsAssignableFrom(variable.GetType(), sharedVariable.GetType()))
-            Debug.LogError((object) ("Set wrong type, go : " + (object) this.gameObject));
+            Debug.LogError("Set wrong type, go : " + gameObject);
           variable.SetValue(sharedVariable.GetValue());
         }
         else
@@ -185,7 +187,7 @@ namespace BehaviorDesigner.Runtime
         behaviorSource.SetVariable(name, instance);
       }
       else
-        Debug.LogError((object) ("Error: No variable exists with name " + name + " in: " + (object) this.gameObject));
+        Debug.LogError("Error: No variable exists with name " + name + " in: " + gameObject);
     }
 
     public List<SharedVariable> GetAllVariables()
@@ -196,7 +198,7 @@ namespace BehaviorDesigner.Runtime
 
     public void CheckForSerialization()
     {
-      if ((UnityEngine.Object) externalBehavior != (UnityEngine.Object) null)
+      if (externalBehavior != null)
       {
         List<SharedVariable> sharedVariableList = null;
         bool force = false;
@@ -280,8 +282,8 @@ namespace BehaviorDesigner.Runtime
       MethodInfo method = task.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
       if (method == null)
       {
-        Debug.LogError((object) ("Unable to start coroutine " + methodName + ": method not found"));
-        return (Coroutine) null;
+        Debug.LogError("Unable to start coroutine " + methodName + ": method not found");
+        return null;
       }
       if (activeTaskCoroutines == null)
         activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
@@ -304,8 +306,8 @@ namespace BehaviorDesigner.Runtime
       MethodInfo method = task.GetType().GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
       if (method == null)
       {
-        Debug.LogError((object) ("Unable to start coroutine " + methodName + ": method not found"));
-        return (Coroutine) null;
+        Debug.LogError("Unable to start coroutine " + methodName + ": method not found");
+        return null;
       }
       if (activeTaskCoroutines == null)
         activeTaskCoroutines = new Dictionary<string, List<TaskCoroutine>>();
@@ -337,7 +339,7 @@ namespace BehaviorDesigner.Runtime
 
     public void StopAllTaskCoroutines()
     {
-      this.StopAllCoroutines();
+      StopAllCoroutines();
       foreach (KeyValuePair<string, List<TaskCoroutine>> activeTaskCoroutine in activeTaskCoroutines)
       {
         List<TaskCoroutine> taskCoroutineList = activeTaskCoroutine.Value;
@@ -564,7 +566,7 @@ namespace BehaviorDesigner.Runtime
 
     public override string ToString() => behaviorSource.ToString();
 
-    int IBehaviorTree.GetInstanceID() => this.GetInstanceID();
+    int IBehaviorTree.GetInstanceID() => GetInstanceID();
 
     public delegate void BehaviorHandler(BehaviorTree behavior);
   }

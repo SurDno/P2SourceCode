@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public class AimController : MonoBehaviour
   {
@@ -50,14 +52,14 @@
     {
       lastPosition = ik.solver.IKPosition;
       dir = ik.solver.IKPosition - pivot;
-      ik.solver.target = (Transform) null;
+      ik.solver.target = null;
     }
 
     private void LateUpdate()
     {
-      if ((Object) target != (Object) lastTarget)
+      if (target != lastTarget)
       {
-        if ((Object) lastTarget == (Object) null && (Object) target != (Object) null)
+        if (lastTarget == null && target != null)
         {
           lastPosition = target.position;
           dir = target.position - pivot;
@@ -71,7 +73,7 @@
         switchWeight = 0.0f;
         lastTarget = target;
       }
-      ik.solver.IKPositionWeight = Mathf.SmoothDamp(ik.solver.IKPositionWeight, (Object) target != (Object) null ? weight : 0.0f, ref weightV, weightSmoothTime);
+      ik.solver.IKPositionWeight = Mathf.SmoothDamp(ik.solver.IKPositionWeight, target != null ? weight : 0.0f, ref weightV, weightSmoothTime);
       if (ik.solver.IKPositionWeight >= 0.99900001287460327)
         ik.solver.IKPositionWeight = 1f;
       if (ik.solver.IKPositionWeight <= 1.0 / 1000.0)
@@ -81,7 +83,7 @@
       switchWeight = Mathf.SmoothDamp(switchWeight, 1f, ref switchWeightV, targetSwitchSmoothTime);
       if (switchWeight >= 0.99900001287460327)
         switchWeight = 1f;
-      if ((Object) target != (Object) null)
+      if (target != null)
         ik.solver.IKPosition = Vector3.Lerp(lastPosition, target.position + offset, switchWeight);
       if (smoothTurnTowardsTarget != lastSmoothTowardsTarget)
       {

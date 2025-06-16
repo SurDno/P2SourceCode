@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -9,8 +11,8 @@
     public float strengthX = 0.05f;
     [Range(0.0f, 1.5f)]
     public float strengthY = 0.05f;
-    public Shader fishEyeShader = (Shader) null;
-    private Material fisheyeMaterial = (Material) null;
+    public Shader fishEyeShader;
+    private Material fisheyeMaterial;
 
     public override bool CheckResources()
     {
@@ -25,14 +27,14 @@
     {
       if (!CheckResources())
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
         float num1 = 5f / 32f;
-        float num2 = (float) ((double) source.width * 1.0 / ((double) source.height * 1.0));
+        float num2 = (float) (source.width * 1.0 / (source.height * 1.0));
         fisheyeMaterial.SetVector("intensity", new Vector4(strengthX * num2 * num1, strengthY * num1, strengthX * num2 * num1, strengthY * num1));
-        Graphics.Blit((Texture) source, destination, fisheyeMaterial);
+        Graphics.Blit(source, destination, fisheyeMaterial);
       }
     }
   }

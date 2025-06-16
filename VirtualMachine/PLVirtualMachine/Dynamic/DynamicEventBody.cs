@@ -218,7 +218,7 @@ namespace PLVirtualMachine.Dynamic
           }
           catch (Exception ex)
           {
-            Logger.AddError(string.Format("SaveLoad error: cannot load raising timers guids list from node {0}  in event {1}, error: {2}", childNode1.InnerText, parent.Name, ex.ToString()));
+            Logger.AddError(string.Format("SaveLoad error: cannot load raising timers guids list from node {0}  in event {1}, error: {2}", childNode1.InnerText, parent.Name, ex));
           }
         }
       }

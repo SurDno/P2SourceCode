@@ -1,20 +1,22 @@
-﻿public class PrefabAnchor : MonoBehaviour
+﻿using UnityEngine;
+
+public class PrefabAnchor : MonoBehaviour
 {
   [SerializeField]
   private GameObject prefab;
   [SerializeField]
-  private bool worldSpace = false;
+  private bool worldSpace;
   [SerializeField]
-  private bool destroyOnDisable = false;
+  private bool destroyOnDisable;
   private GameObject instance;
 
   private void OnEnable()
   {
-    if ((Object) instance == (Object) null)
+    if (instance == null)
     {
-      if (!((Object) prefab != (Object) null))
+      if (!(prefab != null))
         return;
-      instance = !worldSpace ? Object.Instantiate<GameObject>(prefab, this.transform, false) : Object.Instantiate<GameObject>(prefab);
+      instance = !worldSpace ? Instantiate(prefab, transform, false) : Instantiate(prefab);
       instance.name = prefab.name;
     }
     else
@@ -27,12 +29,12 @@
 
   private void OnDisable()
   {
-    if ((Object) instance == (Object) null)
+    if (instance == null)
       return;
     if (destroyOnDisable)
     {
-      Object.Destroy((Object) instance);
-      instance = (GameObject) null;
+      Destroy(instance);
+      instance = null;
     }
     else
     {

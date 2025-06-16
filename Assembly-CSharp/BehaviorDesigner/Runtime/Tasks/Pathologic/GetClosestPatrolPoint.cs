@@ -8,6 +8,8 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components.Utilities;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -42,9 +44,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     {
       inited = false;
       patrolPath = PatrolTransform.Value.GetComponent<PatrolPath>();
-      if ((UnityEngine.Object) patrolPath == (UnityEngine.Object) null)
+      if (patrolPath == null)
       {
-        Debug.LogErrorFormat("{0} has no patrol path", (object) gameObject.name);
+        Debug.LogErrorFormat("{0} has no patrol path", gameObject.name);
       }
       else
       {
@@ -86,7 +88,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
         return TaskStatus.Failure;
       if (patrolPoints.Count == 0)
       {
-        Debug.LogErrorFormat("{0} has wrong patrol path in {1}", (object) gameObject.name, (object) PatrolTransform.Value.name);
+        Debug.LogErrorFormat("{0} has wrong patrol path in {1}", gameObject.name, PatrolTransform.Value.name);
         return TaskStatus.Failure;
       }
       if (CurrentIndex.Value >= patrolPoints.Count)

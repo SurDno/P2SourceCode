@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using UnityEngine;
 
 namespace Inspectors
 {
@@ -17,7 +18,7 @@ namespace Inspectors
       if (!drawers.ContainsKey(type))
         drawers.Add(type, (name, type2, value, mutable, context, drawer, target, member, setter) => action(name, type2, value, mutable, context, drawer, target, member, setter));
       else
-        Debug.LogError((object) ("Drawer type already exist : " + type));
+        Debug.LogError("Drawer type already exist : " + type);
     }
 
     public static void Add<T>(DrawerHandle action)

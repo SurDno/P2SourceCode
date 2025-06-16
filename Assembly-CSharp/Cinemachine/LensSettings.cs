@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -27,7 +28,7 @@ namespace Cinemachine
     public static LensSettings FromCamera(Camera fromCamera)
     {
       LensSettings lensSettings = Default;
-      if ((UnityEngine.Object) fromCamera != (UnityEngine.Object) null)
+      if (fromCamera != null)
       {
         lensSettings.FieldOfView = fromCamera.fieldOfView;
         lensSettings.OrthographicSize = fromCamera.orthographicSize;

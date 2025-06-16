@@ -14,6 +14,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -40,20 +41,20 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       entity = EntityUtility.GetEntity(gameObject);
       if (entity == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
       }
       else
       {
         detector = (DetectorComponent) entity.GetComponent<IDetectorComponent>();
         if (detector == null)
         {
-          Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", (object) gameObject.name, (object) typeof (IDetectorComponent).Name);
+          Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", gameObject.name, typeof (IDetectorComponent).Name);
         }
         else
         {
           lookAtController = gameObject.GetComponent<IKController>();
-          if ((UnityEngine.Object) lookAtController == (UnityEngine.Object) null)
-            Debug.LogErrorFormat("{0}: doesn't contain {1} unity component", (object) gameObject.name, (object) typeof (IKController).Name);
+          if (lookAtController == null)
+            Debug.LogErrorFormat("{0}: doesn't contain {1} unity component", gameObject.name, typeof (IKController).Name);
           else
             inited = true;
         }
@@ -71,7 +72,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     {
       if (!inited)
         return;
-      lookAtController.LookTarget = (Transform) null;
+      lookAtController.LookTarget = null;
     }
 
     public override TaskStatus OnUpdate()
@@ -96,18 +97,18 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
         if (!detectableComponent.IsDisposed)
         {
           IEntityView owner = (IEntityView) ((EngineComponent) detectableComponent).Owner;
-          if (!((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null))
+          if (!(owner.GameObject == null))
           {
             Engine.Behaviours.Engines.PointsOfInterest.LookAtPointOfInterest component1 = owner.GameObject.GetComponent<Engine.Behaviours.Engines.PointsOfInterest.LookAtPointOfInterest>();
-            if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
+            if (component1 != null)
             {
-              if ((UnityEngine.Object) component1.POI != (UnityEngine.Object) null)
+              if (component1.POI != null)
                 potentialPOIs.Add(component1.POI);
               else
                 potentialPOIs.Add(component1.transform);
             }
             Pivot component2 = owner.GameObject.GetComponent<Pivot>();
-            if ((UnityEngine.Object) component2 != (UnityEngine.Object) null && (UnityEngine.Object) component2.Head != (UnityEngine.Object) null)
+            if (component2 != null && component2.Head != null)
               potentialPriorityPOIs.Add(component2.Head.transform);
           }
         }
@@ -123,20 +124,20 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
         lookAtController.LookTarget = potentialPOIs[0];
       }
       else
-        lookAtController.LookTarget = (Transform) null;
+        lookAtController.LookTarget = null;
     }
 
     private int ComparePOIs(Transform a, Transform b)
     {
       float sqrMagnitude1 = (a.position - gameObject.transform.position).sqrMagnitude;
       float sqrMagnitude2 = (b.position - gameObject.transform.position).sqrMagnitude;
-      return (UnityEngine.Object) a == (UnityEngine.Object) b ? 0 : (sqrMagnitude1 < (double) sqrMagnitude2 ? -1 : 1);
+      return a == b ? 0 : (sqrMagnitude1 < (double) sqrMagnitude2 ? -1 : 1);
     }
 
     public IEnumerator ExecuteSecond(float delay, System.Action action)
     {
       float time = Time.unscaledTime;
-      while (time + (double) delay > (double) Time.unscaledTime)
+      while (time + (double) delay > Time.unscaledTime)
       {
         System.Action action1 = action;
         if (action1 != null)

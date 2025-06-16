@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RootMotion.FinalIK
 {
@@ -67,7 +69,7 @@ namespace RootMotion.FinalIK
 
     public bool IsValid(IKSolver solver, ref string message)
     {
-      if ((UnityEngine.Object) bone == (UnityEngine.Object) null)
+      if (bone == null)
       {
         message = "IK Effector bone is null.";
         return false;
@@ -77,9 +79,9 @@ namespace RootMotion.FinalIK
         message = "IK Effector is referencing to a bone '" + bone.name + "' that does not excist in the Node Chain.";
         return false;
       }
-      foreach (UnityEngine.Object childBone in childBones)
+      foreach (Object childBone in childBones)
       {
-        if (childBone == (UnityEngine.Object) null)
+        if (childBone == null)
         {
           message = "IK Effector contains a null reference.";
           return false;
@@ -93,17 +95,17 @@ namespace RootMotion.FinalIK
           return false;
         }
       }
-      if ((UnityEngine.Object) planeBone1 != (UnityEngine.Object) null && solver.GetPoint(planeBone1) == null)
+      if (planeBone1 != null && solver.GetPoint(planeBone1) == null)
       {
         message = "IK Effector is referencing to a bone '" + planeBone1.name + "' that does not excist in the Node Chain.";
         return false;
       }
-      if ((UnityEngine.Object) planeBone2 != (UnityEngine.Object) null && solver.GetPoint(planeBone2) == null)
+      if (planeBone2 != null && solver.GetPoint(planeBone2) == null)
       {
         message = "IK Effector is referencing to a bone '" + planeBone2.name + "' that does not excist in the Node Chain.";
         return false;
       }
-      if (!((UnityEngine.Object) planeBone3 != (UnityEngine.Object) null) || solver.GetPoint(planeBone3) != null)
+      if (!(planeBone3 != null) || solver.GetPoint(planeBone3) != null)
         return true;
       message = "IK Effector is referencing to a bone '" + planeBone3.name + "' that does not excist in the Node Chain.";
       return false;
@@ -121,13 +123,13 @@ namespace RootMotion.FinalIK
         solver.GetChainAndNodeIndexes(childBones[index], out childChainIndexes[index], out childNodeIndexes[index]);
       localPositions = new Vector3[childBones.Length];
       usePlaneNodes = false;
-      if ((UnityEngine.Object) planeBone1 != (UnityEngine.Object) null)
+      if (planeBone1 != null)
       {
         solver.GetChainAndNodeIndexes(planeBone1, out plane1ChainIndex, out plane1NodeIndex);
-        if ((UnityEngine.Object) planeBone2 != (UnityEngine.Object) null)
+        if (planeBone2 != null)
         {
           solver.GetChainAndNodeIndexes(planeBone2, out plane2ChainIndex, out plane2NodeIndex);
-          if ((UnityEngine.Object) planeBone3 != (UnityEngine.Object) null)
+          if (planeBone3 != null)
           {
             solver.GetChainAndNodeIndexes(planeBone3, out plane3ChainIndex, out plane3NodeIndex);
             usePlaneNodes = true;
@@ -148,7 +150,7 @@ namespace RootMotion.FinalIK
 
     public void SetToTarget()
     {
-      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+      if (target == null)
         return;
       position = target.position;
       rotation = target.rotation;
@@ -165,13 +167,13 @@ namespace RootMotion.FinalIK
       solver.GetNode(chainIndex, nodeIndex).effectorRotationWeight = rotW;
       solver.GetNode(chainIndex, nodeIndex).solverRotation = rotation;
       if (float.IsInfinity(positionOffset.x) || float.IsInfinity(positionOffset.y) || float.IsInfinity(positionOffset.z))
-        Debug.LogError((object) "Invalid IKEffector.positionOffset (contains Infinity)! Please make sure not to set IKEffector.positionOffset to infinite values.", (UnityEngine.Object) bone);
+        Debug.LogError("Invalid IKEffector.positionOffset (contains Infinity)! Please make sure not to set IKEffector.positionOffset to infinite values.", bone);
       if (float.IsNaN(positionOffset.x) || float.IsNaN(positionOffset.y) || float.IsNaN(positionOffset.z))
-        Debug.LogError((object) "Invalid IKEffector.positionOffset (contains NaN)! Please make sure not to set IKEffector.positionOffset to NaN values.", (UnityEngine.Object) bone);
-      if ((double) positionOffset.sqrMagnitude > 10000000000.0)
-        Debug.LogError((object) "Additive effector positionOffset detected in Full Body IK (extremely large value). Make sure you are not circularily adding to effector positionOffset each frame.", (UnityEngine.Object) bone);
+        Debug.LogError("Invalid IKEffector.positionOffset (contains NaN)! Please make sure not to set IKEffector.positionOffset to NaN values.", bone);
+      if (positionOffset.sqrMagnitude > 10000000000.0)
+        Debug.LogError("Additive effector positionOffset detected in Full Body IK (extremely large value). Make sure you are not circularily adding to effector positionOffset each frame.", bone);
       if (float.IsInfinity(position.x) || float.IsInfinity(position.y) || float.IsInfinity(position.z))
-        Debug.LogError((object) "Invalid IKEffector.position (contains Infinity)!");
+        Debug.LogError("Invalid IKEffector.position (contains Infinity)!");
       solver.GetNode(chainIndex, nodeIndex).offset += positionOffset * solver.IKPositionWeight;
       if (effectChildNodes && solver.iterations > 0)
       {

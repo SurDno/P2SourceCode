@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public abstract class SpriteViewBase : SpriteView
   {
@@ -16,7 +18,7 @@
 
     public override void SetValue(Sprite value, bool instant)
     {
-      if ((Object) this.value == (Object) value)
+      if (this.value == value)
         return;
       this.value = value;
       ApplyValue(instant);

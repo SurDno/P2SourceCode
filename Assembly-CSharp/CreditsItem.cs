@@ -1,4 +1,6 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class CreditsItem : MonoBehaviour
 {
@@ -31,6 +33,6 @@ public class CreditsItem : MonoBehaviour
 
   public void SetPosition(float value)
   {
-    ((RectTransform) this.transform).anchoredPosition = new Vector2(0.0f, -value);
+    ((RectTransform) transform).anchoredPosition = new Vector2(0.0f, -value);
   }
 }

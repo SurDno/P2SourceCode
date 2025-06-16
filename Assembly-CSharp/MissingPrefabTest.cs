@@ -1,4 +1,6 @@
-﻿public class MissingPrefabTest : MonoBehaviour
+﻿using UnityEngine;
+
+public class MissingPrefabTest : MonoBehaviour
 {
   private void Start()
   {

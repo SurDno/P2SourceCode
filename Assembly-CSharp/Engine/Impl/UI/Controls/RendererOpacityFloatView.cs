@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class RendererOpacityFloatView : FloatViewBase
   {
@@ -15,10 +17,10 @@
 
     protected override void ApplyFloatValue()
     {
-      if ((Object) targetRenderer == (Object) null)
+      if (targetRenderer == null)
         return;
       Material sharedMaterial = targetRenderer.sharedMaterial;
-      if ((Object) sharedMaterial == (Object) null)
+      if (sharedMaterial == null)
         return;
       int id = Shader.PropertyToID(propertyName);
       if (!sharedMaterial.HasProperty(id))

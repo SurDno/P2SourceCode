@@ -1,5 +1,6 @@
 ﻿using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class ItemNullCheckView : ItemView
 {
@@ -15,7 +16,7 @@ public class ItemNullCheckView : ItemView
       if (storable == value)
         return;
       storable = value;
-      if (!((Object) hideableView != (Object) null))
+      if (!(hideableView != null))
         return;
       hideableView.Visible = storable != null;
     }

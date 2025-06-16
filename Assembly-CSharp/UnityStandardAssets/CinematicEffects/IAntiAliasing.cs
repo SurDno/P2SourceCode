@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.CinematicEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.CinematicEffects
 {
   public interface IAntiAliasing
   {

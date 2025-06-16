@@ -5,6 +5,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Impl.Services.HierarchyServices
 {
@@ -46,7 +47,7 @@ namespace Engine.Impl.Services.HierarchyServices
       Template = GetTemplate(Reference);
       if (Template == null)
       {
-        Debug.LogWarning((object) ("Template not found : " + Reference.Id));
+        Debug.LogWarning("Template not found : " + Reference.Id);
       }
       else
       {
@@ -70,7 +71,7 @@ namespace Engine.Impl.Services.HierarchyServices
             if (template != null)
               Container = new HierarchyContainer(template, containers, templates);
             else
-              Debug.LogError((object) (typeof (SceneObject).Name + " not found, id : " + id + " , item : " + Template.GetInfo()));
+              Debug.LogError(typeof (SceneObject).Name + " not found, id : " + id + " , item : " + Template.GetInfo());
           }
         }
       }

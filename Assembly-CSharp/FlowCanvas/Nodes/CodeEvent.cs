@@ -2,6 +2,7 @@
 using System.Reflection;
 using ParadoxNotion;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -27,27 +28,27 @@ namespace FlowCanvas.Nodes
     {
       if (string.IsNullOrEmpty(eventName))
       {
-        Debug.LogError((object) "No Event Selected for CodeEvent, or target is NULL");
+        Debug.LogError("No Event Selected for CodeEvent, or target is NULL");
       }
       else
       {
         EventInfo eventInfo = targetType.RTGetEvent(eventName);
         if (eventInfo == null)
         {
-          Debug.LogError((object) string.Format("Event {0} is not found", eventName));
+          Debug.LogError(string.Format("Event {0} is not found", eventName));
         }
         else
         {
           base.OnGraphStarted();
           Component component = target.value.GetComponent(targetType);
-          if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+          if (component == null)
           {
-            Debug.LogError((object) "Target is null");
+            Debug.LogError("Target is null");
           }
           else
           {
             pointer = (Action) (() => o.Call());
-            eventInfo.AddEventHandler((object) component, pointer);
+            eventInfo.AddEventHandler(component, pointer);
           }
         }
       }
@@ -55,9 +56,9 @@ namespace FlowCanvas.Nodes
 
     public override void OnGraphStoped()
     {
-      if (string.IsNullOrEmpty(eventName) || (UnityEngine.Object) target.value == (UnityEngine.Object) null)
+      if (string.IsNullOrEmpty(eventName) || target.value == null)
         return;
-      targetType.RTGetEvent(eventName).RemoveEventHandler((object) target.value.GetComponent(targetType), pointer);
+      targetType.RTGetEvent(eventName).RemoveEventHandler(target.value.GetComponent(targetType), pointer);
     }
 
     protected override void RegisterPorts()

@@ -14,6 +14,10 @@ using Engine.Source.Services.Saves;
 using Engine.Source.Settings;
 using Engine.Source.UI;
 using Scripts.Data;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.Scripting;
+using Debug = UnityEngine.Debug;
 
 namespace Engine.Source.Services
 {
@@ -44,11 +48,11 @@ namespace Engine.Source.Services
       LoadWindow.Instance.Show = true;
       InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
       TOD_Sky tod = TOD_Sky.Instance;
-      if ((Object) tod != (Object) null)
+      if (tod != null)
         tod.transform.localEulerAngles = new Vector3(0.0f, data.SkyRotation, 0.0f);
       yield return null;
       UIService uiService = ServiceLocator.GetService<UIService>();
-      while ((Object) uiService.Active != (Object) null)
+      while (uiService.Active != null)
       {
         uiService.Pop();
         while (uiService.IsTransition)
@@ -79,7 +83,7 @@ namespace Engine.Source.Services
         GarbageCollector.GCMode = storedGCMode;
         yield return null;
         yield return MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.StartGame);
-        yield return (object) new WaitForSecondsRealtime(1f);
+        yield return new WaitForSecondsRealtime(1f);
         InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
         loadProgress.LoadGameComplete();
         if (!newGame || data == null || data.HideLoadingWindow)
@@ -90,7 +94,7 @@ namespace Engine.Source.Services
           yield return null;
         ServiceLocator.GetService<LogicEventService>().FireCommonEvent("GameLaunchComplete");
         sw.Stop();
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("LoadGame, total elapsed : ").Append(sw.Elapsed));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("LoadGame, total elapsed : ").Append(sw.Elapsed));
       }
     }
 
@@ -105,7 +109,7 @@ namespace Engine.Source.Services
       InstanceByRequest<EngineApplication>.Instance.ViewEnabled = false;
       yield return null;
       UIService uiService = ServiceLocator.GetService<UIService>();
-      while ((Object) uiService.Active != (Object) null)
+      while (uiService.Active != null)
       {
         uiService.Pop();
         while (uiService.IsTransition)
@@ -119,7 +123,7 @@ namespace Engine.Source.Services
       while (SceneManager.sceneCount > 1)
         yield return null;
       yield return null;
-      yield return (object) Resources.UnloadUnusedAssets();
+      yield return Resources.UnloadUnusedAssets();
       yield return null;
       OptimizationUtility.ForceCollect();
       yield return null;
@@ -135,7 +139,7 @@ namespace Engine.Source.Services
       while (uiService.IsTransition)
         yield return null;
       InstanceByRequest<SoundGameSettings>.Instance.Apply();
-      yield return (object) new WaitForSecondsRealtime(1f);
+      yield return new WaitForSecondsRealtime(1f);
       LoadWindow.Instance.Show = false;
     }
 

@@ -1,4 +1,7 @@
-﻿public class StartWithoutLoader : MonoBehaviour
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class StartWithoutLoader : MonoBehaviour
 {
   [SerializeField]
   private GameObject[] prefabs;
@@ -7,18 +10,18 @@
   {
     if (SceneManager.GetActiveScene() == this.gameObject.scene)
     {
-      int siblingIndex = this.transform.GetSiblingIndex();
+      int siblingIndex = transform.GetSiblingIndex();
       foreach (GameObject prefab in prefabs)
       {
-        if (!((Object) prefab == (Object) null))
+        if (!(prefab == null))
         {
-          GameObject gameObject = Object.Instantiate<GameObject>(prefab);
+          GameObject gameObject = Instantiate(prefab);
           gameObject.name = prefab.name;
           gameObject.transform.SetSiblingIndex(siblingIndex);
           ++siblingIndex;
         }
       }
     }
-    Object.Destroy((Object) this.gameObject);
+    Destroy(this.gameObject);
   }
 }

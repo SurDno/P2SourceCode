@@ -1,4 +1,6 @@
-﻿public class LightShaftsPlayerCapture : MonoBehaviour
+﻿using UnityEngine;
+
+public class LightShaftsPlayerCapture : MonoBehaviour
 {
   public float farDistance = 50f;
   public float nearDistance = 5f;
@@ -23,7 +25,7 @@
     LightShafts.nearDistance = nearDistance;
     LightShafts.farDistance = farDistance;
     LightShafts.nearUpdateTime = nearUpdateTime;
-    LightShafts.playerPosition = this.transform.position;
+    LightShafts.playerPosition = transform.position;
     LightShafts.isPlayerSet = true;
   }
 

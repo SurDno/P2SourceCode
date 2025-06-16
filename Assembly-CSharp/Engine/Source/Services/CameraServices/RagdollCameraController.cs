@@ -1,4 +1,5 @@
 ﻿using Engine.Common;
+using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {
@@ -17,7 +18,7 @@ namespace Engine.Source.Services.CameraServices
 
     public void Update(IEntity target, GameObject gameObjectTarget)
     {
-      if ((Object) gameObjectTarget == (Object) null)
+      if (gameObjectTarget == null)
         return;
       smoothTime += speedSmoothTime * Time.deltaTime;
       Transform cameraTransform = GameCamera.Instance.CameraTransform;

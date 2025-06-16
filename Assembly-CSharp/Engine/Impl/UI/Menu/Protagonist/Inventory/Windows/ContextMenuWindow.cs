@@ -1,5 +1,8 @@
 ﻿using System;
 using Engine.Common.Components;
+using UnityEngine;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -39,13 +42,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     public static ContextMenuWindow Instantiate(GameObject prefab)
     {
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Object.Instantiate(prefab);
       gameObject.name = prefab.name;
       ContextMenuWindow component = gameObject.GetComponent<ContextMenuWindow>();
-      component.buttonInvestigate.onClick.AddListener(new UnityAction(component.Investigate));
-      component.buttonDrop.onClick.AddListener(new UnityAction(component.Drop));
-      component.buttonUse.onClick.AddListener(new UnityAction(component.Use));
-      component.buttonWear.onClick.AddListener(new UnityAction(component.Wear));
+      component.buttonInvestigate.onClick.AddListener(component.Investigate);
+      component.buttonDrop.onClick.AddListener(component.Drop);
+      component.buttonUse.onClick.AddListener(component.Use);
+      component.buttonWear.onClick.AddListener(component.Wear);
       return component;
     }
 

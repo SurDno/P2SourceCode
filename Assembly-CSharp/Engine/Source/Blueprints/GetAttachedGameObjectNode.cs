@@ -1,6 +1,7 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -13,18 +14,18 @@ namespace Engine.Source.Blueprints
     {
       base.RegisterPorts();
       goInput = AddValueInput<GameObject>("GameObject");
-      AddValueOutput("Attached", (ValueHandler<GameObject>) (() =>
+      AddValueOutput("Attached", () =>
       {
         GameObject context = goInput.value;
-        if ((Object) context != (Object) null)
+        if (context != null)
         {
           AttachedGameObject component = context.GetComponent<AttachedGameObject>();
-          if ((Object) component != (Object) null)
+          if (component != null)
             return component.Attached;
-          Debug.LogError((object) ("Attached object not found : " + context.name), (Object) context);
+          Debug.LogError("Attached object not found : " + context.name, context);
         }
-        return (GameObject) null;
-      }));
+        return null;
+      });
     }
   }
 }

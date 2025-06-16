@@ -1,4 +1,8 @@
-﻿namespace Engine.Source.UI.Menu.Protagonist.MindMap
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
   public class MMNodeView : 
     MonoBehaviour,
@@ -20,22 +24,22 @@
 
     private void OnEnable()
     {
-      if ((Object) nodeImage == (Object) null)
-        nodeImage = this.GetComponent<RawImage>();
-      if ((Object) nodeImage != (Object) null)
+      if (nodeImage == null)
+        nodeImage = GetComponent<RawImage>();
+      if (nodeImage != null)
         baseColor = nodeImage.color.ToRGBHex();
-      rectTransform = this.GetComponent<RectTransform>();
+      rectTransform = GetComponent<RectTransform>();
     }
 
     public Rect GetSpriteRect()
     {
-      return (Object) rectTransform != (Object) null ? rectTransform.rect : Rect.zero;
+      return rectTransform != null ? rectTransform.rect : Rect.zero;
     }
 
     public void SetActive(bool active)
     {
       Color color;
-      if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) || !((Object) nodeImage != (Object) null))
+      if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) || !(nodeImage != null))
         return;
       nodeImage.color = color;
     }
@@ -43,23 +47,23 @@
     public void OnPointerEnter(PointerEventData eventData)
     {
       SetActive(true);
-      this.GetComponentInParent<MMPageView>().ShowNodeInfo(this);
+      GetComponentInParent<MMPageView>().ShowNodeInfo(this);
     }
 
     public void MarkNodeDiscovered()
     {
       if (Node.Undiscovered)
         Node.Undiscovered = false;
-      if (!((Object) NewIndicator != (Object) null))
+      if (!(NewIndicator != null))
         return;
-      Object.Destroy((Object) NewIndicator);
-      NewIndicator = (GameObject) null;
+      Destroy(NewIndicator);
+      NewIndicator = null;
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
       SetActive(false);
-      this.GetComponentInParent<MMPageView>().HideNodeInfo(this);
+      GetComponentInParent<MMPageView>().HideNodeInfo(this);
     }
 
     public void OnPointerClick(PointerEventData eventData)
@@ -67,7 +71,7 @@
       MarkNodeDiscovered();
       if (!HasMapItem)
         return;
-      this.GetComponentInParent<MMPageView>().CallMap(this);
+      GetComponentInParent<MMPageView>().CallMap(this);
     }
   }
 }

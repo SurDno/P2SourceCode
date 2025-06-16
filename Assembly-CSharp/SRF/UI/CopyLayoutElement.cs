@@ -1,4 +1,8 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace SRF.UI
 {
   [RequireComponent(typeof (RectTransform))]
   [ExecuteInEditMode]
@@ -19,7 +23,7 @@
     {
       get
       {
-        return !CopyPreferredWidth || (Object) CopySource == (Object) null || !this.IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingPreferredWidth;
+        return !CopyPreferredWidth || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingPreferredWidth;
       }
     }
 
@@ -27,7 +31,7 @@
     {
       get
       {
-        return !CopyPreferredHeight || (Object) CopySource == (Object) null || !this.IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingPreferredHeight;
+        return !CopyPreferredHeight || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingPreferredHeight;
       }
     }
 
@@ -35,7 +39,7 @@
     {
       get
       {
-        return !CopyMinWidth || (Object) CopySource == (Object) null || !this.IsActive() ? -1f : LayoutUtility.GetMinWidth(CopySource) + PaddingMinWidth;
+        return !CopyMinWidth || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetMinWidth(CopySource) + PaddingMinWidth;
       }
     }
 
@@ -43,7 +47,7 @@
     {
       get
       {
-        return !CopyMinHeight || (Object) CopySource == (Object) null || !this.IsActive() ? -1f : LayoutUtility.GetMinHeight(CopySource) + PaddingMinHeight;
+        return !CopyMinHeight || CopySource == null || !IsActive() ? -1f : LayoutUtility.GetMinHeight(CopySource) + PaddingMinHeight;
       }
     }
 

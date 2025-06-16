@@ -6,6 +6,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -47,7 +48,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnAwake()
     {
       Pivot component = gameObject.GetComponent<Pivot>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
       animator = component.GetAnimator();
     }

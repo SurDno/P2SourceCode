@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -159,13 +160,13 @@ namespace AmplifyBloom
       switch (type)
       {
         case LogType.Normal:
-          Debug.Log((object) (DebugStr + value));
+          Debug.Log(DebugStr + value);
           break;
         case LogType.Warning:
-          Debug.LogWarning((object) (DebugStr + value));
+          Debug.LogWarning(DebugStr + value);
           break;
         case LogType.Error:
-          Debug.LogError((object) (DebugStr + value));
+          Debug.LogError(DebugStr + value);
           break;
       }
     }
@@ -181,7 +182,7 @@ namespace AmplifyBloom
 
     public static void ReleaseTempRenderTarget(RenderTexture renderTarget)
     {
-      if (!((Object) renderTarget != (Object) null) || !_allocatedRT.Remove(renderTarget))
+      if (!(renderTarget != null) || !_allocatedRT.Remove(renderTarget))
         return;
       renderTarget.DiscardContents();
       RenderTexture.ReleaseTemporary(renderTarget);
@@ -199,7 +200,7 @@ namespace AmplifyBloom
 
     public static void EnsureKeywordEnabled(Material mat, string keyword, bool state)
     {
-      if (!((Object) mat != (Object) null))
+      if (!(mat != null))
         return;
       if (state && !mat.IsKeywordEnabled(keyword))
         mat.EnableKeyword(keyword);

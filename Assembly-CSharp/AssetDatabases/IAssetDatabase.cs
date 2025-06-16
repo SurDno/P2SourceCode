@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Object = UnityEngine.Object;
 
 namespace AssetDatabases
 {
@@ -15,14 +16,14 @@ namespace AssetDatabases
 
     Guid GetId(string path);
 
-    T Load<T>(string path) where T : UnityEngine.Object;
+    T Load<T>(string path) where T : Object;
 
-    UnityEngine.Object[] LoadAll(string path);
+    Object[] LoadAll(string path);
 
-    IAsyncLoad LoadAsync<T>(string path) where T : UnityEngine.Object;
+    IAsyncLoad LoadAsync<T>(string path) where T : Object;
 
     IAsyncLoad LoadSceneAsync(string path);
 
-    void Unload(UnityEngine.Object obj);
+    void Unload(Object obj);
   }
 }

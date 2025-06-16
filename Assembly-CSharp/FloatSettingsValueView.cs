@@ -19,7 +19,7 @@ public class FloatSettingsValueView : SettingsValueView<float>
 
   private void Awake()
   {
-    slider.onValueChanged.AddListener(new UnityAction<float>(OnValueChanged));
+    slider.onValueChanged.AddListener(OnValueChanged);
   }
 
   private void OnValueChanged(float value)

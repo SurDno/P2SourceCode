@@ -1,19 +1,21 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 [ExecuteInEditMode]
 public class SplineBend : MonoBehaviour
 {
   public SplineBendMarker[] markers;
   [HideInInspector]
-  public bool showMeshes = false;
+  public bool showMeshes;
   [HideInInspector]
-  public bool showTiles = false;
+  public bool showTiles;
   [HideInInspector]
-  public bool showTerrain = false;
+  public bool showTerrain;
   [HideInInspector]
-  public bool showUpdate = false;
+  public bool showUpdate;
   [HideInInspector]
-  public bool showExport = false;
+  public bool showExport;
   [HideInInspector]
   public Mesh initialRenderMesh;
   [HideInInspector]
@@ -27,13 +29,13 @@ public class SplineBend : MonoBehaviour
   [HideInInspector]
   public float tileOffset = -1f;
   [HideInInspector]
-  public bool dropToTerrain = false;
+  public bool dropToTerrain;
   [HideInInspector]
   public float terrainSeekDist = 1000f;
   [HideInInspector]
-  public int terrainLayer = 0;
+  public int terrainLayer;
   [HideInInspector]
-  public float terrainOffset = 0.0f;
+  public float terrainOffset;
   [HideInInspector]
   public bool equalize = true;
   [HideInInspector]
@@ -43,11 +45,11 @@ public class SplineBend : MonoBehaviour
   [HideInInspector]
   public float markerSize = 1f;
   [HideInInspector]
-  public bool displayRolloutOpen = false;
+  public bool displayRolloutOpen;
   [HideInInspector]
-  public bool settingsRolloutOpen = false;
+  public bool settingsRolloutOpen;
   [HideInInspector]
-  public bool terrainRolloutOpen = false;
+  public bool terrainRolloutOpen;
   public SplineBendAxis axis = SplineBendAxis.z;
   private Vector3 axisVector;
   [HideInInspector]
@@ -97,8 +99,8 @@ public class SplineBend : MonoBehaviour
     {
       float num2 = percent * percent;
       float num3 = (float) ((1.0 - (1.0 - percent) * (1.0 - percent)) * percent + num2 * (1.0 - percent));
-      vector3_2.x = (float) ((double) marker1.transform.localScale.x * (1.0 - num3) + (double) marker2.transform.localScale.x * num3);
-      vector3_2.y = (float) ((double) marker1.transform.localScale.y * (1.0 - num3) + (double) marker2.transform.localScale.y * num3);
+      vector3_2.x = (float) (marker1.transform.localScale.x * (1.0 - num3) + marker2.transform.localScale.x * (double) num3);
+      vector3_2.y = (float) (marker1.transform.localScale.y * (1.0 - num3) + marker2.transform.localScale.y * (double) num3);
     }
     return beizerPoint3 + normalized1 * coords.x * vector3_2.x + normalized2 * coords.y * vector3_2.y;
   }
@@ -141,10 +143,10 @@ public class SplineBend : MonoBehaviour
 
   private void RebuildMeshes()
   {
-    if ((bool) (UnityEngine.Object) renderMesh)
+    if ((bool) (Object) renderMesh)
     {
-      MeshFilter component = this.GetComponent<MeshFilter>();
-      if (!(bool) (UnityEngine.Object) component)
+      MeshFilter component = GetComponent<MeshFilter>();
+      if (!(bool) (Object) component)
         return;
       renderMesh.Clear(true);
       BuildMesh(renderMesh, initialRenderMesh, tiles, tileOffset);
@@ -152,14 +154,14 @@ public class SplineBend : MonoBehaviour
       renderMesh.RecalculateBounds();
       renderMesh.RecalculateNormals();
     }
-    if (!(bool) (UnityEngine.Object) collisionMesh)
+    if (!(bool) (Object) collisionMesh)
       return;
-    MeshCollider component1 = this.GetComponent<MeshCollider>();
-    if (!(bool) (UnityEngine.Object) component1)
+    MeshCollider component1 = GetComponent<MeshCollider>();
+    if (!(bool) (Object) component1)
       return;
     collisionMesh.Clear(true);
     BuildMesh(collisionMesh, initialCollisionMesh, tiles, tileOffset);
-    component1.sharedMesh = (Mesh) null;
+    component1.sharedMesh = null;
     component1.sharedMesh = collisionMesh;
     collisionMesh.RecalculateBounds();
     collisionMesh.RecalculateNormals();
@@ -174,7 +176,7 @@ public class SplineBend : MonoBehaviour
       for (int index2 = 0; index2 < vertices.Length; ++index2)
       {
         int index3 = index1 * vertices.Length + index2;
-        vector3Array[index3] = vertices[index2] + axisVector * tileOffset * (float) index1;
+        vector3Array[index3] = vertices[index2] + axisVector * tileOffset * index1;
         if (axis == SplineBendAxis.x)
           vector3Array[index3] = new Vector3(-vector3Array[index3].z, vector3Array[index3].y, vector3Array[index3].x);
         else if (axis == SplineBendAxis.y)
@@ -255,18 +257,18 @@ public class SplineBend : MonoBehaviour
         }
         break;
     }
-    int layer1 = this.gameObject.layer;
-    this.gameObject.layer = 4;
+    int layer1 = gameObject.layer;
+    gameObject.layer = 4;
     for (int index = 0; index < vertices1.Length; ++index)
     {
       RaycastHit hitInfo;
-      if (Physics.Raycast(this.transform.TransformPoint(vertices1[index]) with
+      if (Physics.Raycast(transform.TransformPoint(vertices1[index]) with
       {
-        y = this.transform.position.y
+        y = transform.position.y
       } + new Vector3(0.0f, seekDist * 0.5f, 0.0f), -Vector3.up, out hitInfo, seekDist, 1 << layer, QueryTriggerInteraction.Ignore))
-        vertices1[index].y = numArray[index] + this.transform.InverseTransformPoint(hitInfo.point).y + offset;
+        vertices1[index].y = numArray[index] + transform.InverseTransformPoint(hitInfo.point).y + offset;
     }
-    this.gameObject.layer = layer1;
+    gameObject.layer = layer1;
     mesh.vertices = vertices1;
   }
 
@@ -276,36 +278,36 @@ public class SplineBend : MonoBehaviour
   {
     markers = new SplineBendMarker[count];
     Mesh mesh;
-    if ((bool) (UnityEngine.Object) initialRenderMesh)
+    if ((bool) (Object) initialRenderMesh)
       mesh = initialRenderMesh;
-    else if ((bool) (UnityEngine.Object) initialCollisionMesh)
+    else if ((bool) (Object) initialCollisionMesh)
       mesh = initialCollisionMesh;
     Bounds bounds = new Bounds(Vector3.zero, Vector3.zero);
     bool flag = false;
-    if ((bool) (UnityEngine.Object) initialRenderMesh)
+    if ((bool) (Object) initialRenderMesh)
     {
       bounds = initialRenderMesh.bounds;
       flag = true;
     }
-    else if ((bool) (UnityEngine.Object) initialCollisionMesh)
+    else if ((bool) (Object) initialCollisionMesh)
     {
       bounds = initialCollisionMesh.bounds;
       flag = true;
     }
-    if (!flag && (bool) (UnityEngine.Object) this.GetComponent<MeshFilter>())
+    if (!flag && (bool) (Object) GetComponent<MeshFilter>())
     {
-      bounds = this.GetComponent<MeshFilter>().sharedMesh.bounds;
+      bounds = GetComponent<MeshFilter>().sharedMesh.bounds;
       flag = true;
     }
-    if (!flag && (bool) (UnityEngine.Object) this.GetComponent<MeshCollider>())
+    if (!flag && (bool) (Object) GetComponent<MeshCollider>())
     {
-      bounds = this.GetComponent<MeshCollider>().sharedMesh.bounds;
+      bounds = GetComponent<MeshCollider>().sharedMesh.bounds;
       flag = true;
     }
     if (!flag)
       bounds = new Bounds(Vector3.zero, new Vector3(1f, 1f, 1f));
     float z = bounds.min.z;
-    float num = bounds.size.z / (float) (count - 1);
+    float num = bounds.size.z / (count - 1);
     for (int index = 0; index < count; ++index)
     {
       Transform transform = new GameObject("Marker" + index).transform;
@@ -341,7 +343,7 @@ public class SplineBend : MonoBehaviour
       SplineBendMarker marker = markers[index2];
       for (int index3 = 0; index3 < marker.subPoints.Length; ++index3)
       {
-        Vector3 vector3 = this.transform.TransformPoint(marker.subPoints[index3]);
+        Vector3 vector3 = transform.TransformPoint(marker.subPoints[index3]);
         float num2 = Vector3.Dot(camRay.direction, (vector3 - camRay.origin).normalized) * (camRay.origin - vector3).magnitude;
         float magnitude = (camRay.origin + camRay.direction * num2 - vector3).magnitude;
         if (magnitude < (double) num1)
@@ -352,9 +354,9 @@ public class SplineBend : MonoBehaviour
         }
       }
     }
-    Vector3 vector3_1 = this.transform.TransformPoint(markers[prewMarkerNum].subPoints[index1]);
+    Vector3 vector3_1 = transform.TransformPoint(markers[prewMarkerNum].subPoints[index1]);
     float magnitude1 = (camRay.origin - vector3_1).magnitude;
-    this.AddMarker(prewMarkerNum, camRay.origin + camRay.direction * magnitude1);
+    AddMarker(prewMarkerNum, camRay.origin + camRay.direction * magnitude1);
     UpdateNow();
     UpdateNow();
   }
@@ -381,14 +383,14 @@ public class SplineBend : MonoBehaviour
     int length = 0;
     for (int index = 0; index < markers.Length; ++index)
     {
-      if ((bool) (UnityEngine.Object) markers[index])
+      if ((bool) (Object) markers[index])
         ++length;
     }
     SplineBendMarker[] splineBendMarkerArray = new SplineBendMarker[length];
     int index1 = 0;
     for (int index2 = 0; index2 < markers.Length; ++index2)
     {
-      if ((bool) (UnityEngine.Object) markers[index2])
+      if ((bool) (Object) markers[index2])
       {
         splineBendMarkerArray[index1] = markers[index2];
         ++index1;
@@ -399,7 +401,7 @@ public class SplineBend : MonoBehaviour
 
   private void RemoveMarker(int num)
   {
-    UnityEngine.Object.DestroyImmediate((UnityEngine.Object) markers[num].gameObject);
+    DestroyImmediate(markers[num].gameObject);
     SplineBendMarker[] splineBendMarkerArray = new SplineBendMarker[markers.Length - 1];
     for (int index = 0; index < markers.Length - 1; ++index)
       splineBendMarkerArray[index] = index >= num ? markers[index + 1] : markers[index];
@@ -408,7 +410,7 @@ public class SplineBend : MonoBehaviour
 
   private void CloseMarkers()
   {
-    if (closed || (UnityEngine.Object) markers[0] == (UnityEngine.Object) markers[markers.Length - 1])
+    if (closed || markers[0] == markers[markers.Length - 1])
       return;
     SplineBendMarker[] splineBendMarkerArray = new SplineBendMarker[markers.Length + 1];
     for (int index = 0; index < markers.Length; ++index)
@@ -421,7 +423,7 @@ public class SplineBend : MonoBehaviour
 
   private void UnCloseMarkers()
   {
-    if (!closed || (UnityEngine.Object) markers[0] != (UnityEngine.Object) markers[markers.Length - 1])
+    if (!closed || markers[0] != markers[markers.Length - 1])
       return;
     SplineBendMarker[] splineBendMarkerArray = new SplineBendMarker[markers.Length - 1];
     for (int index = 0; index < markers.Length - 1; ++index)
@@ -435,16 +437,16 @@ public class SplineBend : MonoBehaviour
   {
     if (Environment.CommandLine.Contains("-batchmode"))
       return;
-    renderMesh = (Mesh) null;
-    collisionMesh = (Mesh) null;
+    renderMesh = null;
+    collisionMesh = null;
     ForceUpdate();
-    MeshFilter component1 = this.GetComponent<MeshFilter>();
-    MeshCollider component2 = this.GetComponent<MeshCollider>();
-    if ((bool) (UnityEngine.Object) renderMesh && (bool) (UnityEngine.Object) component1)
+    MeshFilter component1 = GetComponent<MeshFilter>();
+    MeshCollider component2 = GetComponent<MeshCollider>();
+    if ((bool) (Object) renderMesh && (bool) (Object) component1)
       component1.sharedMesh = renderMesh;
-    if (!(bool) (UnityEngine.Object) collisionMesh || !(bool) (UnityEngine.Object) component2)
+    if (!(bool) (Object) collisionMesh || !(bool) (Object) component2)
       return;
-    component2.sharedMesh = (Mesh) null;
+    component2.sharedMesh = null;
     component2.sharedMesh = collisionMesh;
   }
 
@@ -452,13 +454,13 @@ public class SplineBend : MonoBehaviour
   {
     if (Environment.CommandLine.Contains("-batchmode"))
       return;
-    MeshFilter component1 = this.GetComponent<MeshFilter>();
-    MeshCollider component2 = this.GetComponent<MeshCollider>();
-    if ((bool) (UnityEngine.Object) initialRenderMesh && (bool) (UnityEngine.Object) component1)
+    MeshFilter component1 = GetComponent<MeshFilter>();
+    MeshCollider component2 = GetComponent<MeshCollider>();
+    if ((bool) (Object) initialRenderMesh && (bool) (Object) component1)
       component1.sharedMesh = initialRenderMesh;
-    if (!(bool) (UnityEngine.Object) initialCollisionMesh || !(bool) (UnityEngine.Object) component2)
+    if (!(bool) (Object) initialCollisionMesh || !(bool) (Object) component2)
       return;
-    component2.sharedMesh = (Mesh) null;
+    component2.sharedMesh = null;
     component2.sharedMesh = initialCollisionMesh;
   }
 
@@ -468,8 +470,8 @@ public class SplineBend : MonoBehaviour
 
   public void ForceUpdate(bool refreshCollisionMesh)
   {
-    MeshCollider component1 = this.GetComponent<MeshCollider>();
-    MeshFilter component2 = this.GetComponent<MeshFilter>();
+    MeshCollider component1 = GetComponent<MeshCollider>();
+    MeshFilter component2 = GetComponent<MeshFilter>();
     switch (axis)
     {
       case SplineBendAxis.x:
@@ -482,16 +484,16 @@ public class SplineBend : MonoBehaviour
         axisVector = new Vector3(0.0f, 0.0f, 1f);
         break;
     }
-    if ((bool) (UnityEngine.Object) initialRenderMesh)
-      tiles = Mathf.Min(tiles, Mathf.FloorToInt(65000f / (float) initialRenderMesh.vertices.Length));
-    else if ((bool) (UnityEngine.Object) initialCollisionMesh)
-      tiles = Mathf.Min(tiles, Mathf.FloorToInt(65000f / (float) initialCollisionMesh.vertices.Length));
+    if ((bool) (Object) initialRenderMesh)
+      tiles = Mathf.Min(tiles, Mathf.FloorToInt(65000f / initialRenderMesh.vertices.Length));
+    else if ((bool) (Object) initialCollisionMesh)
+      tiles = Mathf.Min(tiles, Mathf.FloorToInt(65000f / initialCollisionMesh.vertices.Length));
     tiles = Mathf.Max(tiles, 1);
     if (markers == null)
       ResetMarkers(2);
     for (int index = 0; index < markers.Length; ++index)
     {
-      if (!(bool) (UnityEngine.Object) markers[index])
+      if (!(bool) (Object) markers[index])
         RefreshMarkers();
     }
     if (markers.Length < 2)
@@ -510,33 +512,33 @@ public class SplineBend : MonoBehaviour
     if (!closed && wasClosed)
       UnCloseMarkers();
     wasClosed = closed;
-    if ((bool) (UnityEngine.Object) component2 && !(bool) (UnityEngine.Object) renderMesh)
+    if ((bool) (Object) component2 && !(bool) (Object) renderMesh)
     {
-      if (!(bool) (UnityEngine.Object) initialRenderMesh)
+      if (!(bool) (Object) initialRenderMesh)
         initialRenderMesh = component2.sharedMesh;
-      if ((bool) (UnityEngine.Object) initialRenderMesh)
+      if ((bool) (Object) initialRenderMesh)
       {
         if (tileOffset < 0.0)
           tileOffset = initialRenderMesh.bounds.size.z;
-        renderMesh = UnityEngine.Object.Instantiate<Mesh>(initialRenderMesh);
+        renderMesh = Instantiate(initialRenderMesh);
         renderMesh.hideFlags = HideFlags.HideAndDontSave;
         component2.sharedMesh = renderMesh;
       }
     }
-    if ((bool) (UnityEngine.Object) component1 && !(bool) (UnityEngine.Object) collisionMesh)
+    if ((bool) (Object) component1 && !(bool) (Object) collisionMesh)
     {
-      if (!(bool) (UnityEngine.Object) initialCollisionMesh)
+      if (!(bool) (Object) initialCollisionMesh)
         initialCollisionMesh = component1.sharedMesh;
-      if ((bool) (UnityEngine.Object) initialCollisionMesh)
+      if ((bool) (Object) initialCollisionMesh)
       {
         if (tileOffset < 0.0)
           tileOffset = initialCollisionMesh.bounds.size.z;
-        collisionMesh = UnityEngine.Object.Instantiate<Mesh>(initialCollisionMesh);
+        collisionMesh = Instantiate(initialCollisionMesh);
         collisionMesh.hideFlags = HideFlags.HideAndDontSave;
         component1.sharedMesh = collisionMesh;
       }
     }
-    if ((bool) (UnityEngine.Object) renderMesh && (bool) (UnityEngine.Object) initialRenderMesh && (bool) (UnityEngine.Object) component2)
+    if ((bool) (Object) renderMesh && (bool) (Object) initialRenderMesh && (bool) (Object) component2)
     {
       if (renderMesh.vertexCount != initialRenderMesh.vertexCount * tiles)
         BuildMesh(renderMesh, initialRenderMesh, tiles, 0.0f);
@@ -546,18 +548,18 @@ public class SplineBend : MonoBehaviour
       renderMesh.RecalculateBounds();
       renderMesh.RecalculateNormals();
     }
-    if (!(bool) (UnityEngine.Object) collisionMesh || !(bool) (UnityEngine.Object) initialCollisionMesh || !(bool) (UnityEngine.Object) component1)
+    if (!(bool) (Object) collisionMesh || !(bool) (Object) initialCollisionMesh || !(bool) (Object) component1)
       return;
     if (collisionMesh.vertexCount != initialCollisionMesh.vertexCount * tiles)
       BuildMesh(collisionMesh, initialCollisionMesh, tiles, 0.0f);
     Align(collisionMesh, initialCollisionMesh);
     if (dropToTerrain)
       FallToTerrain(collisionMesh, initialCollisionMesh, terrainSeekDist, terrainLayer, terrainOffset);
-    if (refreshCollisionMesh && (UnityEngine.Object) component1.sharedMesh == (UnityEngine.Object) collisionMesh)
+    if (refreshCollisionMesh && component1.sharedMesh == collisionMesh)
     {
       collisionMesh.RecalculateBounds();
       collisionMesh.RecalculateNormals();
-      component1.sharedMesh = (Mesh) null;
+      component1.sharedMesh = null;
       component1.sharedMesh = collisionMesh;
     }
   }

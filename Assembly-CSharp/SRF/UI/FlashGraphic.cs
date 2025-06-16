@@ -1,4 +1,8 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace SRF.UI
 {
   [AddComponentMenu("SRF/UI/Flash Graphic")]
   [ExecuteInEditMode]

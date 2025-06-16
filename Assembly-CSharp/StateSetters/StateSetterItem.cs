@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace StateSetters
 {
@@ -12,7 +14,7 @@ namespace StateSetters
     public int IntValue1;
     public int IntValue2;
     public bool BoolValue1;
-    public UnityEngine.Object ObjectValue1;
+    public Object ObjectValue1;
     public Color ColorValue1;
     public Color ColorValue2;
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -18,8 +19,8 @@ namespace AmplifyBloom
 
     public void Destroy()
     {
-      Offsets = (Vector4[]) null;
-      Weights = (Vector4[]) null;
+      Offsets = null;
+      Weights = null;
     }
   }
 }

@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public class IKExecutionOrder : MonoBehaviour
   {
@@ -12,7 +14,7 @@
     {
       get
       {
-        return !((Object) animator == (Object) null) && animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
+        return !(animator == null) && animator.updateMode == AnimatorUpdateMode.AnimatePhysics;
       }
     }
 

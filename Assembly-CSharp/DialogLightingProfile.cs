@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(menuName = "Data/Dialog Lighting Profile")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(menuName = "Data/Dialog Lighting Profile")]
 public class DialogLightingProfile : ScriptableObject
 {
   [SerializeField]

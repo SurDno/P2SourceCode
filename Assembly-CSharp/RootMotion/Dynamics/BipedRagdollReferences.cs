@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -25,7 +26,7 @@ namespace RootMotion.Dynamics
 
     public bool IsValid(ref string msg)
     {
-      if ((UnityEngine.Object) root == (UnityEngine.Object) null || (UnityEngine.Object) hips == (UnityEngine.Object) null || (UnityEngine.Object) head == (UnityEngine.Object) null || (UnityEngine.Object) leftUpperArm == (UnityEngine.Object) null || (UnityEngine.Object) leftLowerArm == (UnityEngine.Object) null || (UnityEngine.Object) leftHand == (UnityEngine.Object) null || (UnityEngine.Object) rightUpperArm == (UnityEngine.Object) null || (UnityEngine.Object) rightLowerArm == (UnityEngine.Object) null || (UnityEngine.Object) rightHand == (UnityEngine.Object) null || (UnityEngine.Object) leftUpperLeg == (UnityEngine.Object) null || (UnityEngine.Object) leftLowerLeg == (UnityEngine.Object) null || (UnityEngine.Object) leftFoot == (UnityEngine.Object) null || (UnityEngine.Object) rightUpperLeg == (UnityEngine.Object) null || (UnityEngine.Object) rightLowerLeg == (UnityEngine.Object) null || (UnityEngine.Object) rightFoot == (UnityEngine.Object) null)
+      if (root == null || hips == null || head == null || leftUpperArm == null || leftLowerArm == null || leftHand == null || rightUpperArm == null || rightLowerArm == null || rightHand == null || leftUpperLeg == null || leftLowerLeg == null || leftFoot == null || rightUpperLeg == null || rightLowerLeg == null || rightFoot == null)
       {
         msg = "Invalid References, one or more Transforms missing.";
         return false;
@@ -60,7 +61,7 @@ namespace RootMotion.Dynamics
       {
         for (int index2 = 0; index2 < transformArray.Length; ++index2)
         {
-          if (index1 != index2 && (UnityEngine.Object) transformArray[index1] == (UnityEngine.Object) transformArray[index2])
+          if (index1 != index2 && transformArray[index1] == transformArray[index2])
           {
             msg = "Invalid References, " + transformArray[index1].name + " is represented more than once.";
             return false;
@@ -72,19 +73,19 @@ namespace RootMotion.Dynamics
 
     private bool IsChildRecursive(Transform t, Transform parent)
     {
-      if ((UnityEngine.Object) t.parent == (UnityEngine.Object) parent)
+      if (t.parent == parent)
         return true;
-      return (UnityEngine.Object) t.parent != (UnityEngine.Object) null && IsChildRecursive(t.parent, parent);
+      return t.parent != null && IsChildRecursive(t.parent, parent);
     }
 
     public bool IsEmpty(bool considerRoot)
     {
-      return (!considerRoot || !((UnityEngine.Object) root != (UnityEngine.Object) null)) && !((UnityEngine.Object) hips != (UnityEngine.Object) null) && !((UnityEngine.Object) head != (UnityEngine.Object) null) && !((UnityEngine.Object) spine != (UnityEngine.Object) null) && !((UnityEngine.Object) chest != (UnityEngine.Object) null) && !((UnityEngine.Object) leftUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) leftLowerArm != (UnityEngine.Object) null) && !((UnityEngine.Object) leftHand != (UnityEngine.Object) null) && !((UnityEngine.Object) rightUpperArm != (UnityEngine.Object) null) && !((UnityEngine.Object) rightLowerArm != (UnityEngine.Object) null) && !((UnityEngine.Object) rightHand != (UnityEngine.Object) null) && !((UnityEngine.Object) leftUpperLeg != (UnityEngine.Object) null) && !((UnityEngine.Object) leftLowerLeg != (UnityEngine.Object) null) && !((UnityEngine.Object) leftFoot != (UnityEngine.Object) null) && !((UnityEngine.Object) rightUpperLeg != (UnityEngine.Object) null) && !((UnityEngine.Object) rightLowerLeg != (UnityEngine.Object) null) && !((UnityEngine.Object) rightFoot != (UnityEngine.Object) null);
+      return (!considerRoot || !(root != null)) && !(hips != null) && !(head != null) && !(spine != null) && !(chest != null) && !(leftUpperArm != null) && !(leftLowerArm != null) && !(leftHand != null) && !(rightUpperArm != null) && !(rightLowerArm != null) && !(rightHand != null) && !(leftUpperLeg != null) && !(leftLowerLeg != null) && !(leftFoot != null) && !(rightUpperLeg != null) && !(rightLowerLeg != null) && !(rightFoot != null);
     }
 
     public bool Contains(Transform t, bool ignoreRoot = false)
     {
-      return !ignoreRoot && (UnityEngine.Object) root == (UnityEngine.Object) t || (UnityEngine.Object) hips == (UnityEngine.Object) t || (UnityEngine.Object) spine == (UnityEngine.Object) t || (UnityEngine.Object) chest == (UnityEngine.Object) t || (UnityEngine.Object) leftUpperLeg == (UnityEngine.Object) t || (UnityEngine.Object) leftLowerLeg == (UnityEngine.Object) t || (UnityEngine.Object) leftFoot == (UnityEngine.Object) t || (UnityEngine.Object) rightUpperLeg == (UnityEngine.Object) t || (UnityEngine.Object) rightLowerLeg == (UnityEngine.Object) t || (UnityEngine.Object) rightFoot == (UnityEngine.Object) t || (UnityEngine.Object) leftUpperArm == (UnityEngine.Object) t || (UnityEngine.Object) leftLowerArm == (UnityEngine.Object) t || (UnityEngine.Object) leftHand == (UnityEngine.Object) t || (UnityEngine.Object) rightUpperArm == (UnityEngine.Object) t || (UnityEngine.Object) rightLowerArm == (UnityEngine.Object) t || (UnityEngine.Object) rightHand == (UnityEngine.Object) t || (UnityEngine.Object) head == (UnityEngine.Object) t;
+      return !ignoreRoot && root == t || hips == t || spine == t || chest == t || leftUpperLeg == t || leftLowerLeg == t || leftFoot == t || rightUpperLeg == t || rightLowerLeg == t || rightFoot == t || leftUpperArm == t || leftLowerArm == t || leftHand == t || rightUpperArm == t || rightLowerArm == t || rightHand == t || head == t;
     }
 
     public Transform[] GetRagdollTransforms()

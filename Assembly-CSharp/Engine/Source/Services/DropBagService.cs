@@ -20,6 +20,8 @@ using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Services
 {
@@ -62,12 +64,12 @@ namespace Engine.Source.Services
       Intersect intersect = StorageUtility.GetIntersect(entity.GetComponent<IStorageComponent>(), null, (StorableComponent) storable, null);
       if (!intersect.IsAllowed)
       {
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Redrop storable : ").GetInfo(storable.Owner));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("Redrop storable : ").GetInfo(storable.Owner));
         DropBag(storable, entity);
       }
       else
       {
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Receve bag for storable : ").GetInfo(storable.Owner));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("Receve bag for storable : ").GetInfo(storable.Owner));
         IEntity player = ServiceLocator.GetService<ISimulation>().Player;
         AddItem(storable, entity, intersect, player, true);
       }
@@ -78,7 +80,7 @@ namespace Engine.Source.Services
       foreach (IEntity bag in bags.ToList())
       {
         if (bag == null)
-          Debug.LogError((object) "Bag is null");
+          Debug.LogError("Bag is null");
         else
           RemoveBag(bag);
       }
@@ -101,10 +103,10 @@ namespace Engine.Source.Services
       {
         IEntity bag = bag1;
         if (bag == null)
-          Debug.LogError((object) "Bug is null");
+          Debug.LogError("Bug is null");
         else if (!bag.IsDisposed)
         {
-          if ((double) (((IEntityView) bag).Position - ((IEntityView) target).Position).magnitude < searchRange)
+          if ((((IEntityView) bag).Position - ((IEntityView) target).Position).magnitude < (double) searchRange)
             yield return bag;
           bag = null;
         }
@@ -131,17 +133,17 @@ namespace Engine.Source.Services
     {
       if (storable.IsDisposed)
       {
-        Debug.LogError((object) "Item is disposed");
+        Debug.LogError("Item is disposed");
       }
       else
       {
         IEntity entity = ScriptableObjectInstance<ResourceFromCodeData>.Instance.DropBag.Value;
         if (entity == null)
-          Debug.LogError((object) "Bag template not found");
+          Debug.LogError("Bag template not found");
         else if (ServiceLocator.GetService<ISimulation>().Player != owner)
         {
           storable.Owner.Dispose();
-          Debug.LogWarning((object) ("Drop only player, owner : " + owner.GetInfo()));
+          Debug.LogWarning("Drop only player, owner : " + owner.GetInfo());
         }
         else
         {
@@ -160,7 +162,7 @@ namespace Engine.Source.Services
           waitings.Add(storable);
           if (waitings.Count != 1)
             return;
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Requre bag for storable : ").GetInfo(storable.Owner));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("Requre bag for storable : ").GetInfo(storable.Owner));
           DynamicModelComponent.GroupContext = "[Bugs]";
           Action<IEntity> onCreateEntity = OnCreateEntity;
           if (onCreateEntity != null)
@@ -189,14 +191,14 @@ namespace Engine.Source.Services
           if (component2 != null)
           {
             float dropBagOffset = ExternalSettingsInstance<ExternalCommonSettings>.Instance.DropBagOffset;
-            Vector3 vector3 = new Vector3(UnityEngine.Random.Range(-dropBagOffset, dropBagOffset), 0.0f, UnityEngine.Random.Range(-dropBagOffset, dropBagOffset));
+            Vector3 vector3 = new Vector3(Random.Range(-dropBagOffset, dropBagOffset), 0.0f, Random.Range(-dropBagOffset, dropBagOffset));
             component1.TeleportTo(component2.Location, ((IEntityView) owner).Position + vector3, ((IEntityView) owner).Rotation);
           }
           else
-            Debug.LogError((object) ("LocationItemComponent not found in " + bag.GetInfo()));
+            Debug.LogError("LocationItemComponent not found in " + bag.GetInfo());
         }
         else
-          Debug.LogError((object) ("INavigationComponent not found in " + bag.GetInfo()));
+          Debug.LogError("INavigationComponent not found in " + bag.GetInfo());
       }
       if (!(storable.Container == null ? intersect.Storage.AddItem(intersect.Storable, intersect.Container) : ((StorageComponent) storable.Storage).MoveItem(storable, intersect.Storage, intersect.Container, intersect.Cell.To())))
         throw new Exception();

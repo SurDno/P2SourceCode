@@ -7,6 +7,10 @@ using AssetDatabases;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Source.Commons;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
+using Object = UnityEngine.Object;
 
 public static class ObjectInfoUtility
 {
@@ -17,7 +21,7 @@ public static class ObjectInfoUtility
   {
     if (thread != Thread.CurrentThread)
     {
-      UnityEngine.Debug.LogException(new Exception("Get Stream from wrong thread"));
+      Debug.LogException(new Exception("Get Stream from wrong thread"));
       return new StringBuilder();
     }
     tmp.Clear();
@@ -39,7 +43,7 @@ public static class ObjectInfoUtility
     return GetStream().GetInfo(obj).ToString();
   }
 
-  public static string GetInfo(this UnityEngine.Object obj)
+  public static string GetInfo(this Object obj)
   {
     return GetStream().GetInfo(obj).ToString();
   }
@@ -104,8 +108,8 @@ public static class ObjectInfoUtility
       info.Append("[null]");
       return info;
     }
-    UnityEngine.Object object1 = target as UnityEngine.Object;
-    if (object1 != (UnityEngine.Object) null)
+    Object object1 = target as Object;
+    if (object1 != null)
     {
       info.GetInfo(object1);
       return info;
@@ -162,26 +166,26 @@ public static class ObjectInfoUtility
     return info;
   }
 
-  public static StringBuilder GetInfo(this StringBuilder info, UnityEngine.Object obj)
+  public static StringBuilder GetInfo(this StringBuilder info, Object obj)
   {
-    if (obj == (UnityEngine.Object) null)
+    if (obj == null)
     {
       info.Append("[null]");
       return info;
     }
     info.Append("type : ");
-    info.Append(TypeUtility.GetTypeName(((object) obj).GetType()));
+    info.Append(TypeUtility.GetTypeName(obj.GetType()));
     info.Append(" , to string : ");
-    info.Append(((object) obj));
+    info.Append(obj.ToString());
     GameObject go = obj as GameObject;
-    if ((UnityEngine.Object) go != (UnityEngine.Object) null)
+    if (go != null)
     {
       info.Append(" , path : ");
       info.GetFullName(go);
       return info;
     }
     Component component = obj as Component;
-    if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+    if (!(component != null))
       return info;
     info.Append(" , path : ");
     info.GetFullName(component.gameObject);
@@ -190,7 +194,7 @@ public static class ObjectInfoUtility
 
   public static StringBuilder GetFullName(this StringBuilder info, GameObject go)
   {
-    if ((UnityEngine.Object) go == (UnityEngine.Object) null)
+    if (go == null)
     {
       info.Append("[null]");
       return info;
@@ -208,7 +212,7 @@ public static class ObjectInfoUtility
 
   public static StringBuilder GetFullNameInner(this StringBuilder info, GameObject go)
   {
-    if ((UnityEngine.Object) go.transform.parent != (UnityEngine.Object) null)
+    if (go.transform.parent != null)
       info.GetFullNameInner(go.transform.parent.gameObject);
     info.Append("/");
     info.Append(go.name);

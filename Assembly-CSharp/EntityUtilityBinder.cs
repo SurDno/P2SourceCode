@@ -1,3 +1,5 @@
-﻿public class EntityUtilityBinder : MonoBehaviour
+﻿using UnityEngine;
+
+public class EntityUtilityBinder : MonoBehaviour
 {
 }

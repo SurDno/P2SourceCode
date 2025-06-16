@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityVector3
 {
@@ -68,7 +69,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityVector3
 
     public override void OnReset()
     {
-      firstVector3 = secondVector3 = (SharedVector3) Vector3.zero;
+      firstVector3 = secondVector3 = Vector3.zero;
       storeResult = 0.0f;
     }
   }

@@ -1,4 +1,5 @@
 ﻿using Engine.Behaviours.Engines.Controllers;
+using UnityEngine;
 
 public class NPCRifleCloseWeaponController : NPCWeaponControllerBase
 {
@@ -8,7 +9,7 @@ public class NPCRifleCloseWeaponController : NPCWeaponControllerBase
 
   public override void Initialise(NPCWeaponService service)
   {
-    if ((Object) service.Rifle != (Object) null)
+    if (service.Rifle != null)
       rifleObject = service.Rifle.GetComponent<RifleObject>();
     base.Initialise(service);
     owner = service.gameObject.GetComponent<NPCEnemy>();
@@ -22,7 +23,7 @@ public class NPCRifleCloseWeaponController : NPCWeaponControllerBase
 
   protected override void GetLayersIndices()
   {
-    if (!((Object) animator != (Object) null))
+    if (!(animator != null))
       return;
     walkLayerIndex = animator.GetLayerIndex("Fight Gun Walk Layer");
     attackLayerIndex = animator.GetLayerIndex("Fight Attack Layer");

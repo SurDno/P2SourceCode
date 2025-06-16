@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -75,7 +77,7 @@ namespace Cinemachine
         }
         catch (ArgumentException ex)
         {
-          Debug.LogError((object) ex.ToString());
+          Debug.LogError(ex.ToString());
         }
       }
       float inputAxisValue = m_InputAxisValue;
@@ -84,7 +86,7 @@ namespace Cinemachine
       if (m_MaxSpeed > 9.9999997473787516E-05)
       {
         float f = inputAxisValue * m_MaxSpeed;
-        if ((double) Mathf.Abs(f) < 9.9999997473787516E-05 || (double) Mathf.Sign(mCurrentSpeed) == (double) Mathf.Sign(f) && (double) Mathf.Abs(f) < (double) Mathf.Abs(mCurrentSpeed))
+        if (Mathf.Abs(f) < 9.9999997473787516E-05 || Mathf.Sign(mCurrentSpeed) == (double) Mathf.Sign(f) && Mathf.Abs(f) < (double) Mathf.Abs(mCurrentSpeed))
         {
           float num = Mathf.Min(Mathf.Abs(f - mCurrentSpeed) / Mathf.Max(0.0001f, m_DecelTime) * deltaTime, Mathf.Abs(mCurrentSpeed));
           mCurrentSpeed -= Mathf.Sign(mCurrentSpeed) * num;
@@ -93,7 +95,7 @@ namespace Cinemachine
         {
           float num = Mathf.Abs(f - mCurrentSpeed) / Mathf.Max(0.0001f, m_AccelTime);
           mCurrentSpeed += Mathf.Sign(f) * num * deltaTime;
-          if ((double) Mathf.Sign(mCurrentSpeed) == (double) Mathf.Sign(f) && (double) Mathf.Abs(mCurrentSpeed) > (double) Mathf.Abs(f))
+          if (Mathf.Sign(mCurrentSpeed) == (double) Mathf.Sign(f) && Mathf.Abs(mCurrentSpeed) > (double) Mathf.Abs(f))
             mCurrentSpeed = f;
         }
       }
@@ -112,7 +114,7 @@ namespace Cinemachine
           mCurrentSpeed = 0.0f;
         }
       }
-      return (double) Mathf.Abs(inputAxisValue) > 9.9999997473787516E-05;
+      return Mathf.Abs(inputAxisValue) > 9.9999997473787516E-05;
     }
 
     private float GetMaxSpeed()

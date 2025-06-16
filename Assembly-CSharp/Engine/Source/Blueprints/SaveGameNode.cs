@@ -5,6 +5,7 @@ using Engine.Source.Services.Saves;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -19,7 +20,7 @@ namespace Engine.Source.Blueprints
 
     private IEnumerator Save(FlowOutput output)
     {
-      yield return (object) new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
       SavesService saves = ServiceLocator.GetService<SavesService>();
       ProfilesService profiles = ServiceLocator.GetService<ProfilesService>();
       profiles.GenerateSaveName();

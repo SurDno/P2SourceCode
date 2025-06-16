@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -29,7 +30,7 @@ namespace RootMotion.FinalIK
       {
         for (int index2 = 0; index2 < chains.Length; ++index2)
         {
-          if (index1 != index2 && (UnityEngine.Object) chains[index1].ik == (UnityEngine.Object) chains[index2].ik)
+          if (index1 != index2 && chains[index1].ik == chains[index2].ik)
           {
             message = chains[index1].ik.name + " is represented more than once in IKSolverFABRIKRoot chain.";
             return false;

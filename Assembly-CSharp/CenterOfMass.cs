@@ -1,6 +1,8 @@
-﻿public class CenterOfMass : MonoBehaviour
-{
-  public Vector3 Offset = new Vector3();
+﻿using UnityEngine;
 
-  private void Start() => this.GetComponent<Rigidbody>().centerOfMass += Offset;
+public class CenterOfMass : MonoBehaviour
+{
+  public Vector3 Offset;
+
+  private void Start() => GetComponent<Rigidbody>().centerOfMass += Offset;
 }

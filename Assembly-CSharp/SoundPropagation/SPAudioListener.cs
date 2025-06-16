@@ -1,4 +1,6 @@
-﻿namespace SoundPropagation
+﻿using UnityEngine;
+
+namespace SoundPropagation
 {
   public class SPAudioListener : MonoBehaviour
   {
@@ -25,8 +27,8 @@
       int frameCount = Time.frameCount;
       if (lastFrame == frameCount)
         return;
-      position = this.transform.position;
-      direction = this.transform.forward * -Directionality;
+      position = transform.position;
+      direction = transform.forward * -Directionality;
       cell = SPCell.Find(position, LayerMask);
       lastFrame = frameCount;
     }
@@ -43,14 +45,14 @@
     private void OnDisable()
     {
       cell = null;
-      if (!((Object) Instance == (Object) this))
+      if (!(Instance == this))
         return;
       Instance = null;
     }
 
     private void OnEnable()
     {
-      if (!((Object) Instance == (Object) null))
+      if (!(Instance == null))
         return;
       Instance = this;
     }

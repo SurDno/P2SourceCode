@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Common.Commons.Converters
 {
@@ -11,105 +11,105 @@ namespace Engine.Common.Commons.Converters
   {
     public static void Write(IDataWriter writer, string name, byte value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, sbyte value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, int value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, uint value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, short value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, ushort value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, long value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, ulong value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, float value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, double value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, char value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, bool value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, Guid value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
-    public static void Write(IDataWriter writer, string name, DateTime value)
+    public static void Write(IDataWriter writer, string name, System.DateTime value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
 
     public static void Write(IDataWriter writer, string name, TimeSpan value)
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(DefaultConverter.ToString(value));
       writer.End(name, false);
     }
@@ -118,7 +118,7 @@ namespace Engine.Common.Commons.Converters
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(value);
       writer.End(name, false);
     }
@@ -127,26 +127,26 @@ namespace Engine.Common.Commons.Converters
     {
       if (value == null)
         return;
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(Convert.ToBase64String(value));
       writer.End(name, false);
     }
 
     public static void WriteEnum<T>(IDataWriter writer, string name, T value) where T : struct, IComparable, IConvertible, IFormattable
     {
-      writer.Begin(name, (Type) null, false);
+      writer.Begin(name, null, false);
       writer.Write(value.ToString());
       writer.End(name, false);
     }
 
     public static void WriteSerialize<T>(IDataWriter writer, string name, T value)
     {
-      if ((object) value == null)
+      if (value == null)
         return;
       if (value is ISerializeDataWrite serializeDataWrite)
       {
         Type type = ProxyFactory.GetType(value.GetType());
-        writer.Begin(name, type != typeof (T) ? type : (Type) null, true);
+        writer.Begin(name, type != typeof (T) ? type : null, true);
         serializeDataWrite.DataWrite(writer);
         writer.End(name, true);
       }
@@ -158,9 +158,9 @@ namespace Engine.Common.Commons.Converters
     {
       if (value == null)
         value = new List<string>();
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (string str in value)
-        DefaultDataWriteUtility.Write(writer, "Item", str);
+        Write(writer, "Item", str);
       writer.End(name, true);
     }
 
@@ -168,9 +168,9 @@ namespace Engine.Common.Commons.Converters
     {
       if (value == null)
         value = new List<double>();
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (double num in value)
-        DefaultDataWriteUtility.Write(writer, "Item", num);
+        Write(writer, "Item", num);
       writer.End(name, true);
     }
 
@@ -178,9 +178,9 @@ namespace Engine.Common.Commons.Converters
     {
       if (value == null)
         value = new List<T>();
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
-        DefaultDataWriteUtility.WriteEnum<T>(writer, "Item", obj);
+        WriteEnum(writer, "Item", obj);
       writer.End(name, true);
     }
 
@@ -188,9 +188,9 @@ namespace Engine.Common.Commons.Converters
     {
       if (value == null)
         value = new List<T>();
-      writer.Begin(name, (Type) null, true);
+      writer.Begin(name, null, true);
       foreach (T obj in value)
-        DefaultDataWriteUtility.WriteSerialize<T>(writer, "Item", obj);
+        WriteSerialize(writer, "Item", obj);
       writer.End(name, true);
     }
   }

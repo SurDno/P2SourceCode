@@ -1,6 +1,7 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,9 +17,9 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         GameObject gameObject = goInput.value;
-        if (!((Object) gameObject != (Object) null))
+        if (!(gameObject != null))
           return;
-        Object.Destroy((Object) gameObject, delayInput.value);
+        Object.Destroy(gameObject, delayInput.value);
       });
       goInput = AddValueInput<GameObject>("GameObject");
       delayInput = AddValueInput<float>("Delay");

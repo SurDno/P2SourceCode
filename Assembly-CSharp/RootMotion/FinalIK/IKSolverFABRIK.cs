@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -41,7 +42,7 @@ namespace RootMotion.FinalIK
 
     public override Vector3 GetIKPosition()
     {
-      return (UnityEngine.Object) target != (UnityEngine.Object) null ? target.position : IKPosition;
+      return target != null ? target.position : IKPosition;
     }
 
     protected override void OnInitiate()
@@ -66,7 +67,7 @@ namespace RootMotion.FinalIK
         return;
       IKPositionWeight = Mathf.Clamp(IKPositionWeight, 0.0f, 1f);
       OnPreSolve();
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
         IKPosition = target.position;
       if (XY)
         IKPosition.z = bones[0].transform.position.z;
@@ -174,14 +175,14 @@ namespace RootMotion.FinalIK
     {
       if (index > 0)
         return bones[index - 1].solverRotation;
-      return (UnityEngine.Object) bones[0].transform.parent == (UnityEngine.Object) null ? Quaternion.identity : bones[0].transform.parent.rotation;
+      return bones[0].transform.parent == null ? Quaternion.identity : bones[0].transform.parent.rotation;
     }
 
     private Vector3 GetParentSolverPosition(int index)
     {
       if (index > 0)
         return bones[index - 1].solverPosition;
-      return (UnityEngine.Object) bones[0].transform.parent == (UnityEngine.Object) null ? Vector3.zero : bones[0].transform.parent.position;
+      return bones[0].transform.parent == null ? Vector3.zero : bones[0].transform.parent.position;
     }
 
     private Quaternion GetLimitedRotation(int index, Quaternion q, out bool changed)
@@ -195,7 +196,7 @@ namespace RootMotion.FinalIK
 
     private void LimitForward(int rotateBone, int limitBone)
     {
-      if (!useRotationLimits || (UnityEngine.Object) bones[limitBone].rotationLimit == (UnityEngine.Object) null)
+      if (!useRotationLimits || bones[limitBone].rotationLimit == null)
         return;
       Vector3 solverPosition = bones[bones.Length - 1].solverPosition;
       for (int index = rotateBone; index < bones.Length - 1 && !limitedBones[index]; ++index)
@@ -246,7 +247,7 @@ namespace RootMotion.FinalIK
       {
         Vector3 vector3 = SolveJoint(bones[index + 1].solverPosition, bones[index].solverPosition, bones[index].length);
         Quaternion quaternion = Quaternion.FromToRotation(bones[index].solverRotation * bones[index].axis, vector3 - bones[index].solverPosition) * bones[index].solverRotation;
-        if ((UnityEngine.Object) bones[index].rotationLimit != (UnityEngine.Object) null)
+        if (bones[index].rotationLimit != null)
         {
           bool changed = false;
           quaternion = GetLimitedRotation(index, quaternion, out changed);

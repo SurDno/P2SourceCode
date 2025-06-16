@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressScale : ProgressView
   {
@@ -9,7 +11,7 @@
 
     protected override void ApplyProgress()
     {
-      this.transform.localScale = Vector3.Lerp(minScale, maxScale, Progress);
+      transform.localScale = Vector3.Lerp(minScale, maxScale, Progress);
     }
 
     public override void SkipAnimation()

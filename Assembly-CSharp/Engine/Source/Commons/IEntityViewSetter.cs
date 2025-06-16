@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.Commons
+﻿using UnityEngine;
+
+namespace Engine.Source.Commons
 {
   public interface IEntityViewSetter
   {

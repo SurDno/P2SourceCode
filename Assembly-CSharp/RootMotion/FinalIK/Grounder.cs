@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public abstract class Grounder : MonoBehaviour
   {
@@ -21,12 +23,12 @@
       return zero;
     }
 
-    protected void LogWarning(string message) => Warning.Log(message, this.transform);
+    protected void LogWarning(string message) => Warning.Log(message, transform);
 
     private Vector3 GetLegSpineBendVector(Grounding.Leg leg)
     {
       Vector3 legSpineTangent = GetLegSpineTangent(leg);
-      float num = (float) (((double) Vector3.Dot(solver.root.forward, legSpineTangent.normalized) + 1.0) * 0.5);
+      float num = (float) ((Vector3.Dot(solver.root.forward, legSpineTangent.normalized) + 1.0) * 0.5);
       float magnitude = (leg.IKPosition - leg.transform.position).magnitude;
       return legSpineTangent * magnitude * num;
     }

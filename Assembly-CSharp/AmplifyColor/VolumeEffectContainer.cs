@@ -37,12 +37,12 @@ namespace AmplifyColor
     {
       for (int index = 0; index < volumes.Count; ++index)
       {
-        if ((UnityEngine.Object) volumes[index].gameObject == (UnityEngine.Object) colorEffect)
+        if (volumes[index].gameObject == colorEffect)
           return volumes[index];
       }
       for (int index = 0; index < volumes.Count; ++index)
       {
-        if ((UnityEngine.Object) volumes[index].gameObject != (UnityEngine.Object) null && volumes[index].gameObject.SharedInstanceID == colorEffect.SharedInstanceID)
+        if (volumes[index].gameObject != null && volumes[index].gameObject.SharedInstanceID == colorEffect.SharedInstanceID)
           return volumes[index];
       }
       return null;

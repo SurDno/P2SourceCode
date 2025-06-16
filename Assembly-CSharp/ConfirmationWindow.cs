@@ -3,6 +3,8 @@ using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ConfirmationWindow : MonoBehaviour
 {
@@ -30,8 +32,8 @@ public class ConfirmationWindow : MonoBehaviour
 
   private void Awake()
   {
-    acceptButton.onClick.AddListener(new UnityAction(Accept));
-    cancelButton.onClick.AddListener(new UnityAction(Cancel));
+    acceptButton.onClick.AddListener(Accept);
+    cancelButton.onClick.AddListener(Cancel);
   }
 
   private void Cancel()
@@ -50,7 +52,7 @@ public class ConfirmationWindow : MonoBehaviour
     service.RemoveListener(GameActionType.Cancel, OnSelection);
     onAcceptAction = null;
     onCancelAction = null;
-    this.gameObject.SetActive(false);
+    gameObject.SetActive(false);
     InputService.Instance.onJoystickUsedChanged -= OnJoystick;
   }
 
@@ -59,7 +61,7 @@ public class ConfirmationWindow : MonoBehaviour
     textView.StringValue = text;
     onAcceptAction = onAccept;
     onCancelAction = onCancel;
-    this.gameObject.SetActive(true);
+    gameObject.SetActive(true);
     InputService.Instance.onJoystickUsedChanged += OnJoystick;
     OnJoystick(InputService.Instance.JoystickUsed);
   }

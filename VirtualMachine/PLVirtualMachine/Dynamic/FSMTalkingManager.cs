@@ -448,7 +448,7 @@ namespace PLVirtualMachine.Dynamic
       }
       catch (Exception ex)
       {
-        Logger.AddError(string.Format("Checking talking state actual error at {0}, error: {1}", TalkingFSM.FSMStaticObject.Name, ex.ToString()));
+        Logger.AddError(string.Format("Checking talking state actual error at {0}, error: {1}", TalkingFSM.FSMStaticObject.Name, ex));
       }
       return new KeyValuePair<bool, bool>(false, false);
     }

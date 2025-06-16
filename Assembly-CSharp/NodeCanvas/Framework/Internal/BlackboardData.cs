@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using ParadoxNotion;
+using UnityEngine;
 
 namespace NodeCanvas.Framework.Internal
 {
@@ -21,7 +22,7 @@ namespace NodeCanvas.Framework.Internal
     {
       if (value == null)
       {
-        Debug.LogError((object) "<b>Blackboard:</b> You can't use AddVariable with a null value. Use AddVariable(string, Type) to add the new data first");
+        Debug.LogError("<b>Blackboard:</b> You can't use AddVariable with a null value. Use AddVariable(string, Type) to add the new data first");
         return null;
       }
       Variable variable = AddVariable(varName, value.GetType());
@@ -36,9 +37,9 @@ namespace NodeCanvas.Framework.Internal
       {
         Variable variable = GetVariable(varName, type);
         if (variable == null)
-          Debug.LogError((object) string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}', but is of different type! Returning null instead of new.", varName, ""));
+          Debug.LogError(string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}', but is of different type! Returning null instead of new.", varName, ""));
         else
-          Debug.LogWarning((object) string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}'. Returning existing instead of new.", varName, ""));
+          Debug.LogWarning(string.Format("<b>Blackboard:</b> Variable with name '{0}' already exists in blackboard '{1}'. Returning existing instead of new.", varName, ""));
         return variable;
       }
       Variable instance = (Variable) Activator.CreateInstance(typeof (Variable<>).RTMakeGenericType(new Type[1]
@@ -74,12 +75,12 @@ namespace NodeCanvas.Framework.Internal
         {
           if (!variables.ContainsKey(varName))
           {
-            Debug.LogError((object) string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Returning default T...", varName, typeof (T).FriendlyName(), ""));
+            Debug.LogError(string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Returning default T...", varName, typeof (T).FriendlyName(), ""));
             return default (T);
           }
         }
       }
-      Debug.LogError((object) string.Format("<b>Blackboard:</b> Can't cast value of variable with name '{0}' to type '{1}'", varName, typeof (T).FriendlyName()));
+      Debug.LogError(string.Format("<b>Blackboard:</b> Can't cast value of variable with name '{0}' to type '{1}'", varName, typeof (T).FriendlyName()));
       return default (T);
     }
 
@@ -95,19 +96,19 @@ namespace NodeCanvas.Framework.Internal
       {
         if (!variables.ContainsKey(varName))
         {
-          Debug.Log((object) string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Adding new instead...", varName, value != null ? value.GetType().FriendlyName() : (object) "null", ""));
+          Debug.Log(string.Format("<b>Blackboard:</b> No Variable of name '{0}' and type '{1}' exists on Blackboard '{2}'. Adding new instead...", varName, value != null ? value.GetType().FriendlyName() : (object) "null", ""));
           Variable variable = AddVariable(varName, value);
           if (variable != null)
           {
             variable.isProtected = true;
             return variable;
           }
-          Debug.LogError((object) "1");
+          Debug.LogError("1");
         }
         else
-          Debug.LogError((object) "2");
+          Debug.LogError("2");
       }
-      Debug.LogError((object) ("<b>Blackboard:</b> Can't cast value '" + (value != null ? value.ToString() : "null") + "' to blackboard variable of name '" + varName + "' and type " + variables[varName].varType.Name));
+      Debug.LogError("<b>Blackboard:</b> Can't cast value '" + (value != null ? value.ToString() : "null") + "' to blackboard variable of name '" + varName + "' and type " + variables[varName].varType.Name);
       return null;
     }
 

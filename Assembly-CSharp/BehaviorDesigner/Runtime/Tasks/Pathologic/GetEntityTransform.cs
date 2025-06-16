@@ -8,6 +8,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.BehaviorNodes;
 using Engine.Source.Commons;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -35,7 +36,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       if (Target == null || Target.Entity == null)
         return TaskStatus.Failure;
       IEntityView entity = (IEntityView) Target.Entity;
-      if ((UnityEngine.Object) entity.GameObject == (UnityEngine.Object) null)
+      if (entity.GameObject == null)
         return TaskStatus.Failure;
       Result.Value = entity.GameObject.transform;
       return TaskStatus.Success;

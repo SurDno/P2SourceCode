@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Behaviours.Components;
 using Engine.Behaviours.Engines.Services;
+using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -20,7 +21,7 @@ namespace Engine.Behaviours.Engines.Controllers
       set
       {
         isPaused = value;
-        if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
+        if (!(animator != null))
           return;
         if (isPaused && animator.gameObject.activeSelf)
           animator.SetFloat("Mecanim.Speed", 0.0f);
@@ -39,14 +40,14 @@ namespace Engine.Behaviours.Engines.Controllers
       this.gameObject = gameObject;
       collider = gameObject.GetComponent<CapsuleCollider>();
       weaponService = gameObject.GetComponent<PlayerWeaponServiceNew>();
-      if ((UnityEngine.Object) weaponService == (UnityEngine.Object) null)
-        Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", (object) gameObject.name, (object) typeof (PlayerWeaponServiceNew).Name);
+      if (weaponService == null)
+        Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", gameObject.name, typeof (PlayerWeaponServiceNew).Name);
       pivot = gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
-        Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", (object) gameObject.name, (object) typeof (Pivot).Name);
+      if (pivot == null)
+        Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", gameObject.name, typeof (Pivot).Name);
       characterController = gameObject.GetComponent<CharacterController>();
-      if ((UnityEngine.Object) characterController == (UnityEngine.Object) null)
-        Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", (object) gameObject.name, (object) typeof (CharacterController).Name);
+      if (characterController == null)
+        Debug.LogWarningFormat("{0} doesn' contain {1} unity component.", gameObject.name, typeof (CharacterController).Name);
       animator = gameObject.GetComponent<Animator>();
     }
 

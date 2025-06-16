@@ -31,7 +31,7 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 
     protected override void RegisterLayer()
     {
-      RegisterLayer((IBoundCharactersWindow) this);
+      RegisterLayer<IBoundCharactersWindow>(this);
     }
 
     public override Type GetWindowType() => typeof (IBoundCharactersWindow);

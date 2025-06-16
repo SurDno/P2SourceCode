@@ -16,7 +16,7 @@ namespace Engine.Source.Blueprints
     {
       base.RegisterPorts();
       FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(Compute(output))));
+      AddFlowInput("In", () => StartCoroutine(Compute(output)));
     }
 
     private IEnumerator Compute(FlowOutput output)

@@ -9,6 +9,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Services;
 using Scripts.Utility;
+using Debug = UnityEngine.Debug;
 
 namespace Engine.Source.Commons
 {
@@ -27,7 +28,7 @@ namespace Engine.Source.Commons
       InitialiseEngineProgressService progressService = ServiceLocator.GetService<InitialiseEngineProgressService>();
       foreach (object service in ServiceLocator.GetServices())
       {
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(TypeUtility.GetTypeName(service.GetType())));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(TypeUtility.GetTypeName(service.GetType())));
         MetaService.GetContainer(service.GetType()).GetHandler(FromLocatorAttribute.Id).Compute(service, null);
       }
       services = RuntimeServiceAttribute.GetServices().Select(o => o as IInitialisable).Where(o => o != null).ToList();
@@ -42,11 +43,11 @@ namespace Engine.Source.Commons
       }
       progressService.Begin(maxCount);
       sw.Stop();
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Prepare initialise, count : ").Append(services.Count).Append(" , elapsed : ").Append(sw.Elapsed));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Prepare initialise, count : ").Append(services.Count).Append(" , elapsed : ").Append(sw.Elapsed));
       for (int index = 0; index < services.Count; ++index)
       {
         IInitialisable service = services[index];
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise service : ").Append(TypeUtility.GetTypeName(service.GetType())));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise service : ").Append(TypeUtility.GetTypeName(service.GetType())));
         progressService.Progress += step;
         progressService.Update(nameof (InitialiseServices), TypeUtility.GetTypeName(service.GetType()));
         sw.Restart();
@@ -62,11 +63,11 @@ namespace Engine.Source.Commons
           }
           catch (Exception ex)
           {
-            UnityEngine.Debug.LogException(ex);
+            Debug.LogException(ex);
           }
         }
         sw.Stop();
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise service complete : ").Append(TypeUtility.GetTypeName(service.GetType())).Append(" , elapsed : ").Append(sw.Elapsed));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise service complete : ").Append(TypeUtility.GetTypeName(service.GetType())).Append(" , elapsed : ").Append(sw.Elapsed));
         yield return null;
         service = null;
         async = null;
@@ -87,7 +88,7 @@ namespace Engine.Source.Commons
         }
         catch (Exception ex)
         {
-          UnityEngine.Debug.LogException(ex);
+          Debug.LogException(ex);
         }
       }
       services = null;

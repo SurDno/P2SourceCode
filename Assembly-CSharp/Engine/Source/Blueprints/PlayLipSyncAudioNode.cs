@@ -8,6 +8,8 @@ using Engine.Source.Services;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -37,7 +39,7 @@ namespace Engine.Source.Blueprints
         else
         {
           AudioMixerGroup mixer = mixerInput.value;
-          if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+          if (mixer == null)
           {
             output.Call();
           }
@@ -51,14 +53,14 @@ namespace Engine.Source.Blueprints
             else
             {
               AudioClip clip = lipSyncInfo.Clip.Value;
-              if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
+              if (clip == null)
               {
                 output.Call();
               }
               else
               {
                 AudioState state = SoundUtility.PlayAudioClip2D(clip, mixer, volumeInput.value, fadeTime.value, true, "(blueprint) " + graph.agent.name, (Action) (() => output.Call()));
-                ServiceLocator.GetService<SubtitlesService>().AddSubtitles(null, lipSyncInfo.Tag, state, (UnityEngine.Object) graphAgent);
+                ServiceLocator.GetService<SubtitlesService>().AddSubtitles(null, lipSyncInfo.Tag, state, graphAgent);
               }
             }
           }

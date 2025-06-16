@@ -4,6 +4,7 @@ using Engine.Common.Commons;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Settings.External;
 using ParadoxNotion;
+using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -16,7 +17,7 @@ namespace Engine.Source.Commons
     {
       get
       {
-        if ((Object) gameObject == (Object) null)
+        if (gameObject == null)
         {
           string path = AssetDatabaseService.Instance.GetPath(Id);
           ReflectionTools.ContextObject = path;

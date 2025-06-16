@@ -47,7 +47,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     {
       hitsList = new List<ShotTargetBodyPartEnum>();
       GameObject gameObject1 = ((IEntityView) self).GameObject;
-      if ((Object) gameObject1 == (Object) null)
+      if (gameObject1 == null)
         return;
       Vector3 forward = GameCamera.Instance.CameraTransform.forward;
       Vector3 position = GameCamera.Instance.CameraTransform.position;
@@ -65,14 +65,14 @@ namespace Engine.Source.Commons.Abilities.Projectiles
         for (int index2 = 0; index2 < hits.Count; ++index2)
         {
           GameObject gameObject2 = hits[index2].collider.gameObject;
-          if (!((Object) gameObject2 == (Object) gameObject1) && !(gameObject2.tag == ignoredTag) && (!hits[index2].collider.isTrigger || gameObject2.layer == ScriptableObjectInstance<GameSettingsData>.Instance.NpcHitCollidersLayer.GetIndex()))
+          if (!(gameObject2 == gameObject1) && !(gameObject2.tag == ignoredTag) && (!hits[index2].collider.isTrigger || gameObject2.layer == ScriptableObjectInstance<GameSettingsData>.Instance.NpcHitCollidersLayer.GetIndex()))
           {
             ShotTargetBodyPartEnum targetBodyPartEnum = ShotTargetBodyPartEnum.Body;
             string tag = gameObject2.tag;
             if (tag == untagged)
             {
               Pivot component = gameObject2.GetComponent<Pivot>();
-              if ((Object) component != (Object) null && component.CollidersSetForSharpshooting)
+              if (component != null && component.CollidersSetForSharpshooting)
                 continue;
             }
             else
@@ -82,10 +82,10 @@ namespace Engine.Source.Commons.Abilities.Projectiles
               {
                 do
                 {
-                  if ((Object) component == (Object) null)
+                  if (component == null)
                   {
                     Transform parent = gameObject2.transform.parent;
-                    if (!((Object) parent == (Object) null))
+                    if (!(parent == null))
                     {
                       gameObject2 = parent.gameObject;
                       component = gameObject2.GetComponent<Pivot>();
@@ -94,9 +94,9 @@ namespace Engine.Source.Commons.Abilities.Projectiles
                       break;
                   }
                 }
-                while ((Object) component == (Object) null);
+                while (component == null);
               }
-              if (!((Object) component == (Object) null))
+              if (!(component == null))
               {
                 if (component.CollidersSetForSharpshooting)
                 {
@@ -124,7 +124,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
               }
               break;
             }
-            Debug.LogWarningFormat("{0} can't map entity.", (object) gameObject2.name);
+            Debug.LogWarningFormat("{0} can't map entity.", gameObject2.name);
             break;
           }
         }

@@ -1,4 +1,6 @@
-﻿public static class TOD_Util
+﻿using UnityEngine;
+
+public static class TOD_Util
 {
   public static Color MulRGB(Color color, float multiplier)
   {

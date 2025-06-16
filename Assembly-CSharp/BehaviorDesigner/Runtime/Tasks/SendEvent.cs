@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -88,7 +89,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       }
       else
       {
-        if (components.Length <= 1 || !((UnityEngine.Object) behaviorTree == (UnityEngine.Object) null))
+        if (components.Length <= 1 || !(behaviorTree == null))
           return;
         behaviorTree = components[0];
       }
@@ -96,7 +97,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) behaviorTree == (UnityEngine.Object) null)
+      if (behaviorTree == null)
         return TaskStatus.Success;
       if (argument1 == null || argument1.IsNone)
         behaviorTree.SendEvent(eventName.Value);

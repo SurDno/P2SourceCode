@@ -1,5 +1,8 @@
 ﻿using Engine.Common.MindMap;
 using Engine.Source.UI.Menu.Protagonist.MindMap;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class MapNodeView : 
   MonoBehaviour,
@@ -17,22 +20,22 @@ public class MapNodeView :
 
   private void OnEnable()
   {
-    if ((Object) nodeImage == (Object) null)
-      nodeImage = this.GetComponent<RawImage>();
-    if ((Object) nodeImage != (Object) null)
+    if (nodeImage == null)
+      nodeImage = GetComponent<RawImage>();
+    if (nodeImage != null)
       baseColor = nodeImage.color.ToRGBHex();
-    rectTransform = this.GetComponent<RectTransform>();
+    rectTransform = GetComponent<RectTransform>();
   }
 
   public Rect GetSpriteRect()
   {
-    return (Object) rectTransform != (Object) null ? rectTransform.rect : Rect.zero;
+    return rectTransform != null ? rectTransform.rect : Rect.zero;
   }
 
   public void SetActive(bool active)
   {
     Color color;
-    if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) || !((Object) nodeImage != (Object) null))
+    if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) || !(nodeImage != null))
       return;
     nodeImage.color = color;
   }

@@ -9,6 +9,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -49,7 +50,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      entity = Target != null && !((UnityEngine.Object) Target.Value == (UnityEngine.Object) null) && !((UnityEngine.Object) Target.Value.gameObject == (UnityEngine.Object) null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject);
+      entity = Target != null && !(Target.Value == null) && !(Target.Value.gameObject == null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject);
       if (entity == null)
         return TaskStatus.Failure;
       ParametersComponent component = entity.GetComponent<ParametersComponent>();

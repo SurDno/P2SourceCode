@@ -14,6 +14,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -150,7 +152,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     protected void FindPOIsInGameObject(GameObject searchObject, List<POIBase> result)
     {
-      searchObject.GetComponentsInChildren<POIBase>(result);
+      searchObject.GetComponentsInChildren(result);
     }
 
     protected void FilterIsChilds(List<POIBase> result)
@@ -175,7 +177,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       if (SearchEntity.Entity != null)
       {
         IEntityView entity = (IEntityView) SearchEntity.Entity;
-        if ((UnityEngine.Object) entity.GameObject != (UnityEngine.Object) null && entity.GameObject.activeInHierarchy)
+        if (entity.GameObject != null && entity.GameObject.activeInHierarchy)
           FindPOIsInGameObject(entity.GameObject, poiCache);
       }
       else
@@ -244,9 +246,9 @@ namespace BehaviorDesigner.Runtime.Tasks
       if (POIBase.ActivePOIs.Count == 0)
         return;
       POISetup character = gameObject.GetComponentNonAlloc<POISetup>();
-      if ((UnityEngine.Object) character == (UnityEngine.Object) null)
+      if (character == null)
       {
-        Debug.LogWarning((object) (gameObject.name + ": doesn't contain POISetup Unity component"));
+        Debug.LogWarning(gameObject.name + ": doesn't contain POISetup Unity component");
       }
       else
       {
@@ -257,11 +259,11 @@ namespace BehaviorDesigner.Runtime.Tasks
           SearchingArea.Value = component1.Area.ToString();
         else
           SearchingArea = "no area set";
-        poiCache = poiCache.FindAll(x => (UnityEngine.Object) x.LockedBy == (UnityEngine.Object) null);
+        poiCache = poiCache.FindAll(x => x.LockedBy == null);
         TotalUnlockedPois = poiCache.Count;
         poiCache = poiCache.FindAll(x => (x.SupportedAnimations & character.SupportedAnimations) != 0);
         PlayablePois = poiCache.Count;
-        poiCache = poiCache.FindAll(x => SearchEntity.Entity != null || InSearchRadius.Value == 0.0 || (double) (x.transform.position - gameObject.transform.position).magnitude < InSearchRadius.Value);
+        poiCache = poiCache.FindAll(x => SearchEntity.Entity != null || InSearchRadius.Value == 0.0 || (x.transform.position - gameObject.transform.position).magnitude < (double) InSearchRadius.Value);
         PlayablePoisInRadius = poiCache.Count;
         if (poiCache.Count > 1)
           poiCache = poiCache.FindAll(x => !lastUsedPOIs.Contains(x));
@@ -271,17 +273,17 @@ namespace BehaviorDesigner.Runtime.Tasks
           return;
         if (FindClosest.Value)
         {
-          Vector3 searchPosition = gameObject.transform.position + Quaternion.Euler(0.0f, UnityEngine.Random.value * 360f, 0.0f) * (Vector3.forward * randomOffsetRadius);
+          Vector3 searchPosition = gameObject.transform.position + Quaternion.Euler(0.0f, Random.value * 360f, 0.0f) * (Vector3.forward * randomOffsetRadius);
           poiCache.Sort((c1, c2) => Vector3.Distance(searchPosition, c1.transform.position).CompareTo(Vector3.Distance(searchPosition, c2.transform.position)));
         }
         NavigationComponent component2 = owner?.GetComponent<NavigationComponent>();
         if (component2 != null)
           region = component2.Region;
-        int num1 = FindClosest.Value ? 0 : UnityEngine.Random.Range(0, poiCache.Count);
-        for (int index1 = 0; index1 < poiCache.Count && (UnityEngine.Object) OutPOI == (UnityEngine.Object) null; ++index1)
+        int num1 = FindClosest.Value ? 0 : Random.Range(0, poiCache.Count);
+        for (int index1 = 0; index1 < poiCache.Count && OutPOI == null; ++index1)
         {
           POIBase poiBase = poiCache[(index1 + num1) % poiCache.Count];
-          if (!((UnityEngine.Object) poiBase.LockedBy != (UnityEngine.Object) null))
+          if (!(poiBase.LockedBy != null))
           {
             POIAnimationEnum poiAnimationEnum = poiBase.SupportedAnimations & character.SupportedAnimations;
             if (poiAnimationEnum != 0)
@@ -289,7 +291,7 @@ namespace BehaviorDesigner.Runtime.Tasks
               float magnitude = (poiBase.transform.position - gameObject.transform.position).magnitude;
               if ((poiCache.Count <= AvoidLastUsedPoiNumber.Value || !lastUsedPOIs.Contains(poiBase)) && (InSearchRadius.Value <= 0.0 || magnitude <= (double) InSearchRadius.Value || SearchEntity.Entity != null) && CheckRegion(poiBase.transform.position))
               {
-                int num2 = UnityEngine.Random.Range(0, 32);
+                int num2 = Random.Range(0, 32);
                 for (int index2 = 0; index2 < 32; ++index2)
                 {
                   int num3 = (num2 + index2) % 32;
@@ -297,7 +299,7 @@ namespace BehaviorDesigner.Runtime.Tasks
                   {
                     POIAnimationEnum animation = (POIAnimationEnum) (1 << num3);
                     POIAnimationSetupBase animationSetup = character.GetAnimationSetup(animation);
-                    OutAnimationIndex = UnityEngine.Random.Range(0, animationSetup.Elements.Count);
+                    OutAnimationIndex = Random.Range(0, animationSetup.Elements.Count);
                     if (animationSetup.Elements.Count > OutAnimationIndex && animationSetup.Elements[OutAnimationIndex] is POIAnimationSetupElementSlow)
                       OutMiddleAnimationsCount = (animationSetup.Elements[OutAnimationIndex] as POIAnimationSetupElementSlow).MiddleAnimationClips.Count;
                     OutAngle = poiBase.GetAngle(Owner.gameObject);
@@ -327,7 +329,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     {
       executionStatus = TaskStatus.Inactive;
       currentChildIndex = 0;
-      if (!((UnityEngine.Object) OutPOI != (UnityEngine.Object) null))
+      if (!(OutPOI != null))
         return;
       OutPOI.Unlock(gameObject);
     }

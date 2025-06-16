@@ -1,5 +1,8 @@
-﻿[RequireComponent(typeof (Image))]
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+[RequireComponent(typeof (Image))]
 public class ImageAlphaRaycastEnabled : MonoBehaviour
 {
-  private void Start() => this.GetComponent<Image>().alphaHitTestMinimumThreshold = 0.25f;
+  private void Start() => GetComponent<Image>().alphaHitTestMinimumThreshold = 0.25f;
 }

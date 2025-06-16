@@ -1,5 +1,7 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Behaviours.Localization
 {
@@ -11,9 +13,9 @@ namespace Engine.Behaviours.Localization
     private void Localize()
     {
       LanguageEnum currentLanguage = localizationService.CurrentLanguage;
-      Image component = this.GetComponent<Image>();
+      Image component = GetComponent<Image>();
       component.sprite = GetSprite(currentLanguage);
-      component.enabled = (UnityEngine.Object) component.sprite != (UnityEngine.Object) null;
+      component.enabled = component.sprite != null;
     }
 
     protected abstract Sprite GetSprite(LanguageEnum language);

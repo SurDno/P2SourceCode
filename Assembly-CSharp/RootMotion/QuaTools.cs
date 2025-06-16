@@ -1,4 +1,6 @@
-﻿namespace RootMotion
+﻿using UnityEngine;
+
+namespace RootMotion
 {
   public static class QuaTools
   {
@@ -39,7 +41,7 @@
       float angle = 0.0f;
       Vector3 axis1 = Vector3.zero;
       rotation.ToAngleAxis(out angle, out axis1);
-      if ((double) Vector3.Dot(axis1, axis) < 0.0)
+      if (Vector3.Dot(axis1, axis) < 0.0)
         angle = -angle;
       return Quaternion.AngleAxis(angle, axis);
     }
@@ -71,7 +73,7 @@
         flag = f2 < 0.0;
       }
       float f3 = Vector3.Dot(v, Vector3.forward);
-      if ((double) Mathf.Abs(f3) > num1)
+      if (Mathf.Abs(f3) > (double) num1)
       {
         axis = Vector3.forward;
         flag = f3 < 0.0;
@@ -90,7 +92,7 @@
         return Quaternion.identity;
       if (clampWeight <= 0.0)
         return rotation;
-      float num1 = (float) (1.0 - (double) Quaternion.Angle(Quaternion.identity, rotation) / 180.0);
+      float num1 = (float) (1.0 - Quaternion.Angle(Quaternion.identity, rotation) / 180.0);
       float num2 = Mathf.Clamp((float) (1.0 - (clampWeight - (double) num1) / (1.0 - num1)), 0.0f, 1f);
       float num3 = Mathf.Clamp(num1 / clampWeight, 0.0f, 1f);
       for (int index = 0; index < clampSmoothing; ++index)
@@ -104,7 +106,7 @@
         return 0.0f;
       if (clampWeight <= 0.0)
         return angle;
-      float num1 = (float) (1.0 - (double) Mathf.Abs(angle) / 180.0);
+      float num1 = (float) (1.0 - Mathf.Abs(angle) / 180.0);
       float num2 = Mathf.Clamp((float) (1.0 - (clampWeight - (double) num1) / (1.0 - num1)), 0.0f, 1f);
       float num3 = Mathf.Clamp(num1 / clampWeight, 0.0f, 1f);
       for (int index = 0; index < clampSmoothing; ++index)

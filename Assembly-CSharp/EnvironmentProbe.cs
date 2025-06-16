@@ -1,4 +1,7 @@
-﻿[RequireComponent(typeof (ReflectionProbe))]
+﻿using UnityEngine;
+using UnityEngine.Rendering;
+
+[RequireComponent(typeof (ReflectionProbe))]
 [ExecuteInEditMode]
 public class EnvironmentProbe : MonoBehaviour
 {
@@ -16,14 +19,14 @@ public class EnvironmentProbe : MonoBehaviour
   private void OnDisable()
   {
     Shader.SetGlobalInt("Pathologic_AmbientCubemapLod", 0);
-    Shader.SetGlobalTexture("Pathologic_AmbientCubemap", (Texture) null);
+    Shader.SetGlobalTexture("Pathologic_AmbientCubemap", null);
     Shader.SetGlobalInt("Pathologic_IndoorCubemapLod", 0);
-    Shader.SetGlobalTexture("Pathologic_IndoorCubemap", (Texture) null);
+    Shader.SetGlobalTexture("Pathologic_IndoorCubemap", null);
   }
 
   private void LateUpdate()
   {
-    ReflectionProbe component = this.GetComponent<ReflectionProbe>();
+    ReflectionProbe component = GetComponent<ReflectionProbe>();
     int resolution = component.resolution;
     int num = 5;
     if (resolution == 16 || resolution == 1024)

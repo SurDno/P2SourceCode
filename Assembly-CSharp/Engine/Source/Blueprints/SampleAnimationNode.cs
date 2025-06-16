@@ -2,6 +2,7 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -20,7 +21,7 @@ namespace Engine.Source.Blueprints
       {
         AnimationClip animationClip = animationClipInput.value;
         GameObject go = goInput.value;
-        Debug.LogError((object) ("TEST, before : " + (object) go.transform.position));
+        Debug.LogError("TEST, before : " + go.transform.position);
         animationClip.SampleAnimation(go, timeInput.value);
         StartCoroutine(Delay(output));
       });
@@ -38,7 +39,7 @@ namespace Engine.Source.Blueprints
       yield return null;
       yield return null;
       yield return null;
-      Debug.LogError((object) ("TEST, after : " + (object) goInput.value.transform.position));
+      Debug.LogError("TEST, after : " + goInput.value.transform.position);
       output.Call();
     }
   }

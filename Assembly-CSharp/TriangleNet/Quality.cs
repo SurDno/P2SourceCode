@@ -457,6 +457,7 @@ namespace TriangleNet
             if (mesh.steinerleft > 0)
             {
               --mesh.steinerleft;
+              goto case InsertVertexResult.Violating;
             }
 
             goto case InsertVertexResult.Violating;

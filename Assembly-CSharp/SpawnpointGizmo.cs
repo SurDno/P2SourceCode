@@ -1,3 +1,5 @@
-﻿public class SpawnpointGizmo : MonoBehaviour
+﻿using UnityEngine;
+
+public class SpawnpointGizmo : MonoBehaviour
 {
 }

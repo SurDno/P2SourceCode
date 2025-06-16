@@ -1,4 +1,5 @@
-﻿using System;
+﻿using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -84,7 +85,7 @@ namespace Engine.Impl.UI.Controls
         if (currentValue == (double) value)
           return;
         currentValue = value;
-        if (this.gameObject.activeInHierarchy && this.enabled)
+        if (gameObject.activeInHierarchy && enabled)
           return;
         TailValue = value;
       }
@@ -127,14 +128,9 @@ namespace Engine.Impl.UI.Controls
 
     private Gradient CreateGradient()
     {
-      GameObject gameObject = new GameObject("Gradient", new Type[3]
-      {
-        typeof (RectTransform),
-        typeof (CanvasRenderer),
-        typeof (Gradient)
-      });
+      GameObject gameObject = new GameObject("Gradient", typeof (RectTransform), typeof (CanvasRenderer), typeof (Gradient));
       RectTransform component1 = gameObject.GetComponent<RectTransform>();
-      component1.SetParent(this.transform, false);
+      component1.SetParent(transform, false);
       component1.anchorMin = Vector2.zero;
       component1.anchorMax = Vector2.one;
       component1.offsetMin = Vector2.zero;
@@ -148,7 +144,7 @@ namespace Engine.Impl.UI.Controls
     private float BlinkPhase()
     {
       float f = Time.unscaledTime * 2f;
-      return (float) (0.25 + (double) Mathf.Abs((f - Mathf.Round(f)) * 2f) * 0.75);
+      return (float) (0.25 + Mathf.Abs((f - Mathf.Round(f)) * 2f) * 0.75);
     }
 
     private void Redraw()

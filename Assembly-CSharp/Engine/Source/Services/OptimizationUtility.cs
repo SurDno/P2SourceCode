@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Runtime;
 using System.Text;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Engine.Source.Services
 {
@@ -19,7 +21,7 @@ namespace Engine.Source.Services
 
     public static void Alloc(long need)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try allock memory : ").GetMemoryText(need).Append(" , used : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append(" , max : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Try allock memory : ").GetMemoryText(need).Append(" , used : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append(" , max : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()));
       try
       {
         long length = 1048576;
@@ -39,7 +41,7 @@ namespace Engine.Source.Services
             if (num2 >= num1)
             {
               num2 = 0L;
-              Debug.Log((object) ObjectInfoUtility.GetStream().Append("Dump memory, used : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append(" , max : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()));
+              Debug.Log(ObjectInfoUtility.GetStream().Append("Dump memory, used : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append(" , max : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()));
             }
           }
           else
@@ -55,7 +57,7 @@ namespace Engine.Source.Services
         Debug.LogException(ex);
       }
       ForceCollect();
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Result allock memory, used : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append(" , max : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Result allock memory, used : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append(" , max : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()));
     }
 
     public static void ForceCollect()
@@ -66,7 +68,7 @@ namespace Engine.Source.Services
 
     public static StringBuilder DumpMemory(this StringBuilder info)
     {
-      info.Append("Dump memory :\n").Append("    usedHeapSizeLong : ").GetMemoryText(Profiler.usedHeapSizeLong).Append("\n").Append("    GetAllocatedMemoryForGraphicsDriver() : ").GetMemoryText(Profiler.GetAllocatedMemoryForGraphicsDriver()).Append("\n").Append("    GetMonoHeapSizeLong() : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()).Append("\n").Append("    GetMonoUsedSizeLong() : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append("\n").Append("    GetTempAllocatorSize() : ").GetMemoryText((long) Profiler.GetTempAllocatorSize()).Append("\n").Append("    GetTotalAllocatedMemoryLong() : ").GetMemoryText(Profiler.GetTotalAllocatedMemoryLong()).Append("\n").Append("    GetTotalReservedMemoryLong() : ").GetMemoryText(Profiler.GetTotalReservedMemoryLong()).Append("\n").Append("    GetTotalUnusedReservedMemoryLong() : ").GetMemoryText(Profiler.GetTotalUnusedReservedMemoryLong()).Append("\n");
+      info.Append("Dump memory :\n").Append("    usedHeapSizeLong : ").GetMemoryText(Profiler.usedHeapSizeLong).Append("\n").Append("    GetAllocatedMemoryForGraphicsDriver() : ").GetMemoryText(Profiler.GetAllocatedMemoryForGraphicsDriver()).Append("\n").Append("    GetMonoHeapSizeLong() : ").GetMemoryText(Profiler.GetMonoHeapSizeLong()).Append("\n").Append("    GetMonoUsedSizeLong() : ").GetMemoryText(Profiler.GetMonoUsedSizeLong()).Append("\n").Append("    GetTempAllocatorSize() : ").GetMemoryText(Profiler.GetTempAllocatorSize()).Append("\n").Append("    GetTotalAllocatedMemoryLong() : ").GetMemoryText(Profiler.GetTotalAllocatedMemoryLong()).Append("\n").Append("    GetTotalReservedMemoryLong() : ").GetMemoryText(Profiler.GetTotalReservedMemoryLong()).Append("\n").Append("    GetTotalUnusedReservedMemoryLong() : ").GetMemoryText(Profiler.GetTotalUnusedReservedMemoryLong()).Append("\n");
       return info;
     }
 

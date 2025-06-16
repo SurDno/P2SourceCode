@@ -1,6 +1,7 @@
 ﻿using Engine.Common.Components;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services.Detectablies
 {

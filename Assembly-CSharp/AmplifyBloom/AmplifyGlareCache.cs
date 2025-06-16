@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -33,7 +34,7 @@ namespace AmplifyBloom
       for (int index = 0; index < 4; ++index)
         Starlines[index].Destroy();
       Starlines = null;
-      CromaticAberrationMat = (Vector4[,]) null;
+      CromaticAberrationMat = null;
     }
   }
 }

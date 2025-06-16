@@ -4,6 +4,7 @@ using Engine.Common.Components.AttackerPlayer;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 [RequireComponent(typeof (PlayerWeaponServiceNew))]
 public class PlayerEnemy : EnemyBase
@@ -33,8 +34,8 @@ public class PlayerEnemy : EnemyBase
   private void Awake()
   {
     StaggerTime = 5f;
-    characterController = this.GetComponent<CharacterController>();
-    weaponService = this.GetComponent<PlayerWeaponServiceNew>();
+    characterController = GetComponent<CharacterController>();
+    weaponService = GetComponent<PlayerWeaponServiceNew>();
     weaponService.WeaponShootEvent += (weapon, weaponEntity, shotType, reactionType, shotSubtype) =>
     {
       switch (weapon)
@@ -68,7 +69,7 @@ public class PlayerEnemy : EnemyBase
           break;
       }
     };
-    animator = this.GetComponent<Animator>();
+    animator = GetComponent<Animator>();
     animatorState = FightAnimatorBehavior.GetAnimatorState(animator);
   }
 
@@ -119,7 +120,7 @@ public class PlayerEnemy : EnemyBase
   {
     Reaction(punchType, enemy, reactionType);
     pivot.PlaySound(Pivot.SoundEnum.HittedVocal, protagonist: true);
-    if ((punchType == PunchTypeEnum.Strong || punchType == PunchTypeEnum.Moderate) && (double) UnityEngine.Random.value < 0.20000000298023224)
+    if ((punchType == PunchTypeEnum.Strong || punchType == PunchTypeEnum.Moderate) && Random.value < 0.20000000298023224)
       enemy.PlayLipSync(CombatCryEnum.PunchUnblocked);
     switch (weapon)
     {

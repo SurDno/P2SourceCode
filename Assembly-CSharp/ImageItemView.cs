@@ -1,6 +1,8 @@
 ﻿using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ImageItemView : ItemView
 {
@@ -21,7 +23,7 @@ public class ImageItemView : ItemView
       InventoryPlaceholder placeholder = storable?.Placeholder;
       if (placeholder == null)
       {
-        image.sprite = (Sprite) null;
+        image.sprite = null;
         image.enabled = false;
       }
       else

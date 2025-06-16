@@ -1,4 +1,6 @@
-﻿public class JerboaCharacter : MonoBehaviour
+﻿using UnityEngine;
+
+public class JerboaCharacter : MonoBehaviour
 {
   private Animator jerboaAnimator;
   public bool jumpStart;
@@ -14,8 +16,8 @@
 
   private void Start()
   {
-    jerboaAnimator = this.GetComponent<Animator>();
-    jerboaRigid = this.GetComponent<Rigidbody>();
+    jerboaAnimator = GetComponent<Animator>();
+    jerboaRigid = GetComponent<Rigidbody>();
   }
 
   private void FixedUpdate()
@@ -56,12 +58,12 @@
 
   private void CheckGroundStatus()
   {
-    isGrounded = Physics.Raycast(this.transform.position + this.transform.up * groundCheckOffset, Vector3.down, out RaycastHit _, groundCheckDistance);
+    isGrounded = Physics.Raycast(transform.position + transform.up * groundCheckOffset, Vector3.down, out RaycastHit _, groundCheckDistance);
     if (jumpStart && jumpStartTime > 0.15000000596046448)
     {
       jumpStart = false;
       jerboaAnimator.SetBool("JumpStart", false);
-      jerboaRigid.AddForce((this.transform.up + this.transform.forward * forwardSpeed) * jumpSpeed, ForceMode.Impulse);
+      jerboaRigid.AddForce((transform.up + transform.forward * forwardSpeed) * jumpSpeed, ForceMode.Impulse);
       jerboaAnimator.applyRootMotion = false;
       jerboaAnimator.SetBool("IsGrounded", false);
     }

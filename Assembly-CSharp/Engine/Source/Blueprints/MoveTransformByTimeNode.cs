@@ -2,6 +2,7 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -21,13 +22,13 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         Transform target = targetInput.value;
-        if (!((Object) target != (Object) null))
+        if (!(target != null))
           return;
         Transform from = fromInput.value;
-        if ((Object) from != (Object) null)
+        if (from != null)
         {
           Transform to = toInput.value;
-          if ((Object) to != (Object) null)
+          if (to != null)
           {
             target.position = from.position;
             target.rotation = from.rotation;
@@ -54,11 +55,11 @@ namespace Engine.Source.Blueprints
       while (true)
       {
         yield return null;
-        if (!((Object) target == (Object) null))
+        if (!(target == null))
         {
-          if (!((Object) from == (Object) null))
+          if (!(from == null))
           {
-            if (!((Object) to == (Object) null))
+            if (!(to == null))
             {
               progress += Time.deltaTime;
               if (progress < (double) time)
@@ -81,13 +82,13 @@ namespace Engine.Source.Blueprints
         else
           break;
       }
-      Debug.LogError((object) "target == null");
+      Debug.LogError("target == null");
       goto label_12;
 label_3:
-      Debug.LogError((object) "from == null");
+      Debug.LogError("from == null");
       goto label_12;
 label_5:
-      Debug.LogError((object) "to == null");
+      Debug.LogError("to == null");
       goto label_12;
 label_7:
       target.position = to.position;

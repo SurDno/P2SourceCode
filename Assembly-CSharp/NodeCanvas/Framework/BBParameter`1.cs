@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace NodeCanvas.Framework
 {
@@ -22,7 +23,7 @@ namespace NodeCanvas.Framework
       {
         if (getter != null)
           return getter();
-        if (!Application.isPlaying || !((UnityEngine.Object) bb != (UnityEngine.Object) null) || string.IsNullOrEmpty(name))
+        if (!Application.isPlaying || !(bb != null) || string.IsNullOrEmpty(name))
           return _value;
         varRef = bb.GetVariable(name, typeof (T));
         return getter != null ? getter() : default (T);
@@ -37,7 +38,7 @@ namespace NodeCanvas.Framework
         {
           if (isNone)
             return;
-          if ((UnityEngine.Object) bb != (UnityEngine.Object) null && !string.IsNullOrEmpty(name))
+          if (bb != null && !string.IsNullOrEmpty(name))
           {
             varRef = PromoteToVariable(bb);
             Action<T> setter = this.setter;

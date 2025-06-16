@@ -1,4 +1,7 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -35,7 +38,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Shader == (UnityEngine.Object) null)
+        if (m_Shader == null)
           m_Shader = Shader.Find("Hidden/ScreenSpaceReflection");
         return m_Shader;
       }
@@ -45,7 +48,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Material == (UnityEngine.Object) null)
+        if (m_Material == null)
           m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(shader);
         return m_Material;
       }
@@ -55,17 +58,17 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Camera == (UnityEngine.Object) null)
-          m_Camera = this.GetComponent<Camera>();
+        if (m_Camera == null)
+          m_Camera = GetComponent<Camera>();
         return m_Camera;
       }
     }
 
     private void OnEnable()
     {
-      if (!ImageEffectHelper.IsSupported(shader, false, true, (MonoBehaviour) this))
+      if (!ImageEffectHelper.IsSupported(shader, false, true, this))
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
@@ -87,25 +90,25 @@ namespace UnityStandardAssets.CinematicEffects
 
     private void OnDisable()
     {
-      if ((bool) (UnityEngine.Object) m_Material)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_Material);
-      m_Material = (Material) null;
-      if (!((UnityEngine.Object) camera_ != (UnityEngine.Object) null))
+      if ((bool) (Object) m_Material)
+        DestroyImmediate(m_Material);
+      m_Material = null;
+      if (!(camera_ != null))
         return;
       if (m_CommandBuffer != null)
         camera_.RemoveCommandBuffer(CameraEvent.AfterFinalPass, m_CommandBuffer);
-      m_CommandBuffer = (CommandBuffer) null;
+      m_CommandBuffer = null;
     }
 
     public void OnPreRender()
     {
-      if ((UnityEngine.Object) material == (UnityEngine.Object) null || Camera.current.actualRenderingPath != RenderingPath.DeferredShading)
+      if (material == null || Camera.current.actualRenderingPath != RenderingPath.DeferredShading)
         return;
       int num1 = settings.reflectionSettings.reflectionQuality == SSRResolution.High ? 1 : 2;
       int num2 = camera_.pixelWidth / num1;
       int num3 = camera_.pixelHeight / num1;
-      float pixelWidth = (float) camera_.pixelWidth;
-      float pixelHeight = (float) camera_.pixelHeight;
+      float pixelWidth = camera_.pixelWidth;
+      float pixelHeight = camera_.pixelHeight;
       float num4 = pixelWidth / 2f;
       float num5 = pixelHeight / 2f;
       RenderTextureFormat format = camera_.allowHDR ? RenderTextureFormat.ARGBHalf : RenderTextureFormat.ARGB32;
@@ -119,7 +122,7 @@ namespace UnityStandardAssets.CinematicEffects
       material.SetInt("_FullResolutionFiltering", 0);
       material.SetInt("_HalfResolution", settings.reflectionSettings.reflectionQuality != SSRResolution.High ? 1 : 0);
       material.SetInt("_HighlightSuppression", highlightSuppression ? 1 : 0);
-      material.SetFloat("_PixelsPerMeterAtOneMeter", pixelWidth / (-2f * (float) Math.Tan((double) camera_.fieldOfView / 180.0 * Math.PI * 0.5)));
+      material.SetFloat("_PixelsPerMeterAtOneMeter", pixelWidth / (-2f * (float) Math.Tan(camera_.fieldOfView / 180.0 * Math.PI * 0.5)));
       material.SetFloat("_ScreenEdgeFading", settings.screenEdgeMask.intensity);
       material.SetFloat("_ReflectionBlur", settings.reflectionSettings.reflectionBlur);
       material.SetFloat("_MaxRayTraceDistance", settings.reflectionSettings.maxDistance);
@@ -131,11 +134,11 @@ namespace UnityStandardAssets.CinematicEffects
       Matrix4x4 projectionMatrix = camera_.projectionMatrix;
       Vector4 vector4 = new Vector4((float) (-2.0 / (pixelWidth * (double) projectionMatrix[0])), (float) (-2.0 / (pixelHeight * (double) projectionMatrix[5])), (1f - projectionMatrix[2]) / projectionMatrix[0], (1f + projectionMatrix[6]) / projectionMatrix[5]);
       Vector3 vector3 = float.IsPositiveInfinity(camera_.farClipPlane) ? new Vector3(camera_.nearClipPlane, -1f, 1f) : new Vector3(camera_.nearClipPlane * camera_.farClipPlane, camera_.nearClipPlane - camera_.farClipPlane, camera_.farClipPlane);
-      material.SetVector("_ReflectionBufferSize", (Vector4) new Vector2((float) num2, (float) num3));
-      material.SetVector("_ScreenSize", (Vector4) new Vector2(pixelWidth, pixelHeight));
-      material.SetVector("_InvScreenSize", (Vector4) new Vector2(1f / pixelWidth, 1f / pixelHeight));
+      material.SetVector("_ReflectionBufferSize", new Vector2(num2, num3));
+      material.SetVector("_ScreenSize", new Vector2(pixelWidth, pixelHeight));
+      material.SetVector("_InvScreenSize", new Vector2(1f / pixelWidth, 1f / pixelHeight));
       material.SetVector("_ProjInfo", vector4);
-      material.SetVector("_CameraClipInfo", (Vector4) vector3);
+      material.SetVector("_CameraClipInfo", vector3);
       Matrix4x4 matrix4x4 = new Matrix4x4();
       matrix4x4.SetRow(0, new Vector4(num4, 0.0f, 0.0f, num4));
       matrix4x4.SetRow(1, new Vector4(0.0f, num5, 0.0f, num5));
@@ -154,10 +157,10 @@ namespace UnityStandardAssets.CinematicEffects
         m_CommandBuffer.GetTemporaryRT(kReflectionTextures[index], num2 >> index, num3 >> index, 0, FilterMode.Bilinear, format);
       m_CommandBuffer.GetTemporaryRT(kFilteredReflections, num2, num3, 0, bilateralUpsample ? FilterMode.Point : FilterMode.Bilinear, format);
       m_CommandBuffer.GetTemporaryRT(kFinalReflectionTexture, num2, num3, 0, FilterMode.Point, format);
-      m_CommandBuffer.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) kNormalAndRoughnessTexture, material, 6);
-      m_CommandBuffer.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) kHitPointTexture, material, 0);
-      m_CommandBuffer.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) kFilteredReflections, material, 5);
-      m_CommandBuffer.Blit((RenderTargetIdentifier) kFilteredReflections, (RenderTargetIdentifier) kReflectionTextures[0], material, 8);
+      m_CommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, kNormalAndRoughnessTexture, material, 6);
+      m_CommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, kHitPointTexture, material, 0);
+      m_CommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, kFilteredReflections, material, 5);
+      m_CommandBuffer.Blit(kFilteredReflections, kReflectionTextures[0], material, 8);
       for (int index = 1; index < 5; ++index)
       {
         int reflectionTexture1 = kReflectionTextures[index - 1];
@@ -165,16 +168,16 @@ namespace UnityStandardAssets.CinematicEffects
         m_CommandBuffer.GetTemporaryRT(kBlurTexture, num2 >> num6, num3 >> num6, 0, FilterMode.Bilinear, format);
         m_CommandBuffer.SetGlobalVector("_Axis", new Vector4(1f, 0.0f, 0.0f, 0.0f));
         m_CommandBuffer.SetGlobalFloat("_CurrentMipLevel", index - 1f);
-        m_CommandBuffer.Blit((RenderTargetIdentifier) reflectionTexture1, (RenderTargetIdentifier) kBlurTexture, material, 2);
+        m_CommandBuffer.Blit(reflectionTexture1, kBlurTexture, material, 2);
         m_CommandBuffer.SetGlobalVector("_Axis", new Vector4(0.0f, 1f, 0.0f, 0.0f));
         int reflectionTexture2 = kReflectionTextures[index];
-        m_CommandBuffer.Blit((RenderTargetIdentifier) kBlurTexture, (RenderTargetIdentifier) reflectionTexture2, material, 2);
+        m_CommandBuffer.Blit(kBlurTexture, reflectionTexture2, material, 2);
         m_CommandBuffer.ReleaseTemporaryRT(kBlurTexture);
       }
-      m_CommandBuffer.Blit((RenderTargetIdentifier) kReflectionTextures[0], (RenderTargetIdentifier) kFinalReflectionTexture, material, 3);
+      m_CommandBuffer.Blit(kReflectionTextures[0], kFinalReflectionTexture, material, 3);
       m_CommandBuffer.GetTemporaryRT(kTempTexture, camera_.pixelWidth, camera_.pixelHeight, 0, FilterMode.Bilinear, format);
-      m_CommandBuffer.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) kTempTexture, material, 1);
-      m_CommandBuffer.Blit((RenderTargetIdentifier) kTempTexture, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
+      m_CommandBuffer.Blit(BuiltinRenderTextureType.CameraTarget, kTempTexture, material, 1);
+      m_CommandBuffer.Blit(kTempTexture, BuiltinRenderTextureType.CameraTarget);
       m_CommandBuffer.ReleaseTemporaryRT(kTempTexture);
       camera_.AddCommandBuffer(CameraEvent.AfterFinalPass, m_CommandBuffer);
     }
@@ -194,11 +197,11 @@ namespace UnityStandardAssets.CinematicEffects
     [Serializable]
     public struct SSRSettings
     {
-      [SSRSettings.Layout]
+      [Layout]
       public ReflectionSettings reflectionSettings;
-      [SSRSettings.Layout]
+      [Layout]
       public IntensitySettings intensitySettings;
-      [SSRSettings.Layout]
+      [Layout]
       public ScreenEdgeMask screenEdgeMask;
       private static readonly SSRSettings s_Default = new SSRSettings {
         reflectionSettings = new ReflectionSettings {

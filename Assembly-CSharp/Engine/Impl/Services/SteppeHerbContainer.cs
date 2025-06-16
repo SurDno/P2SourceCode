@@ -9,6 +9,9 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Inspectors;
+using UnityEngine;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace Engine.Impl.Services
 {
@@ -27,7 +30,7 @@ namespace Engine.Impl.Services
     public SteppeHerbContainer(IEntity template, GameObject prefab)
     {
       this.template = template;
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Object.Instantiate(prefab);
       for (int index = 0; index < gameObject.transform.childCount; ++index)
       {
         Vector3 position = gameObject.transform.GetChild(index).position;
@@ -38,7 +41,7 @@ namespace Engine.Impl.Services
           On = false
         });
       }
-      UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+      Object.Destroy(gameObject);
     }
 
     [Inspected]
@@ -82,7 +85,7 @@ namespace Engine.Impl.Services
         int num = SteppeHerbIndices.Count - amount;
         for (int index1 = 0; index1 < num; ++index1)
         {
-          int index2 = UnityEngine.Random.Range(0, SteppeHerbIndices.Count);
+          int index2 = Random.Range(0, SteppeHerbIndices.Count);
           int steppeHerbIndex = SteppeHerbIndices[index2];
           SteppeHerbEntries[steppeHerbIndex].On = false;
           SteppeHerbIndices.RemoveAt(index2);
@@ -94,7 +97,7 @@ namespace Engine.Impl.Services
         int num = amount - SteppeHerbIndices.Count;
         for (int index3 = 0; index3 < num; ++index3)
         {
-          int index4 = UnityEngine.Random.Range(0, SteppeHerbIndicesLeft.Count);
+          int index4 = Random.Range(0, SteppeHerbIndicesLeft.Count);
           int index5 = SteppeHerbIndicesLeft[index4];
           SteppeHerbEntries[index5].On = true;
           SteppeHerbIndicesLeft.RemoveAt(index4);
@@ -112,11 +115,11 @@ namespace Engine.Impl.Services
       NavigationComponent component = entity.GetComponent<NavigationComponent>();
       if (component != null)
       {
-        Quaternion rotation = Quaternion.Euler(0.0f, UnityEngine.Random.Range(0.0f, 6.28318548f), 0.0f);
+        Quaternion rotation = Quaternion.Euler(0.0f, Random.Range(0.0f, 6.28318548f), 0.0f);
         component.TeleportTo(locationComponent, entry.Position, rotation);
       }
       else
-        Debug.LogError((object) ("NavigationComponent not found : " + entity.GetInfo()));
+        Debug.LogError("NavigationComponent not found : " + entity.GetInfo());
       return entity;
     }
 
@@ -136,7 +139,7 @@ namespace Engine.Impl.Services
       RegionComponent regionByName = RegionUtility.GetRegionByName(RegionEnum.Steppe);
       if (regionByName == null)
       {
-        Debug.LogError((object) "region == null");
+        Debug.LogError("region == null");
       }
       else
       {
@@ -146,7 +149,7 @@ namespace Engine.Impl.Services
         while (index1 < NearPlayerIndices.Count)
         {
           vector3 = SteppeHerbEntries[NearPlayerIndices[index1]].Position - playerPosition;
-          if ((double) vector3.magnitude > 30.0)
+          if (vector3.magnitude > 30.0)
           {
             SteppeHerbEntry steppeHerbEntry = SteppeHerbEntries[NearPlayerIndices[index1]];
             if (steppeHerbEntry.Entity != null)
@@ -165,13 +168,13 @@ namespace Engine.Impl.Services
         {
           processingIndex = (processingIndex + 1) % SteppeHerbEntries.Count;
           vector3 = SteppeHerbEntries[processingIndex].Position - playerPosition;
-          if ((double) vector3.magnitude < 30.0 && !NearPlayerIndices.Contains(processingIndex))
+          if (vector3.magnitude < 30.0 && !NearPlayerIndices.Contains(processingIndex))
           {
             SteppeHerbEntry steppeHerbEntry = SteppeHerbEntries[processingIndex];
             if (steppeHerbEntry.On && !steppeHerbEntry.Collected)
             {
               if (steppeHerbEntry.Entity != null)
-                Debug.LogError((object) "Entity can't be null here");
+                Debug.LogError("Entity can't be null here");
               else
                 steppeHerbEntry.Entity = SpawnHerb(steppeHerbEntry, component);
             }

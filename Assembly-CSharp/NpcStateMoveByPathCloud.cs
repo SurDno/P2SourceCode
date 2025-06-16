@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Engine.Behaviours.Components;
 using Engine.Source.Commons;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateMoveByPathCloud : INpcState
 {
@@ -26,7 +28,7 @@ public class NpcStateMoveByPathCloud : INpcState
     if (inited)
       return true;
     agent = pivot.GetAgent();
-    if ((Object) agent != (Object) null)
+    if (agent != null)
       speed = agent.speed;
     inited = true;
     return true;

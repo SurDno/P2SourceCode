@@ -1,5 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine.Serialization;
 
 namespace UnityEngine.AI
 {
@@ -153,13 +153,13 @@ namespace UnityEngine.AI
     {
       if (m_NavMeshDataInstance.valid)
         return;
-      if ((UnityEngine.Object) m_NavMeshData != (UnityEngine.Object) null)
+      if (m_NavMeshData != null)
       {
-        m_NavMeshDataInstance = NavMesh.AddNavMeshData(m_NavMeshData, this.transform.position, this.transform.rotation);
-        m_NavMeshDataInstance.owner = (UnityEngine.Object) this;
+        m_NavMeshDataInstance = NavMesh.AddNavMeshData(m_NavMeshData, transform.position, transform.rotation);
+        m_NavMeshDataInstance.owner = this;
       }
-      m_LastPosition = this.transform.position;
-      m_LastRotation = this.transform.rotation;
+      m_LastPosition = transform.position;
+      m_LastRotation = transform.rotation;
     }
 
     public void RemoveData()
@@ -173,7 +173,7 @@ namespace UnityEngine.AI
       NavMeshBuildSettings settingsById = NavMesh.GetSettingsByID(m_AgentTypeID);
       if (settingsById.agentTypeID == -1)
       {
-        Debug.LogWarning((object) ("No build settings for agent type ID " + agentTypeID), (UnityEngine.Object) this);
+        Debug.LogWarning("No build settings for agent type ID " + agentTypeID, this);
         settingsById.agentTypeID = m_AgentTypeID;
       }
       if (overrideTileSize)
@@ -195,13 +195,13 @@ namespace UnityEngine.AI
       Bounds bounds = new Bounds(m_Center, Abs(m_Size));
       if (m_CollectObjects == CollectObjects.All || m_CollectObjects == CollectObjects.Children)
         bounds = CalculateWorldBounds(sources);
-      NavMeshData navMeshData = NavMeshBuilder.BuildNavMeshData(GetBuildSettings(), sources, bounds, this.transform.position, this.transform.rotation);
-      if (!((UnityEngine.Object) navMeshData != (UnityEngine.Object) null))
+      NavMeshData navMeshData = NavMeshBuilder.BuildNavMeshData(GetBuildSettings(), sources, bounds, transform.position, transform.rotation);
+      if (!(navMeshData != null))
         return;
-      navMeshData.name = this.gameObject.name;
+      navMeshData.name = gameObject.name;
       RemoveData();
       m_NavMeshData = navMeshData;
-      if (this.isActiveAndEnabled)
+      if (isActiveAndEnabled)
         AddData();
     }
 
@@ -217,7 +217,7 @@ namespace UnityEngine.AI
     private static void Register(NavMeshSurface surface)
     {
       if (s_NavMeshSurfaces.Count == 0)
-        NavMesh.onPreUpdate += new NavMesh.OnNavMeshPreUpdate(UpdateActive);
+        NavMesh.onPreUpdate += UpdateActive;
       if (s_NavMeshSurfaces.Contains(surface))
         return;
       s_NavMeshSurfaces.Add(surface);
@@ -228,7 +228,7 @@ namespace UnityEngine.AI
       s_NavMeshSurfaces.Remove(surface);
       if (s_NavMeshSurfaces.Count != 0)
         return;
-      NavMesh.onPreUpdate -= new NavMesh.OnNavMeshPreUpdate(UpdateActive);
+      NavMesh.onPreUpdate -= UpdateActive;
     }
 
     private static void UpdateActive()
@@ -242,14 +242,14 @@ namespace UnityEngine.AI
       List<NavMeshModifierVolume> meshModifierVolumeList;
       if (m_CollectObjects == CollectObjects.Children)
       {
-        meshModifierVolumeList = new List<NavMeshModifierVolume>((IEnumerable<NavMeshModifierVolume>) this.GetComponentsInChildren<NavMeshModifierVolume>());
+        meshModifierVolumeList = new List<NavMeshModifierVolume>(GetComponentsInChildren<NavMeshModifierVolume>());
         meshModifierVolumeList.RemoveAll(x => !x.isActiveAndEnabled);
       }
       else
         meshModifierVolumeList = NavMeshModifierVolume.activeModifiers;
       foreach (NavMeshModifierVolume meshModifierVolume in meshModifierVolumeList)
       {
-        if (((int) m_LayerMask & 1 << meshModifierVolume.gameObject.layer) != 0 && meshModifierVolume.AffectsAgentType(m_AgentTypeID))
+        if ((m_LayerMask & 1 << meshModifierVolume.gameObject.layer) != 0 && meshModifierVolume.AffectsAgentType(m_AgentTypeID))
         {
           Vector3 pos = meshModifierVolume.transform.TransformPoint(meshModifierVolume.center);
           Vector3 lossyScale = meshModifierVolume.transform.lossyScale;
@@ -271,14 +271,14 @@ namespace UnityEngine.AI
       List<NavMeshModifier> navMeshModifierList;
       if (m_CollectObjects == CollectObjects.Children)
       {
-        navMeshModifierList = new List<NavMeshModifier>((IEnumerable<NavMeshModifier>) this.GetComponentsInChildren<NavMeshModifier>());
+        navMeshModifierList = new List<NavMeshModifier>(GetComponentsInChildren<NavMeshModifier>());
         navMeshModifierList.RemoveAll(x => !x.isActiveAndEnabled);
       }
       else
         navMeshModifierList = NavMeshModifier.activeModifiers;
       foreach (NavMeshModifier navMeshModifier in navMeshModifierList)
       {
-        if (((int) m_LayerMask & 1 << navMeshModifier.gameObject.layer) != 0 && navMeshModifier.AffectsAgentType(m_AgentTypeID))
+        if ((m_LayerMask & 1 << navMeshModifier.gameObject.layer) != 0 && navMeshModifier.AffectsAgentType(m_AgentTypeID))
           navMeshBuildMarkupList.Add(new NavMeshBuildMarkup {
             root = navMeshModifier.transform,
             overrideArea = navMeshModifier.overrideArea,
@@ -287,15 +287,15 @@ namespace UnityEngine.AI
           });
       }
       if (m_CollectObjects == CollectObjects.All)
-        NavMeshBuilder.CollectSources((Transform) null, (int) m_LayerMask, m_UseGeometry, m_DefaultArea, navMeshBuildMarkupList, sources);
+        NavMeshBuilder.CollectSources(null, m_LayerMask, m_UseGeometry, m_DefaultArea, navMeshBuildMarkupList, sources);
       else if (m_CollectObjects == CollectObjects.Children)
-        NavMeshBuilder.CollectSources(this.transform, (int) m_LayerMask, m_UseGeometry, m_DefaultArea, navMeshBuildMarkupList, sources);
+        NavMeshBuilder.CollectSources(transform, m_LayerMask, m_UseGeometry, m_DefaultArea, navMeshBuildMarkupList, sources);
       else if (m_CollectObjects == CollectObjects.Volume)
-        NavMeshBuilder.CollectSources(GetWorldBounds(Matrix4x4.TRS(this.transform.position, this.transform.rotation, Vector3.one), new Bounds(m_Center, m_Size)), (int) m_LayerMask, m_UseGeometry, m_DefaultArea, navMeshBuildMarkupList, sources);
+        NavMeshBuilder.CollectSources(GetWorldBounds(Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one), new Bounds(m_Center, m_Size)), m_LayerMask, m_UseGeometry, m_DefaultArea, navMeshBuildMarkupList, sources);
       if (m_IgnoreNavMeshAgent)
-        sources.RemoveAll((Predicate<NavMeshBuildSource>) (x => (UnityEngine.Object) x.component != (UnityEngine.Object) null && (UnityEngine.Object) x.component.gameObject.GetComponent<NavMeshAgent>() != (UnityEngine.Object) null));
+        sources.RemoveAll(x => x.component != null && x.component.gameObject.GetComponent<NavMeshAgent>() != null);
       if (m_IgnoreNavMeshObstacle)
-        sources.RemoveAll((Predicate<NavMeshBuildSource>) (x => (UnityEngine.Object) x.component != (UnityEngine.Object) null && (UnityEngine.Object) x.component.gameObject.GetComponent<NavMeshObstacle>() != (UnityEngine.Object) null));
+        sources.RemoveAll(x => x.component != null && x.component.gameObject.GetComponent<NavMeshObstacle>() != null);
       AppendModifierVolumes(ref sources);
       return sources;
     }
@@ -315,7 +315,7 @@ namespace UnityEngine.AI
 
     private Bounds CalculateWorldBounds(List<NavMeshBuildSource> sources)
     {
-      Matrix4x4 matrix4x4 = Matrix4x4.TRS(this.transform.position, this.transform.rotation, Vector3.one);
+      Matrix4x4 matrix4x4 = Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one);
       matrix4x4 = matrix4x4.inverse;
       Bounds worldBounds = new Bounds();
       foreach (NavMeshBuildSource source in sources)
@@ -344,7 +344,7 @@ namespace UnityEngine.AI
 
     private bool HasTransformChanged()
     {
-      return m_LastPosition != this.transform.position || m_LastRotation != this.transform.rotation;
+      return m_LastPosition != transform.position || m_LastRotation != transform.rotation;
     }
 
     private void UpdateDataIfTransformChanged()

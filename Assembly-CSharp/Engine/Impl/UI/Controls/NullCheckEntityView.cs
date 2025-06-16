@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class NullCheckEntityView : EntityViewBase
   {
@@ -7,14 +9,14 @@
 
     protected override void ApplyValue()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.Visible = Value == null;
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.SkipAnimation();
     }

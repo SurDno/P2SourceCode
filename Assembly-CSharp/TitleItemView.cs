@@ -3,6 +3,7 @@ using Engine.Common.Types;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class TitleItemView : ItemView
 {
@@ -18,7 +19,7 @@ public class TitleItemView : ItemView
       if (storable == value)
         return;
       storable = value;
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.StringValue = ServiceLocator.GetService<LocalizationService>().GetText(storable != null ? storable.Title : LocalizedText.Empty);
     }

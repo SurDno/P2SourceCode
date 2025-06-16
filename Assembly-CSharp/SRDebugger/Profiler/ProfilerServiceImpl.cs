@@ -4,6 +4,7 @@ using CircularBuffer;
 using SRDebugger.Services;
 using SRF;
 using SRF.Service;
+using UnityEngine;
 
 namespace SRDebugger.Profiler
 {
@@ -59,7 +60,7 @@ namespace SRDebugger.Profiler
       if (FrameBuffer.Size > 0)
         FrameBuffer[FrameBuffer.Size - 1] = FrameBuffer.Back() with
         {
-          FrameTime = (double) Time.deltaTime
+          FrameTime = Time.deltaTime
         };
       LastFrameTime = Time.deltaTime;
       int num1 = Mathf.Min(20, FrameBuffer.Size);
@@ -112,7 +113,7 @@ namespace SRDebugger.Profiler
     {
       for (int index = _cameraListeners.Count - 1; index >= 0; --index)
       {
-        if ((UnityEngine.Object) _cameraListeners[index] == (UnityEngine.Object) null)
+        if (_cameraListeners[index] == null)
           _cameraListeners.RemoveAt(index);
       }
       if (Camera.allCamerasCount == _cameraListeners.Count)
@@ -126,7 +127,7 @@ namespace SRDebugger.Profiler
         bool flag = false;
         for (int index2 = 0; index2 < _cameraListeners.Count; ++index2)
         {
-          if ((UnityEngine.Object) _cameraListeners[index2].Camera == (UnityEngine.Object) camera)
+          if (_cameraListeners[index2].Camera == camera)
           {
             flag = true;
             break;

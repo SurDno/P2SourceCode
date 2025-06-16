@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [RequireComponent(typeof (Camera))]
   [AddComponentMenu("")]
@@ -11,13 +13,13 @@
     {
       if (!SystemInfo.supportsImageEffects)
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
         if ((bool) (Object) shader && shader.isSupported)
           return;
-        this.enabled = false;
+        enabled = false;
       }
     }
 
@@ -25,7 +27,7 @@
     {
       get
       {
-        if ((Object) m_Material == (Object) null)
+        if (m_Material == null)
         {
           m_Material = new Material(shader);
           m_Material.hideFlags = HideFlags.HideAndDontSave;
@@ -38,7 +40,7 @@
     {
       if (!(bool) (Object) m_Material)
         return;
-      Object.DestroyImmediate((Object) m_Material);
+      DestroyImmediate(m_Material);
     }
   }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using Inspectors;
 using Scripts.Utility;
+using UnityEngine;
 
 public class ContainerAnimator : MonoBehaviour
 {
@@ -42,38 +43,38 @@ public class ContainerAnimator : MonoBehaviour
         progress = 0.0f;
     }
     float t = EasyUtility.QuarticEaseOut(progress);
-    this.transform.localPosition = Vector3.LerpUnclamped(Closed.Position, Opened.Position, t);
-    this.transform.localRotation = Quaternion.LerpUnclamped(Closed.Rotation, Opened.Rotation, t);
+    transform.localPosition = Vector3.LerpUnclamped(Closed.Position, Opened.Position, t);
+    transform.localRotation = Quaternion.LerpUnclamped(Closed.Rotation, Opened.Rotation, t);
   }
 
   [Inspected(Mode = ExecuteMode.Edit)]
   private void SaveAsClosed()
   {
-    Closed.Position = this.transform.localPosition;
-    Closed.Rotation = this.transform.localRotation;
+    Closed.Position = transform.localPosition;
+    Closed.Rotation = transform.localRotation;
   }
 
   [Inspected(Mode = ExecuteMode.Edit)]
   private void SaveAsOpened()
   {
-    Opened.Position = this.transform.localPosition;
-    Opened.Rotation = this.transform.localRotation;
+    Opened.Position = transform.localPosition;
+    Opened.Rotation = transform.localRotation;
   }
 
   [Inspected(Mode = ExecuteMode.EditAndRuntime)]
   private void Close()
   {
     progress = 0.0f;
-    this.transform.localPosition = Closed.Position;
-    this.transform.localRotation = Closed.Rotation;
+    transform.localPosition = Closed.Position;
+    transform.localRotation = Closed.Rotation;
   }
 
   [Inspected(Mode = ExecuteMode.EditAndRuntime)]
   private void Open()
   {
     progress = 1f;
-    this.transform.localPosition = Opened.Position;
-    this.transform.localRotation = Opened.Rotation;
+    transform.localPosition = Opened.Position;
+    transform.localRotation = Opened.Rotation;
   }
 
   [Serializable]

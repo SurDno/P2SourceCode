@@ -9,6 +9,10 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Profiling;
+using Object = UnityEngine.Object;
 
 [DisallowMultipleComponent]
 public class NpcState : MonoBehaviour, IEntityAttachable
@@ -59,7 +63,7 @@ public class NpcState : MonoBehaviour, IEntityAttachable
     set
     {
       animatorEnabled = value;
-      if (frameCountFromStart <= 1 || !(bool) (UnityEngine.Object) animator)
+      if (frameCountFromStart <= 1 || !(bool) (Object) animator)
         return;
       animator.enabled = animatorEnabled;
     }
@@ -490,20 +494,20 @@ public class NpcState : MonoBehaviour, IEntityAttachable
   private void Awake()
   {
     RestartBehaviourAfterTeleport = true;
-    pivot = this.GetComponent<Pivot>();
-    if ((bool) (UnityEngine.Object) pivot)
+    pivot = GetComponent<Pivot>();
+    if ((bool) (Object) pivot)
     {
       AnimatorEventProxy animatorEventProxy = pivot.GetAnimatorEventProxy();
-      if ((bool) (UnityEngine.Object) animatorEventProxy)
+      if ((bool) (Object) animatorEventProxy)
       {
         animatorEventProxy.AnimatorMoveEvent += Proxy_AnimatorMoveEvent;
         animatorEventProxy.AnimatorEventEvent += Proxy_AnimatorEventEvent;
       }
       NavMeshAgent agent = pivot.GetAgent();
-      if ((bool) (UnityEngine.Object) agent)
+      if ((bool) (Object) agent)
         agent.enabled = false;
       animator = pivot.GetAnimator();
-      if ((bool) (UnityEngine.Object) animator)
+      if ((bool) (Object) animator)
       {
         animatorEnabled = animator.enabled;
         initialAnimatorcullingMode = animator.cullingMode;
@@ -525,7 +529,7 @@ public class NpcState : MonoBehaviour, IEntityAttachable
   private void OnEnable()
   {
     ServiceLocator.GetService<LodService>().RegisterLod(this);
-    foreach (BehaviorTree component in this.gameObject.GetComponents<BehaviorTree>())
+    foreach (BehaviorTree component in gameObject.GetComponents<BehaviorTree>())
       component.PauseWhenDisabled = false;
   }
 
@@ -564,7 +568,7 @@ public class NpcState : MonoBehaviour, IEntityAttachable
   {
     if (Profiler.enabled)
       Profiler.BeginSample(stateNames[(int) CurrentNpcState]);
-    if (frameCountFromStart == 1 && (bool) (UnityEngine.Object) animator)
+    if (frameCountFromStart == 1 && (bool) (Object) animator)
     {
       animator.enabled = animatorEnabled;
       animator.cullingMode = initialAnimatorcullingMode;
@@ -578,9 +582,9 @@ public class NpcState : MonoBehaviour, IEntityAttachable
 
   private void NavigationComponent_OnPreTeleport(INavigationComponent arg1, IEntity arg2)
   {
-    if (RestartBehaviourAfterTeleport && this.enabled)
+    if (RestartBehaviourAfterTeleport && enabled)
     {
-      foreach (BehaviorTree component in this.gameObject.GetComponents<BehaviorTree>())
+      foreach (BehaviorTree component in gameObject.GetComponents<BehaviorTree>())
         component.OnDisable();
     }
     if (inLodState)
@@ -597,9 +601,9 @@ public class NpcState : MonoBehaviour, IEntityAttachable
 
   private void NavigationComponent_OnTeleport(INavigationComponent arg1, IEntity arg2)
   {
-    if (!RestartBehaviourAfterTeleport || !this.enabled)
+    if (!RestartBehaviourAfterTeleport || !enabled)
       return;
-    foreach (BehaviorTree component in this.gameObject.GetComponents<BehaviorTree>())
+    foreach (BehaviorTree component in gameObject.GetComponents<BehaviorTree>())
       component.OnEnable();
   }
 }

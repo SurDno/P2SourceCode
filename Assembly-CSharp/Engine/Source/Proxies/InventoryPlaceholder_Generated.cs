@@ -44,7 +44,7 @@ namespace Engine.Source.Proxies
       UnityDataWriteUtility.Write(writer, "ImageInventorySlotBig", imageInventorySlotBig);
       UnityDataWriteUtility.Write(writer, "ImageInformation", imageInformation);
       UnityDataWriteUtility.Write(writer, "ImageInformationSpecial", imageInformationSpecial);
-      UnityDataWriteUtility.Write<ItemSoundGroup>(writer, "SoundGroup", soundGroup);
+      UnityDataWriteUtility.Write(writer, "SoundGroup", soundGroup);
     }
 
     public void DataRead(IDataReader reader, Type type)
@@ -56,7 +56,7 @@ namespace Engine.Source.Proxies
       imageInventorySlotBig = UnityDataReadUtility.Read(reader, "ImageInventorySlotBig", imageInventorySlotBig);
       imageInformation = UnityDataReadUtility.Read(reader, "ImageInformation", imageInformation);
       imageInformationSpecial = UnityDataReadUtility.Read(reader, "ImageInformationSpecial", imageInformationSpecial);
-      soundGroup = UnityDataReadUtility.Read<ItemSoundGroup>(reader, "SoundGroup", soundGroup);
+      soundGroup = UnityDataReadUtility.Read(reader, "SoundGroup", soundGroup);
     }
   }
 }

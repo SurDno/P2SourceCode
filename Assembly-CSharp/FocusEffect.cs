@@ -1,4 +1,6 @@
-﻿public class FocusEffect : MonoBehaviour
+﻿using UnityEngine;
+
+public class FocusEffect : MonoBehaviour
 {
   private static MaterialPropertyBlock propertyBlock;
   [SerializeField]
@@ -7,14 +9,14 @@
   private DialogIndicationView externalEffect;
   private Coroutine disablingCoroutine;
 
-  private void Disable() => this.enabled = false;
+  private void Disable() => enabled = false;
 
   private void OnEnable()
   {
     if (!initialized)
     {
       if (renderers == null || renderers.Length == 0)
-        renderers = this.GetComponentsInChildren<Renderer>();
+        renderers = GetComponentsInChildren<Renderer>();
       initialized = true;
     }
     if (propertyBlock == null)
@@ -24,12 +26,12 @@
     }
     for (int index = 0; index < renderers.Length; ++index)
       renderers[index].SetPropertyBlock(propertyBlock);
-    if ((Object) externalEffect == (Object) null)
+    if (externalEffect == null)
     {
-      externalEffect = DialogIndicationView.Create(this.transform);
-      if ((Object) externalEffect != (Object) null)
+      externalEffect = DialogIndicationView.Create(transform);
+      if (externalEffect != null)
       {
-        Renderer renderer1 = (Renderer) null;
+        Renderer renderer1 = null;
         float num1 = float.MinValue;
         for (int index = 0; index < renderers.Length; ++index)
         {
@@ -48,7 +50,7 @@
           externalEffect.SetShape((SkinnedMeshRenderer) renderer1);
       }
     }
-    if (!((Object) externalEffect != (Object) null))
+    if (!(externalEffect != null))
       return;
     externalEffect.SetVisibility(true);
   }
@@ -58,12 +60,12 @@
     for (int index = 0; index < renderers.Length; ++index)
     {
       Renderer renderer = renderers[index];
-      if ((Object) renderer != (Object) null)
-        renderer.SetPropertyBlock((MaterialPropertyBlock) null);
+      if (renderer != null)
+        renderer.SetPropertyBlock(null);
       else
-        Debug.LogError((object) "render == null, разобраться");
+        Debug.LogError("render == null, разобраться");
     }
-    if (!((Object) externalEffect != (Object) null))
+    if (!(externalEffect != null))
       return;
     externalEffect.SetVisibility(false);
   }
@@ -72,12 +74,12 @@
   {
     if (value)
     {
-      if (this.enabled)
-        this.CancelInvoke("Disable");
+      if (enabled)
+        CancelInvoke("Disable");
       else
-        this.enabled = true;
+        enabled = true;
     }
-    else if (this.enabled)
-      this.Invoke("Disable", 1f);
+    else if (enabled)
+      Invoke("Disable", 1f);
   }
 }

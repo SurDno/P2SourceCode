@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -25,10 +26,10 @@ namespace RootMotion.FinalIK
     public void AutoDetect()
     {
       fingers = new Finger[0];
-      for (int index = 0; index < this.transform.childCount; ++index)
+      for (int index = 0; index < transform.childCount; ++index)
       {
         Transform[] array = new Transform[0];
-        AddChildrenRecursive(this.transform.GetChild(index), ref array);
+        AddChildrenRecursive(transform.GetChild(index), ref array);
         if (array.Length == 3 || array.Length == 4)
         {
           Finger finger = new Finger();
@@ -66,7 +67,7 @@ namespace RootMotion.FinalIK
       Array.Resize(ref fingers, fingers.Length + 1);
       fingers[fingers.Length - 1] = finger;
       initiated = false;
-      finger.Initiate(this.transform, fingers.Length - 1);
+      finger.Initiate(transform, fingers.Length - 1);
       if (!fingers[fingers.Length - 1].initiated)
         return;
       initiated = true;
@@ -75,7 +76,7 @@ namespace RootMotion.FinalIK
     public void RemoveFinger(int index)
     {
       if (index < 0.0 || index >= fingers.Length)
-        Warning.Log("RemoveFinger index out of bounds.", this.transform);
+        Warning.Log("RemoveFinger index out of bounds.", transform);
       else if (fingers.Length == 1)
       {
         fingers = new Finger[0];
@@ -110,7 +111,7 @@ namespace RootMotion.FinalIK
       initiated = true;
       for (int index = 0; index < fingers.Length; ++index)
       {
-        fingers[index].Initiate(this.transform, index);
+        fingers[index].Initiate(transform, index);
         if (!fingers[index].initiated)
           initiated = false;
       }

@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using Engine.Common.DateTime;
 using Engine.Common.Services;
+using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
+using UnityEngine;
 
 [RequireComponent(typeof (AudioSource))]
 public class SoundPlayer : MonoBehaviour
@@ -22,21 +24,21 @@ public class SoundPlayer : MonoBehaviour
 
   private IEnumerator Start()
   {
-    if ((Object) audioSource == (Object) null)
+    if (audioSource == null)
     {
-      Debug.LogError((object) ("Null audio source, gameobject (need to fix by level designer), trying to get component: " + this.GetInfo()), (Object) this.gameObject);
-      audioSource = this.GetComponent<AudioSource>();
-      if ((Object) audioSource == (Object) null)
+      Debug.LogError("Null audio source, gameobject (need to fix by level designer), trying to get component: " + this.GetInfo(), gameObject);
+      audioSource = GetComponent<AudioSource>();
+      if (audioSource == null)
       {
-        Debug.LogError((object) ("Can't get component: " + this.GetInfo()), (Object) this.gameObject);
+        Debug.LogError("Can't get component: " + this.GetInfo(), gameObject);
         yield break;
       }
     }
-    if ((Object) audioSource.clip != (Object) null)
-      Debug.LogError((object) ("clip != null, gameobject : " + this.gameObject.name), (Object) this.gameObject);
+    if (audioSource.clip != null)
+      Debug.LogError("clip != null, gameobject : " + gameObject.name, gameObject);
     else if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableAudio)
     {
-      clips.Cleanup<AudioClip>();
+      clips.Cleanup();
       if (clips.Count != 0)
       {
         WaitForSeconds wait = new WaitForSeconds(ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.SoundUpdateDelay);
@@ -53,7 +55,7 @@ public class SoundPlayer : MonoBehaviour
                 {
                   if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableAudio)
                   {
-                    yield return (object) wait;
+                    yield return wait;
                     UpdateEnable();
                   }
                   else
@@ -64,7 +66,7 @@ public class SoundPlayer : MonoBehaviour
                 inTimeOfDay = TimesOfDayUtility.HasValue(timesOfDay, timeOfDay);
               }
               while (!inTimeOfDay);
-              if (!((Object) audioSource.clip != (Object) null))
+              if (!(audioSource.clip != null))
                 goto label_19;
             }
             while (audioSource.isPlaying);
@@ -79,13 +81,13 @@ public class SoundPlayer : MonoBehaviour
           while (audioSource.clip.loadState == AudioDataLoadState.Loading);
           goto label_20;
 label_9:
-          yield return (object) wait;
+          yield return wait;
           continue;
 label_15:
           audioSource.clip.LoadAudioData();
           continue;
 label_17:
-          audioSource.clip = (AudioClip) null;
+          audioSource.clip = null;
           continue;
 label_19:
           AudioClip clip = clips.Random();
@@ -93,9 +95,9 @@ label_19:
           continue;
 label_20:
           audioSource.PlayAndCheck();
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(audioSource.clip.name).Append(" , context : ").GetFullName(this.gameObject));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(audioSource.clip.name).Append(" , context : ").GetFullName(gameObject));
           float delay2 = (playInstantly ? 0.0f : audioSource.clip.length) + Random.Range(delay.Min, delay.Max);
-          yield return (object) new WaitForSeconds(delay2);
+          yield return new WaitForSeconds(delay2);
         }
       }
     }
@@ -103,7 +105,7 @@ label_20:
 
   private void UpdateEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
+    bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
     if (audioSource.enabled == flag)
       return;
     audioSource.enabled = flag;

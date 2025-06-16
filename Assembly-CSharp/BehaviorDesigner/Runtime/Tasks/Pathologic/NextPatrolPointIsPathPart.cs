@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -41,17 +43,17 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnStart()
     {
       success = false;
-      if (!(bool) (UnityEngine.Object) Target.Value)
+      if (!(bool) (Object) Target.Value)
         return;
       PatrolPath component = Target.Value.GetComponent<PatrolPath>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+      if (component != null)
       {
         if (component.GetPresetPath(PointIndex.Value, InversePath.Value) == null)
           return;
         success = true;
       }
       else
-        Debug.LogError((object) (gameObject.name + " has wrong patrol path object! Needs PatrolPath script"));
+        Debug.LogError(gameObject.name + " has wrong patrol path object! Needs PatrolPath script");
     }
 
     public override TaskStatus OnUpdate() => success ? TaskStatus.Success : TaskStatus.Failure;

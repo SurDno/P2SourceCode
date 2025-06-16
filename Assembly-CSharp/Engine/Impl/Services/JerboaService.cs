@@ -14,6 +14,7 @@ using Engine.Source.Services;
 using Engine.Source.Services.Saves;
 using Inspectors;
 using JerboaAnimationInstancing;
+using UnityEngine;
 
 namespace Engine.Impl.Services
 {
@@ -33,7 +34,7 @@ namespace Engine.Impl.Services
       set
       {
         quality = value;
-        if (!((UnityEngine.Object) jerboaManager != (UnityEngine.Object) null))
+        if (!(jerboaManager != null))
           return;
         jerboaManager.Quality = quality;
       }
@@ -48,7 +49,7 @@ namespace Engine.Impl.Services
       set
       {
         amount = value;
-        if (!((UnityEngine.Object) jerboaManager != (UnityEngine.Object) null))
+        if (!(jerboaManager != null))
           return;
         jerboaManager.Weight = amount;
       }
@@ -63,7 +64,7 @@ namespace Engine.Impl.Services
       set
       {
         color = value;
-        if (!((UnityEngine.Object) jerboaManager != (UnityEngine.Object) null))
+        if (!(jerboaManager != null))
           return;
         jerboaManager.ColorEnum = color;
       }
@@ -71,7 +72,7 @@ namespace Engine.Impl.Services
 
     public void Syncronize()
     {
-      if (!((UnityEngine.Object) jerboaManager != (UnityEngine.Object) null))
+      if (!(jerboaManager != null))
         return;
       jerboaManager.Syncronize();
     }
@@ -84,10 +85,10 @@ namespace Engine.Impl.Services
     public void Terminate()
     {
       InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-      if (!((UnityEngine.Object) prefabInstance != (UnityEngine.Object) null))
+      if (!(prefabInstance != null))
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) prefabInstance);
-      prefabInstance = (GameObject) null;
+      Object.Destroy(prefabInstance);
+      prefabInstance = null;
     }
 
     public void ComputeUpdate()
@@ -96,13 +97,13 @@ namespace Engine.Impl.Services
       if (player == null)
         return;
       Vector3 position = ((IEntityView) player).Position;
-      if ((UnityEngine.Object) prefabInstance == (UnityEngine.Object) null && (UnityEngine.Object) ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab != (UnityEngine.Object) null)
+      if (prefabInstance == null && ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab != null)
       {
-        prefabInstance = UnityEngine.Object.Instantiate<GameObject>(ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab, position, Quaternion.identity);
+        prefabInstance = Object.Instantiate(ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab, position, Quaternion.identity);
         jerboaManager = prefabInstance.GetComponent<JerboaManager>();
-        if ((UnityEngine.Object) jerboaManager == (UnityEngine.Object) null)
+        if (jerboaManager == null)
         {
-          Debug.Log((object) "Jerboa prefab doesn't contain JerboaManager component");
+          Debug.Log("Jerboa prefab doesn't contain JerboaManager component");
         }
         else
         {
@@ -114,7 +115,7 @@ namespace Engine.Impl.Services
       }
       LocationItemComponent component = player.GetComponent<LocationItemComponent>();
       jerboaManager.Visible = component == null || !component.IsIndoor;
-      if (!((UnityEngine.Object) prefabInstance != (UnityEngine.Object) null))
+      if (!(prefabInstance != null))
         return;
       prefabInstance.transform.position = position;
     }
@@ -141,10 +142,10 @@ namespace Engine.Impl.Services
 
     public void Unload()
     {
-      if (!((UnityEngine.Object) prefabInstance != (UnityEngine.Object) null))
+      if (!(prefabInstance != null))
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) prefabInstance);
-      prefabInstance = (GameObject) null;
+      Object.Destroy(prefabInstance);
+      prefabInstance = null;
     }
 
     public void Save(IDataWriter writer, string context)

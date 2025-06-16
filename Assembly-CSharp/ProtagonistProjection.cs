@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
 
 public class ProtagonistProjection : MonoBehaviour
 {

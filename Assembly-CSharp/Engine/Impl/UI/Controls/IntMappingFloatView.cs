@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -13,7 +14,7 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyFloatValue()
     {
-      if ((UnityEngine.Object) intView == (UnityEngine.Object) null)
+      if (intView == null)
         return;
       for (int index = 0; index < steps.Length; ++index)
       {
@@ -28,7 +29,7 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((UnityEngine.Object) intView != (UnityEngine.Object) null))
+      if (!(intView != null))
         return;
       intView.SkipAnimation();
     }

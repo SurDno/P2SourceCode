@@ -9,9 +9,9 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyTo(Wind wind)
     {
       TOD_Sky tod = ServiceLocator.GetService<EnvironmentService>().Tod;
-      if ((Object) tod == (Object) null)
+      if (tod == null)
         return;
-      if ((Object) tod.Components.Animation == (Object) null)
+      if (tod.Components.Animation == null)
         return;
       TOD_Animation component = tod.Components.Animation.GetComponent<TOD_Animation>();
       wind.Degrees = component.WindDegrees;
@@ -21,9 +21,9 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyFrom(Wind wind)
     {
       TOD_Sky tod = ServiceLocator.GetService<EnvironmentService>().Tod;
-      if ((Object) tod == (Object) null)
+      if (tod == null)
         return;
-      if ((Object) tod.Components.Animation == (Object) null)
+      if (tod.Components.Animation == null)
         return;
       TOD_Animation component = tod.Components.Animation.GetComponent<TOD_Animation>();
       component.WindDegrees = wind.Degrees;

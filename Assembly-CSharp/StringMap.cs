@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(menuName = "Data/String Map")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(menuName = "Data/String Map")]
 public class StringMap : ScriptableObject
 {
   [SerializeField]

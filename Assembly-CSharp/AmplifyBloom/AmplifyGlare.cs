@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -100,17 +101,17 @@ namespace AmplifyBloom
       for (int index = 0; index < m_starDefArr.Length; ++index)
         m_starDefArr[index].Destroy();
       m_glareDefArr = null;
-      m_weigthsMat = (Matrix4x4[]) null;
-      m_offsetsMat = (Matrix4x4[]) null;
+      m_weigthsMat = null;
+      m_offsetsMat = null;
       for (int index = 0; index < _rtBuffer.Length; ++index)
       {
-        if ((UnityEngine.Object) _rtBuffer[index] != (UnityEngine.Object) null)
+        if (_rtBuffer[index] != null)
         {
           AmplifyUtils.ReleaseTempRenderTarget(_rtBuffer[index]);
-          _rtBuffer[index] = (RenderTexture) null;
+          _rtBuffer[index] = null;
         }
       }
-      _rtBuffer = (RenderTexture[]) null;
+      _rtBuffer = null;
       m_amplifyGlareCache.Destroy();
       m_amplifyGlareCache = null;
     }
@@ -133,9 +134,9 @@ namespace AmplifyBloom
         {
           UpdateMatrixesForPass(material, m_amplifyGlareCache.Starlines[index2].Passes[index3].Offsets, m_amplifyGlareCache.Starlines[index2].Passes[index3].Weights, glareIntensity, cameraRotation * m_amplifyGlareCache.StarDef.CameraRotInfluence);
           if (index3 == 0)
-            Graphics.Blit((Texture) source, _rtBuffer[index1], material, 2);
+            Graphics.Blit(source, _rtBuffer[index1], material, 2);
           else
-            Graphics.Blit((Texture) _rtBuffer[index1 - 1], _rtBuffer[index1], material, 2);
+            Graphics.Blit(_rtBuffer[index1 - 1], _rtBuffer[index1], material, 2);
           ++index1;
         }
       }
@@ -143,15 +144,15 @@ namespace AmplifyBloom
       {
         material.SetVector(AmplifyUtils.AnamorphicGlareWeightsStr[index4], m_amplifyGlareCache.AverageWeight);
         int index5 = (index4 + 1) * m_amplifyGlareCache.CurrentPassCount - 1;
-        material.SetTexture(AmplifyUtils.AnamorphicRTS[index4], (Texture) _rtBuffer[index5]);
+        material.SetTexture(AmplifyUtils.AnamorphicRTS[index4], _rtBuffer[index5]);
       }
       int pass = 19 + m_amplifyGlareCache.StarDef.StarlinesCount - 1;
       dest.DiscardContents();
-      Graphics.Blit((Texture) _rtBuffer[0], dest, material, pass);
+      Graphics.Blit(_rtBuffer[0], dest, material, pass);
       for (int index6 = 0; index6 < _rtBuffer.Length; ++index6)
       {
         AmplifyUtils.ReleaseTempRenderTarget(_rtBuffer[index6]);
-        _rtBuffer[index6] = (RenderTexture) null;
+        _rtBuffer[index6] = null;
       }
     }
 
@@ -168,8 +169,8 @@ namespace AmplifyBloom
       {
         int index2 = index1 >> 2;
         int row = index1 & 3;
-        m_offsetsMat[index2][row, 0] = (float) ((double) offsets[index1].x * num1 - (double) offsets[index1].y * num2);
-        m_offsetsMat[index2][row, 1] = (float) ((double) offsets[index1].x * num2 + (double) offsets[index1].y * num1);
+        m_offsetsMat[index2][row, 0] = (float) (offsets[index1].x * (double) num1 - offsets[index1].y * (double) num2);
+        m_offsetsMat[index2][row, 1] = (float) (offsets[index1].x * (double) num2 + offsets[index1].y * (double) num1);
         m_weigthsMat[index2][row, 0] = glareIntensity * weights[index1].x;
         m_weigthsMat[index2][row, 1] = glareIntensity * weights[index1].y;
         m_weigthsMat[index2][row, 2] = glareIntensity * weights[index1].z;
@@ -187,7 +188,7 @@ namespace AmplifyBloom
       RenderTexture dest,
       float cameraRot)
     {
-      Graphics.Blit((Texture) Texture2D.blackTexture, dest);
+      Graphics.Blit(Texture2D.blackTexture, dest);
       if (m_isDirty || m_currentWidth != source.width || m_currentHeight != source.height)
       {
         m_isDirty = false;
@@ -208,8 +209,8 @@ namespace AmplifyBloom
         else
           glareDefData = m_glareDefArr[m_currentGlareIdx];
         m_amplifyGlareCache.GlareDef = glareDefData;
-        float width = (float) source.width;
-        float height = (float) source.height;
+        float width = source.width;
+        float height = source.height;
         StarDefData starDefData = flag ? glareDefData.CustomStarData : m_starDefArr[(int) glareDefData.StarType];
         m_amplifyGlareCache.StarDef = starDefData;
         int num1 = m_glareMaxPassCount < starDefData.PassCount ? m_glareMaxPassCount : starDefData.PassCount;
@@ -221,7 +222,7 @@ namespace AmplifyBloom
           for (int index2 = 0; index2 < 8; ++index2)
           {
             Color b = _overallTint * Color.Lerp(m_cromaticAberrationGrad.Evaluate(index2 / 7f), m_whiteReference, t);
-            m_amplifyGlareCache.CromaticAberrationMat[index1, index2] = (Vector4) Color.Lerp(m_whiteReference, b, glareDefData.ChromaticAberration);
+            m_amplifyGlareCache.CromaticAberrationMat[index1, index2] = Color.Lerp(m_whiteReference, b, glareDefData.ChromaticAberration);
           }
         }
         m_amplifyGlareCache.TotalRT = starDefData.StarlinesCount * num1;
@@ -244,9 +245,9 @@ namespace AmplifyBloom
             {
               float num6 = Mathf.Pow(starLineData.Attenuation, num5 * index6);
               m_amplifyGlareCache.Starlines[index4].Passes[index5].Weights[index6] = m_amplifyGlareCache.CromaticAberrationMat[num1 - 1 - index5, index6] * num6 * (index5 + 1f) * 0.5f;
-              m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].x = vector2.x * (float) index6;
-              m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].y = vector2.y * (float) index6;
-              if ((double) Mathf.Abs(m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].x) >= 0.89999997615814209 || (double) Mathf.Abs(m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].y) >= 0.89999997615814209)
+              m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].x = vector2.x * index6;
+              m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].y = vector2.y * index6;
+              if (Mathf.Abs(m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].x) >= 0.89999997615814209 || Mathf.Abs(m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].y) >= 0.89999997615814209)
               {
                 m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].x = 0.0f;
                 m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets[index6].y = 0.0f;
@@ -260,28 +261,28 @@ namespace AmplifyBloom
             }
             UpdateMatrixesForPass(material, m_amplifyGlareCache.Starlines[index4].Passes[index5].Offsets, m_amplifyGlareCache.Starlines[index4].Passes[index5].Weights, m_intensity, starDefData.CameraRotInfluence * cameraRot);
             if (index5 == 0)
-              Graphics.Blit((Texture) source, _rtBuffer[index3], material, 2);
+              Graphics.Blit(source, _rtBuffer[index3], material, 2);
             else
-              Graphics.Blit((Texture) _rtBuffer[index3 - 1], _rtBuffer[index3], material, 2);
+              Graphics.Blit(_rtBuffer[index3 - 1], _rtBuffer[index3], material, 2);
             ++index3;
             vector2 *= m_perPassDisplacement;
             num5 *= m_perPassDisplacement;
           }
         }
-        m_amplifyGlareCache.AverageWeight = Vector4.one / (float) starDefData.StarlinesCount;
+        m_amplifyGlareCache.AverageWeight = Vector4.one / starDefData.StarlinesCount;
         for (int index8 = 0; index8 < starDefData.StarlinesCount; ++index8)
         {
           material.SetVector(AmplifyUtils.AnamorphicGlareWeightsStr[index8], m_amplifyGlareCache.AverageWeight);
           int index9 = (index8 + 1) * num1 - 1;
-          material.SetTexture(AmplifyUtils.AnamorphicRTS[index8], (Texture) _rtBuffer[index9]);
+          material.SetTexture(AmplifyUtils.AnamorphicRTS[index8], _rtBuffer[index9]);
         }
         int pass = 19 + starDefData.StarlinesCount - 1;
         dest.DiscardContents();
-        Graphics.Blit((Texture) _rtBuffer[0], dest, material, pass);
+        Graphics.Blit(_rtBuffer[0], dest, material, pass);
         for (int index10 = 0; index10 < _rtBuffer.Length; ++index10)
         {
           AmplifyUtils.ReleaseTempRenderTarget(_rtBuffer[index10]);
-          _rtBuffer[index10] = (RenderTexture) null;
+          _rtBuffer[index10] = null;
         }
       }
       else

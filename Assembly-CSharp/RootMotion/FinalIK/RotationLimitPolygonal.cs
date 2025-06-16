@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -188,7 +189,7 @@ namespace RootMotion.FinalIK
           LogWarning("RotationLimitPolygonal reach cones are invalid.");
         return rotation;
       }
-      if ((double) Vector3.Dot(reachCones[reachCone].B, vector3) > 0.0)
+      if (Vector3.Dot(reachCones[reachCone].B, vector3) > 0.0)
         return rotation;
       Vector3 rhs = Vector3.Cross(axis, vector3);
       Vector3 toDirection = Vector3.Cross(-reachCones[reachCone].B, rhs);

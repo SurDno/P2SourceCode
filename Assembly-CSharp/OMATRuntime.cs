@@ -1,4 +1,6 @@
-﻿internal struct OMATRuntime
+﻿using UnityEngine;
+
+internal struct OMATRuntime
 {
   public string name;
   public string textureName;

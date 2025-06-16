@@ -60,7 +60,7 @@ namespace UnityEngine.PostProcessing
             intensity = 0.45f,
             smoothness = 0.2f,
             roundness = 1f,
-            mask = (Texture) null,
+            mask = null,
             opacity = 1f,
             rounded = false
           };

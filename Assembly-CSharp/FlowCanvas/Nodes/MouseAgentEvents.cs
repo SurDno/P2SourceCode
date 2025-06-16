@@ -1,4 +1,5 @@
 ﻿using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -36,7 +37,7 @@ namespace FlowCanvas.Nodes
       over = AddFlowOutput("Over");
       exit = AddFlowOutput("Exit");
       drag = AddFlowOutput("Drag");
-      AddValueOutput("Info", (ValueHandler<RaycastHit>) (() => hit));
+      AddValueOutput("Info", () => hit);
     }
 
     private void OnMouseEnter()

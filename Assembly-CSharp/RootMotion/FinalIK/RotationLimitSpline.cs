@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page12.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Rotation Limits/Rotation Limit Spline")]
@@ -47,7 +49,7 @@
         return rotation;
       Vector3 vector3 = rotation * axis;
       float time = GetOrthogonalAngle(vector3, secondaryAxis, axis);
-      if ((double) Vector3.Dot(vector3, crossAxis) < 0.0)
+      if (Vector3.Dot(vector3, crossAxis) < 0.0)
         time = (float) (180.0 + (180.0 - time));
       float maxDegreesDelta = spline.Evaluate(time);
       Quaternion quaternion = Quaternion.RotateTowards(Quaternion.identity, Quaternion.FromToRotation(axis, vector3), maxDegreesDelta);

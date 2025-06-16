@@ -1,6 +1,7 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Inspectors;
+using UnityEngine;
 
 public class AnimatorStateChecker : MonoBehaviour
 {
@@ -9,6 +10,6 @@ public class AnimatorStateChecker : MonoBehaviour
 
   private void Awake()
   {
-    animatorState = AnimatorState45.GetAnimatorState(this.GetComponent<Pivot>().GetAnimator());
+    animatorState = AnimatorState45.GetAnimatorState(GetComponent<Pivot>().GetAnimator());
   }
 }

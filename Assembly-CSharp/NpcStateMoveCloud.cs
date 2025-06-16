@@ -1,6 +1,8 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateMoveCloud : INpcState
 {
@@ -32,7 +34,7 @@ public class NpcStateMoveCloud : INpcState
   {
     Status = NpcStateStatusEnum.Running;
     agent = pivot.GetAgent();
-    if ((Object) agent != (Object) null)
+    if (agent != null)
     {
       speed = agent.speed;
       agentWasEnabled = agent.enabled;
@@ -44,7 +46,7 @@ public class NpcStateMoveCloud : INpcState
 
   public void Shutdown()
   {
-    if (!((Object) agent != (Object) null))
+    if (!(agent != null))
       return;
     agent.enabled = agentWasEnabled;
   }

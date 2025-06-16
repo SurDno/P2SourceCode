@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   public abstract class Prop : MonoBehaviour
   {
@@ -27,7 +29,7 @@
     private ConfigurableJointMotion angularZMotion;
     private Collider[] colliders = new Collider[0];
 
-    public bool isPickedUp => (Object) propRoot != (Object) null;
+    public bool isPickedUp => propRoot != null;
 
     public PropRoot propRoot { get; private set; }
 
@@ -71,8 +73,8 @@
 
     protected virtual void Awake()
     {
-      if (this.transform.position != muscle.transform.position)
-        Debug.LogError((object) "Prop target position must match exactly with it's muscle's position!", (Object) this.transform);
+      if (transform.position != muscle.transform.position)
+        Debug.LogError("Prop target position must match exactly with it's muscle's position!", transform);
       xMotion = muscle.xMotion;
       yMotion = muscle.yMotion;
       zMotion = muscle.zMotion;
@@ -91,7 +93,7 @@
 
     private void ReleaseJoint()
     {
-      muscle.connectedBody = (Rigidbody) null;
+      muscle.connectedBody = null;
       muscle.targetRotation = Quaternion.identity;
       muscle.slerpDrive = new JointDrive {
         positionSpring = 0.0f
@@ -106,11 +108,11 @@
 
     private void OnDrawGizmos()
     {
-      if ((Object) muscle == (Object) null || Application.isPlaying)
+      if (muscle == null || Application.isPlaying)
         return;
-      this.transform.position = muscle.transform.position;
-      this.transform.rotation = muscle.transform.rotation;
-      if ((Object) additionalPinTarget != (Object) null && (Object) additionalPin != (Object) null)
+      transform.position = muscle.transform.position;
+      transform.rotation = muscle.transform.rotation;
+      if (additionalPinTarget != null && additionalPin != null)
         additionalPinTarget.position = additionalPin.transform.position;
       muscleProps.group = Muscle.Group.Prop;
     }

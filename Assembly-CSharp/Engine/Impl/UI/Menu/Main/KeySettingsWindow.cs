@@ -7,6 +7,10 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -31,13 +35,13 @@ namespace Engine.Impl.UI.Menu.Main
     public override void Initialize()
     {
       RegisterLayer();
-      Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
+      Button[] componentsInChildren = GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
+        entry.callback.AddListener(eventData => Button_Click_Handler());
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -45,9 +49,9 @@ namespace Engine.Impl.UI.Menu.Main
 
     public void Button_Click_Handler()
     {
-      if (!this.gameObject.activeInHierarchy)
+      if (!gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
+      gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
@@ -84,8 +88,8 @@ namespace Engine.Impl.UI.Menu.Main
       {
         if (!bind.Hide)
         {
-          GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(keyItem);
-          gameObject.transform.SetParent((Transform) keyView, false);
+          GameObject gameObject = Instantiate(keyItem);
+          gameObject.transform.SetParent(keyView, false);
           KeyItem component = gameObject.GetComponent<KeyItem>();
           keyItems.Add(component);
           component.Bind = bind;
@@ -103,7 +107,7 @@ namespace Engine.Impl.UI.Menu.Main
       foreach (KeyItem keyItem in keyItems)
       {
         keyItem.OnPressed -= OnKeyItemPressed;
-        UnityEngine.Object.Destroy((UnityEngine.Object) keyItem.gameObject);
+        Destroy(keyItem.gameObject);
       }
       keyItems.Clear();
       listeningItem = null;
@@ -124,7 +128,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void OnKeyItemPressed(KeyItem item)
     {
-      if ((UnityEngine.Object) listeningItem != (UnityEngine.Object) null)
+      if (listeningItem != null)
         return;
       listeningItem = item;
       listeningItem.Selection = true;
@@ -140,6 +144,6 @@ namespace Engine.Impl.UI.Menu.Main
       Fill();
     }
 
-    public bool IsWaiting => (UnityEngine.Object) listeningItem != (UnityEngine.Object) null;
+    public bool IsWaiting => listeningItem != null;
   }
 }

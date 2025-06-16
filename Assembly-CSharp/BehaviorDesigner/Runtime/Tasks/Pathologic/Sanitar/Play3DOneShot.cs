@@ -13,6 +13,8 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Audio;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
 {
@@ -81,26 +83,26 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) Sound == (UnityEngine.Object) null)
+      if (Sound == null)
         return TaskStatus.Failure;
       entity = EntityUtility.GetEntity(gameObject);
       if (entity == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
         return TaskStatus.Failure;
       }
       detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
       if (detectable == null)
-        Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component (this is not critical"), (UnityEngine.Object) gameObject);
-      if ((UnityEngine.Object) Sound == (UnityEngine.Object) null)
+        Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component (this is not critical", gameObject);
+      if (Sound == null)
       {
-        Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (IDetectableComponent).Name + " engine component", gameObject);
         return TaskStatus.Failure;
       }
       pivot = gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        Debug.LogErrorFormat(gameObject.name + " doesnt' contain " + typeof (Pivot).Name + " unity component", (object) gameObject);
+        Debug.LogErrorFormat(gameObject.name + " doesnt' contain " + typeof (Pivot).Name + " unity component", gameObject);
         return TaskStatus.Failure;
       }
       if (detectable == null)
@@ -116,9 +118,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
       DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
       DefaultDataWriteUtility.Write(writer, "Instant", instant);
       DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteUnity<AudioMixerGroup>(writer, "AudioMixerGroup", AudioMixerGroup);
-      BehaviorTreeDataWriteUtility.WriteUnity<AudioClip>(writer, "Sound", Sound);
-      DefaultDataWriteUtility.WriteEnum<AudioRolloffMode>(writer, "RolloffMode", RolloffMode);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "AudioMixerGroup", AudioMixerGroup);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Sound", Sound);
+      DefaultDataWriteUtility.WriteEnum(writer, "RolloffMode", RolloffMode);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "Volume", Volume);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "SpatialBlend", SpatialBlend);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "MinDistance", MinDistance);
@@ -134,8 +136,8 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.Sanitar
       friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
       instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
       disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      AudioMixerGroup = BehaviorTreeDataReadUtility.ReadUnity<AudioMixerGroup>(reader, "AudioMixerGroup", AudioMixerGroup);
-      Sound = BehaviorTreeDataReadUtility.ReadUnity<AudioClip>(reader, "Sound", Sound);
+      AudioMixerGroup = BehaviorTreeDataReadUtility.ReadUnity(reader, "AudioMixerGroup", AudioMixerGroup);
+      Sound = BehaviorTreeDataReadUtility.ReadUnity(reader, "Sound", Sound);
       RolloffMode = DefaultDataReadUtility.ReadEnum<AudioRolloffMode>(reader, "RolloffMode");
       Volume = BehaviorTreeDataReadUtility.ReadShared(reader, "Volume", Volume);
       SpatialBlend = BehaviorTreeDataReadUtility.ReadShared(reader, "SpatialBlend", SpatialBlend);

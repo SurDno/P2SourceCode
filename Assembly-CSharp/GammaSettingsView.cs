@@ -4,6 +4,8 @@ using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class GammaSettingsView : MonoBehaviour
 {
@@ -31,32 +33,32 @@ public class GammaSettingsView : MonoBehaviour
 
   private IEnumerator ChangingCoroutine(bool isDecrement)
   {
-    yield return (object) new WaitForSeconds(0.5f);
+    yield return new WaitForSeconds(0.5f);
     while (true)
     {
       if (isDecrement)
         view?.DecrementValue();
       else
         view?.IncrementValue();
-      yield return (object) new WaitForSeconds(0.05f);
+      yield return new WaitForSeconds(0.05f);
     }
   }
 
   private bool OnValueChange(GameActionType type, bool down)
   {
     if (changingCoroutine != null)
-      this.StopCoroutine(changingCoroutine);
+      StopCoroutine(changingCoroutine);
     if (down)
     {
       switch (type)
       {
         case GameActionType.LStickLeft:
           view?.DecrementValue();
-          changingCoroutine = this.StartCoroutine(ChangingCoroutine(true));
+          changingCoroutine = StartCoroutine(ChangingCoroutine(true));
           break;
         case GameActionType.LStickRight:
           view?.IncrementValue();
-          changingCoroutine = this.StartCoroutine(ChangingCoroutine(false));
+          changingCoroutine = StartCoroutine(ChangingCoroutine(false));
           break;
       }
     }

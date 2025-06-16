@@ -1,4 +1,6 @@
-﻿public class LayoutContainer : MonoBehaviour
+﻿using UnityEngine;
+
+public class LayoutContainer : MonoBehaviour
 {
   [SerializeField]
   private RectTransform content;

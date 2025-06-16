@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace RootMotion.FinalIK
 {
@@ -73,7 +75,7 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        return (UnityEngine.Object) otherLookAtTarget != (UnityEngine.Object) null ? otherLookAtTarget : this.transform;
+        return otherLookAtTarget != null ? otherLookAtTarget : transform;
       }
     }
 
@@ -124,7 +126,7 @@ namespace RootMotion.FinalIK
         if (targets[index].effectorType == effectorType && targets[index].tag == tag)
           return targets[index].transform;
       }
-      return this.transform;
+      return transform;
     }
 
     public void OnStartInteraction(InteractionSystem interactionSystem)
@@ -141,21 +143,21 @@ namespace RootMotion.FinalIK
     {
       for (int index = 0; index < weightCurves.Length; ++index)
       {
-        float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(weightCurves[index].type);
+        float num = target == null ? 1f : target.GetValue(weightCurves[index].type);
         Apply(solver, effector, weightCurves[index].type, weightCurves[index].GetValue(timer), weight * num);
       }
       for (int index = 0; index < multipliers.Length; ++index)
       {
         if (multipliers[index].curve == multipliers[index].result && !Warning.logged)
-          Warning.Log("InteractionObject Multiplier 'Curve' " + multipliers[index].curve + "and 'Result' are the same.", this.transform);
+          Warning.Log("InteractionObject Multiplier 'Curve' " + multipliers[index].curve + "and 'Result' are the same.", transform);
         int weightCurveIndex = GetWeightCurveIndex(multipliers[index].curve);
         if (weightCurveIndex != -1)
         {
-          float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(multipliers[index].result);
+          float num = target == null ? 1f : target.GetValue(multipliers[index].result);
           Apply(solver, effector, multipliers[index].result, multipliers[index].GetValue(weightCurves[weightCurveIndex], timer), weight * num);
         }
         else if (!Warning.logged)
-          Warning.Log("InteractionObject Multiplier curve " + multipliers[index].curve + "does not exist.", this.transform);
+          Warning.Log("InteractionObject Multiplier curve " + multipliers[index].curve + "does not exist.", transform);
       }
     }
 
@@ -167,7 +169,7 @@ namespace RootMotion.FinalIK
       int weightCurveIndex1 = GetWeightCurveIndex(weightCurveType);
       if (weightCurveIndex1 != -1)
       {
-        float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(weightCurveType);
+        float num = target == null ? 1f : target.GetValue(weightCurveType);
         return weightCurves[weightCurveIndex1].GetValue(timer) * num;
       }
       for (int index = 0; index < multipliers.Length; ++index)
@@ -177,7 +179,7 @@ namespace RootMotion.FinalIK
           int weightCurveIndex2 = GetWeightCurveIndex(multipliers[index].curve);
           if (weightCurveIndex2 != -1)
           {
-            float num = (UnityEngine.Object) target == (UnityEngine.Object) null ? 1f : target.GetValue(multipliers[index].result);
+            float num = target == null ? 1f : target.GetValue(multipliers[index].result);
             return multipliers[index].GetValue(weightCurves[weightCurveIndex2], timer) * num;
           }
         }
@@ -189,7 +191,7 @@ namespace RootMotion.FinalIK
     {
       get
       {
-        return (UnityEngine.Object) otherTargetsRoot != (UnityEngine.Object) null ? otherTargetsRoot : this.transform;
+        return otherTargetsRoot != null ? otherTargetsRoot : transform;
       }
     }
 
@@ -211,13 +213,13 @@ namespace RootMotion.FinalIK
           solver.GetEffector(effector).rotationWeight = Mathf.Lerp(solver.GetEffector(effector).rotationWeight, value, weight);
           break;
         case WeightCurve.Type.PositionOffsetX:
-          solver.GetEffector(effector).position += ((UnityEngine.Object) positionOffsetSpace != (UnityEngine.Object) null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.right * value * weight;
+          solver.GetEffector(effector).position += (positionOffsetSpace != null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.right * value * weight;
           break;
         case WeightCurve.Type.PositionOffsetY:
-          solver.GetEffector(effector).position += ((UnityEngine.Object) positionOffsetSpace != (UnityEngine.Object) null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.up * value * weight;
+          solver.GetEffector(effector).position += (positionOffsetSpace != null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.up * value * weight;
           break;
         case WeightCurve.Type.PositionOffsetZ:
-          solver.GetEffector(effector).position += ((UnityEngine.Object) positionOffsetSpace != (UnityEngine.Object) null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.forward * value * weight;
+          solver.GetEffector(effector).position += (positionOffsetSpace != null ? positionOffsetSpace.rotation : solver.GetRoot().rotation) * Vector3.forward * value * weight;
           break;
         case WeightCurve.Type.Pull:
           solver.GetChain(effector).pull = Mathf.Lerp(solver.GetChain(effector).pull, value, weight);
@@ -241,7 +243,7 @@ namespace RootMotion.FinalIK
         if (targets[index].effectorType == effectorType)
           return targets[index].transform;
       }
-      return this.transform;
+      return transform;
     }
 
     private int GetWeightCurveIndex(WeightCurve.Type weightCurveType)
@@ -313,9 +315,9 @@ namespace RootMotion.FinalIK
 
       public void Send(Transform t)
       {
-        if ((UnityEngine.Object) recipient == (UnityEngine.Object) null || function == string.Empty || function == "")
+        if (recipient == null || function == string.Empty || function == "")
           return;
-        recipient.SendMessage(function, (object) t, SendMessageOptions.RequireReceiver);
+        recipient.SendMessage(function, t, SendMessageOptions.RequireReceiver);
       }
     }
 
@@ -338,15 +340,15 @@ namespace RootMotion.FinalIK
 
       public void Activate(bool pickUp)
       {
-        if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+        if (animator != null)
         {
           if (pickUp)
             animator.applyRootMotion = false;
-          this.Activate(animator);
+          Activate(animator);
         }
-        if (!((UnityEngine.Object) animation != (UnityEngine.Object) null))
+        if (!(animation != null))
           return;
-        this.Activate(animation);
+        Activate(animation);
       }
 
       private void Activate(Animator animator)

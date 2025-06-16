@@ -12,6 +12,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -32,15 +33,15 @@ namespace Engine.BehaviourNodes.Conditionals
 
     public override TaskStatus OnUpdate()
     {
-      GameObject gameObject = (UnityEngine.Object) Target.Value == (UnityEngine.Object) null ? this.gameObject : Target.Value.gameObject;
-      if ((UnityEngine.Object) gameObject != (UnityEngine.Object) cacheGameObject)
+      GameObject gameObject = Target.Value == null ? this.gameObject : Target.Value.gameObject;
+      if (gameObject != cacheGameObject)
       {
         cacheGameObject = gameObject;
         cacheParameter = null;
-        IEntity entity = !((UnityEngine.Object) Target.Value == (UnityEngine.Object) null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(this.gameObject);
+        IEntity entity = !(Target.Value == null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(this.gameObject);
         if (entity == null)
         {
-          Debug.LogWarning((object) (this.gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) this.gameObject);
+          Debug.LogWarning(this.gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, this.gameObject);
           return TaskStatus.Failure;
         }
         ParametersComponent component = entity.GetComponent<ParametersComponent>();

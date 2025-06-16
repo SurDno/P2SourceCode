@@ -1,6 +1,10 @@
 ﻿using System;
 using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Behaviours.Localization
 {
@@ -14,7 +18,7 @@ namespace Engine.Behaviours.Localization
     [FormerlySerializedAs("convertToUpper")]
     private bool smallCaps = true;
     [SerializeField]
-    private bool allCaps = false;
+    private bool allCaps;
     private Text textField;
 
     public string Signature
@@ -23,7 +27,7 @@ namespace Engine.Behaviours.Localization
       set
       {
         signature = value;
-        if (!this.isActiveAndEnabled)
+        if (!isActiveAndEnabled)
           return;
         Build();
       }
@@ -45,17 +49,17 @@ namespace Engine.Behaviours.Localization
 
     public void Build()
     {
-      if ((UnityEngine.Object) textField == (UnityEngine.Object) null)
+      if (textField == null)
       {
-        textField = this.gameObject.GetComponent<Text>();
+        textField = gameObject.GetComponent<Text>();
         textField.supportRichText = true;
       }
-      if ((UnityEngine.Object) textField == (UnityEngine.Object) null)
-        throw new Exception("Localization: GameObject " + this.gameObject.name + " don't have UnityEngine.UI.Text!");
+      if (textField == null)
+        throw new Exception("Localization: GameObject " + gameObject.name + " don't have UnityEngine.UI.Text!");
       if (signature != null)
         textField.text = TextHelper.FormatString(signature, textField.fontSize, smallCaps, allCaps);
       else
-        textField.text = (string) null;
+        textField.text = null;
     }
 
     private void OnLocalizationChanged() => Build();

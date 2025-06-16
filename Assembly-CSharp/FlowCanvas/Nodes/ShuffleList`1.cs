@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -10,7 +11,7 @@ namespace FlowCanvas.Nodes
     {
       for (int index1 = list.Count - 1; index1 > 0; --index1)
       {
-        int index2 = (int) Mathf.Floor(UnityEngine.Random.value * (float) (index1 + 1));
+        int index2 = (int) Mathf.Floor(UnityEngine.Random.value * (index1 + 1));
         T obj = list[index1];
         list[index1] = list[index2];
         list[index2] = obj;

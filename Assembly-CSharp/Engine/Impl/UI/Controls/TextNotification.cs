@@ -12,6 +12,8 @@ using Engine.Source.Services;
 using Engine.Source.Services.Notifications;
 using InputServices;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -34,14 +36,14 @@ namespace Engine.Impl.UI.Controls
     private bool shutdown;
     private float timer;
     private bool useTimeout;
-    private object[] vals = null;
+    private object[] vals;
 
     private CanvasGroup CanvasGroup
     {
       get
       {
-        if ((UnityEngine.Object) canvasGroup == (UnityEngine.Object) null)
-          canvasGroup = this.GetComponent<CanvasGroup>();
+        if (canvasGroup == null)
+          canvasGroup = GetComponent<CanvasGroup>();
         return canvasGroup;
       }
     }
@@ -78,7 +80,7 @@ namespace Engine.Impl.UI.Controls
           JoystickLayoutSwitcher.Instance.OnLayoutChanged -= ChangeLayout;
           InputService.Instance.onJoystickUsedChanged -= OnJoystick;
           ServiceLocator.GetService<LocalizationService>().LocalizationChanged -= ChangeLanguage;
-          UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+          Destroy(gameObject);
         }
         else
           CanvasGroup.alpha = alpha;
@@ -130,9 +132,9 @@ namespace Engine.Impl.UI.Controls
 
     private void Play()
     {
-      if ((UnityEngine.Object) clip == (UnityEngine.Object) null || (UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (clip == null || mixer == null)
         return;
-      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     }
 
     public void ResetTooltip()
@@ -201,9 +203,9 @@ namespace Engine.Impl.UI.Controls
       }
       if (string.IsNullOrEmpty(text1) && string.IsNullOrEmpty(text2))
       {
-        Debug.LogWarning((object) ("Notification : " + type + " : No text. Expects value[0] as string, LocalizedText, List<string> or List<LocalizedText>"));
+        Debug.LogWarning("Notification : " + type + " : No text. Expects value[0] as string, LocalizedText, List<string> or List<LocalizedText>");
         textView.StringValue = null;
-        if (!((UnityEngine.Object) optionalHeaderView != (UnityEngine.Object) null))
+        if (!(optionalHeaderView != null))
           return;
         optionalHeaderView.StringValue = null;
       }
@@ -212,7 +214,7 @@ namespace Engine.Impl.UI.Controls
         string a = TextHelper.ReplaceTags(text2, "<b><color=#e4b450>", "</color></b>");
         string source = TextHelper.ReplaceTags(text1, "<b><color=#e4b450>", "</color></b>");
         string b = ServiceLocator.GetService<TextContextService>().ComputeText(source);
-        if ((UnityEngine.Object) optionalHeaderView != (UnityEngine.Object) null)
+        if (optionalHeaderView != null)
         {
           optionalHeaderView.StringValue = a;
           optionalHeaderView.gameObject.SetActive(!string.IsNullOrEmpty(a));

@@ -21,7 +21,7 @@ public class PlagueZone : MonoBehaviour
     for (int index = 0; index < hits.Count; ++index)
     {
       PlagueZone componentNonAlloc = hits[index].collider.GetComponentNonAlloc<PlagueZone>();
-      if ((UnityEngine.Object) componentNonAlloc != (UnityEngine.Object) null)
+      if (componentNonAlloc != null)
         result.Add(new ZoneHit(componentNonAlloc, hits[index].textureCoord.x, componentNonAlloc.importance, componentNonAlloc._level));
     }
     result.Sort(ZoneHit.Comparison);
@@ -46,7 +46,7 @@ public class PlagueZone : MonoBehaviour
 
   public void ApplyLevel()
   {
-    LOD[] loDs = this.GetComponent<LODGroup>().GetLODs();
+    LOD[] loDs = GetComponent<LODGroup>().GetLODs();
     if (_level == 0.0)
     {
       for (int index1 = 0; index1 < loDs.Length; ++index1)

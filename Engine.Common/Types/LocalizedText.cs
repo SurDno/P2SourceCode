@@ -7,9 +7,9 @@
 
     public LocalizedText(ulong id) => this.id = id;
 
-    public ulong Id => this.id;
+    public ulong Id => id;
 
-    public override int GetHashCode() => this.Id.GetHashCode();
+    public override int GetHashCode() => Id.GetHashCode();
 
     public override bool Equals(object a)
     {

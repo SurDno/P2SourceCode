@@ -14,6 +14,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [TaskDescription("Can see NPC (with Behaviour and Info engine components)")]
 [TaskCategory("Pathologic")]
@@ -51,14 +52,14 @@ public class CanSee : Conditional, IStub, ISerializeDataWrite, ISerializeDataRea
     entity = EntityUtility.GetEntity(gameObject);
     if (entity == null)
     {
-      Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+      Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
     }
     else
     {
       detector = entity.GetComponent<DetectorComponent>();
       if (detector != null)
         return;
-      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", (object) gameObject.name, (object) typeof (IDetectorComponent).Name);
+      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", gameObject.name, typeof (IDetectorComponent).Name);
     }
   }
 
@@ -76,7 +77,7 @@ public class CanSee : Conditional, IStub, ISerializeDataWrite, ISerializeDataRea
         if (Filter(detectable))
         {
           GameObject gameObject = ((IEntityView) detectable.Owner).GameObject;
-          if (!((UnityEngine.Object) gameObject == (UnityEngine.Object) null))
+          if (!(gameObject == null))
           {
             if (ResultList.Value == null)
             {

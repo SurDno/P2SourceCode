@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -7,7 +8,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
   {
     protected override fsResult DoSerialize(RectOffset model, Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + SerializeMember<int>(serialized, null, "bottom", model.bottom) + SerializeMember<int>(serialized, null, "left", model.left) + SerializeMember<int>(serialized, null, "right", model.right) + SerializeMember<int>(serialized, null, "top", model.top);
+      return fsResult.Success + SerializeMember(serialized, null, "bottom", model.bottom) + SerializeMember(serialized, null, "left", model.left) + SerializeMember(serialized, null, "right", model.right) + SerializeMember(serialized, null, "top", model.top);
     }
 
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref RectOffset model)
@@ -30,7 +31,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new RectOffset();
+      return new RectOffset();
     }
   }
 }

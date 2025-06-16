@@ -26,7 +26,7 @@ namespace UnityEngine
       }
       for (int index = 0; index < num; ++index)
         result.Add(tmp[index]);
-      result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
+      result.Sort(RaycastComparer.Instance);
     }
 
     public static void Raycast(
@@ -49,7 +49,7 @@ namespace UnityEngine
       }
       for (int index = 0; index < num; ++index)
         result.Add(tmp[index]);
-      result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
+      result.Sort(RaycastComparer.Instance);
     }
 
     public static void Raycast(
@@ -71,7 +71,7 @@ namespace UnityEngine
       }
       for (int index = 0; index < num; ++index)
         result.Add(tmp[index]);
-      result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
+      result.Sort(RaycastComparer.Instance);
     }
 
     public static void Raycast(
@@ -93,7 +93,7 @@ namespace UnityEngine
       }
       for (int index = 0; index < num; ++index)
         result.Add(tmp[index]);
-      result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
+      result.Sort(RaycastComparer.Instance);
     }
 
     public static void SphereCast(
@@ -116,7 +116,7 @@ namespace UnityEngine
       }
       for (int index = 0; index < num; ++index)
         result.Add(tmp[index]);
-      result.Sort((IComparer<RaycastHit>) RaycastComparer.Instance);
+      result.Sort(RaycastComparer.Instance);
     }
   }
 }

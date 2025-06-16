@@ -1,4 +1,6 @@
-﻿namespace Cinemachine.Utility
+﻿using UnityEngine;
+
+namespace Cinemachine.Utility
 {
   public static class UnityQuaternionExtensions
   {
@@ -42,7 +44,7 @@
       {
         Vector3 vector3_3 = Vector3.forward.ProjectOntoPlane(vector3_1);
         if (vector3_3.AlmostZero())
-          vector3_3 = (double) Vector3.Dot(vector3_3, vector3_1) <= 0.0 ? Vector3.up.ProjectOntoPlane(vector3_1) : Vector3.down.ProjectOntoPlane(vector3_1);
+          vector3_3 = Vector3.Dot(vector3_3, vector3_1) <= 0.0 ? Vector3.up.ProjectOntoPlane(vector3_1) : Vector3.down.ProjectOntoPlane(vector3_1);
         num = UnityVectorExtensions.SignedAngle(vector3_3, vector3_2, vector3_1);
       }
       Quaternion quaternion2 = Quaternion.AngleAxis(num, vector3_1);

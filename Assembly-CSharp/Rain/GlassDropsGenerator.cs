@@ -1,4 +1,6 @@
-﻿namespace Rain
+﻿using UnityEngine;
+
+namespace Rain
 {
   [ExecuteInEditMode]
   public class GlassDropsGenerator : MonoBehaviour
@@ -16,27 +18,27 @@
     {
       get
       {
-        if ((Object) _material == (Object) null)
+        if (_material == null)
           _material = new Material(shader);
         return _material;
       }
       set
       {
-        if (!((Object) value != (Object) _material))
+        if (!(value != _material))
           return;
-        if ((Object) _material != (Object) null)
-          Object.Destroy((Object) _material);
+        if (_material != null)
+          Destroy(_material);
         _material = value;
       }
     }
 
-    private void OnDisable() => material = (Material) null;
+    private void OnDisable() => material = null;
 
     private void Update()
     {
       RainManager instance = RainManager.Instance;
       float num = 0.0f;
-      if ((Object) instance != (Object) null && instance.actualRainIntensity > 0.0)
+      if (instance != null && instance.actualRainIntensity > 0.0)
       {
         _phase += Time.deltaTime * speed * instance.actualRainIntensity * instance.actualRainIntensity;
         if (_phase >= 1.0)
@@ -58,7 +60,7 @@
       material.SetFloat("_Intensity", num);
       material.SetFloat("_Phase", _phase);
       Graphics.Blit(inputTexture, heightOutput, material, 0);
-      Graphics.Blit((Texture) heightOutput, normalOutput, material, 1);
+      Graphics.Blit(heightOutput, normalOutput, material, 1);
     }
   }
 }

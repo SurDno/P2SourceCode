@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 {
@@ -54,7 +55,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) sharedTransform.Value == (UnityEngine.Object) null)
+      if (sharedTransform.Value == null)
         return TaskStatus.Failure;
       sharedGameObject.Value = sharedTransform.Value.gameObject;
       return TaskStatus.Success;

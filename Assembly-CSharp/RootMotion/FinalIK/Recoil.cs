@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace RootMotion.FinalIK
 {
@@ -40,7 +42,7 @@ namespace RootMotion.FinalIK
     private bool handRotationsSet;
     private Vector3 aimIKAxis;
 
-    public bool isFinished => (double) Time.time > endTime;
+    public bool isFinished => Time.time > (double) endTime;
 
     public void SetHandRotations(Quaternion leftHandRotation, Quaternion rightHandRotation)
     {
@@ -50,12 +52,12 @@ namespace RootMotion.FinalIK
 
     public void Fire(float magnitude)
     {
-      float num = magnitude * UnityEngine.Random.value * magnitudeRandom;
+      float num = magnitude * Random.value * magnitudeRandom;
       magnitudeMlp = magnitude + num;
-      randomRotation = Quaternion.Euler(rotationRandom * UnityEngine.Random.value);
+      randomRotation = Quaternion.Euler(rotationRandom * Random.value);
       foreach (RecoilOffset offset in offsets)
         offset.Start();
-      blendWeight = (double) Time.time >= endTime ? 1f : 0.0f;
+      blendWeight = Time.time >= (double) endTime ? 1f : 0.0f;
       Keyframe[] keys = recoilWeight.keys;
       length = keys[keys.Length - 1].time;
       endTime = Time.time + length;
@@ -63,20 +65,20 @@ namespace RootMotion.FinalIK
 
     protected override void OnModifyOffset()
     {
-      if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
+      if (aimIK != null)
         aimIKAxis = aimIK.solver.axis;
-      if ((double) Time.time >= endTime)
+      if (Time.time >= (double) endTime)
       {
         rotationOffset = Quaternion.identity;
       }
       else
       {
-        if (!initiated && (UnityEngine.Object) ik != (UnityEngine.Object) null)
+        if (!initiated && ik != null)
         {
           initiated = true;
           IKSolverFullBodyBiped solver1 = ik.solver;
           solver1.OnPostUpdate = solver1.OnPostUpdate + AfterFBBIK;
-          if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
+          if (aimIK != null)
           {
             IKSolverAim solver2 = aimIK.solver;
             solver2.OnPostUpdate = solver2.OnPostUpdate + AfterAimIK;
@@ -85,7 +87,7 @@ namespace RootMotion.FinalIK
         blendTime = Mathf.Max(blendTime, 0.0f);
         blendWeight = blendTime <= 0.0 ? 1f : Mathf.Min(blendWeight + Time.deltaTime * (1f / blendTime), 1f);
         w = Mathf.Lerp(w, recoilWeight.Evaluate(length - (endTime - Time.time)) * magnitudeMlp, blendWeight);
-        Quaternion rotation = randomRotation * (!((UnityEngine.Object) aimIK != (UnityEngine.Object) null) || !((UnityEngine.Object) aimIK.solver.transform != (UnityEngine.Object) null) || aimIKSolvedLast ? ik.references.root.rotation : Quaternion.LookRotation(aimIK.solver.IKPosition - aimIK.solver.transform.position, ik.references.root.up));
+        Quaternion rotation = randomRotation * (!(aimIK != null) || !(aimIK.solver.transform != null) || aimIKSolvedLast ? ik.references.root.rotation : Quaternion.LookRotation(aimIK.solver.IKPosition - aimIK.solver.transform.position, ik.references.root.up));
         foreach (RecoilOffset offset in offsets)
           offset.Apply(ik.solver, rotation, w, length, endTime - Time.time);
         if (!handRotationsSet)
@@ -99,7 +101,7 @@ namespace RootMotion.FinalIK
           secondaryHandRelativeRotation = Quaternion.Inverse(primaryHand.rotation) * secondaryHand.rotation;
           secondaryHandEffector.positionOffset += primaryHand.position + primaryHandEffector.positionOffset + handRotation * vector3 - (secondaryHand.position + secondaryHandEffector.positionOffset);
         }
-        if (!((UnityEngine.Object) aimIK != (UnityEngine.Object) null) || !aimIKSolvedLast)
+        if (!(aimIK != null) || !aimIKSolvedLast)
           return;
         aimIK.solver.axis = Quaternion.Inverse(ik.references.root.rotation) * Quaternion.Inverse(rotationOffset) * aimIKAxis;
       }
@@ -107,7 +109,7 @@ namespace RootMotion.FinalIK
 
     private void AfterFBBIK()
     {
-      if ((double) Time.time >= endTime)
+      if (Time.time >= (double) endTime)
         return;
       primaryHand.rotation = handRotation;
       if (!twoHanded)
@@ -145,11 +147,11 @@ namespace RootMotion.FinalIK
     protected override void OnDestroy()
     {
       base.OnDestroy();
-      if (!((UnityEngine.Object) ik != (UnityEngine.Object) null) || !initiated)
+      if (!(ik != null) || !initiated)
         return;
       IKSolverFullBodyBiped solver1 = ik.solver;
       solver1.OnPostUpdate = solver1.OnPostUpdate - AfterFBBIK;
-      if ((UnityEngine.Object) aimIK != (UnityEngine.Object) null)
+      if (aimIK != null)
       {
         IKSolverAim solver2 = aimIK.solver;
         solver2.OnPostUpdate = solver2.OnPostUpdate - AfterAimIK;

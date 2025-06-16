@@ -4,6 +4,8 @@ using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -23,8 +25,8 @@ namespace Engine.Impl.UI.Menu.Main
     protected override void Awake()
     {
       gameActionService = ServiceLocator.GetService<GameActionService>();
-      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
-      joystickLayout = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      layout = Instantiate(listLayoutPrefab, transform, false);
+      joystickLayout = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       joystickLayout.SetName("{UI.Pingle.KeyMaps.ChangeKeyMap}");
       joystickLayout.SetValueNames(new string[3]
       {
@@ -33,7 +35,7 @@ namespace Engine.Impl.UI.Menu.Main
         "{UI.Pingle.PresetC}"
       });
       joystickLayout.SetSetting(InstanceByRequest<InputGameSetting>.Instance.JoystickLayout);
-      buttonCancel.onClick.AddListener(new UnityAction(CancelSelection));
+      buttonCancel.onClick.AddListener(CancelSelection);
       base.Awake();
     }
 
@@ -76,7 +78,7 @@ namespace Engine.Impl.UI.Menu.Main
     {
       Clear();
       Fill();
-      LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
+      LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
     }
 
     public void Fill()
@@ -85,7 +87,7 @@ namespace Engine.Impl.UI.Menu.Main
       {
         if (!bind.Hide)
         {
-          KeySettingsItemView settingsItemView = UnityEngine.Object.Instantiate<KeySettingsItemView>(selectableViewPrefab, (Transform) layout.Content, false);
+          KeySettingsItemView settingsItemView = Instantiate(selectableViewPrefab, layout.Content, false);
           items.Add(settingsItemView);
           settingsItemView.GameActionGroup = bind;
           if (bind.IsChangeble)
@@ -103,7 +105,7 @@ namespace Engine.Impl.UI.Menu.Main
       {
         InputService.Instance.onJoystickUsedChanged -= items[index].OnJoystickUsedChanged;
         items[index].Selectable.ClickEvent -= OnItemClicked;
-        UnityEngine.Object.Destroy((UnityEngine.Object) items[index].gameObject);
+        Destroy(items[index].gameObject);
       }
       items.Clear();
     }
@@ -123,12 +125,12 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void SelectItem(SelectableSettingsItemView item)
     {
-      if ((UnityEngine.Object) listeningItem == (UnityEngine.Object) item)
+      if (listeningItem == item)
         return;
-      if ((UnityEngine.Object) listeningItem != (UnityEngine.Object) null)
+      if (listeningItem != null)
         listeningItem.Selected = false;
       listeningItem = item;
-      if ((UnityEngine.Object) listeningItem != (UnityEngine.Object) null)
+      if (listeningItem != null)
       {
         listeningItem.Selected = true;
         buttonCancel.gameObject.SetActive(true);
@@ -160,6 +162,6 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void CancelSelection() => SelectItem(null);
 
-    public bool IsWaiting => (UnityEngine.Object) listeningItem != (UnityEngine.Object) null;
+    public bool IsWaiting => listeningItem != null;
   }
 }

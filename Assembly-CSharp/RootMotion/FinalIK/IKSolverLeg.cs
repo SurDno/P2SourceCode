@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -20,12 +21,12 @@ namespace RootMotion.FinalIK
 
     public override bool IsValid(ref string message)
     {
-      if ((UnityEngine.Object) pelvis.transform == (UnityEngine.Object) null || (UnityEngine.Object) thigh.transform == (UnityEngine.Object) null || (UnityEngine.Object) calf.transform == (UnityEngine.Object) null || (UnityEngine.Object) foot.transform == (UnityEngine.Object) null || (UnityEngine.Object) toe.transform == (UnityEngine.Object) null)
+      if (pelvis.transform == null || thigh.transform == null || calf.transform == null || foot.transform == null || toe.transform == null)
       {
         message = "Please assign all bone slots of the Leg IK solver.";
         return false;
       }
-      Transform transform = (Transform) Hierarchy.ContainsDuplicate((UnityEngine.Object[]) new Transform[5]
+      Transform transform = (Transform) Hierarchy.ContainsDuplicate(new Transform[5]
       {
         pelvis.transform,
         thigh.transform,
@@ -33,7 +34,7 @@ namespace RootMotion.FinalIK
         foot.transform,
         toe.transform
       });
-      if (!((UnityEngine.Object) transform != (UnityEngine.Object) null))
+      if (!(transform != null))
         return true;
       message = transform.name + " is represented multiple times in the LegIK.";
       return false;
@@ -70,15 +71,15 @@ namespace RootMotion.FinalIK
 
     public override Point GetPoint(Transform transform)
     {
-      if ((UnityEngine.Object) pelvis.transform == (UnityEngine.Object) transform)
+      if (pelvis.transform == transform)
         return pelvis;
-      if ((UnityEngine.Object) thigh.transform == (UnityEngine.Object) transform)
+      if (thigh.transform == transform)
         return thigh;
-      if ((UnityEngine.Object) calf.transform == (UnityEngine.Object) transform)
+      if (calf.transform == transform)
         return calf;
-      if ((UnityEngine.Object) foot.transform == (UnityEngine.Object) transform)
+      if (foot.transform == transform)
         return foot;
-      return (UnityEngine.Object) toe.transform == (UnityEngine.Object) transform ? toe : null;
+      return toe.transform == transform ? toe : null;
     }
 
     public override void StoreDefaultLocalState()

@@ -22,6 +22,10 @@ using Engine.Source.UI.Controls.BoolViews;
 using InputServices;
 using Inspectors;
 using Pingle;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -105,7 +109,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.OnEnable();
       Unsubscribe();
       CanShowInfoWindows = false;
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
       {
         HideInfoWindow();
         selectedStorable.SetSelected(false);
@@ -147,7 +151,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       HideableViewUtility.SetVisible(noBottleMessage.gameObject, false);
       toolSelector.ChangeItemEvent -= OnSelectorItemChange;
       CurrentMode = Modes.None;
-      if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
+      if (holdSelectedStorable != null)
       {
         holdSelectedStorable.HoldSelected(false);
         holdSelectedStorable = null;
@@ -176,7 +180,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             AutopsyWindowUnsubscribe();
             foreach (BodyPartSelectable organ in organs)
               organ.SetSelected(false);
-            if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
+            if (holdSelectedStorable != null)
               holdSelectedStorable.HoldSelected(false);
             currentOrganIndex = -1;
             break;
@@ -187,13 +191,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             {
               UnsubscribeNavigation();
               AutopsyWindowSubscribe();
-              if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+              if (selectedStorable != null)
               {
                 selectedStorable.SetSelected(false);
                 selectedStorable = null;
               }
               selectedStorable = GetStorableByComponent(toolSelector.Item);
-              if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+              if (selectedStorable != null)
               {
                 selectedStorable.SetSelected(true);
                 holdSelectedStorable = selectedStorable;
@@ -215,14 +219,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return false;
       if (type == GameActionType.RStickLeft)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(toolSelector.previousButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        ExecuteEvents.Execute(toolSelector.previousButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         OnInvalidate();
         HideInfoWindow();
         return true;
       }
       if (!(type == GameActionType.RStickRight & down))
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(toolSelector.nextButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute(toolSelector.nextButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       OnInvalidate();
       HideInfoWindow();
       return true;
@@ -280,10 +284,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           dirrection = Vector2.right;
           break;
       }
-      GameObject gameObject = toolSelector.Item == null ? UISelectableHelper.Select(organs.Where(organ => organ.OrganRemoved && !organ.OrganTaken).Select((Func<BodyPartSelectable, GameObject>) (organ => organ.gameObject)), position, (Vector3) dirrection, false) : UISelectableHelper.Select(organs.Select((Func<BodyPartSelectable, GameObject>) (organ => organ.gameObject)), position, (Vector3) dirrection, false);
-      if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+      GameObject gameObject = toolSelector.Item == null ? UISelectableHelper.Select(organs.Where(organ => organ.OrganRemoved && !organ.OrganTaken).Select(organ => organ.gameObject), position, dirrection, false) : UISelectableHelper.Select(organs.Select(organ => organ.gameObject), position, dirrection, false);
+      if (gameObject != null)
       {
-        if (currentOrganIndex != -1 && (UnityEngine.Object) organs[currentOrganIndex] != (UnityEngine.Object) null)
+        if (currentOrganIndex != -1 && organs[currentOrganIndex] != null)
         {
           organs[currentOrganIndex].SetSelected(false);
           organs[currentOrganIndex].FireConsoleOnExitEvent();
@@ -308,7 +312,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       IStorableComponent arg2,
       IStorableComponent arg3)
     {
-      if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
+      if (holdSelectedStorable != null)
       {
         holdSelectedStorable.HoldSelected(false);
         holdSelectedStorable = null;
@@ -317,7 +321,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         SetStorableByComponent(arg3);
         StorableUI storableByComponent = GetStorableByComponent(arg3);
-        if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
+        if (storableByComponent != null)
         {
           storableByComponent.HoldSelected(true);
           holdSelectedStorable = storableByComponent;
@@ -348,13 +352,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         organDamageItem.transform.parent.localPosition = new Vector3(organDamageItem.transform.parent.localPosition.x, -510f);
         buttonDrain.transform.localPosition = new Vector3(275f, buttonDrain.transform.localPosition.y);
       }
-      if ((UnityEngine.Object) holdSelectedStorable != (UnityEngine.Object) null)
+      if (holdSelectedStorable != null)
         holdSelectedStorable.HoldSelected(joystick);
       if (toolSelector.Item != null || organs.Count(organ => organ.OrganRemoved) > 0)
       {
         if (currentOrganIndex >= organs.Count || currentOrganIndex < 0)
           currentOrganIndex = organs.Count - 1;
-        if ((UnityEngine.Object) organs[currentOrganIndex] != (UnityEngine.Object) null)
+        if (organs[currentOrganIndex] != null)
         {
           organs[currentOrganIndex].SetSelected(joystick);
           if (joystick)
@@ -379,7 +383,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       itemStorage = Target;
       foreach (ContainerTarget containerTarget in containerTargets)
       {
-        if (!((UnityEngine.Object) containerTarget.View == (UnityEngine.Object) null))
+        if (!(containerTarget.View == null))
           containerTarget.View.Container = (InventoryComponent) StorageUtility.GetContainerByTemplate(itemStorage, containerTarget.Template.Value);
       }
       toolSelector.Storage = Actor;
@@ -424,7 +428,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return;
       IStorableComponent storableComponent = container.GetStorage().Items.First(x => x.Container == container);
       float linesVision = GetLinesVision();
-      if ((double) UnityEngine.Random.value >= (double) Mathf.Max(container.GetDifficulty() - linesVision, 0.0f))
+      if (Random.value >= (double) Mathf.Max(container.GetDifficulty() - linesVision, 0.0f))
         return;
       if (storableComponent?.Owner != null)
         storableComponent.Owner.Dispose();
@@ -468,10 +472,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      RegisterLayer((IAutopsyWindow) this);
+      RegisterLayer<IAutopsyWindow>(this);
       foreach (ContainerTarget containerTarget in containerTargets)
       {
-        if (!((UnityEngine.Object) containerTarget.View == (UnityEngine.Object) null))
+        if (!(containerTarget.View == null))
         {
           containerTarget.View.SelectEvent += OnContainerSelect;
           containerTarget.View.DeselectEvent += OnContainerDeselect;
@@ -587,12 +591,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       base.UpdateContainerStates();
       foreach (KeyValuePair<IStorableComponent, StorableUI> storable in storables)
       {
-        if (storable.Key != null && (UnityEngine.Object) storable.Value != (UnityEngine.Object) null)
+        if (storable.Key != null && storable.Value != null)
           storable.Value.ShowCount(!ItemIsOrgan(storable.Key));
       }
       foreach (ContainerTarget containerTarget in containerTargets)
       {
-        if (!((UnityEngine.Object) containerTarget.View == (UnityEngine.Object) null))
+        if (!(containerTarget.View == null))
         {
           InventoryComponent container = containerTarget.View.Container;
           if (container == null)
@@ -637,7 +641,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
+      if (windowContextMenu != null)
       {
         HideContextMenu();
       }

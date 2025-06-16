@@ -17,6 +17,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components.Crowds;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Components
 {
@@ -167,7 +169,7 @@ namespace Engine.Source.Components
       float max = templates.Sum(t => t.Weight);
       if (max == 0.0)
         return null;
-      float num1 = UnityEngine.Random.Range(0.0f, max);
+      float num1 = Random.Range(0.0f, max);
       float num2 = 0.0f;
       for (int index = 0; index < templates.Count; ++index)
       {
@@ -182,10 +184,10 @@ namespace Engine.Source.Components
     {
       roots.PlayGiveBloodSound();
       TimeSpan gameTime = ServiceLocator.GetService<TimeService>().GameTime;
-      int num1 = UnityEngine.Random.Range(herbsCountMin, herbsCountMax + 1);
+      int num1 = Random.Range(herbsCountMin, herbsCountMax + 1);
       for (int index = 0; index < num1 && grownHerbsCount < herbsBudget; ++index)
       {
-        float num2 = 60f * UnityEngine.Random.Range(HerbsGrowTimeInMinutesMin, herbsGrowTimeInMinutesMax);
+        float num2 = 60f * Random.Range(HerbsGrowTimeInMinutesMin, herbsGrowTimeInMinutesMax);
         herbGrowTimesLeftSorted.Add(gameTime.TotalSeconds + num2);
         ++grownHerbsCount;
       }
@@ -295,7 +297,7 @@ namespace Engine.Source.Components
     {
       if (spawnPoints.Count == 0 || herbGrowTimesLeftSorted.Count == 0 || templates.Count == 0 || ServiceLocator.GetService<TimeService>().GameTime.TotalSeconds < herbGrowTimesLeftSorted[0])
         return;
-      int num = UnityEngine.Random.Range(0, spawnPoints.Count);
+      int num = Random.Range(0, spawnPoints.Count);
       herbGrowTimesLeftSorted.RemoveAt(0);
       if (state == HerbRootsComponentStateEnum.Active)
         interactable.IsEnabled = herbGrowTimesLeftSorted.Count == 0;
@@ -327,25 +329,25 @@ namespace Engine.Source.Components
     private void OnGameObjectChangedEvent()
     {
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       roots = gameObject.GetComponent<HerbRoots>();
-      if ((UnityEngine.Object) roots == (UnityEngine.Object) null)
+      if (roots == null)
       {
-        Debug.LogError((object) (typeof (HerbRoots).Name + " is not attached : " + Owner.GetInfo()), (UnityEngine.Object) gameObject);
+        Debug.LogError(typeof (HerbRoots).Name + " is not attached : " + Owner.GetInfo(), gameObject);
       }
       else
       {
         for (int index = 0; index < gameObject.transform.childCount; ++index)
         {
-          if (!((UnityEngine.Object) gameObject.transform.GetChild(index).GetComponentNonAlloc<HerbRootsSpawnPoint>() == (UnityEngine.Object) null))
+          if (!(gameObject.transform.GetChild(index).GetComponentNonAlloc<HerbRootsSpawnPoint>() == null))
             spawnPoints.Add(new HerbRootsPointInfo {
               CenterPoint = gameObject.transform.GetChild(index).position,
               Entity = null
             });
         }
         if (spawnPoints.Count == 0)
-          Debug.LogError((object) ("Zero spawn points count, owner : " + Owner.GetInfo()));
+          Debug.LogError("Zero spawn points count, owner : " + Owner.GetInfo());
         spawnPointsAttached = true;
       }
     }
@@ -392,7 +394,7 @@ namespace Engine.Source.Components
       this.waitingPoint = null;
       if (waitingPoint == null)
       {
-        Debug.LogError((object) ("Point not found : " + Owner.GetInfo()));
+        Debug.LogError("Point not found : " + Owner.GetInfo());
       }
       else
       {
@@ -401,7 +403,7 @@ namespace Engine.Source.Components
         if (component != null)
           component.TeleportTo(locationItem.Location, waitingPoint.CenterPoint, Quaternion.identity);
         else
-          Debug.LogError((object) ("NavigationComponent not found : " + entity.GetInfo()));
+          Debug.LogError("NavigationComponent not found : " + entity.GetInfo());
       }
     }
 

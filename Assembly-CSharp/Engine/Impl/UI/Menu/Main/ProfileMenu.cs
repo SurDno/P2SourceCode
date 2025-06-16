@@ -9,6 +9,9 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.Services.Profiles;
 using Engine.Source.UI;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -47,7 +50,7 @@ namespace Engine.Impl.UI.Menu.Main
     private void Awake()
     {
       profilesService = ServiceLocator.GetService<ProfilesService>();
-      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
+      layout = Instantiate(listLayoutPrefab, transform, false);
       scroll = layout.transform.GetChild(0).GetComponent<ScrollRect>();
     }
 
@@ -62,10 +65,10 @@ namespace Engine.Impl.UI.Menu.Main
       if (down)
       {
         SelectItem(items[currentSelected > 0 ? currentSelected - 1 : items.Count - 1]);
-        scrollCoroutine = this.StartCoroutine(ScrollCoroutine(true));
+        scrollCoroutine = StartCoroutine(ScrollCoroutine(true));
       }
       else if (scrollCoroutine != null)
-        this.StopCoroutine(scrollCoroutine);
+        StopCoroutine(scrollCoroutine);
       return true;
     }
 
@@ -74,21 +77,21 @@ namespace Engine.Impl.UI.Menu.Main
       if (down)
       {
         SelectItem(items[currentSelected < items.Count - 1 ? currentSelected + 1 : 0]);
-        scrollCoroutine = this.StartCoroutine(ScrollCoroutine(false));
+        scrollCoroutine = StartCoroutine(ScrollCoroutine(false));
       }
       else if (scrollCoroutine != null)
-        this.StopCoroutine(scrollCoroutine);
+        StopCoroutine(scrollCoroutine);
       return true;
     }
 
     private IEnumerator ScrollCoroutine(bool isUp)
     {
-      yield return (object) new WaitForSeconds(0.5f);
+      yield return new WaitForSeconds(0.5f);
       while (true)
       {
         int sellected = !isUp ? (currentSelected < items.Count - 1 ? currentSelected + 1 : 0) : (currentSelected > 0 ? currentSelected - 1 : items.Count - 1);
         SelectItem(items[sellected]);
-        yield return (object) new WaitForSeconds(0.05f);
+        yield return new WaitForSeconds(0.05f);
       }
     }
 
@@ -110,12 +113,12 @@ namespace Engine.Impl.UI.Menu.Main
     {
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, SelectPrevious, true);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickDown, SelectNext, true);
-      if (!(bool) (UnityEngine.Object) selectedItem || !canDelete)
+      if (!(bool) (Object) selectedItem || !canDelete)
         return;
       int selectedIndex = 0;
       for (int index = 0; index < items.Count; ++index)
       {
-        if ((UnityEngine.Object) items[index] == (UnityEngine.Object) selectedItem)
+        if (items[index] == selectedItem)
         {
           selectedIndex = index;
           break;
@@ -126,7 +129,7 @@ namespace Engine.Impl.UI.Menu.Main
       Fill();
       CoroutineService.Instance.WaitFrame(1, (Action) (() =>
       {
-        LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
+        LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
         if (items.Count <= 0)
           return;
         selectedIndex = Mathf.Min(selectedIndex, items.Count - 1);
@@ -140,7 +143,7 @@ namespace Engine.Impl.UI.Menu.Main
       for (int index = 0; index < items.Count; ++index)
       {
         items[index].GetComponent<SelectableSettingsItemView>().ClickEvent -= OnClickItem;
-        UnityEngine.Object.Destroy((UnityEngine.Object) items[index].gameObject);
+        Destroy(items[index].gameObject);
       }
       items.Clear();
     }
@@ -154,7 +157,7 @@ namespace Engine.Impl.UI.Menu.Main
       for (int index = profiles.Count - 1; index >= 0; --index)
       {
         ProfileData profile = profiles[index];
-        SelectableSettingsItemView settingsItemView2 = UnityEngine.Object.Instantiate<SelectableSettingsItemView>(selectableViewPrefab, (Transform) layout.Content, false);
+        SelectableSettingsItemView settingsItemView2 = Instantiate(selectableViewPrefab, layout.Content, false);
         items.Add(settingsItemView2);
         string str = ProfilesUtility.ConvertProfileName(profile.Name, "{UI.Menu.Main.Profile.LongFormat}");
         if (profile == current)
@@ -183,7 +186,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void LoadSelected()
     {
-      if (!(bool) (UnityEngine.Object) selectedItem || !canLoad)
+      if (!(bool) (Object) selectedItem || !canLoad)
         return;
       profilesService.SetCurrent(selectedItem.name);
       ServiceLocator.GetService<UIService>().Swap<IStartLoadGameWindow>();
@@ -191,7 +194,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void OnDisable()
     {
-      if ((UnityEngine.Object) confirmationInstance != (UnityEngine.Object) null)
+      if (confirmationInstance != null)
         confirmationInstance.Hide();
       Clear();
       profiles = null;
@@ -211,7 +214,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void OnClickItem(SelectableSettingsItemView item)
     {
-      if ((UnityEngine.Object) item == (UnityEngine.Object) selectedItem)
+      if (item == selectedItem)
         LoadSelected();
       else
         SelectItem(item);
@@ -219,33 +222,33 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void SelectItem(SelectableSettingsItemView item)
     {
-      if ((UnityEngine.Object) item == (UnityEngine.Object) this.selectedItem)
+      if (item == this.selectedItem)
         return;
-      if ((bool) (UnityEngine.Object) this.selectedItem)
+      if ((bool) (Object) this.selectedItem)
         this.selectedItem.Selected = false;
       this.selectedItem = item;
       SelectableSettingsItemView selectedItem = this.selectedItem;
       bool flag = false;
-      if ((bool) (UnityEngine.Object) selectedItem)
+      if ((bool) (Object) selectedItem)
       {
         this.selectedItem.Selected = true;
         selectedFileView.StringValue = this.selectedItem.name;
         flag = profilesService.Current.Name == this.selectedItem.name;
       }
-      loadButton.interactable = (bool) (UnityEngine.Object) selectedItem;
-      canLoad = (bool) (UnityEngine.Object) selectedItem;
-      deleteButton.interactable = (bool) (UnityEngine.Object) selectedItem && !flag;
-      canDelete = (bool) (UnityEngine.Object) selectedItem && !flag;
+      loadButton.interactable = (bool) (Object) selectedItem;
+      canLoad = (bool) (Object) selectedItem;
+      deleteButton.interactable = (bool) (Object) selectedItem && !flag;
+      canDelete = (bool) (Object) selectedItem && !flag;
       removeTipObject.SetActive(canDelete);
-      hasSelectedView.Visible = (bool) (UnityEngine.Object) selectedItem;
+      hasSelectedView.Visible = (bool) (Object) selectedItem;
       currentSelected = items.IndexOf(item);
       FillForSelected(currentSelected);
     }
 
     private void ShowConfirmation(string text, Action onAccept)
     {
-      if ((UnityEngine.Object) confirmationInstance == (UnityEngine.Object) null)
-        confirmationInstance = UnityEngine.Object.Instantiate<ConfirmationWindow>(confirmationPrefab, this.transform, false);
+      if (confirmationInstance == null)
+        confirmationInstance = Instantiate(confirmationPrefab, transform, false);
       confirmationInstance.Show(text, onAccept, (Action) (() =>
       {
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickUp, SelectPrevious, true);
@@ -264,7 +267,7 @@ namespace Engine.Impl.UI.Menu.Main
       Vector2 anchoredPosition = component.anchoredPosition;
       if (num2 - (double) anchoredPosition.y > height)
         anchoredPosition.y = num2 + (double) anchoredPosition.y > height ? num2 - height : 0.0f;
-      else if (num2 - num1 * 2.0 - (double) anchoredPosition.y < 0.0)
+      else if (num2 - num1 * 2.0 - anchoredPosition.y < 0.0)
         anchoredPosition.y = num2 - num1 * 2f;
       component.anchoredPosition = anchoredPosition;
     }

@@ -7,6 +7,7 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {

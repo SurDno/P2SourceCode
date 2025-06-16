@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Behaviours.Unity.Mecanim
 {
@@ -19,7 +21,7 @@ namespace Engine.Behaviours.Unity.Mecanim
       audioGO = new GameObject("Sound3D");
       audioGO.transform.SetParent(component.Head, false);
       AudioSource audioSource = audioGO.AddComponent<AudioSource>();
-      audioSource.clip = Clips[UnityEngine.Random.Range(0, Clips.Length)];
+      audioSource.clip = Clips[Random.Range(0, Clips.Length)];
       audioSource.volume = Volume * 0.5f;
       audioSource.spatialBlend = 1f;
       audioSource.minDistance = 0.4f;
@@ -31,7 +33,7 @@ namespace Engine.Behaviours.Unity.Mecanim
       AnimatorStateInfo animatorStateInfo,
       int layerIndex)
     {
-      UnityEngine.Object.Destroy((UnityEngine.Object) audioGO);
+      Destroy(audioGO);
     }
   }
 }

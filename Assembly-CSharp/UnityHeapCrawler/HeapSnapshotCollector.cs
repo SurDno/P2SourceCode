@@ -4,6 +4,10 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using Cofe.Utility;
+using JetBrains.Annotations;
+using UnityEngine;
+using UnityEngine.Profiling;
+using Object = UnityEngine.Object;
 
 namespace UnityHeapCrawler
 {
@@ -46,7 +50,7 @@ namespace UnityHeapCrawler
       HierarchySettings = CrawlSettings.CreateHierarchy(CollectRootHierarchyGameObjects);
       ScriptableObjectsSettings = CrawlSettings.CreateScriptableObjects((Action) (() => CollectUnityObjects(typeof (ScriptableObject))));
       PrefabsSettings = CrawlSettings.CreatePrefabs(CollectPrefabs);
-      UnityObjectsSettings = CrawlSettings.CreateUnityObjects((Action) (() => CollectUnityObjects(typeof (UnityEngine.Object))));
+      UnityObjectsSettings = CrawlSettings.CreateUnityObjects((Action) (() => CollectUnityObjects(typeof (Object))));
       forbiddenTypes.Add(typeof (TypeData));
       forbiddenTypes.Add(typeof (TypeStats));
     }
@@ -82,7 +86,7 @@ namespace UnityHeapCrawler
         unityObjects.Clear();
         if (UnityObjectsSettings != null)
         {
-          foreach (object obj in Resources.FindObjectsOfTypeAll<UnityEngine.Object>())
+          foreach (object obj in Resources.FindObjectsOfTypeAll<Object>())
             unityObjects.Add(obj);
         }
         int size1 = 0;
@@ -103,7 +107,7 @@ namespace UnityHeapCrawler
       PrintTypeStats(TypeSizeMode.Self, "types-self.txt");
       PrintTypeStats(TypeSizeMode.Total, "types-total.txt");
       PrintTypeStats(TypeSizeMode.Native, "types-native.txt");
-      Debug.Log((object) ("Heap snapshot created: " + output));
+      Debug.Log("Heap snapshot created: " + output);
     }
 
     private void PrintTypeStats(TypeSizeMode mode, string filename)
@@ -171,7 +175,7 @@ namespace UnityHeapCrawler
             }
             catch (Exception ex)
             {
-              Debug.LogError((object) ("Error get value from type : " + type1 + "\r\n" + ex));
+              Debug.LogError("Error get value from type : " + type1 + "\r\n" + ex);
               continue;
             }
             if (root != null)
@@ -189,8 +193,8 @@ namespace UnityHeapCrawler
       foreach (object unityObject in unityObjects)
       {
         GameObject root = unityObject as GameObject;
-        if (!((UnityEngine.Object) root == (UnityEngine.Object) null) && root.scene.IsValid() && !((UnityEngine.Object) root.transform.parent != (UnityEngine.Object) null))
-          EnqueueRoot((object) root, root.name, false);
+        if (!(root == null) && root.scene.IsValid() && !(root.transform.parent != null))
+          EnqueueRoot(root, root.name, false);
       }
     }
 
@@ -199,8 +203,8 @@ namespace UnityHeapCrawler
       foreach (object unityObject in unityObjects)
       {
         GameObject root = unityObject as GameObject;
-        if (!((UnityEngine.Object) root == (UnityEngine.Object) null) && !root.scene.IsValid() && !((UnityEngine.Object) root.transform.parent != (UnityEngine.Object) null))
-          EnqueueRoot((object) root, root.name, false);
+        if (!(root == null) && !root.scene.IsValid() && !(root.transform.parent != null))
+          EnqueueRoot(root, root.name, false);
       }
     }
 
@@ -210,8 +214,8 @@ namespace UnityHeapCrawler
       {
         if (type.IsInstanceOfType(unityObject))
         {
-          UnityEngine.Object root = (UnityEngine.Object) unityObject;
-          EnqueueRoot((object) root, root.name, false);
+          Object root = (Object) unityObject;
+          EnqueueRoot(root, root.name, false);
         }
       }
     }
@@ -339,18 +343,18 @@ namespace UnityHeapCrawler
       [NotNull] CrawlSettings crawlSettings)
     {
       GameObject gameObject1 = v as GameObject;
-      if ((UnityEngine.Object) gameObject1 == (UnityEngine.Object) null)
+      if (gameObject1 == null)
         return;
       foreach (Component component in gameObject1.GetComponents<Component>())
       {
         if (component != null)
-          QueueValue(parent, queue, (object) component, TypeUtility.GetTypeName(((object) component).GetType()), crawlSettings);
+          QueueValue(parent, queue, component, TypeUtility.GetTypeName(component.GetType()), crawlSettings);
       }
       Transform transform = gameObject1.transform;
       for (int index = 0; index < transform.childCount; ++index)
       {
         GameObject gameObject2 = transform.GetChild(index).gameObject;
-        QueueValue(parent, queue, (object) gameObject2, gameObject2.name, crawlSettings);
+        QueueValue(parent, queue, gameObject2, gameObject2.name, crawlSettings);
       }
     }
 

@@ -1,4 +1,7 @@
-﻿[RequireComponent(typeof (Light))]
+﻿using UnityEngine;
+using UnityEngine.Rendering;
+
+[RequireComponent(typeof (Light))]
 [ExecuteInEditMode]
 public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
 {
@@ -6,7 +9,7 @@ public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
   [Tooltip("If disabled, NGSS Directional shadows replacement will be removed from Graphics settings when OnDisable is called in this component.")]
   public bool NGSS_KEEP_ONDISABLE = true;
   [Tooltip("Useful if you want to fallback to hard shadows at runtime without having to disable the component.")]
-  public bool NGSS_HARD_SHADOWS = false;
+  public bool NGSS_HARD_SHADOWS;
   [Header(" ")]
   [Tooltip("Used to test blocker search and early bail out algorithms.\nRecommended values: Mobile = 16, Consoles = 24, Desktop VR = 32, Desktop High = 64, Desktop Ultra 128")]
   [Range(1f, 128f)]
@@ -34,7 +37,7 @@ public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
   [Header(" ")]
   [Header("GLOBAL SETTINGS")]
   [Tooltip("Enable it to let NGSS_Directional control global shadows settings through this component.\nDisable it if you want to manage shadows settings through Unity Quality & Graphics Settings panel.")]
-  public bool GLOBAL_SETTINGS_OVERRIDE = false;
+  public bool GLOBAL_SETTINGS_OVERRIDE;
   [Tooltip("Shadows projection.\nRecommeded StableFit as it helps stabilizing shadows as camera moves.")]
   public ShadowProjection GLOBAL_SHADOWS_PROJECTION = ShadowProjection.StableFit;
   [Tooltip("Shadows resolution.\nLow = 1024, Med = 2048, High = 4096, Ultra = 8192, Mega = 16384.")]
@@ -64,8 +67,8 @@ public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
   {
     get
     {
-      if ((Object) _dirLight == (Object) null)
-        _dirLight = this.GetComponent<Light>();
+      if (_dirLight == null)
+        _dirLight = GetComponent<Light>();
       return _dirLight;
     }
   }
@@ -84,8 +87,8 @@ public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
   {
     if (IsNotSupported())
     {
-      Debug.LogWarning((object) "Unsupported graphics API, NGSS requires at least SM3.0 or higher and DX9 is not supported.", (Object) this);
-      this.enabled = false;
+      Debug.LogWarning("Unsupported graphics API, NGSS requires at least SM3.0 or higher and DX9 is not supported.", this);
+      enabled = false;
     }
     else
       Init();
@@ -120,9 +123,9 @@ public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
     {
       Shader.DisableKeyword("NGSS_HARD_SHADOWS_DIR");
       dirLight.shadows = LightShadows.Soft;
-      Shader.SetGlobalFloat("NGSS_TEST_SAMPLERS", (float) NGSS_TEST_SAMPLERS);
-      Shader.SetGlobalFloat("NGSS_FILTER_SAMPLERS", (float) NGSS_FILTER_SAMPLERS);
-      double num1 = NGSS_SOFTNESS / ((double) QualitySettings.shadowDistance * 0.6600000262260437);
+      Shader.SetGlobalFloat("NGSS_TEST_SAMPLERS", NGSS_TEST_SAMPLERS);
+      Shader.SetGlobalFloat("NGSS_FILTER_SAMPLERS", NGSS_FILTER_SAMPLERS);
+      double num1 = NGSS_SOFTNESS / (QualitySettings.shadowDistance * 0.6600000262260437);
       double num2;
       switch (QualitySettings.shadowCascades)
       {
@@ -165,7 +168,7 @@ public class NGSS_Directional : MonoBehaviourInstance<NGSS_Directional>
       if (GLOBAL_CASCADES_COUNT > 1)
       {
         Shader.SetGlobalFloat("NGSS_CASCADES_SOFTNESS_NORMALIZATION", NGSS_CASCADES_SOFTNESS_NORMALIZATION);
-        Shader.SetGlobalFloat("NGSS_CASCADES_COUNT", (float) QualitySettings.shadowCascades);
+        Shader.SetGlobalFloat("NGSS_CASCADES_COUNT", QualitySettings.shadowCascades);
         Shader.SetGlobalVector("NGSS_CASCADES_SPLITS", QualitySettings.shadowCascades == 2 ? new Vector4(QualitySettings.shadowCascade2Split, 1f, 1f, 1f) : new Vector4(QualitySettings.shadowCascade4Split.x, QualitySettings.shadowCascade4Split.y, QualitySettings.shadowCascade4Split.z, 1f));
       }
       if (NGSS_CASCADES_BLENDING && GLOBAL_CASCADES_COUNT > 1)

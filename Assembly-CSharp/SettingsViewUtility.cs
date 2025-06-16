@@ -1,4 +1,6 @@
-﻿public static class SettingsViewUtility
+﻿using UnityEngine;
+
+public static class SettingsViewUtility
 {
   public static string GammaValueName(float value)
   {

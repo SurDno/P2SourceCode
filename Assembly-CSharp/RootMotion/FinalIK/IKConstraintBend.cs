@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -26,7 +27,7 @@ namespace RootMotion.FinalIK
 
     public bool IsValid(IKSolverFullBody solver, Warning.Logger logger)
     {
-      if ((UnityEngine.Object) bone1 == (UnityEngine.Object) null || (UnityEngine.Object) bone2 == (UnityEngine.Object) null || (UnityEngine.Object) bone3 == (UnityEngine.Object) null)
+      if (bone1 == null || bone2 == null || bone3 == null)
       {
         if (logger != null)
           logger("Bend Constraint contains a null reference.");
@@ -84,11 +85,11 @@ namespace RootMotion.FinalIK
     public void SetLimbOrientation(Vector3 upper, Vector3 lower, Vector3 last)
     {
       if (upper == Vector3.zero)
-        Debug.LogError((object) "Attempting to set limb orientation to Vector3.zero axis");
+        Debug.LogError("Attempting to set limb orientation to Vector3.zero axis");
       if (lower == Vector3.zero)
-        Debug.LogError((object) "Attempting to set limb orientation to Vector3.zero axis");
+        Debug.LogError("Attempting to set limb orientation to Vector3.zero axis");
       if (last == Vector3.zero)
-        Debug.LogError((object) "Attempting to set limb orientation to Vector3.zero axis");
+        Debug.LogError("Attempting to set limb orientation to Vector3.zero axis");
       defaultLocalDirection = upper.normalized;
       defaultChildDirection = last.normalized;
     }
@@ -121,7 +122,7 @@ namespace RootMotion.FinalIK
       if (!initiated)
         return Vector3.zero;
       float t = weight * solver.IKPositionWeight;
-      if ((UnityEngine.Object) bendGoal != (UnityEngine.Object) null)
+      if (bendGoal != null)
       {
         Vector3 vector3 = bendGoal.position - solver.GetNode(chainIndex1, nodeIndex1).solverPosition;
         if (vector3 != Vector3.zero)

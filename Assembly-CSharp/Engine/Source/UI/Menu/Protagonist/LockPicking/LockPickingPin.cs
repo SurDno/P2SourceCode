@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.UI.Menu.Protagonist.LockPicking
+﻿using UnityEngine;
+
+namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 {
   public class LockPickingPin : MonoBehaviour
   {
@@ -31,7 +33,7 @@
         if (position == (double) value)
           return;
         position = value;
-        this.transform.localEulerAngles = new Vector3(0.0f, 0.0f, Mathf.Lerp(rotationRange.x, rotationRange.y, position));
+        transform.localEulerAngles = new Vector3(0.0f, 0.0f, Mathf.Lerp(rotationRange.x, rotationRange.y, position));
       }
     }
 
@@ -90,7 +92,7 @@
       if (spots == null)
         return;
       foreach (Spot spot in spots)
-        Object.Destroy((Object) spot.View.gameObject);
+        Destroy(spot.View.gameObject);
       spots = null;
     }
 
@@ -107,7 +109,7 @@
         index %= sourSpotPrototypes.Length;
         original = sourSpotPrototypes[index];
       }
-      LockPickingPinSpot view = Object.Instantiate<LockPickingPinSpot>(original, original.transform.parent);
+      LockPickingPinSpot view = Instantiate(original, original.transform.parent);
       view.transform.SetParent(original.transform.parent, false);
       return view;
     }

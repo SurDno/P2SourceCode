@@ -8,6 +8,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -31,15 +32,15 @@ namespace Engine.BehaviourNodes.Conditionals
 
     public override TaskStatus OnUpdate()
     {
-      if (Target == null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target == null || Target.Value == null)
       {
-        Debug.LogWarningFormat("{0}: target is null", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: target is null", gameObject.name);
         return TaskStatus.Failure;
       }
-      return (double) ((Target.Value.transform.position - gameObject.transform.position) with
+      return ((Target.Value.transform.position - gameObject.transform.position) with
       {
         y = 0.0f
-      }).magnitude < Distance ? TaskStatus.Success : TaskStatus.Failure;
+      }).magnitude < (double) Distance ? TaskStatus.Success : TaskStatus.Failure;
     }
 
     public void DataWrite(IDataWriter writer)

@@ -1,8 +1,10 @@
-﻿using System;
-using Engine.Common.Services;
+﻿using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 public class PlagueIntroExplosionTrigger : MonoBehaviour
 {
@@ -22,10 +24,10 @@ public class PlagueIntroExplosionTrigger : MonoBehaviour
     if (done)
       return;
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null || !((UnityEngine.Object) playerGameObject == (UnityEngine.Object) other.gameObject))
+    if (playerGameObject == null || !(playerGameObject == other.gameObject))
       return;
     director.Play();
-    director.stopped += new Action<PlayableDirector>(Director_stopped);
+    director.stopped += Director_stopped;
     done = true;
     if (IsGame)
       ServiceLocator.GetService<LogicEventService>().FireCommonEvent("PlagueIntroWindowDone");
@@ -33,7 +35,7 @@ public class PlagueIntroExplosionTrigger : MonoBehaviour
 
   private void Director_stopped(PlayableDirector obj)
   {
-    director.stopped -= new Action<PlayableDirector>(Director_stopped);
+    director.stopped -= Director_stopped;
   }
 
   private GameObject GetPlayerGameObject()

@@ -1,4 +1,6 @@
-﻿public class BulletManager : MonoBehaviour
+﻿using UnityEngine;
+
+public class BulletManager : MonoBehaviour
 {
   public GameObject bullet1;
   public GameObject bullet2;

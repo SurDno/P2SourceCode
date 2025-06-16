@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using UnityEngine;
 
 public class FootageCapture : MonoBehaviour
 {
   private const string FolderName = "Capture";
   private const string FileExtension = ".png";
   public int CaptureFramerate = 30;
-  public int SuperSize = 0;
+  public int SuperSize;
   public KeyCode RecordKey = KeyCode.F9;
   public KeyCode ScreenshotKey = KeyCode.F12;
   private bool isCapturing;

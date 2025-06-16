@@ -1,5 +1,7 @@
 ﻿using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class PlagueIntroRat : MonoBehaviour
 {
@@ -15,8 +17,8 @@ public class PlagueIntroRat : MonoBehaviour
 
   private void Awake()
   {
-    agent = this.GetComponent<NavMeshAgent>();
-    animator = this.GetComponent<Animator>();
+    agent = GetComponent<NavMeshAgent>();
+    animator = GetComponent<Animator>();
     disposed = true;
   }
 
@@ -31,7 +33,7 @@ public class PlagueIntroRat : MonoBehaviour
   public void Spawn(int lockIndex, Vector3 from, Vector3 to)
   {
     this.lockIndex = lockIndex;
-    this.transform.position = from;
+    transform.position = from;
     agent.updatePosition = false;
     agent.updateRotation = false;
     agent.Warp(from);
@@ -52,9 +54,9 @@ public class PlagueIntroRat : MonoBehaviour
   {
     if (disposed)
       return;
-    if ((double) Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
+    if (Random.value < Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo((Object) this.gameObject));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(gameObject));
       Vector3 destination = agent.destination;
       agent.ResetPath();
       agent.SetDestination(destination);
@@ -66,18 +68,18 @@ public class PlagueIntroRat : MonoBehaviour
     else
     {
       float max = 60f;
-      animator.SetFloat("Turn", Mathf.Clamp(Vector3.SignedAngle(this.transform.forward, agent.desiredVelocity, Vector3.up), -max, max) / max, 0.5f, Time.deltaTime);
+      animator.SetFloat("Turn", Mathf.Clamp(Vector3.SignedAngle(transform.forward, agent.desiredVelocity, Vector3.up), -max, max) / max, 0.5f, Time.deltaTime);
       animator.SetFloat("Forward", 2f * agent.desiredVelocity.magnitude / agent.speed, 0.5f, Time.deltaTime);
-      prevForward = this.transform.forward;
+      prevForward = transform.forward;
       if (agent.pathStatus == NavMeshPathStatus.PathInvalid)
         Dispose();
-      else if (agent.hasPath && (double) agent.remainingDistance < 0.5)
+      else if (agent.hasPath && agent.remainingDistance < 0.5)
       {
         Dispose();
       }
       else
       {
-        if ((double) Random.value >= (double) Time.deltaTime / 5.0 || agent.SamplePathPosition(-1, 3f, out NavMeshHit _))
+        if (Random.value >= Time.deltaTime / 5.0 || agent.SamplePathPosition(-1, 3f, out NavMeshHit _))
           return;
         animator.SetTrigger("Jump");
       }
@@ -86,7 +88,7 @@ public class PlagueIntroRat : MonoBehaviour
 
   public void OnAnimatorMove()
   {
-    this.transform.position = animator.rootPosition with
+    transform.position = animator.rootPosition with
     {
       y = agent.nextPosition.y
     };

@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services.Simulations;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -25,7 +26,7 @@ namespace Engine.Impl.UI.Controls
 
     private void SetPlayer(IEntity entity)
     {
-      if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
+      if (!(view != null))
         return;
       view.Value = entity;
     }

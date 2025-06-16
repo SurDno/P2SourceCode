@@ -1,4 +1,6 @@
-﻿public class TOD_Resources : MonoBehaviour
+﻿using UnityEngine;
+
+public class TOD_Resources : MonoBehaviour
 {
   public Material Skybox;
   public Mesh MoonLOD0;

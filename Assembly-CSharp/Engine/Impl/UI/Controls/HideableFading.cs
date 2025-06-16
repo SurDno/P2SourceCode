@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableFading : HideableView
   {
@@ -11,7 +13,7 @@
 
     private void Update()
     {
-      if ((Object) canvasGroup == (Object) null)
+      if (canvasGroup == null)
         return;
       float alpha = canvasGroup.alpha;
       float target = Visible ? 1f : 0.0f;
@@ -29,7 +31,7 @@
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      if (!((Object) canvasGroup != (Object) null))
+      if (!(canvasGroup != null))
         return;
       canvasGroup.alpha = Visible ? 1f : 0.0f;
     }
@@ -38,7 +40,7 @@
     {
       if (!Application.isPlaying)
         SkipAnimation();
-      if (!((Object) canvasGroup != (Object) null))
+      if (!(canvasGroup != null))
         return;
       canvasGroup.interactable = Visible;
       canvasGroup.blocksRaycasts = Visible;

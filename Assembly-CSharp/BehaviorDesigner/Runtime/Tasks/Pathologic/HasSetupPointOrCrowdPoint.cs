@@ -8,6 +8,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -29,7 +30,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     {
       IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
       if (owner == null)
-        Debug.LogWarningFormat("{0} has no entity", (object) gameObject.name);
+        Debug.LogWarningFormat("{0} has no entity", gameObject.name);
       else
         success = HasSetupPoint(owner) || HasCrowdPoint(owner);
     }
@@ -40,7 +41,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       if (component == null)
         return false;
       IEntity setupPoint = component.SetupPoint;
-      return setupPoint != null && (UnityEngine.Object) ((IEntityView) setupPoint).GameObject != (UnityEngine.Object) null;
+      return setupPoint != null && ((IEntityView) setupPoint).GameObject != null;
     }
 
     private bool HasCrowdPoint(IEntity entity)
@@ -49,7 +50,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       if (component == null || component.Point == null)
         return false;
       IEntity entityPoint = component.Point.EntityPoint;
-      return entityPoint != null && (UnityEngine.Object) ((IEntityView) entityPoint).GameObject != (UnityEngine.Object) null;
+      return entityPoint != null && ((IEntityView) entityPoint).GameObject != null;
     }
 
     public override TaskStatus OnUpdate() => success ? TaskStatus.Success : TaskStatus.Failure;

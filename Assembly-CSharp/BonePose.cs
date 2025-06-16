@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections;
 using System.Xml;
+using UnityEngine;
 
 [Serializable]
 public class BonePose
 {
   public string boneName = "";
-  public Transform m_bone = (Transform) null;
+  public Transform m_bone;
   public float tx;
   public float ty;
   public float tz;
@@ -116,7 +117,7 @@ public class BonePose
 
   private float FixRotations(float r, float defr)
   {
-    if ((double) Mathf.Abs(r - defr) > 180.0)
+    if (Mathf.Abs(r - defr) > 180.0)
     {
       if (defr > 0.0)
         r = 360f + r;
@@ -135,10 +136,10 @@ public class BonePose
     else
     {
       m_bone = FindRecursive(gObject, boneName);
-      if ((UnityEngine.Object) m_bone != (UnityEngine.Object) null)
-        cache[boneName] = (object) m_bone;
+      if (m_bone != null)
+        cache[boneName] = m_bone;
     }
-    if (!((UnityEngine.Object) m_bone != (UnityEngine.Object) null) || !bKeepLocalRotations)
+    if (!(m_bone != null) || !bKeepLocalRotations)
       return;
     rx += m_bone.transform.localEulerAngles.x;
     ry += m_bone.transform.localEulerAngles.y;
@@ -147,22 +148,22 @@ public class BonePose
 
   public void Print()
   {
-    Debug.Log((object) ("bone " + boneName + " x,y,z (" + tx + "," + ty + "," + tz + ")"));
-    Debug.Log((object) ("bone " + boneName + " rx,ry,rz (" + rx + "," + ry + "," + rz + ")"));
+    Debug.Log("bone " + boneName + " x,y,z (" + tx + "," + ty + "," + tz + ")");
+    Debug.Log("bone " + boneName + " rx,ry,rz (" + rx + "," + ry + "," + rz + ")");
   }
 
   public void PrintDiff(BonePose def)
   {
     if (tx != (double) def.tx || ty != (double) def.ty || tz != (double) def.tz)
-      Debug.Log((object) (boneName + " difference in translate "));
+      Debug.Log(boneName + " difference in translate ");
     if (rx == (double) def.rx && ry == (double) def.ry && rz == (double) def.rz)
       return;
-    Debug.Log((object) (boneName + " difference in rotation"));
+    Debug.Log(boneName + " difference in rotation");
   }
 
   public void ResetToThisTransform()
   {
-    if ((UnityEngine.Object) m_bone == (UnityEngine.Object) null)
+    if (m_bone == null)
       return;
     m_bone.localPosition = m_bone.localPosition with
     {
@@ -180,7 +181,7 @@ public class BonePose
 
   public void Deform(float weight, BoneDeformMemento memento)
   {
-    if ((UnityEngine.Object) m_bone == (UnityEngine.Object) null)
+    if (m_bone == null)
       return;
     Vector3 localPosition = m_bone.localPosition;
     float tx = weight * this.tx;
@@ -204,14 +205,14 @@ public class BonePose
   private Transform FindRecursive(Transform obj, string name)
   {
     Transform recursive1 = obj.Find(name);
-    if ((UnityEngine.Object) recursive1 != (UnityEngine.Object) null)
+    if (recursive1 != null)
       return recursive1;
     foreach (Transform transform in obj)
     {
       Transform recursive2 = FindRecursive(transform, name);
-      if ((UnityEngine.Object) recursive2 != (UnityEngine.Object) null)
+      if (recursive2 != null)
         return recursive2;
     }
-    return (Transform) null;
+    return null;
   }
 }

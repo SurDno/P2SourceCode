@@ -1,11 +1,13 @@
-﻿public class ProtagonistLight : MonoBehaviour
+﻿using UnityEngine;
+
+public class ProtagonistLight : MonoBehaviour
 {
   private void LateUpdate()
   {
     ProtagonistShadersSettings instance = MonoBehaviourInstance<ProtagonistShadersSettings>.Instance;
-    if ((Object) instance == (Object) null)
+    if (instance == null)
       return;
-    Vector3 position = this.transform.parent.position;
-    this.transform.position = instance.ProtagonistToWorld(position);
+    Vector3 position = transform.parent.position;
+    transform.position = instance.ProtagonistToWorld(position);
   }
 }

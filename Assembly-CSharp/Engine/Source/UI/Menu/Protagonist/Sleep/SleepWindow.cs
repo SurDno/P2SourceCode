@@ -11,6 +11,8 @@ using Engine.Source.Services;
 using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.Sleep
 {
@@ -113,10 +115,10 @@ namespace Engine.Source.UI.Menu.Protagonist.Sleep
 
     public override void Initialize()
     {
-      RegisterLayer((ISleepWindow) this);
-      sleepButton.onClick.AddListener(new UnityAction(Sleep));
-      closeButton.onClick.AddListener(new UnityAction(CloseWindow));
-      hoursSlider.onValueChanged.AddListener(new UnityAction<float>(SetHoursText));
+      RegisterLayer<ISleepWindow>(this);
+      sleepButton.onClick.AddListener(Sleep);
+      closeButton.onClick.AddListener(CloseWindow);
+      hoursSlider.onValueChanged.AddListener(SetHoursText);
       base.Initialize();
     }
 
@@ -172,7 +174,7 @@ namespace Engine.Source.UI.Menu.Protagonist.Sleep
       ServiceLocator.GetService<LogicEventService>().FireEntityEvent(nameof (Sleep), Target);
       EngineApplication.Sleep = true;
       startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
-      delayTime = TimeSpan.FromHours((double) hoursSlider.value);
+      delayTime = TimeSpan.FromHours(hoursSlider.value);
       UpdateButtons();
       UpdateSleepValue();
     }

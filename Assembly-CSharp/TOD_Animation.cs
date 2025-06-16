@@ -1,9 +1,11 @@
 ﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class TOD_Animation : MonoBehaviour
 {
   [Tooltip("Wind direction in degrees.")]
-  public float WindDegrees = 0.0f;
+  public float WindDegrees;
   [Tooltip("Speed of the wind that is acting on the clouds.")]
   public float WindSpeed = 1f;
   private TOD_Sky sky;
@@ -14,15 +16,15 @@ public class TOD_Animation : MonoBehaviour
   {
     get
     {
-      Vector3 vector3 = this.transform.position * 0.0001f;
-      return Quaternion.Euler(0.0f, -this.transform.rotation.eulerAngles.y, 0.0f) * vector3;
+      Vector3 vector3 = transform.position * 0.0001f;
+      return Quaternion.Euler(0.0f, -transform.rotation.eulerAngles.y, 0.0f) * vector3;
     }
   }
 
   protected void Start()
   {
-    sky = this.GetComponent<TOD_Sky>();
-    CloudUV = new Vector3(UnityEngine.Random.value, UnityEngine.Random.value, UnityEngine.Random.value);
+    sky = GetComponent<TOD_Sky>();
+    CloudUV = new Vector3(Random.value, Random.value, Random.value);
   }
 
   protected void Update()

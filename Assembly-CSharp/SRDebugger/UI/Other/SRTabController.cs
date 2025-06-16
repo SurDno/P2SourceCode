@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using SRDebugger.UI.Controls;
 using SRF;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRDebugger.UI.Other
 {
@@ -27,15 +29,15 @@ namespace SRDebugger.UI.Other
 
     public void AddTab(SRTab tab, bool visibleInSidebar = true)
     {
-      tab.CachedTransform.SetParent((Transform) TabContentsContainer, false);
+      tab.CachedTransform.SetParent(TabContentsContainer, false);
       tab.CachedGameObject.SetActive(false);
       if (visibleInSidebar)
       {
-        SRTabButton srTabButton = SRInstantiate.Instantiate<SRTabButton>(TabButtonPrefab);
-        srTabButton.CachedTransform.SetParent((Transform) TabButtonContainer, false);
+        SRTabButton srTabButton = SRInstantiate.Instantiate(TabButtonPrefab);
+        srTabButton.CachedTransform.SetParent(TabButtonContainer, false);
         srTabButton.TitleText.text = tab.Title;
         srTabButton.IsActive = false;
-        srTabButton.Button.onClick.AddListener((UnityAction) (() => MakeActive(tab)));
+        srTabButton.Button.onClick.AddListener(() => MakeActive(tab));
         tab.TabButton = srTabButton;
       }
       _tabs.Add(tab);
@@ -49,24 +51,24 @@ namespace SRDebugger.UI.Other
     {
       if (!_tabs.Contains(tab))
         throw new ArgumentException("tab is not a member of this tab controller", nameof (tab));
-      if ((UnityEngine.Object) _activeTab != (UnityEngine.Object) null)
+      if (_activeTab != null)
       {
         _activeTab.CachedGameObject.SetActive(false);
-        if ((UnityEngine.Object) _activeTab.TabButton != (UnityEngine.Object) null)
+        if (_activeTab.TabButton != null)
           _activeTab.TabButton.IsActive = false;
-        if ((UnityEngine.Object) _activeTab.HeaderExtraContent != (UnityEngine.Object) null)
+        if (_activeTab.HeaderExtraContent != null)
           _activeTab.HeaderExtraContent.gameObject.SetActive(false);
       }
       _activeTab = tab;
-      if ((UnityEngine.Object) _activeTab != (UnityEngine.Object) null)
+      if (_activeTab != null)
       {
         _activeTab.CachedGameObject.SetActive(true);
         TabHeaderText.text = _activeTab.Title;
-        if ((UnityEngine.Object) _activeTab.TabButton != (UnityEngine.Object) null)
+        if (_activeTab.TabButton != null)
           _activeTab.TabButton.IsActive = true;
-        if ((UnityEngine.Object) _activeTab.HeaderExtraContent != (UnityEngine.Object) null)
+        if (_activeTab.HeaderExtraContent != null)
         {
-          _activeTab.HeaderExtraContent.SetParent((Transform) TabHeaderContentContainer, false);
+          _activeTab.HeaderExtraContent.SetParent(TabHeaderContentContainer, false);
           _activeTab.HeaderExtraContent.gameObject.SetActive(true);
         }
       }
@@ -81,7 +83,7 @@ namespace SRDebugger.UI.Other
       _tabs.Sort((t1, t2) => t1.SortIndex.CompareTo(t2.SortIndex));
       for (int index = 0; index < _tabs.Count; ++index)
       {
-        if ((UnityEngine.Object) _tabs[index].TabButton != (UnityEngine.Object) null)
+        if (_tabs[index].TabButton != null)
           _tabs[index].TabButton.CachedTransform.SetSiblingIndex(index);
       }
     }

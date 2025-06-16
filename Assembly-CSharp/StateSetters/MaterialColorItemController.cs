@@ -1,4 +1,6 @@
-﻿namespace StateSetters
+﻿using UnityEngine;
+
+namespace StateSetters
 {
   [StateSetter("{B749D8EE-A73C-4CC1-B7A1-7FAF349AFF78}")]
   public class MaterialColorItemController : MaterialPropertyItemController

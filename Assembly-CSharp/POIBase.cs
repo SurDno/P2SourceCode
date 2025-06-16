@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using Engine.Common.Components.Locations;
 using Engine.Source.Services;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 public class POIBase : MonoBehaviour
 {
@@ -32,7 +34,7 @@ public class POIBase : MonoBehaviour
     get
     {
       if (locationType == LocationType.None)
-        locationType = LocationItemUtility.GetLocationType(this.gameObject);
+        locationType = LocationItemUtility.GetLocationType(gameObject);
       return locationType;
     }
   }
@@ -64,7 +66,7 @@ public class POIBase : MonoBehaviour
 
   public void Unlock(GameObject who)
   {
-    lockedBy = (GameObject) null;
+    lockedBy = null;
     lockedByAnimation = 0;
   }
 
@@ -72,11 +74,11 @@ public class POIBase : MonoBehaviour
 
   public float GetAngle(GameObject to)
   {
-    Vector3 lhs = to.transform.position - this.transform.position;
+    Vector3 lhs = to.transform.position - transform.position;
     lhs = lhs.normalized;
-    Vector3 vector3 = this.transform.forward * -1f;
+    Vector3 vector3 = transform.forward * -1f;
     float num = Mathf.Acos(Vector3.Dot(lhs, vector3)) * 57.29578f;
-    Vector3 rhs = to.transform.position - this.transform.position;
+    Vector3 rhs = to.transform.position - transform.position;
     float y = Vector3.Cross(vector3, rhs).y;
     return num * Mathf.Sign(y);
   }
@@ -89,8 +91,8 @@ public class POIBase : MonoBehaviour
     out Vector3 closestTargetPosition,
     out Quaternion closestTargetRotation)
   {
-    closestTargetPosition = this.transform.position;
-    closestTargetRotation = this.transform.rotation;
+    closestTargetPosition = transform.position;
+    closestTargetRotation = transform.rotation;
   }
 
   public virtual void GetRandomTargetPoint(
@@ -100,7 +102,7 @@ public class POIBase : MonoBehaviour
     out Vector3 targetPosition,
     out Quaternion targetRotation)
   {
-    targetPosition = this.transform.position;
-    targetRotation = this.transform.rotation;
+    targetPosition = transform.position;
+    targetRotation = transform.rotation;
   }
 }

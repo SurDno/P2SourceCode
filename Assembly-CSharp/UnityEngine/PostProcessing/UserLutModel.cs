@@ -30,7 +30,7 @@ namespace UnityEngine.PostProcessing
         get
         {
           return new Settings {
-            lut = (Texture2D) null,
+            lut = null,
             contribution = 1f
           };
         }

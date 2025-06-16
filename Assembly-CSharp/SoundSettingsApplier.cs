@@ -1,5 +1,7 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
+using UnityEngine.Audio;
 
 public class SoundSettingsApplier : MonoBehaviour
 {

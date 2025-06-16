@@ -1,6 +1,7 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -17,7 +18,7 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         GameObject gameObject = goInput.value;
-        if ((Object) gameObject != (Object) null)
+        if (gameObject != null)
           gameObject.SetActive(enableInput.value);
         output.Call();
       });

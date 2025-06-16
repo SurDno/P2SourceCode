@@ -38,29 +38,29 @@ namespace UnityEngine.PostProcessing
       else
         context.camera.projectionMatrix = context.camera.orthographic ? GetOrthographicProjectionMatrix(offset) : GetPerspectiveProjectionMatrix(offset);
       context.camera.useJitteredProjectionMatrixForTransparentRendering = true;
-      offset.x /= (float) context.width;
-      offset.y /= (float) context.height;
-      context.materialFactory.Get("Hidden/Post FX/Temporal Anti-aliasing").SetVector(Uniforms._Jitter, (Vector4) offset);
+      offset.x /= context.width;
+      offset.y /= context.height;
+      context.materialFactory.Get("Hidden/Post FX/Temporal Anti-aliasing").SetVector(Uniforms._Jitter, offset);
       jitterVector = offset;
     }
 
     public void Render(RenderTexture source, RenderTexture destination)
     {
       Material material = context.materialFactory.Get("Hidden/Post FX/Temporal Anti-aliasing");
-      material.shaderKeywords = (string[]) null;
+      material.shaderKeywords = null;
       AntialiasingModel.TaaSettings taaSettings = model.settings.taaSettings;
-      if (m_ResetHistory || (UnityEngine.Object) m_HistoryTexture == (UnityEngine.Object) null || m_HistoryTexture.width != source.width || m_HistoryTexture.height != source.height)
+      if (m_ResetHistory || m_HistoryTexture == null || m_HistoryTexture.width != source.width || m_HistoryTexture.height != source.height)
       {
-        if ((bool) (UnityEngine.Object) m_HistoryTexture)
+        if ((bool) (Object) m_HistoryTexture)
           RenderTexture.ReleaseTemporary(m_HistoryTexture);
         m_HistoryTexture = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
         m_HistoryTexture.name = "TAA History";
-        Graphics.Blit((Texture) source, m_HistoryTexture, material, 2);
+        Graphics.Blit(source, m_HistoryTexture, material, 2);
       }
       material.SetVector(Uniforms._SharpenParameters, new Vector4(taaSettings.sharpen, 0.0f, 0.0f, 0.0f));
       material.SetVector(Uniforms._FinalBlendParameters, new Vector4(taaSettings.stationaryBlending, taaSettings.motionBlending, 6000f, 0.0f));
-      material.SetTexture(Uniforms._MainTex, (Texture) source);
-      material.SetTexture(Uniforms._HistoryTex, (Texture) m_HistoryTexture);
+      material.SetTexture(Uniforms._MainTex, source);
+      material.SetTexture(Uniforms._HistoryTex, m_HistoryTexture);
       RenderTexture temporary = RenderTexture.GetTemporary(source.width, source.height, 0, source.format);
       temporary.name = "TAA History";
       m_MRT[0] = destination.colorBuffer;
@@ -104,18 +104,18 @@ namespace UnityEngine.PostProcessing
       float num5 = (offset.y + num1) * context.camera.nearClipPlane;
       float num6 = (offset.y - num1) * context.camera.nearClipPlane;
       return new Matrix4x4 {
-        [0, 0] = (float) (2.0 * (double) context.camera.nearClipPlane / (num4 - (double) num3)),
+        [0, 0] = (float) (2.0 * context.camera.nearClipPlane / (num4 - (double) num3)),
         [0, 1] = 0.0f,
         [0, 2] = (float) ((num4 + (double) num3) / (num4 - (double) num3)),
         [0, 3] = 0.0f,
         [1, 0] = 0.0f,
-        [1, 1] = (float) (2.0 * (double) context.camera.nearClipPlane / (num5 - (double) num6)),
+        [1, 1] = (float) (2.0 * context.camera.nearClipPlane / (num5 - (double) num6)),
         [1, 2] = (float) ((num5 + (double) num6) / (num5 - (double) num6)),
         [1, 3] = 0.0f,
         [2, 0] = 0.0f,
         [2, 1] = 0.0f,
-        [2, 2] = (float) (-((double) context.camera.farClipPlane + (double) context.camera.nearClipPlane) / ((double) context.camera.farClipPlane - (double) context.camera.nearClipPlane)),
-        [2, 3] = (float) (-(2.0 * (double) context.camera.farClipPlane * (double) context.camera.nearClipPlane) / ((double) context.camera.farClipPlane - (double) context.camera.nearClipPlane)),
+        [2, 2] = (float) (-(context.camera.farClipPlane + (double) context.camera.nearClipPlane) / (context.camera.farClipPlane - (double) context.camera.nearClipPlane)),
+        [2, 3] = (float) (-(2.0 * context.camera.farClipPlane * context.camera.nearClipPlane) / (context.camera.farClipPlane - (double) context.camera.nearClipPlane)),
         [3, 0] = 0.0f,
         [3, 1] = 0.0f,
         [3, 2] = -1f,
@@ -138,9 +138,9 @@ namespace UnityEngine.PostProcessing
 
     public override void OnDisable()
     {
-      if ((UnityEngine.Object) m_HistoryTexture != (UnityEngine.Object) null)
+      if (m_HistoryTexture != null)
         RenderTexture.ReleaseTemporary(m_HistoryTexture);
-      m_HistoryTexture = (RenderTexture) null;
+      m_HistoryTexture = null;
       m_SampleIndex = 0;
       ResetHistory();
     }

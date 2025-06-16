@@ -17,6 +17,7 @@ using Engine.Source.Components.Utilities;
 using Engine.Source.Services;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -67,7 +68,7 @@ namespace Engine.Source.Debugs
     {
       string text1 = "\n[Gizmos]";
       ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
-      string text2 = "  MapItems " + (mapItemsVisible ? "True" : (object) "False") + " [Control + " + (object) mapItemsKey + "]";
+      string text2 = "  MapItems " + (mapItemsVisible ? "True" : (object) "False") + " [Control + " + mapItemsKey + "]";
       ServiceLocator.GetService<GizmoService>().DrawText(text2, mapItemsVisible ? trueColor : falseColor);
     }
 
@@ -76,13 +77,13 @@ namespace Engine.Source.Debugs
       if (!mapItemsVisible)
         return;
       MapWindow active = ServiceLocator.GetService<UIService>().Active as MapWindow;
-      if ((UnityEngine.Object) active == (UnityEngine.Object) null)
+      if (active == null)
         return;
       GizmoService service1 = ServiceLocator.GetService<GizmoService>();
       ITemplateService service2 = ServiceLocator.GetService<ITemplateService>();
-      float distance = 2f / (24f / (float) Screen.height);
+      float distance = 2f / (24f / Screen.height);
       float num1 = 0.5f;
-      Vector3 detectorPosition = new Vector3(Input.mousePosition.x, 0.0f, (float) Screen.height - Input.mousePosition.y);
+      Vector3 detectorPosition = new Vector3(Input.mousePosition.x, 0.0f, Screen.height - Input.mousePosition.y);
       float num2 = 0.7f;
       foreach (MapItemComponent mapItemComponent in MapItemComponent.Items)
       {
@@ -152,7 +153,7 @@ namespace Engine.Source.Debugs
     private static void ComputeTeleport()
     {
       MapWindow active = ServiceLocator.GetService<UIService>().Active as MapWindow;
-      if ((UnityEngine.Object) active == (UnityEngine.Object) null)
+      if (active == null)
         return;
       Vector3 point = active.GetWorldPosition(Input.mousePosition);
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
@@ -160,7 +161,7 @@ namespace Engine.Source.Debugs
       point = new Vector3(point.x, 0.0f, point.y);
       point.y = Terrain.activeTerrain.SampleHeight(point);
       NavMeshUtility.SamplePosition(ref point, AreaEnum.All.ToMask());
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Teleport to : ").Append((object) point));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Teleport to : ").Append(point));
       player.GetComponent<NavigationComponent>().TeleportTo(component, point, Quaternion.identity);
       ServiceLocator.GetService<UIService>().Pop();
     }

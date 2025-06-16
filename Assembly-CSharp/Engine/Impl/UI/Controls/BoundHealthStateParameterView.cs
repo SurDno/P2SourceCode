@@ -1,6 +1,7 @@
 ﻿using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -11,7 +12,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private ParameterNameEnum parameterName;
     [SerializeField]
-    private int defaultValue = 0;
+    private int defaultValue;
     private IParameter<BoundHealthStateEnum> parameter;
 
     protected override void ApplyValue()
@@ -26,14 +27,14 @@ namespace Engine.Impl.UI.Controls
 
     private void ApplyParameter()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.IntValue = parameter != null ? (int) parameter.Value : defaultValue;
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.SkipAnimation();
     }

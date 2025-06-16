@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Engine.Source.Audio;
 using ProBuilder2.Common;
 using ProBuilder2.MeshOperations;
+using UnityEngine;
 
 namespace ProBuilder2.Examples
 {
@@ -34,8 +36,8 @@ namespace ProBuilder2.Examples
     public float waveformHeight = 2f;
     public float waveformRadius = 20f;
     public float waveformSpeed = 0.1f;
-    public bool rotateWaveformRing = false;
-    public bool bounceWaveform = false;
+    public bool rotateWaveformRing;
+    public bool bounceWaveform;
     public GameObject missingClipWarning;
     private Vector3 icoPosition = Vector3.zero;
     private float faces_length;
@@ -51,8 +53,8 @@ namespace ProBuilder2.Examples
 
     private void Start()
     {
-      audioSource = this.GetComponent<AudioSource>();
-      if ((UnityEngine.Object) audioSource.clip == (UnityEngine.Object) null)
+      audioSource = GetComponent<AudioSource>();
+      if (audioSource.clip == null)
         missingClipWarning.SetActive(true);
       ico = pb_ShapeGenerator.IcosahedronGenerator(icoRadius, icoSubdivisions);
       pb_Face[] faces = ico.faces;
@@ -66,7 +68,7 @@ namespace ProBuilder2.Examples
       for (int index = 0; index < faces.Length; ++index)
         outsides[index] = new FaceRef(faces[index], pb_Math.Normal(ico, faces[index]), ico.sharedIndices.AllIndicesWithValues(dictionary, faces[index].distinctIndices).ToArray());
       original_vertices = new Vector3[ico.vertices.Length];
-      Array.Copy((Array) ico.vertices, (Array) original_vertices, ico.vertices.Length);
+      Array.Copy(ico.vertices, original_vertices, ico.vertices.Length);
       displaced_vertices = ico.vertices;
       icoMesh = ico.msh;
       icoTransform = ico.transform;
@@ -87,7 +89,7 @@ namespace ProBuilder2.Examples
       {
         float time = index1 / faces_length;
         int index2 = (int) (time * (double) fftBounds);
-        Vector3 vector3 = outsides[index1].nrm * (float) ((fft[index2] + (double) fft_history[index2]) * 0.5 * ((double) frequencyCurve.Evaluate(time) * 0.5 + 0.5)) * extrusion;
+        Vector3 vector3 = outsides[index1].nrm * (float) ((fft[index2] + (double) fft_history[index2]) * 0.5 * (frequencyCurve.Evaluate(time) * 0.5 + 0.5)) * extrusion;
         foreach (int index3 in outsides[index1].indices)
           displaced_vertices[index3] = original_vertices[index3] + vector3;
       }

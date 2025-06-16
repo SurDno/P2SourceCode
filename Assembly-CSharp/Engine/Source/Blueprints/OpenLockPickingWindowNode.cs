@@ -1,5 +1,4 @@
-﻿using System;
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Common.Components;
 using Engine.Common.Components.Gate;
 using Engine.Common.Services;
@@ -36,11 +35,11 @@ namespace Engine.Source.Blueprints
           IStorageComponent storage = player.GetComponent<IStorageComponent>();
           if (storage != null)
           {
-            UIServiceUtility.PushWindow(output, (Action<ILockPickingWindow>) (window =>
+            UIServiceUtility.PushWindow<ILockPickingWindow>(output, window =>
             {
               window.Actor = storage;
               window.Target = door;
-            }));
+            });
             return;
           }
         }

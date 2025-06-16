@@ -3,6 +3,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services.CameraServices;
+using UnityEngine;
 
 public struct DialogModeController
 {
@@ -31,7 +32,7 @@ public struct DialogModeController
   public void SetDialogMode(IEntity target, bool enabled)
   {
     GameObject gameObject = ((IEntityView) target)?.GameObject;
-    if ((Object) gameObject == (Object) null)
+    if (gameObject == null)
       return;
     SetDialogLayerWeight(gameObject, enabled);
     SetKinematic(gameObject, enabled);
@@ -40,7 +41,7 @@ public struct DialogModeController
   private void SetDialogLayerWeight(GameObject target, bool enabled)
   {
     Animator animator = target.GetComponent<Pivot>()?.GetAnimator();
-    if (!((Object) animator != (Object) null))
+    if (!(animator != null))
       return;
     animator.enabled = true;
     if (enabled)
@@ -62,7 +63,7 @@ public struct DialogModeController
   private void SetKinematic(GameObject target, bool kinematic)
   {
     Rigidbody component = target.GetComponent<Rigidbody>();
-    if (!((Object) component != (Object) null))
+    if (!(component != null))
       return;
     if (kinematic)
     {

@@ -6,6 +6,9 @@ using Engine.Source.Components.BoundCharacters;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using InputServices;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 {
@@ -55,7 +58,7 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
         if (dictionary.TryGetValue(groups[index1], out characterComponentList))
         {
           characterComponentList.Sort(SortingComparison);
-          BoundCharactersGroupView charactersGroupView = UnityEngine.Object.Instantiate<BoundCharactersGroupView>(groupViewPrefab, (Transform) layout, false);
+          BoundCharactersGroupView charactersGroupView = Instantiate(groupViewPrefab, layout, false);
           groupViews.Add(charactersGroupView);
           charactersGroupView.SetGroup(groups[index1]);
           for (int index2 = 0; index2 < characterComponentList.Count; ++index2)
@@ -74,7 +77,7 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
         animationPhase = singleAnimationTime * 0.5f;
       }
       ServiceLocator.GetService<NotificationService>().RemoveNotify(NotificationEnum.BoundCharacters);
-      _scrollbar = this.GetComponent<ScrollRect>().horizontalScrollbar;
+      _scrollbar = GetComponent<ScrollRect>().horizontalScrollbar;
     }
 
     private void Clear()
@@ -82,7 +85,7 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
       unseenGroupViews.Clear();
       unseenStateViews.Clear();
       foreach (Component groupView in groupViews)
-        UnityEngine.Object.Destroy((UnityEngine.Object) groupView.gameObject);
+        Destroy(groupView.gameObject);
       groupViews.Clear();
       animationPhase = -1f;
     }
@@ -131,13 +134,13 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
       animationPhase -= animationTime;
       if (unseenGroupViews.Count > 0)
       {
-        int index = UnityEngine.Random.Range(0, unseenGroupViews.Count);
+        int index = Random.Range(0, unseenGroupViews.Count);
         unseenGroupViews[index].MakeGroupSeen();
         unseenGroupViews.RemoveAt(index);
       }
       else if (unseenStateViews.Count > 0)
       {
-        int index = UnityEngine.Random.Range(0, unseenStateViews.Count);
+        int index = Random.Range(0, unseenStateViews.Count);
         unseenStateViews[index].MakeStateSeen();
         unseenStateViews.RemoveAt(index);
       }

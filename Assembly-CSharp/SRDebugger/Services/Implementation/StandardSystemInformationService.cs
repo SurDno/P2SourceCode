@@ -1,7 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using SRF;
 using SRF.Service;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace SRDebugger.Services.Implementation
 {
@@ -19,7 +20,7 @@ namespace SRDebugger.Services.Implementation
       List<ISystemInfo> info;
       if (_info.TryGetValue(category, out info))
         return info;
-      Debug.LogError((object) "[SystemInformationService] Category not found: {0}".Fmt(category));
+      Debug.LogError("[SystemInformationService] Category not found: {0}".Fmt(category));
       return new ISystemInfo[0];
     }
 
@@ -53,61 +54,61 @@ namespace SRDebugger.Services.Implementation
     private void CreateDefaultSet()
     {
       _info.Add("System", new List<ISystemInfo> {
-        Info.Create("Operating System", (object) SystemInfo.operatingSystem),
-        Info.Create("Device Name", (object) SystemInfo.deviceName, true),
-        Info.Create("Device Type", (object) SystemInfo.deviceType),
-        Info.Create("Device Model", (object) SystemInfo.deviceModel),
-        Info.Create("CPU Type", (object) SystemInfo.processorType),
-        Info.Create("CPU Count", (object) SystemInfo.processorCount),
-        Info.Create("System Memory", SRFileUtil.GetBytesReadable((long) SystemInfo.systemMemorySize * 1024L * 1024L))
+        Info.Create("Operating System", SystemInfo.operatingSystem),
+        Info.Create("Device Name", SystemInfo.deviceName, true),
+        Info.Create("Device Type", SystemInfo.deviceType),
+        Info.Create("Device Model", SystemInfo.deviceModel),
+        Info.Create("CPU Type", SystemInfo.processorType),
+        Info.Create("CPU Count", SystemInfo.processorCount),
+        Info.Create("System Memory", SRFileUtil.GetBytesReadable(SystemInfo.systemMemorySize * 1024L * 1024L))
       });
       _info.Add("Unity", new List<ISystemInfo> {
-        Info.Create("Version", (object) Application.unityVersion),
-        Info.Create("Debug", (object) Debug.isDebugBuild),
-        Info.Create("Logging", (object) Debug.unityLogger.filterLogType),
-        Info.Create("Unity Pro", (object) Application.HasProLicense()),
+        Info.Create("Version", Application.unityVersion),
+        Info.Create("Debug", Debug.isDebugBuild),
+        Info.Create("Logging", Debug.unityLogger.filterLogType),
+        Info.Create("Unity Pro", Application.HasProLicense()),
         Info.Create("Genuine", "{0} ({1})".Fmt(Application.genuine ? "Yes" : (object) "No", Application.genuineCheckAvailable ? "Trusted" : (object) "Untrusted")),
-        Info.Create("System Language", (object) Application.systemLanguage),
-        Info.Create("Platform", (object) Application.platform),
+        Info.Create("System Language", Application.systemLanguage),
+        Info.Create("Platform", Application.platform),
         Info.Create("IL2CPP", "No"),
-        Info.Create("Persistent Data Path", (object) Application.persistentDataPath)
+        Info.Create("Persistent Data Path", Application.persistentDataPath)
       });
       _info.Add("Display", new List<ISystemInfo> {
-        Info.Create("Resolution", (Func<object>) (() => Screen.width.ToString() + "x" + (object) Screen.height)),
-        Info.Create("DPI", (Func<object>) (() => (object) Screen.dpi)),
-        Info.Create("Fullscreen", (Func<object>) (() => (object) Screen.fullScreen)),
-        Info.Create("Orientation", (Func<object>) (() => (object) Screen.orientation))
+        Info.Create("Resolution", () => Screen.width + "x" + Screen.height),
+        Info.Create("DPI", () => Screen.dpi),
+        Info.Create("Fullscreen", () => Screen.fullScreen),
+        Info.Create("Orientation", () => Screen.orientation)
       });
       _info.Add("Runtime", new List<ISystemInfo> {
-        Info.Create("Play Time", (Func<object>) (() => (object) Time.unscaledTime)),
-        Info.Create("Level Play Time", (Func<object>) (() => (object) Time.timeSinceLevelLoad)),
-        Info.Create("Current Level", (Func<object>) (() =>
+        Info.Create("Play Time", () => Time.unscaledTime),
+        Info.Create("Level Play Time", () => Time.timeSinceLevelLoad),
+        Info.Create("Current Level", () =>
         {
           Scene activeScene = SceneManager.GetActiveScene();
-          return "{0} (Index: {1})".Fmt((object) activeScene.name, (object) activeScene.buildIndex);
-        })),
-        Info.Create("Quality Level", (Func<object>) (() => QualitySettings.names[QualitySettings.GetQualityLevel()] + " (" + (object) QualitySettings.GetQualityLevel() + ")"))
+          return "{0} (Index: {1})".Fmt(activeScene.name, activeScene.buildIndex);
+        }),
+        Info.Create("Quality Level", () => QualitySettings.names[QualitySettings.GetQualityLevel()] + " (" + QualitySettings.GetQualityLevel() + ")")
       });
       _info.Add("Features", new List<ISystemInfo> {
-        Info.Create("Location", (object) SystemInfo.supportsLocationService),
-        Info.Create("Accelerometer", (object) SystemInfo.supportsAccelerometer),
-        Info.Create("Gyroscope", (object) SystemInfo.supportsGyroscope),
-        Info.Create("Vibration", (object) SystemInfo.supportsVibration)
+        Info.Create("Location", SystemInfo.supportsLocationService),
+        Info.Create("Accelerometer", SystemInfo.supportsAccelerometer),
+        Info.Create("Gyroscope", SystemInfo.supportsGyroscope),
+        Info.Create("Vibration", SystemInfo.supportsVibration)
       });
       _info.Add("Graphics", new List<ISystemInfo> {
-        Info.Create("Device Name", (object) SystemInfo.graphicsDeviceName),
-        Info.Create("Device Vendor", (object) SystemInfo.graphicsDeviceVendor),
-        Info.Create("Device Version", (object) SystemInfo.graphicsDeviceVersion),
-        Info.Create("Max Tex Size", (object) SystemInfo.maxTextureSize),
-        Info.Create("NPOT Support", (object) SystemInfo.npotSupport),
-        Info.Create("Render Textures", "{0} ({1})".Fmt(SystemInfo.supportsRenderTextures ? "Yes" : (object) "No", (object) SystemInfo.supportedRenderTargetCount)),
-        Info.Create("3D Textures", (object) SystemInfo.supports3DTextures),
-        Info.Create("Compute Shaders", (object) SystemInfo.supportsComputeShaders),
-        Info.Create("Image Effects", (object) SystemInfo.supportsImageEffects),
-        Info.Create("Cubemaps", (object) SystemInfo.supportsRenderToCubemap),
-        Info.Create("Shadows", (object) SystemInfo.supportsShadows),
-        Info.Create("Stencil", (object) SystemInfo.supportsStencil),
-        Info.Create("Sparse Textures", (object) SystemInfo.supportsSparseTextures)
+        Info.Create("Device Name", SystemInfo.graphicsDeviceName),
+        Info.Create("Device Vendor", SystemInfo.graphicsDeviceVendor),
+        Info.Create("Device Version", SystemInfo.graphicsDeviceVersion),
+        Info.Create("Max Tex Size", SystemInfo.maxTextureSize),
+        Info.Create("NPOT Support", SystemInfo.npotSupport),
+        Info.Create("Render Textures", "{0} ({1})".Fmt(SystemInfo.supportsRenderTextures ? "Yes" : (object) "No", SystemInfo.supportedRenderTargetCount)),
+        Info.Create("3D Textures", SystemInfo.supports3DTextures),
+        Info.Create("Compute Shaders", SystemInfo.supportsComputeShaders),
+        Info.Create("Image Effects", SystemInfo.supportsImageEffects),
+        Info.Create("Cubemaps", SystemInfo.supportsRenderToCubemap),
+        Info.Create("Shadows", SystemInfo.supportsShadows),
+        Info.Create("Stencil", SystemInfo.supportsStencil),
+        Info.Create("Sparse Textures", SystemInfo.supportsSparseTextures)
       });
     }
 

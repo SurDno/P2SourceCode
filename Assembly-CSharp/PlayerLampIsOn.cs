@@ -11,6 +11,7 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
+using UnityEngine;
 
 [TaskDescription("Player lamp is on")]
 [TaskCategory("Pathologic")]

@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -10,18 +12,18 @@
     public float blackIntensity = 1f;
     public float whiteIntensity = 1f;
     public float midGrey = 0.2f;
-    public bool dx11Grain = false;
+    public bool dx11Grain;
     public float softness;
-    public bool monochrome = false;
+    public bool monochrome;
     public Vector3 intensities = new Vector3(1f, 1f, 1f);
     public Vector3 tiling = new Vector3(64f, 64f, 64f);
     public float monochromeTiling = 64f;
     public FilterMode filterMode = FilterMode.Bilinear;
     public Texture2D noiseTexture;
     public Shader noiseShader;
-    private Material noiseMaterial = (Material) null;
+    private Material noiseMaterial;
     public Shader dx11NoiseShader;
-    private Material dx11NoiseMaterial = (Material) null;
+    private Material dx11NoiseMaterial;
     private static float TILE_AMOUNT = 64f;
     private Mesh mesh;
 
@@ -40,29 +42,29 @@
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if (!CheckResources() || (Object) null == (Object) noiseTexture)
+      if (!CheckResources() || null == noiseTexture)
       {
-        Graphics.Blit((Texture) source, destination);
-        if (!((Object) null == (Object) noiseTexture))
+        Graphics.Blit(source, destination);
+        if (!(null == noiseTexture))
           return;
-        Debug.LogWarning((object) "Noise & Grain effect failing as noise texture is not assigned. please assign.", (Object) this.transform);
+        Debug.LogWarning("Noise & Grain effect failing as noise texture is not assigned. please assign.", transform);
       }
       else
       {
         softness = Mathf.Clamp(softness, 0.0f, 0.99f);
         if (dx11Grain && supportDX11)
         {
-          dx11NoiseMaterial.SetFloat("_DX11NoiseTime", (float) Time.frameCount);
-          dx11NoiseMaterial.SetTexture("_NoiseTex", (Texture) noiseTexture);
-          dx11NoiseMaterial.SetVector("_NoisePerChannel", (Vector4) (monochrome ? Vector3.one : intensities));
-          dx11NoiseMaterial.SetVector("_MidGrey", (Vector4) new Vector3(midGrey, (float) (1.0 / (1.0 - midGrey)), -1f / midGrey));
-          dx11NoiseMaterial.SetVector("_NoiseAmount", (Vector4) (new Vector3(generalIntensity, blackIntensity, whiteIntensity) * intensityMultiplier));
+          dx11NoiseMaterial.SetFloat("_DX11NoiseTime", Time.frameCount);
+          dx11NoiseMaterial.SetTexture("_NoiseTex", noiseTexture);
+          dx11NoiseMaterial.SetVector("_NoisePerChannel", monochrome ? Vector3.one : intensities);
+          dx11NoiseMaterial.SetVector("_MidGrey", new Vector3(midGrey, (float) (1.0 / (1.0 - midGrey)), -1f / midGrey));
+          dx11NoiseMaterial.SetVector("_NoiseAmount", new Vector3(generalIntensity, blackIntensity, whiteIntensity) * intensityMultiplier);
           if (softness > (double) Mathf.Epsilon)
           {
-            RenderTexture temporary = RenderTexture.GetTemporary((int) ((double) source.width * (1.0 - softness)), (int) ((double) source.height * (1.0 - softness)));
+            RenderTexture temporary = RenderTexture.GetTemporary((int) (source.width * (1.0 - softness)), (int) (source.height * (1.0 - softness)));
             DrawNoiseQuadGrid(source, temporary, dx11NoiseMaterial, noiseTexture, mesh, monochrome ? 3 : 2);
-            dx11NoiseMaterial.SetTexture("_NoiseTex", (Texture) temporary);
-            Graphics.Blit((Texture) source, destination, dx11NoiseMaterial, 4);
+            dx11NoiseMaterial.SetTexture("_NoiseTex", temporary);
+            Graphics.Blit(source, destination, dx11NoiseMaterial, 4);
             RenderTexture.ReleaseTemporary(temporary);
           }
           else
@@ -75,17 +77,17 @@
             noiseTexture.wrapMode = TextureWrapMode.Repeat;
             noiseTexture.filterMode = filterMode;
           }
-          noiseMaterial.SetTexture("_NoiseTex", (Texture) noiseTexture);
-          noiseMaterial.SetVector("_NoisePerChannel", (Vector4) (monochrome ? Vector3.one : intensities));
-          noiseMaterial.SetVector("_NoiseTilingPerChannel", (Vector4) (monochrome ? Vector3.one * monochromeTiling : tiling));
-          noiseMaterial.SetVector("_MidGrey", (Vector4) new Vector3(midGrey, (float) (1.0 / (1.0 - midGrey)), -1f / midGrey));
-          noiseMaterial.SetVector("_NoiseAmount", (Vector4) (new Vector3(generalIntensity, blackIntensity, whiteIntensity) * intensityMultiplier));
+          noiseMaterial.SetTexture("_NoiseTex", noiseTexture);
+          noiseMaterial.SetVector("_NoisePerChannel", monochrome ? Vector3.one : intensities);
+          noiseMaterial.SetVector("_NoiseTilingPerChannel", monochrome ? Vector3.one * monochromeTiling : tiling);
+          noiseMaterial.SetVector("_MidGrey", new Vector3(midGrey, (float) (1.0 / (1.0 - midGrey)), -1f / midGrey));
+          noiseMaterial.SetVector("_NoiseAmount", new Vector3(generalIntensity, blackIntensity, whiteIntensity) * intensityMultiplier);
           if (softness > (double) Mathf.Epsilon)
           {
-            RenderTexture temporary = RenderTexture.GetTemporary((int) ((double) source.width * (1.0 - softness)), (int) ((double) source.height * (1.0 - softness)));
+            RenderTexture temporary = RenderTexture.GetTemporary((int) (source.width * (1.0 - softness)), (int) (source.height * (1.0 - softness)));
             DrawNoiseQuadGrid(source, temporary, noiseMaterial, noiseTexture, mesh, 2);
-            noiseMaterial.SetTexture("_NoiseTex", (Texture) temporary);
-            Graphics.Blit((Texture) source, destination, noiseMaterial, 1);
+            noiseMaterial.SetTexture("_NoiseTex", temporary);
+            Graphics.Blit(source, destination, noiseMaterial, 1);
             RenderTexture.ReleaseTemporary(temporary);
           }
           else
@@ -103,7 +105,7 @@
       int passNr)
     {
       RenderTexture.active = dest;
-      fxMaterial.SetTexture("_MainTex", (Texture) source);
+      fxMaterial.SetTexture("_MainTex", source);
       GL.PushMatrix();
       GL.LoadOrtho();
       fxMaterial.SetPass(passNr);
@@ -121,9 +123,9 @@
 
     private static void BuildMesh(Mesh mesh, RenderTexture source, Texture2D noise)
     {
-      float noiseSize = (float) noise.width * 1f;
-      float f = 1f * (float) source.width / TILE_AMOUNT;
-      float num1 = (float) (1.0 * (double) source.width / (1.0 * (double) source.height));
+      float noiseSize = noise.width * 1f;
+      float f = 1f * source.width / TILE_AMOUNT;
+      float num1 = (float) (1.0 * source.width / (1.0 * source.height));
       float num2 = 1f / f;
       float num3 = num2 * num1;
       int width = (int) Mathf.Ceil(f);

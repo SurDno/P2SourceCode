@@ -33,7 +33,7 @@ public class POISequenceCrowdOutdoors : POISequence, IStub, ISerializeDataWrite,
       {
         foreach (CrowdPointInfo point in component.Point.Region.GetComponent<CrowdPointsComponent>().Points)
         {
-          if (point.Area == component.Area && (UnityEngine.Object) point.GameObject != (UnityEngine.Object) null && point.GameObject.activeInHierarchy)
+          if (point.Area == component.Area && point.GameObject != null && point.GameObject.activeInHierarchy)
             FindPOIsInGameObject(((IEntityView) point.EntityPoint).GameObject, poiCache);
         }
       }

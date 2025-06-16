@@ -15,6 +15,8 @@ using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Components
 {
@@ -96,7 +98,7 @@ namespace Engine.Source.Components
             templateInfo.Seed = 0;
         }
         else
-          Debug.LogWarning((object) ("info == null : " + Owner.GetInfo()));
+          Debug.LogWarning("info == null : " + Owner.GetInfo());
       }
     }
 
@@ -105,37 +107,37 @@ namespace Engine.Source.Components
       if (locationItem.IsHibernation)
         return;
       GameObject gameObject1 = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject1 == (UnityEngine.Object) null)
+      if (gameObject1 == null)
       {
-        Debug.LogError((object) ("GameObject not found , " + Owner.GetInfo()));
+        Debug.LogError("GameObject not found , " + Owner.GetInfo());
       }
       else
       {
         SceneObjectContainer container = SceneObjectContainer.GetContainer(gameObject1.scene);
-        if ((UnityEngine.Object) container == (UnityEngine.Object) null)
+        if (container == null)
         {
-          Debug.LogError((object) ("SceneObjectContainer not found in scene " + gameObject1.scene.name + " , " + Owner.GetInfo()));
+          Debug.LogError("SceneObjectContainer not found in scene " + gameObject1.scene.name + " , " + Owner.GetInfo());
         }
         else
         {
           GameObject gameObject2 = container.GetGameObject(region.Id);
-          if ((UnityEngine.Object) gameObject2 == (UnityEngine.Object) null)
+          if (gameObject2 == null)
           {
-            Debug.LogError((object) string.Format("GameObject region not found : {0} , {1}", region.Id, Owner.GetInfo()));
+            Debug.LogError(string.Format("GameObject region not found : {0} , {1}", region.Id, Owner.GetInfo()));
           }
           else
           {
             IEntity entity = EntityUtility.GetEntity(gameObject2);
             if (entity == null)
             {
-              Debug.LogError((object) ("Entity not found : " + Owner.GetInfo()), (UnityEngine.Object) gameObject2);
+              Debug.LogError("Entity not found : " + Owner.GetInfo(), gameObject2);
             }
             else
             {
               targetCrowdPointsComponent = entity.GetComponent<CrowdPointsComponent>();
               if (targetCrowdPointsComponent == null)
               {
-                Debug.LogError((object) ("CrowdPointsComponent not found : " + Owner.GetInfo()), (UnityEngine.Object) gameObject2);
+                Debug.LogError("CrowdPointsComponent not found : " + Owner.GetInfo(), gameObject2);
               }
               else
               {
@@ -166,7 +168,7 @@ namespace Engine.Source.Components
       CrowdUtility.SetAsCrowd(entity);
       if (points.FirstOrDefault(o => o.Entity == entity) != null)
       {
-        Debug.LogError((object) ("Entity already added : " + entity.GetInfo()));
+        Debug.LogError("Entity already added : " + entity.GetInfo());
       }
       else
       {
@@ -174,7 +176,7 @@ namespace Engine.Source.Components
         this.waitingPoint = null;
         if (waitingPoint == null)
         {
-          Debug.LogError((object) ("Point not found : " + Owner.GetInfo()));
+          Debug.LogError("Point not found : " + Owner.GetInfo());
         }
         else
         {
@@ -183,7 +185,7 @@ namespace Engine.Source.Components
           if (component1 != null)
             component1.AttachToCrowd(Owner, waitingPoint);
           else
-            Debug.LogError((object) ("CrowdItemComponent not found : " + entity.GetInfo()));
+            Debug.LogError("CrowdItemComponent not found : " + entity.GetInfo());
           foreach (ICrowdContextComponent component2 in entity.GetComponents<ICrowdContextComponent>())
             component2.RestoreState(waitingPoint.States, true);
           waitingPoint.States.Clear();
@@ -204,7 +206,7 @@ namespace Engine.Source.Components
             }
           }
           else
-            Debug.LogError((object) ("NavigationComponent not found : " + entity.GetInfo()));
+            Debug.LogError("NavigationComponent not found : " + entity.GetInfo());
           if (!IsAvailable)
             RemoveEntity(waitingPoint);
           else
@@ -247,10 +249,10 @@ namespace Engine.Source.Components
         foreach (CrowdTemplateInfo templateInfo in area.TemplateInfos)
         {
           if (templateInfo.Seed == 0)
-            templateInfo.Seed = UnityEngine.Random.Range(int.MinValue, int.MaxValue);
-          UnityEngine.Random.InitState(templateInfo.Seed);
-          int num = UnityEngine.Random.Range(templateInfo.Min, templateInfo.Max + 1);
-          if (templateInfo.Chance < (double) UnityEngine.Random.value)
+            templateInfo.Seed = Random.Range(int.MinValue, int.MaxValue);
+          Random.InitState(templateInfo.Seed);
+          int num = Random.Range(templateInfo.Min, templateInfo.Max + 1);
+          if (templateInfo.Chance < (double) Random.value)
             num = 0;
           for (int index2 = 0; index2 < num; ++index2)
           {
@@ -263,7 +265,7 @@ namespace Engine.Source.Components
               indoorPointInfo.Position = point.Position;
               indoorPointInfo.Rotation = point.Rotation;
               indoorPointInfo.TemplateInfo = templateInfo;
-              indoorPointInfo.Template = templateInfo.Templates[UnityEngine.Random.Range(0, templateInfo.Templates.Count)].Value;
+              indoorPointInfo.Template = templateInfo.Templates[Random.Range(0, templateInfo.Templates.Count)].Value;
               indoorPointInfo.EntityPoint = point.EntityPoint;
               indoorPointInfo.OnNavMesh = point.OnNavMesh;
               points.Add(indoorPointInfo);

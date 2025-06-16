@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -60,7 +61,7 @@ namespace AmplifyBloom
     {
       Vector4[] bokehSamples = new Vector4[sampleCount];
       float f = (float) Math.PI / 180f * angle;
-      float num = (float) Screen.width / (float) Screen.height;
+      float num = Screen.width / (float) Screen.height;
       Vector4 b = new Vector4(m_bokehSampleRadius * Mathf.Cos(f), m_bokehSampleRadius * Mathf.Sin(f));
       b.x /= num;
       for (int index = 0; index < sampleCount; ++index)
@@ -80,16 +81,16 @@ namespace AmplifyBloom
       {
         for (int index2 = 0; index2 < 8; ++index2)
           material.SetVector(AmplifyUtils.AnamorphicGlareWeightsStr[index2], m_bokehOffsets[index1].Offsets[index2]);
-        Graphics.Blit((Texture) source, m_bokehOffsets[index1].BokehRenderTexture, material, 27);
+        Graphics.Blit(source, m_bokehOffsets[index1].BokehRenderTexture, material, 27);
       }
       for (int index = 0; index < m_bokehOffsets.Count - 1; ++index)
-        material.SetTexture(AmplifyUtils.AnamorphicRTS[index], (Texture) m_bokehOffsets[index].BokehRenderTexture);
+        material.SetTexture(AmplifyUtils.AnamorphicRTS[index], m_bokehOffsets[index].BokehRenderTexture);
       source.DiscardContents();
-      Graphics.Blit((Texture) m_bokehOffsets[m_bokehOffsets.Count - 1].BokehRenderTexture, source, material, 28 + (m_bokehOffsets.Count - 2));
+      Graphics.Blit(m_bokehOffsets[m_bokehOffsets.Count - 1].BokehRenderTexture, source, material, 28 + (m_bokehOffsets.Count - 2));
       for (int index = 0; index < m_bokehOffsets.Count; ++index)
       {
         AmplifyUtils.ReleaseTempRenderTarget(m_bokehOffsets[index].BokehRenderTexture);
-        m_bokehOffsets[index].BokehRenderTexture = (RenderTexture) null;
+        m_bokehOffsets[index].BokehRenderTexture = null;
       }
     }
 

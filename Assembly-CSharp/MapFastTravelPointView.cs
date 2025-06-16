@@ -1,4 +1,7 @@
-﻿public class MapFastTravelPointView : 
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+
+public class MapFastTravelPointView : 
   MonoBehaviour,
   IPointerEnterHandler,
   IEventSystemHandler,

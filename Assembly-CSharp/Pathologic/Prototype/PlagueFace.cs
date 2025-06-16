@@ -8,6 +8,8 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Pathologic.Prototype
 {
@@ -99,7 +101,7 @@ namespace Pathologic.Prototype
 
     private void InitCrowdItem(CrowdItemComponent crowdItem)
     {
-      GameObject setupPointGo = (GameObject) null;
+      GameObject setupPointGo = null;
       if (crowdItem != null && crowdItem.Point != null)
         setupPointGo = crowdItem.Point.GameObject;
       GetPathFromGameObject(setupPointGo);
@@ -107,13 +109,13 @@ namespace Pathologic.Prototype
 
     private void GetPathFromGameObject(GameObject setupPointGo)
     {
-      if ((UnityEngine.Object) setupPointGo == (UnityEngine.Object) null)
+      if (setupPointGo == null)
         return;
       PlagueFacePoint componentInChildren = setupPointGo.GetComponentInChildren<PlagueFacePoint>();
-      if ((UnityEngine.Object) componentInChildren == (UnityEngine.Object) null)
+      if (componentInChildren == null)
         return;
       StartingPoint = componentInChildren.gameObject;
-      if ((UnityEngine.Object) StartingPoint == (UnityEngine.Object) null)
+      if (StartingPoint == null)
         return;
       InitializeAt(StartingPoint.GetComponent<PlagueFacePoint>());
     }
@@ -121,7 +123,7 @@ namespace Pathologic.Prototype
     private static float VisibilityWeight(Transform point, Vector3 playerPosition)
     {
       Vector3 rhs = playerPosition - point.position;
-      if ((double) Vector3.Dot(point.forward, rhs) <= 0.0)
+      if (Vector3.Dot(point.forward, rhs) <= 0.0)
         return 0.0f;
       float magnitude = rhs.magnitude;
       return magnitude == 0.0 ? float.PositiveInfinity : 1f / magnitude;
@@ -133,17 +135,17 @@ namespace Pathologic.Prototype
 
     public void InitializeAt(PlagueFacePoint startingPoint)
     {
-      if ((UnityEngine.Object) startingPoint == (UnityEngine.Object) null)
+      if (startingPoint == null)
       {
-        Debug.LogWarning((object) "InitializeAt(PlagueFacePoint) doesn't accept null.");
+        Debug.LogWarning("InitializeAt(PlagueFacePoint) doesn't accept null.");
       }
       else
       {
         this.startingPoint = startingPoint;
-        this.transform.SetParent(startingPoint.transform, false);
-        this.transform.position = startingPoint.transform.position;
-        this.transform.rotation = startingPoint.transform.rotation;
-        this.transform.localScale = Vector3.one;
+        transform.SetParent(startingPoint.transform, false);
+        transform.position = startingPoint.transform.position;
+        transform.rotation = startingPoint.transform.rotation;
+        transform.localScale = Vector3.one;
         aggresion = 0.0f;
         attack = 0.0f;
         navigation.Initialize(startingPoint);
@@ -151,7 +153,7 @@ namespace Pathologic.Prototype
         graphic.Initialize();
         _tilleNextPrototypeMessage = 1f / attackMessageFrequency;
         _isInitialized = true;
-        this.enabled = true;
+        enabled = true;
         initedRecently = true;
       }
     }
@@ -160,29 +162,29 @@ namespace Pathologic.Prototype
     {
       if (!_isInitialized)
       {
-        Debug.LogWarning((object) "PlagueFace must not be enabled until InitializeAt(PlagueFacePoint) is called");
-        this.enabled = false;
+        Debug.LogWarning("PlagueFace must not be enabled until InitializeAt(PlagueFacePoint) is called");
+        enabled = false;
       }
       else
       {
-        if (initedRecently && (UnityEngine.Object) startingPoint != (UnityEngine.Object) null)
+        if (initedRecently && startingPoint != null)
         {
-          this.transform.position = startingPoint.transform.position;
-          this.transform.rotation = startingPoint.transform.rotation;
+          transform.position = startingPoint.transform.position;
+          transform.rotation = startingPoint.transform.rotation;
           initedRecently = false;
         }
         IEntity player = ServiceLocator.GetService<ISimulation>().Player;
         if (player == null)
           return;
         GameObject gameObject = ((IEntityView) player).GameObject;
-        if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+        if (gameObject == null)
           return;
         Pivot component1 = gameObject.GetComponent<Pivot>();
         DetectorComponent component2 = (DetectorComponent) Owner.GetComponent<IDetectorComponent>();
         DetectableComponent component3 = player.GetComponent<DetectableComponent>();
         if (component2 != null && component3 != null)
           canHearPlayer = component2.Hearing.Contains(component3);
-        playerPosition = (UnityEngine.Object) component1 == (UnityEngine.Object) null ? gameObject.transform.position : component1.Chest.transform.position;
+        playerPosition = component1 == null ? gameObject.transform.position : component1.Chest.transform.position;
         _tilleNextPrototypeMessage -= Time.fixedDeltaTime;
         if (_tilleNextPrototypeMessage < 0.0)
         {
@@ -192,8 +194,8 @@ namespace Pathologic.Prototype
           else if (_lastAttackValue != 0.0)
             _lastAttackValue = 0.0f;
         }
-        bool isVisible = navigation.IsVisible(this.transform, playerPosition, false);
-        bool wasMoved = !isVisible && navigation.TryMove(this.transform, playerPosition);
+        bool isVisible = navigation.IsVisible(transform, playerPosition, false);
+        bool wasMoved = !isVisible && navigation.TryMove(transform, playerPosition);
         PercieveAndAttack(isVisible);
         graphic.Update(Time.fixedDeltaTime, isVisible, wasMoved);
         sound.Update(this, Time.fixedDeltaTime);
@@ -239,20 +241,20 @@ namespace Pathologic.Prototype
     {
       aggresion -= Time.fixedDeltaTime * aggessionDecrease;
       attack -= Time.fixedDeltaTime * attackDecreaseRate;
-      Vector3 rhs = playerPosition - this.transform.position;
+      Vector3 rhs = playerPosition - transform.position;
       float magnitude = rhs.magnitude;
       if (canHearPlayer)
         aggresion += (noiseAggessionIncrease + aggessionDecrease) * Time.fixedDeltaTime * Mathf.Min(Vector3.Distance(playerPosition, _lastPlayerPos) / Time.fixedDeltaTime, maxPlayerVelocity) * Mathf.Min((float) ((farHearingRadius - (double) magnitude) / (farHearingRadius - (double) nearHearingRadius)), 1f);
       _lastPlayerPos = playerPosition;
-      if (magnitude < (double) sightRadius && (double) Vector3.Dot(this.transform.forward, rhs) > 0.0)
+      if (magnitude < (double) sightRadius && Vector3.Dot(transform.forward, rhs) > 0.0)
       {
         int num1 = 0;
         for (int index = 0; index < sightRaysPerTick; ++index)
         {
-          Vector2 vector2 = UnityEngine.Random.insideUnitCircle * eyeSize;
-          Vector3 vector3 = this.transform.localToWorldMatrix.MultiplyPoint(new Vector3(vector2.x, vector2.y, eyeExtent));
-          Vector3 b = playerPosition + UnityEngine.Random.insideUnitSphere * playerSize;
-          if (!Physics.Raycast(vector3, b - vector3, out RaycastHit _, Vector3.Distance(vector3, b), (int) sightObstacles))
+          Vector2 vector2 = Random.insideUnitCircle * eyeSize;
+          Vector3 vector3 = transform.localToWorldMatrix.MultiplyPoint(new Vector3(vector2.x, vector2.y, eyeExtent));
+          Vector3 b = playerPosition + Random.insideUnitSphere * playerSize;
+          if (!Physics.Raycast(vector3, b - vector3, out RaycastHit _, Vector3.Distance(vector3, b), sightObstacles))
             ++num1;
         }
         float num2 = num1 / (float) sightRaysPerTick;
@@ -291,15 +293,15 @@ namespace Pathologic.Prototype
 
       public void Initialize()
       {
-        if (!((UnityEngine.Object) renderer != (UnityEngine.Object) null))
+        if (!(renderer != null))
           return;
         _opacity = 1f;
         _properties = new MaterialPropertyBlock();
         _properties.SetFloat("_Opacity", _opacity);
         if (textures.Length != 0)
         {
-          _textureIndex = UnityEngine.Random.Range(0, textures.Length);
-          _properties.SetTexture("_MainTex", (Texture) textures[_textureIndex]);
+          _textureIndex = Random.Range(0, textures.Length);
+          _properties.SetTexture("_MainTex", textures[_textureIndex]);
         }
         _lastChangeTime = Time.time;
         renderer.SetPropertyBlock(_properties);
@@ -307,7 +309,7 @@ namespace Pathologic.Prototype
 
       public void Update(float deltaTime, bool isVisible, bool wasMoved)
       {
-        if (!((UnityEngine.Object) renderer != (UnityEngine.Object) null))
+        if (!(renderer != null))
           return;
         if (isVisible)
         {
@@ -316,10 +318,10 @@ namespace Pathologic.Prototype
         else
         {
           _opacity = Mathf.MoveTowards(_opacity, 1f, deltaTime / fadeInTime);
-          if (wasMoved && textures.Length != 0 && (double) Time.time >= _lastChangeTime + (double) minChangeTime)
+          if (wasMoved && textures.Length != 0 && Time.time >= _lastChangeTime + (double) minChangeTime)
           {
-            _textureIndex = UnityEngine.Random.Range(0, textures.Length);
-            _properties.SetTexture("_MainTex", (Texture) textures[_textureIndex]);
+            _textureIndex = Random.Range(0, textures.Length);
+            _properties.SetTexture("_MainTex", textures[_textureIndex]);
             _lastChangeTime = Time.time;
           }
         }
@@ -368,7 +370,7 @@ namespace Pathologic.Prototype
             plagueFacePointList.Add(plagueFacePoint);
             for (int index = 0; index < plagueFacePoint.neighbors.Length; ++index)
             {
-              if ((UnityEngine.Object) plagueFacePoint.neighbors[index] != (UnityEngine.Object) null)
+              if (plagueFacePoint.neighbors[index] != null)
                 plagueFacePointQueue.Enqueue(plagueFacePoint.neighbors[index]);
             }
           }
@@ -381,7 +383,7 @@ namespace Pathologic.Prototype
         if (_cullingGroup == null)
           return;
         _cullingGroup.Dispose();
-        _cullingGroup = (CullingGroup) null;
+        _cullingGroup = null;
       }
 
       public PlagueFacePoint[] GetNeighbors(PlagueFacePoint point) => point.neighbors;
@@ -394,7 +396,7 @@ namespace Pathologic.Prototype
           bool flag = false;
           for (int index = 0; index < _points.Length; ++index)
           {
-            if ((UnityEngine.Object) _points[index] == (UnityEngine.Object) startingPoint)
+            if (_points[index] == startingPoint)
             {
               flag = true;
               break;
@@ -441,12 +443,12 @@ namespace Pathologic.Prototype
 
       private float TimeToJump(PlagueFacePoint from, PlagueFacePoint to)
       {
-        return this.TimeToJump(from.transform, to.transform);
+        return TimeToJump(from.transform, to.transform);
       }
 
       public bool TryMove(Transform face, Vector3 playerPosition)
       {
-        if (_route.Count <= 0 || TimeToJump(face, _route[_route.Count - 1].transform) >= (double) Time.time - _lastJumpTime || IsVisible(_route[_route.Count - 1].transform, playerPosition, true))
+        if (_route.Count <= 0 || TimeToJump(face, _route[_route.Count - 1].transform) >= Time.time - (double) _lastJumpTime || IsVisible(_route[_route.Count - 1].transform, playerPosition, true))
           return false;
         _currentPoint = _route[_route.Count - 1];
         _route.RemoveAt(_route.Count - 1);
@@ -468,7 +470,7 @@ namespace Pathologic.Prototype
             if (_route.Count == 0)
             {
               Vector3 normalized1 = (face.playerPosition - _currentPoint.transform.position).normalized;
-              int index1 = UnityEngine.Random.Range(0, _currentPoint.neighbors.Length);
+              int index1 = Random.Range(0, _currentPoint.neighbors.Length);
               bool flag = false;
               float num1 = float.NegativeInfinity;
               for (int index2 = 0; index2 < _currentPoint.neighbors.Length; ++index2)
@@ -479,7 +481,7 @@ namespace Pathologic.Prototype
                     num1 = float.NegativeInfinity;
                   vector3 = _currentPoint.neighbors[index2].transform.position - _currentPoint.transform.position;
                   Vector3 normalized2 = vector3.normalized;
-                  float num2 = Vector3.Dot(normalized1, normalized2) * UnityEngine.Random.value;
+                  float num2 = Vector3.Dot(normalized1, normalized2) * Random.value;
                   if (num2 > (double) num1)
                   {
                     index1 = index2;
@@ -495,7 +497,7 @@ namespace Pathologic.Prototype
             {
               vector3 = _route[0].transform.position - _currentPoint.transform.position;
               Vector3 normalized3 = vector3.normalized;
-              int index3 = UnityEngine.Random.Range(0, _route[0].neighbors.Length);
+              int index3 = Random.Range(0, _route[0].neighbors.Length);
               bool flag = false;
               float num3 = float.NegativeInfinity;
               for (int index4 = 0; index4 < _route[0].neighbors.Length; ++index4)
@@ -506,7 +508,7 @@ namespace Pathologic.Prototype
                     num3 = float.NegativeInfinity;
                   vector3 = _route[0].neighbors[index4].transform.position - _route[0].transform.position;
                   Vector3 normalized4 = vector3.normalized;
-                  float num4 = Vector3.Dot(normalized3, normalized4) * UnityEngine.Random.value;
+                  float num4 = Vector3.Dot(normalized3, normalized4) * Random.value;
                   if (num4 > (double) num3)
                   {
                     index3 = index4;
@@ -530,14 +532,14 @@ namespace Pathologic.Prototype
               float num6 = VisibilityWeight(_points[_nextSearchPoint].transform, face.playerPosition);
               if (num6 > 0.0)
               {
-                Vector2 vector2 = UnityEngine.Random.insideUnitCircle * face.eyeSize;
+                Vector2 vector2 = Random.insideUnitCircle * face.eyeSize;
                 Vector3 vector3 = _points[_nextSearchPoint].transform.localToWorldMatrix.MultiplyPoint(new Vector3(vector2.x, vector2.y, face.eyeExtent));
-                Vector3 b = face.playerPosition + UnityEngine.Random.insideUnitSphere * face.playerSize;
-                if (Physics.Raycast(vector3, b - vector3, out RaycastHit _, Vector3.Distance(vector3, b), (int) face.sightObstacles))
+                Vector3 b = face.playerPosition + Random.insideUnitSphere * face.playerSize;
+                if (Physics.Raycast(vector3, b - vector3, out RaycastHit _, Vector3.Distance(vector3, b), face.sightObstacles))
                   num6 = 0.0f;
                 --searchRaysPerTick;
               }
-              if (_route.Count > 0 && (UnityEngine.Object) _points[_nextSearchPoint] == (UnityEngine.Object) _route[0])
+              if (_route.Count > 0 && _points[_nextSearchPoint] == _route[0])
                 _destinationQuality = num6;
               else if (num6 > (double) _destinationQuality)
               {
@@ -553,14 +555,14 @@ namespace Pathologic.Prototype
           _cullingGroup = new CullingGroup();
           _cullingGroup.SetBoundingSpheres(_cullingSpheres);
         }
-        if ((UnityEngine.Object) GameCamera.Instance.Camera != (UnityEngine.Object) null)
+        if (GameCamera.Instance.Camera != null)
           _cullingGroup.targetCamera = GameCamera.Instance.Camera;
         for (int index = 0; index < boundingSpheres.Length; ++index)
-          _cullingSpheres[index] = new BoundingSphere(_currentPoint.transform.TransformPoint((Vector3) boundingSpheres[index]), boundingSpheres[index].w);
+          _cullingSpheres[index] = new BoundingSphere(_currentPoint.transform.TransformPoint(boundingSpheres[index]), boundingSpheres[index].w);
         if (_route.Count > 0)
         {
           for (int index = 0; index < boundingSpheres.Length; ++index)
-            _cullingSpheres[index + boundingSpheres.Length] = new BoundingSphere(_route[_route.Count - 1].transform.TransformPoint((Vector3) boundingSpheres[index]), boundingSpheres[index].w);
+            _cullingSpheres[index + boundingSpheres.Length] = new BoundingSphere(_route[_route.Count - 1].transform.TransformPoint(boundingSpheres[index]), boundingSpheres[index].w);
           _cullingGroup.SetBoundingSphereCount(_cullingSpheres.Length);
         }
         else
@@ -570,7 +572,7 @@ namespace Pathologic.Prototype
       public void SetDestination(PlagueFacePoint destination)
       {
         _route.Clear();
-        if ((UnityEngine.Object) destination == (UnityEngine.Object) _currentPoint)
+        if (destination == _currentPoint)
           return;
         _pathfinder.AddReversedRoute(_currentPoint, destination, _route);
       }
@@ -613,34 +615,34 @@ namespace Pathologic.Prototype
 
       public void Initialize()
       {
-        if ((UnityEngine.Object) transform != (UnityEngine.Object) null && (UnityEngine.Object) anchor != (UnityEngine.Object) null)
+        if (transform != null && anchor != null)
         {
           _worldPosition = anchor.position;
           transform.position = _worldPosition;
         }
         _soundWeights = new Vector3(1f, 0.0f, 0.0f);
-        if ((UnityEngine.Object) sleepSource != (UnityEngine.Object) null)
+        if (sleepSource != null)
           sleepSource.volume = sleepMaxVolume;
-        if ((UnityEngine.Object) roamSource != (UnityEngine.Object) null)
+        if (roamSource != null)
           roamSource.volume = 0.0f;
-        if (!((UnityEngine.Object) attackSource != (UnityEngine.Object) null))
+        if (!(attackSource != null))
           return;
         attackSource.volume = 0.0f;
       }
 
       public void Update(PlagueFace face, float deltaTime)
       {
-        if ((UnityEngine.Object) transform != (UnityEngine.Object) null && (UnityEngine.Object) anchor != (UnityEngine.Object) null)
+        if (transform != null && anchor != null)
         {
           _worldPosition = Vector3.SmoothDamp(_worldPosition, anchor.position, ref _velocity, moveSmoothness, float.PositiveInfinity, deltaTime);
           transform.position = _worldPosition;
         }
         _soundWeights = Vector3.MoveTowards(_soundWeights, face.attack <= 0.0 ? (face.aggresion < (double) face.navigation.roamAggresion ? new Vector3(1f, 0.0f, 0.0f) : new Vector3(0.0f, 1f, 0.0f)) : new Vector3(0.0f, 0.0f, 1f), deltaTime / fadeTime);
-        if ((UnityEngine.Object) sleepSource != (UnityEngine.Object) null)
+        if (sleepSource != null)
           sleepSource.volume = _soundWeights.x * sleepMaxVolume;
-        if ((UnityEngine.Object) roamSource != (UnityEngine.Object) null)
+        if (roamSource != null)
           roamSource.volume = _soundWeights.y * roamMaxVolume;
-        if (!((UnityEngine.Object) attackSource != (UnityEngine.Object) null))
+        if (!(attackSource != null))
           return;
         attackSource.volume = _soundWeights.z * attackMaxVolume;
       }

@@ -1,4 +1,8 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace SRF.UI
 {
@@ -28,10 +32,10 @@ namespace SRF.UI
 
     public void OnDrag(PointerEventData eventData)
     {
-      if (!this.interactable)
+      if (!interactable)
         return;
       _dragDelta += eventData.delta.x;
-      if ((double) Mathf.Abs(_dragDelta) <= DragThreshold)
+      if (Mathf.Abs(_dragDelta) <= (double) DragThreshold)
         return;
       float num = Mathf.Sign(_dragDelta);
       int amount = Mathf.FloorToInt(Mathf.Abs(_dragDelta) / DragThreshold);

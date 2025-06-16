@@ -1,4 +1,5 @@
 ﻿using NodeCanvas.Framework;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -29,13 +30,13 @@ namespace FlowCanvas.Nodes
         string[] targetMessageEvents = GetTargetMessageEvents();
         if (targetMessageEvents == null || targetMessageEvents.Length == 0)
           return;
-        RegisterEvents((Component) target.value, targetMessageEvents);
+        RegisterEvents(target.value, targetMessageEvents);
       }
     }
 
     public override void OnGraphStoped()
     {
-      UnRegisterEvents((Component) target.value, GetTargetMessageEvents());
+      UnRegisterEvents(target.value, GetTargetMessageEvents());
     }
   }
 }

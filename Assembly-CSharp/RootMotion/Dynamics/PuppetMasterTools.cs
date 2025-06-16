@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   public static class PuppetMasterTools
   {
@@ -9,7 +11,7 @@
         return;
       foreach (Muscle muscle in puppetMaster.muscles)
       {
-        if ((Object) muscle.joint == (Object) null || (Object) muscle.target == (Object) null)
+        if (muscle.joint == null || muscle.target == null)
           return;
       }
       Vector3[] vector3Array = new Vector3[componentsInChildren.Length];
@@ -22,7 +24,7 @@
       {
         foreach (Muscle muscle in puppetMaster.muscles)
         {
-          if ((Object) muscle.joint.GetComponent<Rigidbody>() == (Object) rigidbody)
+          if (muscle.joint.GetComponent<Rigidbody>() == rigidbody)
             rigidbody.transform.position = muscle.target.position;
         }
       }
@@ -41,25 +43,25 @@
     {
       foreach (Muscle muscle in puppetMaster.muscles)
       {
-        if ((Object) muscle.joint == (Object) null || (Object) muscle.joint.transform == (Object) null || (Object) muscle.target == (Object) null)
+        if (muscle.joint == null || muscle.joint.transform == null || muscle.target == null)
         {
-          Debug.LogWarning((object) "Muscles incomplete, can not realign ragdoll.");
+          Debug.LogWarning("Muscles incomplete, can not realign ragdoll.");
           return;
         }
       }
       foreach (Muscle muscle in puppetMaster.muscles)
       {
-        if ((Object) muscle.target != (Object) null)
+        if (muscle.target != null)
         {
           Transform[] transformArray = new Transform[muscle.joint.transform.childCount];
           for (int index = 0; index < transformArray.Length; ++index)
             transformArray[index] = muscle.joint.transform.GetChild(index);
           foreach (Transform transform in transformArray)
-            transform.parent = (Transform) null;
+            transform.parent = null;
           BoxCollider component1 = muscle.joint.GetComponent<BoxCollider>();
           Vector3 vector1 = Vector3.zero;
           Vector3 vector2 = Vector3.zero;
-          if ((Object) component1 != (Object) null)
+          if (component1 != null)
           {
             vector1 = component1.transform.TransformVector(component1.size);
             vector2 = component1.transform.TransformVector(component1.center);
@@ -67,30 +69,30 @@
           CapsuleCollider component2 = muscle.joint.GetComponent<CapsuleCollider>();
           Vector3 vector3 = Vector3.zero;
           Vector3 direction = Vector3.zero;
-          if ((Object) component2 != (Object) null)
+          if (component2 != null)
           {
             vector3 = component2.transform.TransformVector(component2.center);
             direction = component2.transform.TransformVector(DirectionIntToVector3(component2.direction));
           }
           SphereCollider component3 = muscle.joint.GetComponent<SphereCollider>();
           Vector3 vector4 = Vector3.zero;
-          if ((Object) component3 != (Object) null)
+          if (component3 != null)
             vector4 = component3.transform.TransformVector(component3.center);
           Vector3 vector5 = muscle.joint.transform.TransformVector(muscle.joint.axis);
           Vector3 vector6 = muscle.joint.transform.TransformVector(muscle.joint.secondaryAxis);
           muscle.joint.transform.rotation = muscle.target.rotation;
-          if ((Object) component1 != (Object) null)
+          if (component1 != null)
           {
             component1.size = component1.transform.InverseTransformVector(vector1);
             component1.center = component1.transform.InverseTransformVector(vector2);
           }
-          if ((Object) component2 != (Object) null)
+          if (component2 != null)
           {
             component2.center = component2.transform.InverseTransformVector(vector3);
             Vector3 dir = component2.transform.InverseTransformDirection(direction);
             component2.direction = DirectionVector3ToInt(dir);
           }
-          if ((Object) component3 != (Object) null)
+          if (component3 != null)
             component3.center = component3.transform.InverseTransformVector(vector4);
           muscle.joint.axis = muscle.joint.transform.InverseTransformVector(vector5);
           muscle.joint.secondaryAxis = muscle.joint.transform.InverseTransformVector(vector6);

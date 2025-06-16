@@ -1,5 +1,7 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -16,13 +18,13 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     public void Hide()
     {
       nodeView = null;
-      this.gameObject.SetActive(false);
-      this.CancelInvoke("MarkNodeDiscovered");
+      gameObject.SetActive(false);
+      CancelInvoke("MarkNodeDiscovered");
     }
 
     public void Hide(MMNodeView nodeView)
     {
-      if (!((Object) nodeView == (Object) this.nodeView))
+      if (!(nodeView == this.nodeView))
         return;
       Hide();
     }
@@ -33,26 +35,26 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       this.nodeView = nodeView;
       textView.text = service.GetText(nodeView.Node.Content.Description);
       mapCallTooltip.SetActive(hasMapItem);
-      this.gameObject.SetActive(true);
+      gameObject.SetActive(true);
       UpdatePosition();
-      this.Invoke("MarkNodeDiscovered", discoveredTime);
+      Invoke("MarkNodeDiscovered", discoveredTime);
     }
 
     private void LateUpdate() => UpdatePosition();
 
     private void UpdatePosition()
     {
-      if ((Object) nodeView == (Object) null)
+      if (nodeView == null)
         return;
-      RectTransform transform1 = (RectTransform) this.transform;
-      RectTransform transform2 = (RectTransform) this.GetComponentInParent<Canvas>().transform;
+      RectTransform transform1 = (RectTransform) transform;
+      RectTransform transform2 = (RectTransform) GetComponentInParent<Canvas>().transform;
       Vector2 vector2_1 = new Vector2(transform2.sizeDelta.x, transform2.sizeDelta.y);
-      Vector2 vector2_2 = (Vector2) nodeView.transform.TransformPoint(Vector3.zero);
+      Vector2 vector2_2 = nodeView.transform.TransformPoint(Vector3.zero);
       vector2_2.x = Mathf.Round(vector2_2.x);
       vector2_2.y = Mathf.Round(vector2_2.y);
       vector2_2.x /= transform2.localScale.x;
       vector2_2.y /= transform2.localScale.y;
-      transform1.pivot = new Vector2((double) vector2_2.x > (double) vector2_1.x * 0.699999988079071 ? 1f : 0.0f, (double) vector2_2.y > (double) vector2_1.y * 0.30000001192092896 ? 1f : 0.0f);
+      transform1.pivot = new Vector2(vector2_2.x > vector2_1.x * 0.699999988079071 ? 1f : 0.0f, vector2_2.y > vector2_1.y * 0.30000001192092896 ? 1f : 0.0f);
       transform1.anchoredPosition = vector2_2;
     }
 

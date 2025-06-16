@@ -36,7 +36,7 @@
 
     private static Color NormalizeColor(Color c)
     {
-      float a = (float) (((double) c.r + (double) c.g + (double) c.b) / 3.0);
+      float a = (float) ((c.r + (double) c.g + c.b) / 3.0);
       if (Mathf.Approximately(a, 0.0f))
         return new Color(1f, 1f, 1f, c.a);
       return new Color {
@@ -55,27 +55,27 @@
     public static Vector3 GetLiftValue(Color lift)
     {
       Color color = NormalizeColor(lift);
-      float num = (float) (((double) color.r + (double) color.g + (double) color.b) / 3.0);
-      return ClampVector(new Vector3((float) (((double) color.r - num) * 0.10000000149011612) + lift.a, (float) (((double) color.g - num) * 0.10000000149011612) + lift.a, (float) (((double) color.b - num) * 0.10000000149011612) + lift.a), -1f, 1f);
+      float num = (float) ((color.r + (double) color.g + color.b) / 3.0);
+      return ClampVector(new Vector3((float) ((color.r - (double) num) * 0.10000000149011612) + lift.a, (float) ((color.g - (double) num) * 0.10000000149011612) + lift.a, (float) ((color.b - (double) num) * 0.10000000149011612) + lift.a), -1f, 1f);
     }
 
     public static Vector3 GetGammaValue(Color gamma)
     {
       Color color = NormalizeColor(gamma);
-      float num = (float) (((double) color.r + (double) color.g + (double) color.b) / 3.0);
-      gamma.a *= (double) gamma.a < 0.0 ? 0.8f : 5f;
-      float b1 = Mathf.Pow(2f, (float) (((double) color.r - num) * 0.5)) + gamma.a;
-      float b2 = Mathf.Pow(2f, (float) (((double) color.g - num) * 0.5)) + gamma.a;
-      float b3 = Mathf.Pow(2f, (float) (((double) color.b - num) * 0.5)) + gamma.a;
+      float num = (float) ((color.r + (double) color.g + color.b) / 3.0);
+      gamma.a *= gamma.a < 0.0 ? 0.8f : 5f;
+      float b1 = Mathf.Pow(2f, (float) ((color.r - (double) num) * 0.5)) + gamma.a;
+      float b2 = Mathf.Pow(2f, (float) ((color.g - (double) num) * 0.5)) + gamma.a;
+      float b3 = Mathf.Pow(2f, (float) ((color.b - (double) num) * 0.5)) + gamma.a;
       return ClampVector(new Vector3(1f / Mathf.Max(0.01f, b1), 1f / Mathf.Max(0.01f, b2), 1f / Mathf.Max(0.01f, b3)), 0.0f, 5f);
     }
 
     public static Vector3 GetGainValue(Color gain)
     {
       Color color = NormalizeColor(gain);
-      float num = (float) (((double) color.r + (double) color.g + (double) color.b) / 3.0);
-      gain.a *= (double) gain.a > 0.0 ? 3f : 1f;
-      return ClampVector(new Vector3(Mathf.Pow(2f, (float) (((double) color.r - num) * 0.5)) + gain.a, Mathf.Pow(2f, (float) (((double) color.g - num) * 0.5)) + gain.a, Mathf.Pow(2f, (float) (((double) color.b - num) * 0.5)) + gain.a), 0.0f, 4f);
+      float num = (float) ((color.r + (double) color.g + color.b) / 3.0);
+      gain.a *= gain.a > 0.0 ? 3f : 1f;
+      return ClampVector(new Vector3(Mathf.Pow(2f, (float) ((color.r - (double) num) * 0.5)) + gain.a, Mathf.Pow(2f, (float) ((color.g - (double) num) * 0.5)) + gain.a, Mathf.Pow(2f, (float) ((color.b - (double) num) * 0.5)) + gain.a), 0.0f, 4f);
     }
 
     public static void CalculateLiftGammaGain(
@@ -94,28 +94,28 @@
     public static Vector3 GetSlopeValue(Color slope)
     {
       Color color = NormalizeColor(slope);
-      float num = (float) (((double) color.r + (double) color.g + (double) color.b) / 3.0);
+      float num = (float) ((color.r + (double) color.g + color.b) / 3.0);
       slope.a *= 0.5f;
-      return ClampVector(new Vector3((float) (((double) color.r - num) * 0.10000000149011612 + (double) slope.a + 1.0), (float) (((double) color.g - num) * 0.10000000149011612 + (double) slope.a + 1.0), (float) (((double) color.b - num) * 0.10000000149011612 + (double) slope.a + 1.0)), 0.0f, 2f);
+      return ClampVector(new Vector3((float) ((color.r - (double) num) * 0.10000000149011612 + slope.a + 1.0), (float) ((color.g - (double) num) * 0.10000000149011612 + slope.a + 1.0), (float) ((color.b - (double) num) * 0.10000000149011612 + slope.a + 1.0)), 0.0f, 2f);
     }
 
     public static Vector3 GetPowerValue(Color power)
     {
       Color color = NormalizeColor(power);
-      float num = (float) (((double) color.r + (double) color.g + (double) color.b) / 3.0);
+      float num = (float) ((color.r + (double) color.g + color.b) / 3.0);
       power.a *= 0.5f;
-      float b1 = (float) (((double) color.r - num) * 0.10000000149011612 + (double) power.a + 1.0);
-      float b2 = (float) (((double) color.g - num) * 0.10000000149011612 + (double) power.a + 1.0);
-      float b3 = (float) (((double) color.b - num) * 0.10000000149011612 + (double) power.a + 1.0);
+      float b1 = (float) ((color.r - (double) num) * 0.10000000149011612 + power.a + 1.0);
+      float b2 = (float) ((color.g - (double) num) * 0.10000000149011612 + power.a + 1.0);
+      float b3 = (float) ((color.b - (double) num) * 0.10000000149011612 + power.a + 1.0);
       return ClampVector(new Vector3(1f / Mathf.Max(0.01f, b1), 1f / Mathf.Max(0.01f, b2), 1f / Mathf.Max(0.01f, b3)), 0.5f, 2.5f);
     }
 
     public static Vector3 GetOffsetValue(Color offset)
     {
       Color color = NormalizeColor(offset);
-      float num = (float) (((double) color.r + (double) color.g + (double) color.b) / 3.0);
+      float num = (float) ((color.r + (double) color.g + color.b) / 3.0);
       offset.a *= 0.5f;
-      return ClampVector(new Vector3((float) (((double) color.r - num) * 0.05000000074505806) + offset.a, (float) (((double) color.g - num) * 0.05000000074505806) + offset.a, (float) (((double) color.b - num) * 0.05000000074505806) + offset.a), -0.8f, 0.8f);
+      return ClampVector(new Vector3((float) ((color.r - (double) num) * 0.05000000074505806) + offset.a, (float) ((color.g - (double) num) * 0.05000000074505806) + offset.a, (float) ((color.b - (double) num) * 0.05000000074505806) + offset.a), -0.8f, 0.8f);
     }
 
     public static void CalculateSlopePowerOffset(
@@ -133,7 +133,7 @@
 
     private Texture2D GetCurveTexture()
     {
-      if ((Object) m_GradingCurves == (Object) null)
+      if (m_GradingCurves == null)
       {
         Texture2D texture2D = new Texture2D(128, 2, TextureFormat.RGBAHalf, false, true);
         texture2D.name = "Internal Curves Texture";
@@ -167,7 +167,7 @@
 
     private bool IsLogLutValid(RenderTexture lut)
     {
-      return (Object) lut != (Object) null && lut.IsCreated() && lut.height == 32;
+      return lut != null && lut.IsCreated() && lut.height == 32;
     }
 
     private void GenerateLut()
@@ -175,7 +175,7 @@
       ColorGradingModel.Settings settings = this.model.settings;
       if (!IsLogLutValid(this.model.bakedLut))
       {
-        GraphicsUtils.Destroy((Object) this.model.bakedLut);
+        GraphicsUtils.Destroy(this.model.bakedLut);
         ColorGradingModel model = this.model;
         RenderTexture renderTexture = new RenderTexture(1024, 32, 0, RenderTextureFormat.ARGBHalf);
         renderTexture.name = "Color Grading Log LUT";
@@ -187,7 +187,7 @@
       }
       Material mat = context.materialFactory.Get("Hidden/Post FX/Lut Generator");
       mat.SetVector(Uniforms._LutParams, new Vector4(32f, 0.00048828125f, 1f / 64f, 1.032258f));
-      mat.shaderKeywords = (string[]) null;
+      mat.shaderKeywords = null;
       ColorGradingModel.TonemappingSettings tonemapping = settings.tonemapping;
       switch (tonemapping.tonemapper)
       {
@@ -212,26 +212,26 @@
       mat.SetFloat(Uniforms._HueShift, settings.basic.hueShift / 360f);
       mat.SetFloat(Uniforms._Saturation, settings.basic.saturation);
       mat.SetFloat(Uniforms._Contrast, settings.basic.contrast);
-      mat.SetVector(Uniforms._Balance, (Vector4) CalculateColorBalance(settings.basic.temperature, settings.basic.tint));
+      mat.SetVector(Uniforms._Balance, CalculateColorBalance(settings.basic.temperature, settings.basic.tint));
       Vector3 outLift;
       Vector3 outGamma;
       Vector3 outGain;
       CalculateLiftGammaGain(settings.colorWheels.linear.lift, settings.colorWheels.linear.gamma, settings.colorWheels.linear.gain, out outLift, out outGamma, out outGain);
-      mat.SetVector(Uniforms._Lift, (Vector4) outLift);
-      mat.SetVector(Uniforms._InvGamma, (Vector4) outGamma);
-      mat.SetVector(Uniforms._Gain, (Vector4) outGain);
+      mat.SetVector(Uniforms._Lift, outLift);
+      mat.SetVector(Uniforms._InvGamma, outGamma);
+      mat.SetVector(Uniforms._Gain, outGain);
       Vector3 outSlope;
       Vector3 outPower;
       Vector3 outOffset;
       CalculateSlopePowerOffset(settings.colorWheels.log.slope, settings.colorWheels.log.power, settings.colorWheels.log.offset, out outSlope, out outPower, out outOffset);
-      mat.SetVector(Uniforms._Slope, (Vector4) outSlope);
-      mat.SetVector(Uniforms._Power, (Vector4) outPower);
-      mat.SetVector(Uniforms._Offset, (Vector4) outOffset);
-      mat.SetVector(Uniforms._ChannelMixerRed, (Vector4) settings.channelMixer.red);
-      mat.SetVector(Uniforms._ChannelMixerGreen, (Vector4) settings.channelMixer.green);
-      mat.SetVector(Uniforms._ChannelMixerBlue, (Vector4) settings.channelMixer.blue);
-      mat.SetTexture(Uniforms._Curves, (Texture) GetCurveTexture());
-      Graphics.Blit((Texture) null, this.model.bakedLut, mat, 0);
+      mat.SetVector(Uniforms._Slope, outSlope);
+      mat.SetVector(Uniforms._Power, outPower);
+      mat.SetVector(Uniforms._Offset, outOffset);
+      mat.SetVector(Uniforms._ChannelMixerRed, settings.channelMixer.red);
+      mat.SetVector(Uniforms._ChannelMixerGreen, settings.channelMixer.green);
+      mat.SetVector(Uniforms._ChannelMixerBlue, settings.channelMixer.blue);
+      mat.SetTexture(Uniforms._Curves, GetCurveTexture());
+      Graphics.Blit(null, this.model.bakedLut, mat, 0);
     }
 
     public override void Prepare(Material uberMaterial)
@@ -243,8 +243,8 @@
       }
       uberMaterial.EnableKeyword(context.profile.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.PreGradingLog) ? "COLOR_GRADING_LOG_VIEW" : "COLOR_GRADING");
       RenderTexture bakedLut = model.bakedLut;
-      uberMaterial.SetTexture(Uniforms._LogLut, (Texture) bakedLut);
-      uberMaterial.SetVector(Uniforms._LogLut_Params, (Vector4) new Vector3(1f / (float) bakedLut.width, 1f / (float) bakedLut.height, (float) bakedLut.height - 1f));
+      uberMaterial.SetTexture(Uniforms._LogLut, bakedLut);
+      uberMaterial.SetVector(Uniforms._LogLut_Params, new Vector3(1f / bakedLut.width, 1f / bakedLut.height, bakedLut.height - 1f));
       float num = Mathf.Exp(model.settings.basic.postExposure * 0.6931472f);
       uberMaterial.SetFloat(Uniforms._ExposureEV, num);
     }
@@ -252,15 +252,15 @@
     public void OnGUI()
     {
       RenderTexture bakedLut = model.bakedLut;
-      GUI.DrawTexture(new Rect((float) ((double) context.viewport.x * (double) Screen.width + 8.0), 8f, (float) bakedLut.width, (float) bakedLut.height), (Texture) bakedLut);
+      GUI.DrawTexture(new Rect((float) (context.viewport.x * (double) Screen.width + 8.0), 8f, bakedLut.width, bakedLut.height), bakedLut);
     }
 
     public override void OnDisable()
     {
-      GraphicsUtils.Destroy((Object) m_GradingCurves);
-      GraphicsUtils.Destroy((Object) model.bakedLut);
-      m_GradingCurves = (Texture2D) null;
-      model.bakedLut = (RenderTexture) null;
+      GraphicsUtils.Destroy(m_GradingCurves);
+      GraphicsUtils.Destroy(model.bakedLut);
+      m_GradingCurves = null;
+      model.bakedLut = null;
     }
 
     private static class Uniforms

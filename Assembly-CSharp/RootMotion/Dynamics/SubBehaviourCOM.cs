@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -118,7 +119,7 @@ namespace RootMotion.Dynamics
       Vector3 zero = Vector3.zero;
       for (int index = 0; index < collision.contacts.Length; ++index)
         zero += collision.contacts[index].point;
-      return zero / (float) collision.contacts.Length;
+      return zero / collision.contacts.Length;
     }
 
     private bool IsGrounded()
@@ -177,7 +178,7 @@ namespace RootMotion.Dynamics
           ++num;
         }
       }
-      return zero / (float) num;
+      return zero / num;
     }
 
     private Vector3 GetFeetCentroid()
@@ -192,7 +193,7 @@ namespace RootMotion.Dynamics
           ++num;
         }
       }
-      return zero / (float) num;
+      return zero / num;
     }
 
     [Serializable]

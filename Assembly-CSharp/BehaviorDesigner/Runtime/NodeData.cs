@@ -8,6 +8,7 @@ using Engine.Common.Commons;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -206,7 +207,7 @@ namespace BehaviorDesigner.Runtime
     private static Vector2 StringToVector2(string vector2String)
     {
       string[] strArray = vector2String.Substring(1, vector2String.Length - 2).Split(',');
-      return (Vector2) new Vector3(float.Parse(strArray[0]), float.Parse(strArray[1]));
+      return new Vector3(float.Parse(strArray[0]), float.Parse(strArray[1]));
     }
   }
 }

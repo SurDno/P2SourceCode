@@ -1,4 +1,6 @@
-﻿public abstract class KeyCodeViewBase : KeyCodeView
+﻿using UnityEngine;
+
+public abstract class KeyCodeViewBase : KeyCodeView
 {
   [SerializeField]
   private KeyCode value;

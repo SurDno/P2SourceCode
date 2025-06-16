@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -34,12 +35,12 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       base.OnStart();
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
       {
         npcState = gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+        if (npcState == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component", gameObject);
           return;
         }
       }
@@ -48,7 +49,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if (EscapeTime.Value > 0.0 && startTime + (double) waitDuration < (double) Time.time)
+      if (EscapeTime.Value > 0.0 && startTime + (double) waitDuration < Time.time)
         return TaskStatus.Success;
       if (npcState.CurrentNpcState != NpcStateEnum.FightEscape)
         return TaskStatus.Failure;

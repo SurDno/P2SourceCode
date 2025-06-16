@@ -4,6 +4,7 @@ using Engine.Source.Commons;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -19,13 +20,13 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         Transform transform = targetValue.value;
-        if ((Object) transform != (Object) null)
+        if (transform != null)
         {
           IEntity player = ServiceLocator.GetService<ISimulation>().Player;
           if (player != null)
           {
             GameObject gameObject = ((IEntityView) player).GameObject;
-            if ((Object) gameObject != (Object) null && (double) Mathf.Sign(Vector3.Dot(transform.parent.rotation * Vector3.forward, gameObject.transform.rotation * Vector3.forward)) == -1.0)
+            if (gameObject != null && Mathf.Sign(Vector3.Dot(transform.parent.rotation * Vector3.forward, gameObject.transform.rotation * Vector3.forward)) == -1.0)
             {
               Vector3 eulerAngles = transform.rotation.eulerAngles;
               eulerAngles.y += 180f;

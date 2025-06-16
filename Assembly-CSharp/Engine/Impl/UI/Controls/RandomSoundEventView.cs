@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class RandomSoundEventView : EventView
   {
@@ -8,7 +10,7 @@
     public override void Invoke()
     {
       AudioClip clip = soundCollection?.GetClip();
-      if ((Object) clip == (Object) null)
+      if (clip == null)
         return;
       MonoBehaviourInstance<UISounds>.Instance?.PlaySound(clip);
     }

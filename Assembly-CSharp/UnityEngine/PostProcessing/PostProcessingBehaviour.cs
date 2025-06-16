@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine.Rendering;
 
 namespace UnityEngine.PostProcessing
 {
@@ -66,13 +67,13 @@ namespace UnityEngine.PostProcessing
       m_ComponentStates = new Dictionary<PostProcessingComponentBase, bool>();
       foreach (PostProcessingComponentBase component in m_Components)
         m_ComponentStates.Add(component, false);
-      this.useGUILayout = false;
+      useGUILayout = false;
     }
 
     private void OnPreCull()
     {
-      m_Camera = this.GetComponent<Camera>();
-      if ((UnityEngine.Object) profile == (UnityEngine.Object) null || (UnityEngine.Object) m_Camera == (UnityEngine.Object) null)
+      m_Camera = GetComponent<Camera>();
+      if (profile == null || m_Camera == null)
         return;
       PostProcessingContext pcontext = m_Context.Reset();
       pcontext.profile = profile;
@@ -95,7 +96,7 @@ namespace UnityEngine.PostProcessing
       m_Vignette.Init(pcontext, profile.vignette);
       m_Dithering.Init(pcontext, profile.dithering);
       m_Fxaa.Init(pcontext, profile.antialiasing);
-      if ((UnityEngine.Object) m_PreviousProfile != (UnityEngine.Object) profile)
+      if (m_PreviousProfile != profile)
       {
         DisableComponents();
         m_PreviousProfile = profile;
@@ -115,7 +116,7 @@ namespace UnityEngine.PostProcessing
 
     private void OnPreRender()
     {
-      if ((UnityEngine.Object) profile == (UnityEngine.Object) null)
+      if (profile == null)
         return;
       TryExecuteCommandBuffer(m_DebugViews);
       TryExecuteCommandBuffer(m_AmbientOcclusion);
@@ -127,7 +128,7 @@ namespace UnityEngine.PostProcessing
 
     private void OnPostRender()
     {
-      if ((UnityEngine.Object) profile == (UnityEngine.Object) null || (UnityEngine.Object) m_Camera == (UnityEngine.Object) null || m_RenderingInSceneView || !m_Taa.active || profile.debugViews.willInterrupt)
+      if (profile == null || m_Camera == null || m_RenderingInSceneView || !m_Taa.active || profile.debugViews.willInterrupt)
         return;
       m_Context.camera.ResetProjectionMatrix();
     }
@@ -135,9 +136,9 @@ namespace UnityEngine.PostProcessing
     [ImageEffectTransformsToLDR]
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if ((UnityEngine.Object) profile == (UnityEngine.Object) null || (UnityEngine.Object) m_Camera == (UnityEngine.Object) null)
+      if (profile == null || m_Camera == null)
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -146,7 +147,7 @@ namespace UnityEngine.PostProcessing
         bool antialiasCoC = m_Taa.active && !m_RenderingInSceneView;
         bool flag2 = m_DepthOfField.active && !m_RenderingInSceneView;
         Material material1 = m_MaterialFactory.Get("Hidden/Post FX/Uber Shader");
-        material1.shaderKeywords = (string[]) null;
+        material1.shaderKeywords = null;
         RenderTexture renderTexture1 = source;
         RenderTexture renderTexture2 = destination;
         if (antialiasCoC)
@@ -155,7 +156,7 @@ namespace UnityEngine.PostProcessing
           m_Taa.Render(renderTexture1, destination1);
           renderTexture1 = destination1;
         }
-        Texture autoExposure = (Texture) GraphicsUtils.whiteTexture;
+        Texture autoExposure = GraphicsUtils.whiteTexture;
         if (m_EyeAdaptation.active)
         {
           flag1 = true;
@@ -173,16 +174,16 @@ namespace UnityEngine.PostProcessing
           m_Bloom.Prepare(renderTexture1, material1, autoExposure);
         }
         bool flag3 = flag1 | TryPrepareUberImageEffect(m_ChromaticAberration, material1) | TryPrepareUberImageEffect(m_ColorGrading, material1) | TryPrepareUberImageEffect(m_Vignette, material1) | TryPrepareUberImageEffect(m_UserLut, material1);
-        Material material2 = active ? m_MaterialFactory.Get("Hidden/Post FX/FXAA") : (Material) null;
+        Material material2 = active ? m_MaterialFactory.Get("Hidden/Post FX/FXAA") : null;
         if (active)
         {
-          material2.shaderKeywords = (string[]) null;
+          material2.shaderKeywords = null;
           TryPrepareUberImageEffect(m_Grain, material2);
           TryPrepareUberImageEffect(m_Dithering, material2);
           if (flag3)
           {
             RenderTexture dest = m_RenderTextureFactory.Get(renderTexture1);
-            Graphics.Blit((Texture) renderTexture1, dest, material1, 0);
+            Graphics.Blit(renderTexture1, dest, material1, 0);
             renderTexture1 = dest;
           }
           m_Fxaa.Render(renderTexture1, renderTexture2);
@@ -194,18 +195,18 @@ namespace UnityEngine.PostProcessing
           {
             if (!GraphicsUtils.isLinearColorSpace)
               material1.EnableKeyword("UNITY_COLORSPACE_GAMMA");
-            Graphics.Blit((Texture) renderTexture1, renderTexture2, material1, 0);
+            Graphics.Blit(renderTexture1, renderTexture2, material1, 0);
           }
         }
         if (!flag3 && !active)
-          Graphics.Blit((Texture) renderTexture1, renderTexture2);
+          Graphics.Blit(renderTexture1, renderTexture2);
         m_RenderTextureFactory.ReleaseAll();
       }
     }
 
     private void OnGUI()
     {
-      if (Event.current.type != EventType.Repaint || (UnityEngine.Object) profile == (UnityEngine.Object) null || (UnityEngine.Object) m_Camera == (UnityEngine.Object) null)
+      if (Event.current.type != EventType.Repaint || profile == null || m_Camera == null)
         return;
       if (m_EyeAdaptation.active && profile.debugViews.IsModeActive(BuiltinDebugViewsModel.Mode.EyeAdaptation))
         m_EyeAdaptation.OnGUI();
@@ -229,10 +230,10 @@ namespace UnityEngine.PostProcessing
         keyValuePair.Value.Dispose();
       }
       m_CommandBuffers.Clear();
-      if ((UnityEngine.Object) profile != (UnityEngine.Object) null)
+      if (profile != null)
         DisableComponents();
       m_Components.Clear();
-      if ((UnityEngine.Object) m_Camera != (UnityEngine.Object) null)
+      if (m_Camera != null)
         m_Camera.depthTextureMode = DepthTextureMode.None;
       m_MaterialFactory.Dispose();
       m_RenderTextureFactory.Dispose();

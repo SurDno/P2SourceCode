@@ -1,4 +1,6 @@
-﻿[AddComponentMenu("Utilities/HUDFPS")]
+﻿using UnityEngine;
+
+[AddComponentMenu("Utilities/HUDFPS")]
 public class HUDFPS : MonoBehaviour
 {
   private float accum;

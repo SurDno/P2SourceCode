@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine.Common.Components.AttackerPlayer;
+using UnityEngine;
 
 namespace Engine.Behaviours.Components
 {
@@ -129,14 +130,14 @@ namespace Engine.Behaviours.Components
 
     private void Awake()
     {
-      animator = this.GetComponent<Animator>();
-      if ((Object) animator == (Object) null)
+      animator = GetComponent<Animator>();
+      if (animator == null)
       {
-        Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", (object) this.gameObject.name, (object) typeof (Animator).Name);
+        Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", gameObject.name, typeof (Animator).Name);
       }
       else
       {
-        if ((Object) VisirBone != (Object) null && (Object) VisirAnchor != (Object) null)
+        if (VisirBone != null && VisirAnchor != null)
         {
           VisirBone.transform.parent = VisirAnchor.transform;
           VisirBone.transform.localPosition = Vector3.zero;
@@ -158,13 +159,13 @@ namespace Engine.Behaviours.Components
       switch (weaponKind)
       {
         case WeaponKind.Revolver:
-          if (!((Object) RevolverBone != (Object) null) || !((Object) RevolverAnchor != (Object) null))
+          if (!(RevolverBone != null) || !(RevolverAnchor != null))
             break;
           RevolverBone.transform.position = RevolverAnchor.transform.position;
           RevolverBone.transform.rotation = RevolverAnchor.transform.rotation;
           break;
         case WeaponKind.Visir:
-          if ((Object) VisirBone != (Object) null && (Object) VisirAnchor != (Object) null)
+          if (VisirBone != null && VisirAnchor != null)
           {
             VisirBone.transform.localPosition = Vector3.zero;
             VisirBone.transform.localRotation = Quaternion.identity;
@@ -178,7 +179,7 @@ namespace Engine.Behaviours.Components
       Rigidbody component1 = FlashlightGeometry.GetComponent<Rigidbody>();
       foreach (CharacterJoint component2 in FlashlightJoint.gameObject.GetComponents<CharacterJoint>())
       {
-        if (!((Object) component2.connectedBody != (Object) component1))
+        if (!(component2.connectedBody != component1))
         {
           component2.transform.TransformPoint(component2.anchor);
           component1.transform.TransformPoint(component2.connectedAnchor);

@@ -13,13 +13,14 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Engine.Source.Components.Utilities;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
   [Initialisable]
   public static class BindTourConsoleCommands
   {
-    private static YieldInstruction wait = (YieldInstruction) new WaitForSeconds(1f);
+    private static YieldInstruction wait = new WaitForSeconds(1f);
 
     [ConsoleCommand("tour_regions")]
     private static string TourRegionsCommand(string command, ConsoleParameter[] parameters)
@@ -54,7 +55,7 @@ namespace Engine.Source.Services.Consoles.Binds
       IEntity player = simulation.Player;
       if (player == null)
       {
-        Debug.LogError((object) "Player not found");
+        Debug.LogError("Player not found");
       }
       else
       {
@@ -70,11 +71,11 @@ namespace Engine.Source.Services.Consoles.Binds
         for (int index = 0; index < regions.Count; ++index)
         {
           RegionComponent region = regions[index];
-          Debug.LogError((object) ("Region : " + region.Owner.Name + "   ( " + index + " / " + regions.Count + " )"));
+          Debug.LogError("Region : " + region.Owner.Name + "   ( " + index + " / " + regions.Count + " )");
           yield return ComputeRegion(region, player);
           region = null;
         }
-        Debug.LogError((object) "Regions Complete");
+        Debug.LogError("Regions Complete");
       }
     }
 
@@ -87,13 +88,13 @@ namespace Engine.Source.Services.Consoles.Binds
       LocationComponent location = region.GetComponent<LocationComponent>();
       navigation.TeleportTo(location, position, Quaternion.identity);
       while (navigation.WaitTeleport)
-        yield return (object) wait;
+        yield return wait;
       LocationItemComponent locationItem = player.GetComponent<LocationItemComponent>();
       while (locationItem.IsHibernation)
-        yield return (object) wait;
+        yield return wait;
       while (!SceneController.CanLoad)
-        yield return (object) wait;
-      yield return (object) wait;
+        yield return wait;
+      yield return wait;
     }
 
     private static IEnumerator TourIndoors()
@@ -102,7 +103,7 @@ namespace Engine.Source.Services.Consoles.Binds
       IEntity player = simulation.Player;
       if (player == null)
       {
-        Debug.LogError((object) "Player not found");
+        Debug.LogError("Player not found");
       }
       else
       {
@@ -121,13 +122,13 @@ namespace Engine.Source.Services.Consoles.Binds
               name = connection.Name;
             connection = null;
           }
-          Debug.LogError((object) ("Indoor : " + name + "   ( " + index + " / " + indoors.Count + " )"));
+          Debug.LogError("Indoor : " + name + "   ( " + index + " / " + indoors.Count + " )");
           yield return ComputeIndoor(indoor, player);
           indoor = null;
           name = null;
           model = null;
         }
-        Debug.LogError((object) "Indoors Complete");
+        Debug.LogError("Indoors Complete");
       }
     }
 
@@ -153,13 +154,13 @@ namespace Engine.Source.Services.Consoles.Binds
       NavigationComponent navigation = player.GetComponent<NavigationComponent>();
       navigation.TeleportTo(indoor, position, Quaternion.identity);
       while (navigation.WaitTeleport)
-        yield return (object) wait;
+        yield return wait;
       LocationItemComponent locationItem = player.GetComponent<LocationItemComponent>();
       while (locationItem.IsHibernation)
-        yield return (object) wait;
+        yield return wait;
       while (!SceneController.CanLoad)
-        yield return (object) wait;
-      yield return (object) wait;
+        yield return wait;
+      yield return wait;
     }
   }
 }

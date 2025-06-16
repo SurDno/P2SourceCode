@@ -4,6 +4,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services.Gizmos;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Engine.Source.Debugs
 {
@@ -16,14 +18,14 @@ namespace Engine.Source.Debugs
       Bounds bounds)
     {
       NavMeshAgent component = go.GetComponent<NavMeshAgent>();
-      if ((Object) component == (Object) null)
+      if (component == null)
         return;
       NavMeshPath path = component.path;
       GizmoService service = ServiceLocator.GetService<GizmoService>();
       int num = NavMeshUtility.DrawPath(component, service);
-      string text = "NavMeshAgent status : " + (object) component.pathStatus + "\nNavMeshAgent hasPath : " + component.hasPath.ToString() + "\nNavMeshAgent isOnNavMesh : " + component.isOnNavMesh.ToString();
+      string text = "NavMeshAgent status : " + component.pathStatus + "\nNavMeshAgent hasPath : " + component.hasPath + "\nNavMeshAgent isOnNavMesh : " + component.isOnNavMesh;
       if (component.hasPath && component.isOnNavMesh)
-        text = text + "\nNavMeshAgent remaining distance : " + (object) component.remainingDistance + "\nCorner count : " + num;
+        text = text + "\nNavMeshAgent remaining distance : " + component.remainingDistance + "\nCorner count : " + num;
       service.DrawText3d(go.transform.position, text, TextCorner.Down, Color.white);
     }
 
@@ -41,7 +43,7 @@ namespace Engine.Source.Debugs
         float eyeDistance = detector.EyeDistance;
         float eyeAngle = detector.EyeAngle;
         Color yellow = Color.yellow;
-        float startAngle = (float) (360.0 - (double) rotation.eulerAngles.y + 90.0) - eyeAngle / 2f;
+        float startAngle = (float) (360.0 - rotation.eulerAngles.y + 90.0) - eyeAngle / 2f;
         service.DrawEyeSector(position, baseEyeDistance, startAngle, startAngle + eyeAngle, yellow, false);
         service.DrawEyeSector(position, eyeDistance, startAngle, startAngle + eyeAngle, yellow);
         int num = 0;
@@ -50,7 +52,7 @@ namespace Engine.Source.Debugs
           if (detectableComponent != null && !detectableComponent.IsDisposed)
           {
             GameObject gameObject = ((IEntityView) detectableComponent.Owner).GameObject;
-            if (!((Object) gameObject == (Object) null))
+            if (!(gameObject == null))
             {
               service.DrawLine(position, gameObject.transform.position, yellow);
               ++num;
@@ -76,7 +78,7 @@ namespace Engine.Source.Debugs
         if (detectableComponent != null && !detectableComponent.IsDisposed)
         {
           GameObject gameObject = ((IEntityView) detectableComponent.Owner).GameObject;
-          if (!((Object) gameObject == (Object) null))
+          if (!(gameObject == null))
           {
             service.DrawLine(position + vector3, gameObject.transform.position + vector3, red);
             ++num1;

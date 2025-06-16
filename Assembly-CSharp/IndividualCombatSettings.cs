@@ -1,6 +1,7 @@
 ﻿using System;
 using BehaviorDesigner.Runtime;
 using Engine.Common.Commons;
+using UnityEngine;
 
 [Serializable]
 public class IndividualCombatSettings

@@ -4,6 +4,7 @@ using Engine.Impl.UI.Menu.Protagonist.Inventory.Grid;
 using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {

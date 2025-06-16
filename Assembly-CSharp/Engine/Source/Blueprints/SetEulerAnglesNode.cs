@@ -1,6 +1,7 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -17,7 +18,7 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         Transform transform = targetInput.value;
-        if ((Object) transform != (Object) null)
+        if (transform != null)
           transform.eulerAngles = eulerAnglesInput.value;
         output.Call();
       });

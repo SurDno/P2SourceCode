@@ -13,6 +13,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -44,14 +45,14 @@ namespace Engine.BehaviourNodes.Conditionals
       IEntity entity1 = EntityUtility.GetEntity(gameObject);
       if (entity1 == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
         return TaskStatus.Failure;
       }
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target.Value == null)
         return TaskStatus.Failure;
       ParametersComponent component = entity1?.GetComponent<ParametersComponent>();
       if (component == null)
-        Debug.LogWarningFormat("{0}: doesn't have parameters", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: doesn't have parameters", gameObject.name);
       IParameter<FractionEnum> fraction = component?.GetByName<FractionEnum>(ParameterNameEnum.Fraction);
       List<FractionEnum> fractionEnumList = null;
       if (fraction != null)
@@ -59,7 +60,7 @@ namespace Engine.BehaviourNodes.Conditionals
       IEntity entity2 = EntityUtility.GetEntity(Target.Value.gameObject);
       if (entity2 == null)
       {
-        Debug.LogWarningFormat("{0}: entity not found", (object) Target.Value.gameObject.name);
+        Debug.LogWarningFormat("{0}: entity not found", Target.Value.gameObject.name);
         return TaskStatus.Failure;
       }
       bool flag = fractionEnumList != null && fractionEnumList.Contains(FractionsHelper.GetTargetFraction(entity2, entity1));

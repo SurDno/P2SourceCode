@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Behaviours.Components;
+using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -24,10 +25,10 @@ namespace Engine.Behaviours.Engines.Controllers
       this.gameObject = gameObject;
       collider = gameObject.GetComponent<CapsuleCollider>();
       rigidbody = gameObject.GetComponent<Rigidbody>();
-      if ((UnityEngine.Object) rigidbody != (UnityEngine.Object) null)
+      if (rigidbody != null)
         rigidbody.isKinematic = true;
       Pivot component = gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+      if (component != null)
         component.RagdollWeight = 0.0f;
       animator = component.GetAnimator();
       animator.updateMode = AnimatorUpdateMode.Normal;

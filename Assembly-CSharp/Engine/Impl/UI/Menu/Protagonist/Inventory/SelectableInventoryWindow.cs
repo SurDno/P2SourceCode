@@ -7,6 +7,9 @@ using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -41,7 +44,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
               if (ingredientSelectors.Length > 1)
                 ingredientSelectors[1]?.SetSelection(false);
             }
-            SelectorButtons = new List<Button>((IEnumerable<Button>) ingredientSelectors[0]?.GetComponentsInChildren<Button>());
+            SelectorButtons = new List<Button>(ingredientSelectors[0]?.GetComponentsInChildren<Button>());
             break;
           case SelectedSelector.Bottom:
             if (InputService.Instance.JoystickUsed)
@@ -50,7 +53,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
               if (ingredientSelectors.Length > 1)
                 ingredientSelectors[1]?.SetSelection(true);
             }
-            SelectorButtons = new List<Button>((IEnumerable<Button>) ingredientSelectors[1]?.GetComponentsInChildren<Button>());
+            SelectorButtons = new List<Button>(ingredientSelectors[1]?.GetComponentsInChildren<Button>());
             break;
           default:
             ingredientSelectors[0]?.SetSelection(false);
@@ -89,7 +92,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
               return;
             break;
           case Modes.Craft:
-            if ((_currentMode == Modes.Inventory || _currentMode == Modes.None) && (UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+            if ((_currentMode == Modes.Inventory || _currentMode == Modes.None) && selectedStorable != null)
             {
               selectedStorable.SetSelected(false);
               selectedStorable = null;
@@ -140,7 +143,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (arg2 != null)
       {
         StorableUI storableByComponent = GetStorableByComponent(arg2);
-        if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
+        if (storableByComponent != null)
         {
           storableByComponent.HoldSelected(false);
           if (selectedStorables.Contains(storableByComponent))
@@ -151,7 +154,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         SetStorableByComponent(arg3);
         StorableUI storableByComponent = GetStorableByComponent(arg3);
-        if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null)
+        if (storableByComponent != null)
         {
           storableByComponent.HoldSelected(true);
           selectedStorables.Add(storableByComponent);
@@ -166,14 +169,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return false;
       if (type == GameActionType.LStickLeft & down)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[0].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        ExecuteEvents.Execute(SelectorButtons[0].gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         OnInvalidate();
         HideInfoWindow();
         return true;
       }
       if (type == GameActionType.LStickRight & down)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[1].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        ExecuteEvents.Execute(SelectorButtons[1].gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         OnInvalidate();
         HideInfoWindow();
         return true;
@@ -208,7 +211,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void OnPointerDown(PointerEventData eventData)
     {
-      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
+      if (windowContextMenu != null)
       {
         HideContextMenu();
       }
@@ -218,7 +221,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           return;
         if (intersect.Storables == null)
         {
-          Debug.LogError((object) "intersect.Storables == null, Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
+          Debug.LogError("intersect.Storables == null, Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
         }
         else
         {
@@ -282,7 +285,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       CurrentMode = Modes.Craft;
       foreach (ItemSelector ingredientSelector in ingredientSelectors)
         ingredientSelector.ChangeItemEvent += OnSelectorItemChange;
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
       {
         selectedStorable.SetSelected(false);
         selectedStorable.HoldSelected(false);

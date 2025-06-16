@@ -1,4 +1,6 @@
-﻿public class MapForceCanvasSize : MonoBehaviour
+﻿using UnityEngine;
+
+public class MapForceCanvasSize : MonoBehaviour
 {
   [SerializeField]
   private Vector2 size = new Vector2(1920f, 1080f);

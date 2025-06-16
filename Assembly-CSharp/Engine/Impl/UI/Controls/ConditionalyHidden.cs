@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -17,7 +18,7 @@ namespace Engine.Impl.UI.Controls
       foreach (Item obj in items)
       {
         HideableView hideableView = obj.GetHideableView();
-        if ((UnityEngine.Object) hideableView != (UnityEngine.Object) null)
+        if (hideableView != null)
         {
           hideableView.OnChangeEvent += UpdateVisibility;
           hideableView.OnSkipAnimationEvent += SkipAnimation;
@@ -30,7 +31,7 @@ namespace Engine.Impl.UI.Controls
       foreach (Item obj in items)
       {
         HideableView hideableView = obj.GetHideableView();
-        if ((UnityEngine.Object) hideableView != (UnityEngine.Object) null)
+        if (hideableView != null)
         {
           hideableView.OnChangeEvent -= UpdateVisibility;
           hideableView.OnSkipAnimationEvent -= SkipAnimation;
@@ -40,7 +41,7 @@ namespace Engine.Impl.UI.Controls
 
     private void SkipAnimation()
     {
-      if (!((UnityEngine.Object) hideableView != (UnityEngine.Object) null))
+      if (!(hideableView != null))
         return;
       hideableView.SkipAnimation();
     }
@@ -51,7 +52,7 @@ namespace Engine.Impl.UI.Controls
       for (int index = 0; index < items.Length; ++index)
       {
         HideableView hideableView = items[index].GetHideableView();
-        if (!((UnityEngine.Object) hideableView == (UnityEngine.Object) null))
+        if (!(hideableView == null))
         {
           bool flag = hideableView.Visible;
           if (items[index].Negated)
@@ -70,7 +71,7 @@ namespace Engine.Impl.UI.Controls
           }
         }
       }
-      if (!((UnityEngine.Object) this.hideableView != (UnityEngine.Object) null))
+      if (!(this.hideableView != null))
         return;
       this.hideableView.Visible = defaultVisibility;
     }

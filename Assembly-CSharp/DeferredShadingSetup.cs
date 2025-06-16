@@ -1,4 +1,7 @@
-﻿public class DeferredShadingSetup : MonoBehaviour
+﻿using UnityEngine;
+using UnityEngine.Rendering;
+
+public class DeferredShadingSetup : MonoBehaviour
 {
   [SerializeField]
   private Shader deferredShader;
@@ -12,6 +15,6 @@
   private void OnDisable()
   {
     GraphicsSettings.SetShaderMode(BuiltinShaderType.DeferredShading, BuiltinShaderMode.UseBuiltin);
-    GraphicsSettings.SetCustomShader(BuiltinShaderType.DeferredShading, (Shader) null);
+    GraphicsSettings.SetCustomShader(BuiltinShaderType.DeferredShading, null);
   }
 }

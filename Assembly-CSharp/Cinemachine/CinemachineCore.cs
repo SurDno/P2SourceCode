@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -6,7 +7,7 @@ namespace Cinemachine
   {
     public static readonly int kStreamingVersion = 20170927;
     public static readonly string kVersionString = "2.1";
-    private static CinemachineCore sInstance = null;
+    private static CinemachineCore sInstance;
     public static bool sShowHiddenObjects = false;
     private List<CinemachineBrain> mActiveBrains = new List<CinemachineBrain>();
     private List<ICinemachineCamera> mActiveCameras = new List<ICinemachineCamera>();
@@ -95,7 +96,7 @@ namespace Cinemachine
       }
       if (mUpdateStatus == null)
         mUpdateStatus = new Dictionary<ICinemachineCamera, UpdateStatus>();
-      if ((Object) vcam.VirtualCameraGameObject == (Object) null)
+      if (vcam.VirtualCameraGameObject == null)
       {
         if (mUpdateStatus.ContainsKey(vcam))
           mUpdateStatus.Remove(vcam);
@@ -132,18 +133,18 @@ namespace Cinemachine
     private static bool GetTargetPosition(ICinemachineCamera vcam, out Matrix4x4 targetPos)
     {
       ICinemachineCamera liveChildOrSelf = vcam.LiveChildOrSelf;
-      if (liveChildOrSelf == null || (Object) liveChildOrSelf.VirtualCameraGameObject == (Object) null)
+      if (liveChildOrSelf == null || liveChildOrSelf.VirtualCameraGameObject == null)
       {
         targetPos = Matrix4x4.identity;
         return false;
       }
       targetPos = liveChildOrSelf.VirtualCameraGameObject.transform.localToWorldMatrix;
-      if ((Object) liveChildOrSelf.LookAt != (Object) null)
+      if (liveChildOrSelf.LookAt != null)
       {
         targetPos = liveChildOrSelf.LookAt.localToWorldMatrix;
         return true;
       }
-      if ((Object) liveChildOrSelf.Follow != (Object) null)
+      if (liveChildOrSelf.Follow != null)
       {
         targetPos = liveChildOrSelf.Follow.localToWorldMatrix;
         return true;
@@ -165,7 +166,7 @@ namespace Cinemachine
         for (int index = 0; index < BrainCount; ++index)
         {
           CinemachineBrain activeBrain = GetActiveBrain(index);
-          if ((Object) activeBrain != (Object) null && activeBrain.IsLive(vcam))
+          if (activeBrain != null && activeBrain.IsLive(vcam))
             return true;
         }
       }
@@ -179,7 +180,7 @@ namespace Cinemachine
       for (int index = 0; index < BrainCount; ++index)
       {
         CinemachineBrain activeBrain = GetActiveBrain(index);
-        if ((Object) activeBrain != (Object) null && activeBrain.IsLive(vcam))
+        if (activeBrain != null && activeBrain.IsLive(vcam))
           activeBrain.m_CameraActivatedEvent.Invoke(vcam);
       }
     }
@@ -191,7 +192,7 @@ namespace Cinemachine
       for (int index = 0; index < BrainCount; ++index)
       {
         CinemachineBrain activeBrain = GetActiveBrain(index);
-        if ((Object) activeBrain != (Object) null && activeBrain.IsLive(vcam))
+        if (activeBrain != null && activeBrain.IsLive(vcam))
           activeBrain.m_CameraCutEvent.Invoke(activeBrain);
       }
     }
@@ -204,14 +205,14 @@ namespace Cinemachine
         for (int index = 0; index < brainCount; ++index)
         {
           CinemachineBrain activeBrain = GetActiveBrain(index);
-          if ((Object) activeBrain != (Object) null && (Object) activeBrain.OutputCamera != (Object) null && activeBrain.IsLive(vcam))
+          if (activeBrain != null && activeBrain.OutputCamera != null && activeBrain.IsLive(vcam))
             return activeBrain;
         }
       }
       for (int index = 0; index < brainCount; ++index)
       {
         CinemachineBrain activeBrain = GetActiveBrain(index);
-        if ((Object) activeBrain != (Object) null && (Object) activeBrain.OutputCamera != (Object) null)
+        if (activeBrain != null && activeBrain.OutputCamera != null)
           return activeBrain;
       }
       return null;

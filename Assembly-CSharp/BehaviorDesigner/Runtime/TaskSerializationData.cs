@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -9,6 +11,6 @@ namespace BehaviorDesigner.Runtime
     [SerializeField]
     public string XmlData;
     [SerializeField]
-    public List<UnityEngine.Object> unityObjects = new List<UnityEngine.Object>();
+    public List<Object> unityObjects = new List<Object>();
   }
 }

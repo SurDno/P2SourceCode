@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.UI.Menu.Protagonist.LockPicking
+﻿using UnityEngine;
+
+namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 {
   [CreateAssetMenu(fileName = "Lock Picking Settings", menuName = "Data/Lock Picking Settings")]
   public class LockPickingSettingsData : ScriptableObject

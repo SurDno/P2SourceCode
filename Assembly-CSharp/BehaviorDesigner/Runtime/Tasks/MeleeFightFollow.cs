@@ -7,6 +7,10 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components.Utilities;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.AI;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -41,7 +45,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private bool IsEnemyRunningAway()
     {
-      return (double) owner.Enemy.Velocity.magnitude >= 0.5 && (double) Vector3.Dot(transform.forward, (owner.Enemy.transform.position - owner.transform.position).normalized) > 0.25;
+      return owner.Enemy.Velocity.magnitude >= 0.5 && Vector3.Dot(transform.forward, (owner.Enemy.transform.position - owner.transform.position).normalized) > 0.25;
     }
 
     public override void OnStart()
@@ -56,31 +60,31 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if (followTime.Value > 0.0 && startTime + (double) waitDuration < (double) Time.time)
+      if (followTime.Value > 0.0 && startTime + (double) waitDuration < Time.time)
         return TaskStatus.Success;
-      if ((UnityEngine.Object) description == (UnityEngine.Object) null)
+      if (description == null)
       {
-        Debug.LogWarning((object) (typeof (MeleeFightFollow).Name + " has no " + typeof (FollowDescription).Name + " attached"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(typeof (MeleeFightFollow).Name + " has no " + typeof (FollowDescription).Name + " attached", gameObject);
         return TaskStatus.Failure;
       }
-      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner.Enemy == null)
         return TaskStatus.Failure;
       UpdatePath();
-      owner.RotationTarget = (Transform) null;
+      owner.RotationTarget = null;
       owner.RotateByPath = false;
       owner.RetreatAngle = new float?();
-      if ((bool) (UnityEngine.Object) fighter && (fighter.IsReacting || fighter.IsQuickBlock))
+      if ((bool) (Object) fighter && (fighter.IsReacting || fighter.IsQuickBlock))
       {
-        if (fighter.IsContrReacting && (UnityEngine.Object) fighter.CounterReactionEnemy != (UnityEngine.Object) null)
+        if (fighter.IsContrReacting && fighter.CounterReactionEnemy != null)
           owner.RotationTarget = fighter.CounterReactionEnemy.transform;
-        else if (fighter.IsQuickBlock && (UnityEngine.Object) fighter.PrePunchEnemy != (UnityEngine.Object) null)
+        else if (fighter.IsQuickBlock && fighter.PrePunchEnemy != null)
           owner.RotationTarget = fighter.PrePunchEnemy.transform;
         return TaskStatus.Running;
       }
       Vector3 lhs = owner.Enemy.transform.position - owner.transform.position;
       float magnitude = lhs.magnitude;
       lhs.Normalize();
-      if ((bool) (UnityEngine.Object) fighter && (fighter.IsAttacking || fighter.IsContrReacting))
+      if ((bool) (Object) fighter && (fighter.IsAttacking || fighter.IsContrReacting))
       {
         owner.RotationTarget = owner.Enemy.transform;
         return TaskStatus.Running;
@@ -90,9 +94,9 @@ namespace BehaviorDesigner.Runtime.Tasks
       {
         if (!agent.hasPath)
           return TaskStatus.Running;
-        if ((double) agent.remainingDistance > description.StopDistance)
+        if (agent.remainingDistance > (double) description.StopDistance)
         {
-          desiredWalkSpeed = num <= 1.0 ? (!IsEnemyRunningAway() ? ((double) agent.remainingDistance > description.RunDistance ? 2f : 1f) : 2f) : 2f;
+          desiredWalkSpeed = num <= 1.0 ? (!IsEnemyRunningAway() ? (agent.remainingDistance > (double) description.RunDistance ? 2f : 1f) : 2f) : 2f;
           owner.RotationTarget = owner.Enemy.transform;
           owner.RotateByPath = true;
           owner.RetreatAngle = new float?();
@@ -100,13 +104,13 @@ namespace BehaviorDesigner.Runtime.Tasks
       }
       else if (magnitude > (double) description.StopDistance)
       {
-        desiredWalkSpeed = num <= 1.0 ? (!IsEnemyRunningAway() ? ((double) agent.remainingDistance > description.RunDistance ? 2f : 1f) : 2f) : 2f;
+        desiredWalkSpeed = num <= 1.0 ? (!IsEnemyRunningAway() ? (agent.remainingDistance > (double) description.RunDistance ? 2f : 1f) : 2f) : 2f;
         owner.RotationTarget = owner.Enemy.transform;
       }
       else
       {
         desiredWalkSpeed = 0.0f;
-        if ((bool) (UnityEngine.Object) fighter && (fighter.IsContrReacting || !fighter.IsReacting))
+        if ((bool) (Object) fighter && (fighter.IsContrReacting || !fighter.IsReacting))
           owner.RotationTarget = owner.Enemy.transform;
         animator.GetInteger("Fight.AttackType");
         if (fightAnimatorState.IsAttacking)
@@ -118,7 +122,7 @@ namespace BehaviorDesigner.Runtime.Tasks
         return TaskStatus.Running;
       if (owner.Enemy is PlayerEnemy && owner.Enemy.BlockNormalizedTime > (double) description.PushIfBlockTimeMoreThan && !fightAnimatorState.IsPushing && !fightAnimatorState.IsReaction && !fightAnimatorState.IsAttacking)
       {
-        if ((double) UnityEngine.Random.value < 0.5)
+        if (Random.value < 0.5)
         {
           animatorState.SetTrigger("Fight.Triggers/Push");
         }
@@ -154,7 +158,7 @@ namespace BehaviorDesigner.Runtime.Tasks
         {
           animatorState.SetTrigger("Fight.Triggers/Attack");
           animator.SetInteger("Fight.AttackType", 3);
-          animator.SetBool("Fight.AttackAfterCheat", (double) UnityEngine.Random.value > description.CheatProbability);
+          animator.SetBool("Fight.AttackAfterCheat", Random.value > (double) description.CheatProbability);
           attackCooldownTime = description.TelegraphPunchCooldownTime;
         }
       }
@@ -163,7 +167,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     private void UpdatePath()
     {
-      if ((double) (lastPlayerPosition - owner.Enemy.transform.position).magnitude <= 0.33000001311302185)
+      if ((lastPlayerPosition - owner.Enemy.transform.position).magnitude <= 0.33000001311302185)
         return;
       if (!agent.isOnNavMesh)
         agent.Warp(transform.position);
@@ -181,7 +185,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       Vector3 vector3 = player.transform.position - owner.transform.position;
       float magnitude = vector3.magnitude;
       Vector3 lhs = vector3 / magnitude;
-      if (magnitude > 5.0 || (double) Vector3.Dot(lhs, player.transform.forward) < 0.0 || magnitude >= 3.0)
+      if (magnitude > 5.0 || Vector3.Dot(lhs, player.transform.forward) < 0.0 || magnitude >= 3.0)
         return false;
       fighter.TriggerAction(WeaponActionEnum.KnockDown);
       playerKnockdownCooldownLeft = description.KnockDownCooldownTime;
@@ -197,7 +201,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "FollowTime", followTime);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "Aim", Aim);
-      BehaviorTreeDataWriteUtility.WriteUnity<FollowDescription>(writer, "Description", description);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Description", description);
     }
 
     public new void DataRead(IDataReader reader, Type type)
@@ -209,7 +213,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
       followTime = BehaviorTreeDataReadUtility.ReadShared(reader, "FollowTime", followTime);
       Aim = BehaviorTreeDataReadUtility.ReadShared(reader, "Aim", Aim);
-      description = BehaviorTreeDataReadUtility.ReadUnity<FollowDescription>(reader, "Description", description);
+      description = BehaviorTreeDataReadUtility.ReadUnity(reader, "Description", description);
     }
   }
 }

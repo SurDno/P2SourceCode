@@ -3,6 +3,7 @@ using FlowCanvas;
 using NodeCanvas.Framework.Internal;
 using ParadoxNotion.Design;
 using ParadoxNotion.Serialization;
+using UnityEngine;
 
 namespace NodeCanvas.Framework
 {
@@ -53,12 +54,12 @@ namespace NodeCanvas.Framework
     {
       if (source == null || target == null)
       {
-        Debug.LogError((object) "Can't Create a Connection without providing Source and Target Nodes");
+        Debug.LogError("Can't Create a Connection without providing Source and Target Nodes");
         return null;
       }
       if (source is MissingNode)
       {
-        Debug.LogError((object) "Creating new Connections from a 'MissingNode' is not allowed. Please resolve the MissingNode node first");
+        Debug.LogError("Creating new Connections from a 'MissingNode' is not allowed. Please resolve the MissingNode node first");
         return null;
       }
       Connection instance = (Connection) Activator.CreateInstance(source.outConnectionType);
@@ -74,7 +75,7 @@ namespace NodeCanvas.Framework
     {
       if (newSource == null || newTarget == null)
       {
-        Debug.LogError((object) "Can't Duplicate a Connection without providing NewSource and NewTarget Nodes");
+        Debug.LogError("Can't Duplicate a Connection without providing NewSource and NewTarget Nodes");
         return null;
       }
       Connection connection = JSONSerializer.Deserialize<Connection>(JSONSerializer.Serialize(typeof (Connection), this));

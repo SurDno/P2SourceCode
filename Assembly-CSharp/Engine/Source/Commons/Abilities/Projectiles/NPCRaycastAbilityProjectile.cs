@@ -48,30 +48,30 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
     {
       GameObject gameObject1 = ((IEntityView) self).GameObject;
-      if ((Object) gameObject1 == (Object) null)
+      if (gameObject1 == null)
         return;
       Vector3 origin = gameObject1.transform.position;
       Vector3 direction1 = gameObject1.transform.forward;
       gameObject1.GetComponent<Pivot>();
       NPCWeaponService component1 = gameObject1.GetComponent<NPCWeaponService>();
-      if ((Object) component1 != (Object) null)
+      if (component1 != null)
       {
         origin = component1.GetWeaponStartPoint();
         direction1 = component1.GetWeaponAimDirection();
       }
       NPCEnemy component2 = gameObject1.GetComponent<NPCEnemy>();
-      if ((Object) component2 != (Object) null)
+      if (component2 != null)
         direction1 = ScatterShotDirection(direction1, component2);
       LayerMask triggerInteractLayer = ScriptableObjectInstance<GameSettingsData>.Instance.TriggerInteractLayer;
       LayerMask ragdollLayer = ScriptableObjectInstance<GameSettingsData>.Instance.RagdollLayer;
       for (int index1 = 0; index1 < bulletsCount; ++index1)
       {
         Vector3 direction2 = ScatterSingleBulletDirection(direction1);
-        PhysicsUtility.Raycast(hits, origin, direction2, hitDistance, -1 ^ (int) triggerInteractLayer ^ (int) ragdollLayer, QueryTriggerInteraction.Ignore);
+        PhysicsUtility.Raycast(hits, origin, direction2, hitDistance, -1 ^ triggerInteractLayer ^ ragdollLayer, QueryTriggerInteraction.Ignore);
         for (int index2 = 0; index2 < hits.Count; ++index2)
         {
           GameObject gameObject2 = hits[index2].collider.gameObject;
-          if (!((Object) gameObject2 == (Object) gameObject1))
+          if (!(gameObject2 == gameObject1))
           {
             IEntity entity = EntityUtility.GetEntity(gameObject2);
             if (entity != null)
@@ -89,13 +89,13 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     private Vector3 ScatterShotDirection(Vector3 direction, NPCEnemy enemy)
     {
       float num = Mathf.Lerp(minimumDirectionScatter, maximumDirectionScatter, Mathf.Min(enemy.GetAimingRotationDelta() / maximumAimingDeltaAngle, 1f));
-      return Quaternion.Euler(0.0f, (float) (num / 2.0 - (double) Random.value * num), 0.0f) * direction;
+      return Quaternion.Euler(0.0f, (float) (num / 2.0 - Random.value * (double) num), 0.0f) * direction;
     }
 
     private Vector3 ScatterSingleBulletDirection(Vector3 direction)
     {
       float bulletScatter = this.bulletScatter;
-      return Quaternion.Euler(0.0f, (float) (bulletScatter / 2.0 - (double) Random.value * bulletScatter), 0.0f) * direction;
+      return Quaternion.Euler(0.0f, (float) (bulletScatter / 2.0 - Random.value * (double) bulletScatter), 0.0f) * direction;
     }
   }
 }

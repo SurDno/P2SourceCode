@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 public struct PlagueWebCellId : IEquatable<PlagueWebCellId>
 {

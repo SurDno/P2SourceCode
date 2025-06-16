@@ -3,6 +3,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -54,7 +55,7 @@ namespace Engine.Source.Services
       if (component == null || component.IsIndoor)
         return;
       GameObject gameObject = ((IEntityView) player)?.GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       Vector3 position1 = gameObject.transform.position with
       {
@@ -67,7 +68,7 @@ namespace Engine.Source.Services
           y = 0.0f
         };
         float visibilityRadius = light.VisibilityRadius;
-        if ((double) Mathf.Abs(position2.x - position1.x) <= visibilityRadius && (double) Mathf.Abs(position2.z - position1.z) <= visibilityRadius && (double) (position2 - position1).magnitude <= visibilityRadius)
+        if (Mathf.Abs(position2.x - position1.x) <= (double) visibilityRadius && Mathf.Abs(position2.z - position1.z) <= (double) visibilityRadius && (position2 - position1).magnitude <= (double) visibilityRadius)
         {
           playerIsLighted = true;
           break;

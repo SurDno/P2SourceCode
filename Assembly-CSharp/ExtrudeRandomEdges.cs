@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using ProBuilder2.Common;
 using ProBuilder2.MeshOperations;
+using UnityEngine;
 
 public class ExtrudeRandomEdges : MonoBehaviour
 {
@@ -28,9 +28,9 @@ public class ExtrudeRandomEdges : MonoBehaviour
   {
     pb_Face sourceFace = lastExtrudedFace;
     List<pb_Edge> list = pb_WingedEdge.GetWingedEdges(pb).Where(x => x.face == sourceFace).Where(x => x.opposite == null).Select(y => y.edge.local).ToList();
-    int index = UnityEngine.Random.Range(0, list.Count);
+    int index = Random.Range(0, list.Count);
     pb_Edge pbEdge = list[index];
-    Vector3 vector3 = (pb.vertices[pbEdge.x] + pb.vertices[pbEdge.y]) * 0.5f - pb_Math.Average<int>((IList<int>) sourceFace.distinctIndices, (Func<int, Vector3>) (x => pb.vertices[x]), (IList<int>) null);
+    Vector3 vector3 = (pb.vertices[pbEdge.x] + pb.vertices[pbEdge.y]) * 0.5f - sourceFace.distinctIndices.Average(x => pb.vertices[x]);
     vector3.Normalize();
     pb_Edge[] extrudedEdges;
     pb.Extrude(new pb_Edge[1]{ pbEdge }, 0.0f, false, true, out extrudedEdges);

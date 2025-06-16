@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -12,8 +14,8 @@
     [Range(1f, 4f)]
     public int blurIterations = 2;
     public BlurType blurType = BlurType.StandardGauss;
-    public Shader blurShader = (Shader) null;
-    private Material blurMaterial = (Material) null;
+    public Shader blurShader;
+    private Material blurMaterial;
 
     public override bool CheckResources()
     {
@@ -28,14 +30,14 @@
     {
       if (!(bool) (Object) blurMaterial)
         return;
-      Object.DestroyImmediate((Object) blurMaterial);
+      DestroyImmediate(blurMaterial);
     }
 
     public void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
       if (!CheckResources())
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -46,7 +48,7 @@
         int height = source.height >> downsample;
         RenderTexture renderTexture1 = RenderTexture.GetTemporary(width, height, 0, source.format);
         renderTexture1.filterMode = FilterMode.Bilinear;
-        Graphics.Blit((Texture) source, renderTexture1, blurMaterial, 0);
+        Graphics.Blit(source, renderTexture1, blurMaterial, 0);
         int num2 = blurType == BlurType.StandardGauss ? 0 : 2;
         for (int index = 0; index < blurIterations; ++index)
         {
@@ -54,16 +56,16 @@
           blurMaterial.SetVector("_Parameter", new Vector4(blurSize * num1 + num3, -blurSize * num1 - num3, 0.0f, 0.0f));
           RenderTexture temporary1 = RenderTexture.GetTemporary(width, height, 0, source.format);
           temporary1.filterMode = FilterMode.Bilinear;
-          Graphics.Blit((Texture) renderTexture1, temporary1, blurMaterial, 1 + num2);
+          Graphics.Blit(renderTexture1, temporary1, blurMaterial, 1 + num2);
           RenderTexture.ReleaseTemporary(renderTexture1);
           RenderTexture renderTexture2 = temporary1;
           RenderTexture temporary2 = RenderTexture.GetTemporary(width, height, 0, source.format);
           temporary2.filterMode = FilterMode.Bilinear;
-          Graphics.Blit((Texture) renderTexture2, temporary2, blurMaterial, 2 + num2);
+          Graphics.Blit(renderTexture2, temporary2, blurMaterial, 2 + num2);
           RenderTexture.ReleaseTemporary(renderTexture2);
           renderTexture1 = temporary2;
         }
-        Graphics.Blit((Texture) renderTexture1, destination);
+        Graphics.Blit(renderTexture1, destination);
         RenderTexture.ReleaseTemporary(renderTexture1);
       }
     }

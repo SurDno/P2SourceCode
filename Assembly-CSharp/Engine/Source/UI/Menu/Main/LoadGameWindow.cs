@@ -8,6 +8,10 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Services.Profiles;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Main
 {
@@ -29,13 +33,13 @@ namespace Engine.Source.UI.Menu.Main
     public override void Initialize()
     {
       RegisterLayer();
-      Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
+      Button[] componentsInChildren = GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
+        entry.callback.AddListener(eventData => Button_Click_Handler());
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -53,8 +57,8 @@ namespace Engine.Source.UI.Menu.Main
         string text = ProfilesUtility.ConvertSaveName(saveName);
         if (saveName == lastSave)
           text = text + "  " + ServiceLocator.GetService<LocalizationService>().GetText("{UI.CurrentSave}");
-        SaveFileItem saveFileItem = UnityEngine.Object.Instantiate<SaveFileItem>(itemPrefab);
-        saveFileItem.transform.SetParent((Transform) keyView, false);
+        SaveFileItem saveFileItem = Instantiate(itemPrefab);
+        saveFileItem.transform.SetParent(keyView, false);
         SaveFileItem component = saveFileItem.GetComponent<SaveFileItem>();
         items.Add(component);
         component.SetText(text);
@@ -68,7 +72,7 @@ namespace Engine.Source.UI.Menu.Main
       foreach (SaveFileItem saveFileItem in items)
       {
         saveFileItem.OnPressed -= OnKeyItemPressed;
-        UnityEngine.Object.Destroy((UnityEngine.Object) saveFileItem.gameObject);
+        Destroy(saveFileItem.gameObject);
       }
       items.Clear();
     }
@@ -78,13 +82,13 @@ namespace Engine.Source.UI.Menu.Main
       ProfileData current = ServiceLocator.GetService<ProfilesService>().Current;
       if (current == null)
       {
-        Debug.LogError((object) "Profile not found");
+        Debug.LogError("Profile not found");
       }
       else
       {
         string str = ProfilesUtility.SavePath(current.Name, item.File);
         if (!ProfilesUtility.IsSaveExist(str))
-          Debug.LogError((object) ("Save name not found : " + item.File));
+          Debug.LogError("Save name not found : " + item.File);
         else
           CoroutineService.Instance.Route(LoadGameUtility.RestartGameWithSave(str));
       }
@@ -92,9 +96,9 @@ namespace Engine.Source.UI.Menu.Main
 
     public void Button_Click_Handler()
     {
-      if (!this.gameObject.activeInHierarchy)
+      if (!gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
+      gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();

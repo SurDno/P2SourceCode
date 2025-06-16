@@ -1,4 +1,6 @@
-﻿public class ThrowingExample : MonoBehaviour
+﻿using UnityEngine;
+
+public class ThrowingExample : MonoBehaviour
 {
   [SerializeField]
   private KeyCode key;
@@ -16,12 +18,12 @@
 
   private void Throw()
   {
-    Vector3 position = this.transform.position;
-    Vector3 forward = this.transform.forward;
+    Vector3 position = transform.position;
+    Vector3 forward = transform.forward;
     RaycastHit hitInfo;
-    if (!Physics.Raycast(position + forward, forward, out hitInfo, 50f, (int) layerMask, QueryTriggerInteraction.Ignore))
+    if (!Physics.Raycast(position + forward, forward, out hitInfo, 50f, layerMask, QueryTriggerInteraction.Ignore))
       return;
-    GameObject gameObject = Object.Instantiate<GameObject>(prefab);
+    GameObject gameObject = Instantiate(prefab);
     gameObject.transform.position = hitInfo.point;
     gameObject.transform.rotation = Quaternion.LookRotation(forward);
   }

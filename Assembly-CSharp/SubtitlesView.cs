@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Audio;
 using Engine.Source.Services;
 using Engine.Source.UI;
+using UnityEngine;
 
 public class SubtitlesView : EngineDependent
 {
@@ -23,7 +23,7 @@ public class SubtitlesView : EngineDependent
 
   public float FadeTime => fadeTime;
 
-  public void AddSubtitles(IEntity actor, string tag, AudioState audioState, UnityEngine.Object context)
+  public void AddSubtitles(IEntity actor, string tag, AudioState audioState, Object context)
   {
     if (!service.SubtitlesEnabled || !service.DialogSubtitlesEnabled && ServiceLocator.GetService<UIService>().Active is IDialogWindow)
       return;
@@ -51,7 +51,7 @@ public class SubtitlesView : EngineDependent
   public GameObject CreateLineView()
   {
     if (lineViewPool.Count == 0)
-      return UnityEngine.Object.Instantiate<GameObject>(lineViewPrefab, (Transform) layout, false);
+      return Instantiate(lineViewPrefab, layout, false);
     int index = lineViewPool.Count - 1;
     GameObject lineView = lineViewPool[index];
     lineViewPool.RemoveAt(index);
@@ -75,7 +75,7 @@ public class SubtitlesView : EngineDependent
     if (!initialized)
     {
       service = ServiceLocator.GetService<SubtitlesService>();
-      service.AddSubtitlesEvent += new Action<IEntity, string, AudioState, UnityEngine.Object>(AddSubtitles);
+      service.AddSubtitlesEvent += AddSubtitles;
       service.RemoveSubtitlesEvent += RemoveSubtitles;
       items = new List<SubtitlesItem>();
       itemPool = new List<SubtitlesItem>();
@@ -89,7 +89,7 @@ public class SubtitlesView : EngineDependent
   {
     if (!initialized)
       return;
-    service.AddSubtitlesEvent -= new Action<IEntity, string, AudioState, UnityEngine.Object>(AddSubtitles);
+    service.AddSubtitlesEvent -= AddSubtitles;
     service.RemoveSubtitlesEvent -= RemoveSubtitles;
   }
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -12,7 +13,7 @@ namespace RootMotion.Dynamics
     public PuppetUpdateLimit fixedUpdateLimit = new PuppetUpdateLimit();
     public bool collisionStayMessages = true;
     public bool collisionExitMessages = true;
-    public float activePuppetCollisionThresholdMlp = 0.0f;
+    public float activePuppetCollisionThresholdMlp;
     private List<PuppetMaster> _puppets = new List<PuppetMaster>();
 
     public int currentlyActivePuppets { get; private set; }
@@ -95,7 +96,7 @@ namespace RootMotion.Dynamics
           int index2 = index + index1;
           if (index2 >= puppets.Count)
             index2 -= puppets.Count;
-          if ((UnityEngine.Object) puppets[index2] == (UnityEngine.Object) puppetMaster)
+          if (puppets[index2] == puppetMaster)
             return true;
         }
         return false;

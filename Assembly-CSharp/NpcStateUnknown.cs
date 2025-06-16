@@ -1,6 +1,8 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateUnknown : INpcState, INpcStateRagdoll
 {

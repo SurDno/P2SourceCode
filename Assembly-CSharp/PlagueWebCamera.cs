@@ -1,4 +1,6 @@
-﻿public class PlagueWebCamera : MonoBehaviour
+﻿using UnityEngine;
+
+public class PlagueWebCamera : MonoBehaviour
 {
-  private void Update() => PlagueWeb.Instance.CameraPosition = this.transform.position;
+  private void Update() => PlagueWeb.Instance.CameraPosition = transform.position;
 }

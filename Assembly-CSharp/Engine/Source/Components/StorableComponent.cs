@@ -17,6 +17,7 @@ using Engine.Source.Components.Saves;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -160,12 +161,12 @@ namespace Engine.Source.Components
       {
         if (Storage == null)
         {
-          Debug.LogError((object) ("Storage not found, owner : " + Owner.GetInfo()));
+          Debug.LogError("Storage not found, owner : " + Owner.GetInfo());
           return null;
         }
         if (Container == null)
         {
-          Debug.LogError((object) ("Container not found, owner : " + Owner.GetInfo()));
+          Debug.LogError("Container not found, owner : " + Owner.GetInfo());
           return null;
         }
         StorableData storableData = ProxyFactory.Create<StorableData>();
@@ -176,10 +177,10 @@ namespace Engine.Source.Components
       set
       {
         if (value == null)
-          Debug.LogError((object) ("StorableData is null, owner : " + Owner.GetInfo()));
+          Debug.LogError("StorableData is null, owner : " + Owner.GetInfo());
         else if (value.Storage == null)
         {
-          Debug.LogError((object) ("Storage not found, owner : " + Owner.GetInfo()));
+          Debug.LogError("Storage not found, owner : " + Owner.GetInfo());
         }
         else
         {
@@ -221,7 +222,7 @@ namespace Engine.Source.Components
     {
       if (count <= max)
         return;
-      Debug.LogError((object) ("Count : " + count + " , max : " + max + " , owner : " + Owner.GetInfo()));
+      Debug.LogError("Count : " + count + " , max : " + max + " , owner : " + Owner.GetInfo());
     }
 
     [OnLoaded]

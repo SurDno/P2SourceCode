@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(fileName = "Plague Cloud Particles Settings", menuName = "Plague/Cloud Particles Settings")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "Plague Cloud Particles Settings", menuName = "Plague/Cloud Particles Settings")]
 public class PlagueCloudParticlesSettings : ScriptableObject
 {
   public float EmissionRadius = 2f;
@@ -8,18 +10,18 @@ public class PlagueCloudParticlesSettings : ScriptableObject
   public Vector3 Acceleration = Vector3.down;
   public float Drag = 5f;
   [Space]
-  public float NoiseFrequency = 0.0f;
-  public float NoiseAmplitude = 0.0f;
-  public float NoiseMotion = 0.0f;
+  public float NoiseFrequency;
+  public float NoiseAmplitude;
+  public float NoiseMotion;
   [Space]
-  public float Gravity = 0.0f;
+  public float Gravity;
   public float GravitySphereRadius = 0.5f;
   public float GravityFadeRadius = 3f;
-  public float GravityMovementPrediction = 0.0f;
+  public float GravityMovementPrediction;
   [Space]
-  public Texture2D Pattern = (Texture2D) null;
+  public Texture2D Pattern;
   public Vector2 PatternSize = Vector2.one;
-  public float PatternPlaneForce = 0.0f;
-  public float PatternOrthogonalForce = 0.0f;
-  public float PatternRandomForce = 0.0f;
+  public float PatternPlaneForce;
+  public float PatternOrthogonalForce;
+  public float PatternRandomForce;
 }

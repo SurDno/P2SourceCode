@@ -10,6 +10,8 @@ using Engine.Common.Types;
 using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Scripts.Expressions.Commons;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Inspectors
 {
@@ -50,42 +52,42 @@ namespace Inspectors
       InspectedDrawerService.Add(typeof (SceneGameObject), (name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Guid id = (Guid) type.GetProperty("Id").GetValue(value, null);
-        GameObject gameObject1 = (GameObject) null;
+        GameObject gameObject1 = null;
         GameObject gameObject2 = context.ContextObject as GameObject;
-        if ((UnityEngine.Object) gameObject2 == (UnityEngine.Object) null)
+        if (gameObject2 == null)
         {
           Component contextObject = context.ContextObject as Component;
-          if ((UnityEngine.Object) contextObject != (UnityEngine.Object) null)
+          if (contextObject != null)
             gameObject2 = contextObject.gameObject;
         }
-        if ((UnityEngine.Object) gameObject2 != (UnityEngine.Object) null)
+        if (gameObject2 != null)
         {
           SceneObjectContainer container = SceneObjectContainer.GetContainer(gameObject2.scene);
-          if ((UnityEngine.Object) container != (UnityEngine.Object) null)
+          if (container != null)
             gameObject1 = container.GetGameObject(id);
         }
-        GameObject gameObject3 = drawer.ObjectField(name, (UnityEngine.Object) gameObject1, typeof (GameObject)) as GameObject;
+        GameObject gameObject3 = drawer.ObjectField(name, gameObject1, typeof (GameObject)) as GameObject;
       });
       InspectedDrawerService.Add(typeof (UnitySubAsset<>), (name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Type genericArgument = type.GetGenericArguments()[0];
-        UnityEngine.Object @object = (UnityEngine.Object) type.GetProperty("Value").GetValue(value, null);
+        Object @object = (Object) type.GetProperty("Value").GetValue(value, null);
         drawer.ObjectField(name, @object, genericArgument);
       });
       InspectedDrawerService.Add(typeof (UnityAsset<>), (name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Type genericArgument = type.GetGenericArguments()[0];
-        UnityEngine.Object @object = (UnityEngine.Object) type.GetProperty("Value").GetValue(value, null);
+        Object @object = (Object) type.GetProperty("Value").GetValue(value, null);
         drawer.ObjectField(name, @object, genericArgument);
       });
       InspectedDrawerService.Add(typeof (Typed<>), (name, type, value, mutable, context, drawer, target, member, setter) =>
       {
         Type genericArgument = type.GetGenericArguments()[0];
         IObject object1 = (IObject) type.GetProperty("Value").GetValue(value, null);
-        UnityEngine.Object object2 = (UnityEngine.Object) null;
+        Object object2 = null;
         if (object1 != null)
-          object2 = AssetDatabaseService.Instance.Load<UnityEngine.Object>(AssetDatabaseService.Instance.GetPath(object1.Id));
-        drawer.ObjectField(name, object2, typeof (UnityEngine.Object));
+          object2 = AssetDatabaseService.Instance.Load<Object>(AssetDatabaseService.Instance.GetPath(object1.Id));
+        drawer.ObjectField(name, object2, typeof (Object));
       });
       InspectedDrawerService.Add(typeof (Position), (name, type, value, mutable, context, drawer, target, member, setter) =>
       {

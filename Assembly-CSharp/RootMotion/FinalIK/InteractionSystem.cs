@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace RootMotion.FinalIK
 {
@@ -166,7 +168,7 @@ namespace RootMotion.FinalIK
       InteractionObject interactionObject,
       bool interrupt)
     {
-      if (!IsValid(true) || (Object) interactionObject == (Object) null)
+      if (!IsValid(true) || interactionObject == null)
         return false;
       for (int index = 0; index < interactionEffectors.Length; ++index)
       {
@@ -329,8 +331,8 @@ namespace RootMotion.FinalIK
         for (int index2 = 0; index2 < range.interactions[index1].effectors.Length; ++index2)
         {
           InteractionObject interactionObject = range.interactions[index1].interactionObject;
-          Transform target = interactionObject.GetTarget(range.interactions[index1].effectors[index2], this.tag);
-          if ((Object) target != (Object) null)
+          Transform target = interactionObject.GetTarget(range.interactions[index1].effectors[index2], tag);
+          if (target != null)
             interactionTarget = target.GetComponent<InteractionTarget>();
           if (!StartInteraction(range.interactions[index1].effectors[index2], interactionObject, interrupt))
             flag = false;
@@ -422,7 +424,7 @@ namespace RootMotion.FinalIK
         return null;
       if (index >= 0 && index < bestRangeIndexes.Count)
         return triggersInRange[index].ranges[bestRangeIndexes[index]];
-      Warning.Log("Index out of range.", this.transform);
+      Warning.Log("Index out of range.", transform);
       return null;
     }
 
@@ -436,9 +438,9 @@ namespace RootMotion.FinalIK
       float num1 = float.PositiveInfinity;
       for (int index = 0; index < triggersInRange.Count; ++index)
       {
-        if ((Object) triggersInRange[index] != (Object) null)
+        if (triggersInRange[index] != null)
         {
-          float num2 = Vector3.SqrMagnitude(triggersInRange[index].transform.position - this.transform.position);
+          float num2 = Vector3.SqrMagnitude(triggersInRange[index].transform.position - transform.position);
           if (num2 < (double) num1)
           {
             closestTriggerIndex = index;
@@ -459,11 +461,11 @@ namespace RootMotion.FinalIK
 
     protected virtual void Start()
     {
-      if ((Object) fullBody == (Object) null)
-        fullBody = this.GetComponent<FullBodyBipedIK>();
-      if ((Object) fullBody == (Object) null)
+      if (fullBody == null)
+        fullBody = GetComponent<FullBodyBipedIK>();
+      if (fullBody == null)
       {
-        Warning.Log("InteractionSystem can not find a FullBodyBipedIK component", this.transform);
+        Warning.Log("InteractionSystem can not find a FullBodyBipedIK component", transform);
       }
       else
       {
@@ -480,7 +482,7 @@ namespace RootMotion.FinalIK
         foreach (InteractionEffector interactionEffector in interactionEffectors)
           interactionEffector.Initiate(this);
         triggersInRange = new List<InteractionTrigger>();
-        c = this.GetComponent<Collider>();
+        c = GetComponent<Collider>();
         UpdateTriggerEventBroadcasting();
         initiated = true;
       }
@@ -516,20 +518,20 @@ namespace RootMotion.FinalIK
 
     public void OnTriggerEnter(Collider c)
     {
-      if ((Object) fullBody == (Object) null)
+      if (fullBody == null)
         return;
       InteractionTrigger component = c.GetComponent<InteractionTrigger>();
-      if ((Object) component == (Object) null || inContact.Contains(component))
+      if (component == null || inContact.Contains(component))
         return;
       inContact.Add(component);
     }
 
     public void OnTriggerExit(Collider c)
     {
-      if ((Object) fullBody == (Object) null)
+      if (fullBody == null)
         return;
       InteractionTrigger component = c.GetComponent<InteractionTrigger>();
-      if ((Object) component == (Object) null)
+      if (component == null)
         return;
       inContact.Remove(component);
     }
@@ -541,15 +543,15 @@ namespace RootMotion.FinalIK
         return false;
       if (index < 0 || index >= inContact.Count)
       {
-        Warning.Log("Index out of range.", this.transform);
+        Warning.Log("Index out of range.", transform);
         return false;
       }
-      if ((Object) inContact[index] == (Object) null)
+      if (inContact[index] == null)
       {
-        Warning.Log("The InteractionTrigger in the list 'inContact' has been destroyed", this.transform);
+        Warning.Log("The InteractionTrigger in the list 'inContact' has been destroyed", transform);
         return false;
       }
-      bestRangeIndex = inContact[index].GetBestRangeIndex(this.transform, FPSCamera, raycastHit);
+      bestRangeIndex = inContact[index].GetBestRangeIndex(transform, FPSCamera, raycastHit);
       return bestRangeIndex != -1;
     }
 
@@ -557,16 +559,16 @@ namespace RootMotion.FinalIK
     {
       if (Application.isPlaying)
         return;
-      if ((Object) fullBody == (Object) null)
-        fullBody = this.GetComponent<FullBodyBipedIK>();
-      if (!((Object) characterCollider == (Object) null))
+      if (fullBody == null)
+        fullBody = GetComponent<FullBodyBipedIK>();
+      if (!(characterCollider == null))
         return;
-      characterCollider = this.GetComponent<Collider>();
+      characterCollider = GetComponent<Collider>();
     }
 
     private void Update()
     {
-      if ((Object) fullBody == (Object) null)
+      if (fullBody == null)
         return;
       UpdateTriggerEventBroadcasting();
       Raycasting();
@@ -575,7 +577,7 @@ namespace RootMotion.FinalIK
       for (int index = 0; index < inContact.Count; ++index)
       {
         int bestRangeIndex = -1;
-        if ((Object) inContact[index] != (Object) null && inContact[index].gameObject.activeInHierarchy && inContact[index].enabled && ContactIsInRange(index, out bestRangeIndex))
+        if (inContact[index] != null && inContact[index].gameObject.activeInHierarchy && inContact[index].enabled && ContactIsInRange(index, out bestRangeIndex))
         {
           triggersInRange.Add(inContact[index]);
           bestRangeIndexes.Add(bestRangeIndex);
@@ -586,24 +588,24 @@ namespace RootMotion.FinalIK
 
     private void Raycasting()
     {
-      if ((int) camRaycastLayers == -1 || (Object) FPSCamera == (Object) null)
+      if (camRaycastLayers == -1 || FPSCamera == null)
         return;
-      Physics.Raycast(FPSCamera.position, FPSCamera.forward, out raycastHit, camRaycastDistance, (int) camRaycastLayers);
+      Physics.Raycast(FPSCamera.position, FPSCamera.forward, out raycastHit, camRaycastDistance, camRaycastLayers);
     }
 
     private void UpdateTriggerEventBroadcasting()
     {
-      if ((Object) characterCollider == (Object) null)
+      if (characterCollider == null)
         characterCollider = c;
-      if ((Object) characterCollider != (Object) null && (Object) characterCollider != (Object) c)
+      if (characterCollider != null && characterCollider != c)
       {
-        if ((Object) characterCollider.GetComponent<TriggerEventBroadcaster>() == (Object) null)
-          characterCollider.gameObject.AddComponent<TriggerEventBroadcaster>().target = this.gameObject;
-        if ((Object) lastCollider != (Object) null && (Object) lastCollider != (Object) c && (Object) lastCollider != (Object) characterCollider)
+        if (characterCollider.GetComponent<TriggerEventBroadcaster>() == null)
+          characterCollider.gameObject.AddComponent<TriggerEventBroadcaster>().target = gameObject;
+        if (lastCollider != null && lastCollider != c && lastCollider != characterCollider)
         {
           TriggerEventBroadcaster component = lastCollider.GetComponent<TriggerEventBroadcaster>();
-          if ((Object) component != (Object) null)
-            Object.Destroy((Object) component);
+          if (component != null)
+            Destroy(component);
         }
       }
       lastCollider = characterCollider;
@@ -611,17 +613,17 @@ namespace RootMotion.FinalIK
 
     private void UpdateEffectors()
     {
-      if ((Object) fullBody == (Object) null)
+      if (fullBody == null)
         return;
       for (int index = 0; index < interactionEffectors.Length; ++index)
-        interactionEffectors[index].Update(this.transform, speed);
+        interactionEffectors[index].Update(transform, speed);
       for (int index = 0; index < interactionEffectors.Length; ++index)
         interactionEffectors[index].ResetToDefaults(resetToDefaultsSpeed * speed);
     }
 
     private void OnPreFBBIK()
     {
-      if (!this.enabled || (Object) fullBody == (Object) null || !fullBody.enabled)
+      if (!enabled || fullBody == null || !fullBody.enabled)
         return;
       lookAt.SolveSpine();
       UpdateEffectors();
@@ -629,7 +631,7 @@ namespace RootMotion.FinalIK
 
     private void OnPostFBBIK()
     {
-      if (!this.enabled || (Object) fullBody == (Object) null || !fullBody.enabled)
+      if (!enabled || fullBody == null || !fullBody.enabled)
         return;
       for (int index = 0; index < interactionEffectors.Length; ++index)
         interactionEffectors[index].OnPostFBBIK();
@@ -640,7 +642,7 @@ namespace RootMotion.FinalIK
 
     private void OnDestroy()
     {
-      if ((Object) fullBody == (Object) null)
+      if (fullBody == null)
         return;
       IKSolverFullBodyBiped solver1 = fullBody.solver;
       solver1.OnPreUpdate = solver1.OnPreUpdate - OnPreFBBIK;
@@ -656,16 +658,16 @@ namespace RootMotion.FinalIK
 
     private bool IsValid(bool log)
     {
-      if ((Object) fullBody == (Object) null)
+      if (fullBody == null)
       {
         if (log)
-          Warning.Log("FBBIK is null. Will not update the InteractionSystem", this.transform);
+          Warning.Log("FBBIK is null. Will not update the InteractionSystem", transform);
         return false;
       }
       if (initiated)
         return true;
       if (log)
-        Warning.Log("The InteractionSystem has not been initiated yet.", this.transform);
+        Warning.Log("The InteractionSystem has not been initiated yet.", transform);
       return false;
     }
 
@@ -673,12 +675,12 @@ namespace RootMotion.FinalIK
     {
       if (index < 0 || index >= triggersInRange.Count)
       {
-        Warning.Log("Index out of range.", this.transform);
+        Warning.Log("Index out of range.", transform);
         return false;
       }
-      if (!((Object) triggersInRange[index] == (Object) null))
+      if (!(triggersInRange[index] == null))
         return true;
-      Warning.Log("The InteractionTrigger in the list 'inContact' has been destroyed", this.transform);
+      Warning.Log("The InteractionTrigger in the list 'inContact' has been destroyed", transform);
       return false;
     }
 

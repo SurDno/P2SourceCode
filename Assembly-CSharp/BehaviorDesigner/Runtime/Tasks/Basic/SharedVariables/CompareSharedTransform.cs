@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 {
@@ -53,9 +54,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) variable.Value == (UnityEngine.Object) null && (UnityEngine.Object) compareTo.Value != (UnityEngine.Object) null)
+      if (variable.Value == null && compareTo.Value != null)
         return TaskStatus.Failure;
-      return (UnityEngine.Object) variable.Value == (UnityEngine.Object) null && (UnityEngine.Object) compareTo.Value == (UnityEngine.Object) null ? TaskStatus.Success : (((object) variable.Value).Equals((object) compareTo.Value) ? TaskStatus.Success : TaskStatus.Failure);
+      return variable.Value == null && compareTo.Value == null ? TaskStatus.Success : (variable.Value.Equals(compareTo.Value) ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public override void OnReset()

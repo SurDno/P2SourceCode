@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using BehaviorDesigner.Runtime.Tasks;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -15,9 +17,9 @@ namespace BehaviorDesigner.Runtime
       set => behaviorSource = value;
     }
 
-    public Object GetObject() => (Object) this;
+    public Object GetObject() => this;
 
-    public string GetOwnerName() => this.name;
+    public string GetOwnerName() => name;
 
     public SharedVariable GetVariable(string name)
     {
@@ -95,6 +97,6 @@ namespace BehaviorDesigner.Runtime
         FindTasksWithName(taskName, parentTask.Children[index], ref taskList);
     }
 
-    int IBehaviorTree.GetInstanceID() => this.GetInstanceID();
+    int IBehaviorTree.GetInstanceID() => GetInstanceID();
   }
 }

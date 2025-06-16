@@ -4,6 +4,7 @@ using SRDebugger.Internal;
 using SRDebugger.UI;
 using SRF;
 using SRF.Service;
+using UnityEngine;
 
 namespace SRDebugger.Services.Implementation
 {
@@ -16,7 +17,7 @@ namespace SRDebugger.Services.Implementation
 
     public event Action<IDebugPanelService, bool> VisibilityChanged;
 
-    public bool IsLoaded => (UnityEngine.Object) _debugPanelRootObject != (UnityEngine.Object) null;
+    public bool IsLoaded => _debugPanelRootObject != null;
 
     public bool IsVisible
     {
@@ -58,7 +59,7 @@ namespace SRDebugger.Services.Implementation
     {
       get
       {
-        return (UnityEngine.Object) _debugPanelRootObject == (UnityEngine.Object) null ? new DefaultTabs?() : _debugPanelRootObject.TabController.ActiveTab;
+        return _debugPanelRootObject == null ? new DefaultTabs?() : _debugPanelRootObject.TabController.ActiveTab;
       }
     }
 
@@ -71,26 +72,26 @@ namespace SRDebugger.Services.Implementation
 
     public void Unload()
     {
-      if ((UnityEngine.Object) _debugPanelRootObject == (UnityEngine.Object) null)
+      if (_debugPanelRootObject == null)
         return;
       IsVisible = false;
       _debugPanelRootObject.CachedGameObject.SetActive(false);
-      UnityEngine.Object.Destroy((UnityEngine.Object) _debugPanelRootObject.CachedGameObject);
+      Destroy(_debugPanelRootObject.CachedGameObject);
       _debugPanelRootObject = null;
     }
 
     private void Load()
     {
       DebugPanelRoot prefab = Resources.Load<DebugPanelRoot>("SRDebugger/UI/Prefabs/DebugPanel");
-      if ((UnityEngine.Object) prefab == (UnityEngine.Object) null)
+      if (prefab == null)
       {
-        Debug.LogError((object) "[SRDebugger] Error loading debug panel prefab");
+        Debug.LogError("[SRDebugger] Error loading debug panel prefab");
       }
       else
       {
-        _debugPanelRootObject = SRInstantiate.Instantiate<DebugPanelRoot>(prefab);
+        _debugPanelRootObject = SRInstantiate.Instantiate(prefab);
         _debugPanelRootObject.name = "Panel";
-        UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object) _debugPanelRootObject);
+        DontDestroyOnLoad(_debugPanelRootObject);
         _debugPanelRootObject.CachedTransform.SetParent(Hierarchy.Get("SRDebugger/UI"), true);
         SRDebuggerUtil.EnsureEventSystemExists();
       }

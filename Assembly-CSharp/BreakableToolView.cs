@@ -1,6 +1,8 @@
 ﻿using Engine.Common.Components;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BreakableToolView : ItemView
 {
@@ -23,10 +25,10 @@ public class BreakableToolView : ItemView
         return;
       storable = value;
       Sprite sprite = storable?.Placeholder?.ImageInventorySlot.Value;
-      if ((Object) sprite == (Object) null)
+      if (sprite == null)
         storableImage.gameObject.SetActive(false);
       storableImage.sprite = sprite;
-      if ((Object) sprite != (Object) null)
+      if (sprite != null)
         storableImage.gameObject.SetActive(true);
       UpdateFill();
     }

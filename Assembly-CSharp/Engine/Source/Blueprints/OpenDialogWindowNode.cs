@@ -1,11 +1,11 @@
-﻿using System;
-using Engine.Common.Components;
+﻿using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Source.Services.Utilities;
 using Engine.Source.UI;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -25,15 +25,15 @@ namespace Engine.Source.Blueprints
           return;
         if (target.SpeakAvailable)
         {
-          UIServiceUtility.PushWindow(output, (Action<IDialogWindow>) (window =>
+          UIServiceUtility.PushWindow<IDialogWindow>(output, window =>
           {
             window.Target = target;
             window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<ISpeakingComponent>();
-          }));
+          });
         }
         else
         {
-          Debug.LogError((object) ("Speak is not available : " + target.Owner.GetInfo()));
+          Debug.LogError("Speak is not available : " + target.Owner.GetInfo());
           output.Call();
         }
       });

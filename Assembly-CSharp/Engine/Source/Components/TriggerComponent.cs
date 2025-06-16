@@ -6,6 +6,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -32,12 +33,12 @@ namespace Engine.Source.Components
 
     public void Enter(GameObject go)
     {
-      if ((Object) go == (Object) null)
+      if (go == null)
         return;
       IEntity entity = EntityUtility.GetEntity(go);
       if (entity == null || !entities.Add(entity))
         return;
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Enter trigger, actor : ").GetInfo(entity).Append(" , trigger : ").GetInfo(Owner));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Enter trigger, actor : ").GetInfo(entity).Append(" , trigger : ").GetInfo(Owner));
       EventArgument<IEntity, ITriggerComponent> eventArguments = new EventArgument<IEntity, ITriggerComponent> {
         Actor = entity,
         Target = this
@@ -50,7 +51,7 @@ namespace Engine.Source.Components
 
     public void Exit(GameObject go)
     {
-      if ((Object) go == (Object) null)
+      if (go == null)
         return;
       IEntity entity = EntityUtility.GetEntity(go);
       if (entity == null)
@@ -62,7 +63,7 @@ namespace Engine.Source.Components
     {
       if (!entities.Remove(entity))
         return;
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Exit trigger, actor : ").GetInfo(entity).Append(" , trigger : ").GetInfo(Owner));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Exit trigger, actor : ").GetInfo(entity).Append(" , trigger : ").GetInfo(Owner));
       EventArgument<IEntity, ITriggerComponent> eventArguments = new EventArgument<IEntity, ITriggerComponent> {
         Actor = entity,
         Target = this

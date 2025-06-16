@@ -2,6 +2,7 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -15,13 +16,13 @@ namespace Engine.Source.Blueprints
       base.RegisterPorts();
       FlowOutput output = AddFlowOutput("Out");
       delay = AddValueInput<float>("Delay");
-      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(Delay(delay.value, output))));
+      AddFlowInput("In", () => StartCoroutine(Delay(delay.value, output)));
     }
 
     private IEnumerator Delay(float delay, FlowOutput output)
     {
-      yield return (object) new WaitForSeconds(delay);
-      if ((Object) graphAgent != (Object) null)
+      yield return new WaitForSeconds(delay);
+      if (graphAgent != null)
         output.Call();
     }
   }

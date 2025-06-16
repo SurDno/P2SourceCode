@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableProgressFading : HideableView
   {
@@ -11,7 +13,7 @@
 
     private void Update()
     {
-      if ((Object) progressView == (Object) null)
+      if (progressView == null)
         return;
       float progress = progressView.Progress;
       float target = Visible ? 1f : 0.0f;
@@ -27,7 +29,7 @@
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      if ((Object) progressView == (Object) null)
+      if (progressView == null)
         return;
       progressView.Progress = Visible ? 1f : 0.0f;
       progressView.SkipAnimation();

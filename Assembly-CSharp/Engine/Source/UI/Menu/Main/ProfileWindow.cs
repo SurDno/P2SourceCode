@@ -8,6 +8,10 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Services.Profiles;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Main
 {
@@ -34,13 +38,13 @@ namespace Engine.Source.UI.Menu.Main
     public override void Initialize()
     {
       RegisterLayer();
-      Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
+      Button[] componentsInChildren = GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
+        entry.callback.AddListener(eventData => Button_Click_Handler());
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -53,8 +57,8 @@ namespace Engine.Source.UI.Menu.Main
       ProfileData current = service.Current;
       foreach (ProfileData profile in service.Profiles)
       {
-        ProfileItem profileItem = UnityEngine.Object.Instantiate<ProfileItem>(itemPrefab);
-        profileItem.transform.SetParent((Transform) keyView, false);
+        ProfileItem profileItem = Instantiate(itemPrefab);
+        profileItem.transform.SetParent(keyView, false);
         ProfileItem component = profileItem.GetComponent<ProfileItem>();
         items.Add(component);
         string text2 = profile.Name + "  [" + ProfilesUtility.GetSaveCount(profile.Name) + "]  ";
@@ -73,14 +77,14 @@ namespace Engine.Source.UI.Menu.Main
       foreach (ProfileItem profileItem in items)
       {
         profileItem.OnPressed -= OnKeyItemPressed;
-        UnityEngine.Object.Destroy((UnityEngine.Object) profileItem.gameObject);
+        Destroy(profileItem.gameObject);
       }
       items.Clear();
     }
 
     private void OnKeyItemPressed(ProfileItem item)
     {
-      if ((UnityEngine.Object) selection != (UnityEngine.Object) null)
+      if (selection != null)
         selection.Slection = false;
       selection = item;
       selection.Slection = true;
@@ -89,16 +93,16 @@ namespace Engine.Source.UI.Menu.Main
 
     public void Button_Click_Handler()
     {
-      if (!this.gameObject.activeInHierarchy)
+      if (!gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
+      gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
 
     public void Button_Current_Click_Handler()
     {
-      if ((UnityEngine.Object) selection == (UnityEngine.Object) null)
+      if (selection == null)
         return;
       ServiceLocator.GetService<ProfilesService>().SetCurrent(selection.Name);
       Clear();
@@ -107,7 +111,7 @@ namespace Engine.Source.UI.Menu.Main
 
     public void Button_Delete_Click_Handler()
     {
-      if ((UnityEngine.Object) selection == (UnityEngine.Object) null)
+      if (selection == null)
         return;
       ServiceLocator.GetService<ProfilesService>().DeleteProfile(selection.Name);
       Clear();
@@ -136,11 +140,11 @@ namespace Engine.Source.UI.Menu.Main
 
     private void UpdateButtons()
     {
-      if ((UnityEngine.Object) currentButton != (UnityEngine.Object) null)
-        currentButton.interactable = (UnityEngine.Object) selection != (UnityEngine.Object) null;
-      if (!((UnityEngine.Object) deleteButton != (UnityEngine.Object) null))
+      if (currentButton != null)
+        currentButton.interactable = selection != null;
+      if (!(deleteButton != null))
         return;
-      deleteButton.interactable = (UnityEngine.Object) selection != (UnityEngine.Object) null;
+      deleteButton.interactable = selection != null;
     }
   }
 }

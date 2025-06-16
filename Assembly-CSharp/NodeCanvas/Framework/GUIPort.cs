@@ -1,4 +1,6 @@
-﻿namespace NodeCanvas.Framework
+﻿using UnityEngine;
+
+namespace NodeCanvas.Framework
 {
   public class GUIPort
   {

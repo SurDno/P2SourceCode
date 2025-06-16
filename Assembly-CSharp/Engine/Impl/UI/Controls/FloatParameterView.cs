@@ -1,5 +1,7 @@
 ﻿using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -11,7 +13,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private ParameterNameEnum parameterName;
     [SerializeField]
-    private float defaultValue = 0.0f;
+    private float defaultValue;
     [SerializeField]
     private bool normalized = true;
     private IParameter<float> parameter;
@@ -28,14 +30,14 @@ namespace Engine.Impl.UI.Controls
 
     private void ApplyParameter()
     {
-      if (!((Object) valueView != (Object) null))
+      if (!(valueView != null))
         return;
       valueView.Progress = parameter == null ? defaultValue : (normalized ? parameter.Value / parameter.MaxValue : parameter.Value);
     }
 
     public override void SkipAnimation()
     {
-      if (!((Object) valueView != (Object) null))
+      if (!(valueView != null))
         return;
       valueView.SkipAnimation();
     }

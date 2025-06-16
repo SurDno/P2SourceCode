@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -13,7 +14,7 @@ namespace SoundPropagation
 
     private void UpdatePosition()
     {
-      if ((Object) SPAudioListener.Instance == (Object) null)
+      if (SPAudioListener.Instance == null)
       {
         audioSource.mute = true;
       }
@@ -28,7 +29,7 @@ namespace SoundPropagation
         for (int index = 0; index < points.Count; ++index)
         {
           Vector3 position2 = points[index].Position;
-          if ((double) position1.x + maxDistance > (double) position2.x && (double) position1.x - maxDistance < (double) position2.x && (double) position1.z + maxDistance > (double) position2.z && (double) position1.z - maxDistance < (double) position2.z)
+          if (position1.x + (double) maxDistance > position2.x && position1.x - (double) maxDistance < position2.x && position1.z + (double) maxDistance > position2.z && position1.z - (double) maxDistance < position2.z)
           {
             Vector3 vector3 = position2 - position1;
             float sqrMagnitude = vector3.sqrMagnitude;
@@ -50,12 +51,12 @@ namespace SoundPropagation
           if (magnitude == 0.0)
           {
             audioSource.spread = 360f;
-            this.transform.position = new Vector3(position1.x, position1.y + num3, position1.z);
+            transform.position = new Vector3(position1.x, position1.y + num3, position1.z);
           }
           else
           {
             audioSource.spread = (float) ((1.0 - magnitude / (double) num2) * 360.0);
-            this.transform.position = position1 + zero * (num3 / magnitude);
+            transform.position = position1 + zero * (num3 / magnitude);
           }
           audioSource.mute = false;
         }
@@ -71,10 +72,10 @@ namespace SoundPropagation
         sources = new Dictionary<SPFieldSource, SPFieldSource>();
       else
         sources.TryGetValue(prefab, out spFieldSource);
-      if ((Object) spFieldSource == (Object) null)
+      if (spFieldSource == null)
       {
         GameObject group = UnityFactory.GetOrCreateGroup("[Sounds]");
-        spFieldSource = Object.Instantiate<SPFieldSource>(prefab, group.transform, false);
+        spFieldSource = Instantiate(prefab, group.transform, false);
         spFieldSource.name = prefab.name;
         spFieldSource.audioSource = spFieldSource.GetComponent<AudioSource>();
         spFieldSource.audioSource.dopplerLevel = 0.0f;
@@ -95,7 +96,7 @@ namespace SoundPropagation
       if (source.points.Count != 0)
         return;
       sources.Remove(prefab);
-      Object.Destroy((Object) source.gameObject);
+      Destroy(source.gameObject);
     }
   }
 }

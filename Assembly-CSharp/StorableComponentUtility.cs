@@ -6,6 +6,7 @@ using Engine.Common.Components.Storable;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
+using UnityEngine;
 
 public static class StorableComponentUtility
 {
@@ -66,12 +67,12 @@ public static class StorableComponentUtility
   {
     if (item == null)
     {
-      Debug.LogError((object) "Item is null");
+      Debug.LogError("Item is null");
     }
     else
     {
       AudioClip putClip = ((StorableComponent) item).Placeholder?.SoundGroup?.GetPutClip();
-      if ((UnityEngine.Object) putClip == (UnityEngine.Object) null)
+      if (putClip == null)
         putClip = ScriptableObjectInstance<ResourceFromCodeData>.Instance?.DefaultItemSoundGroup?.GetPutClip();
       MonoBehaviourInstance<UISounds>.Instance.PlaySound(putClip);
     }
@@ -81,12 +82,12 @@ public static class StorableComponentUtility
   {
     if (item == null)
     {
-      Debug.LogError((object) "Item is null");
+      Debug.LogError("Item is null");
     }
     else
     {
       AudioClip takeClip = ((StorableComponent) item).Placeholder?.SoundGroup?.GetTakeClip();
-      if ((UnityEngine.Object) takeClip == (UnityEngine.Object) null)
+      if (takeClip == null)
         takeClip = ScriptableObjectInstance<ResourceFromCodeData>.Instance.DefaultItemSoundGroup?.GetTakeClip();
       MonoBehaviourInstance<UISounds>.Instance.PlaySound(takeClip);
     }
@@ -96,12 +97,12 @@ public static class StorableComponentUtility
   {
     if (item == null)
     {
-      Debug.LogError((object) "Item is null");
+      Debug.LogError("Item is null");
     }
     else
     {
       AudioClip useClip = ((StorableComponent) item).Placeholder?.SoundGroup?.GetUseClip();
-      if ((UnityEngine.Object) useClip == (UnityEngine.Object) null)
+      if (useClip == null)
         useClip = ScriptableObjectInstance<ResourceFromCodeData>.Instance.DefaultItemSoundGroup?.GetUseClip();
       MonoBehaviourInstance<UISounds>.Instance.PlaySound(useClip);
     }
@@ -111,12 +112,12 @@ public static class StorableComponentUtility
   {
     if (item == null)
     {
-      Debug.LogError((object) "Item is null");
+      Debug.LogError("Item is null");
     }
     else
     {
       AudioClip pourOutClip = ((StorableComponent) item).Placeholder?.SoundGroup?.GetPourOutClip();
-      if ((UnityEngine.Object) pourOutClip == (UnityEngine.Object) null)
+      if (pourOutClip == null)
         pourOutClip = ScriptableObjectInstance<ResourceFromCodeData>.Instance.DefaultItemSoundGroup?.GetPourOutClip();
       MonoBehaviourInstance<UISounds>.Instance.PlaySound(pourOutClip);
     }

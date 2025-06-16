@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -31,14 +32,14 @@ namespace RootMotion.Dynamics
     public static Options AutodetectOptions(BipedRagdollReferences r)
     {
       Options options = Options.Default;
-      if ((UnityEngine.Object) r.spine == (UnityEngine.Object) null)
+      if (r.spine == null)
         options.spine = false;
-      if ((UnityEngine.Object) r.chest == (UnityEngine.Object) null)
+      if (r.chest == null)
         options.chest = false;
-      if (options.chest && (double) Vector3.Dot(r.root.up, r.chest.position - GetUpperArmCentroid(r)) > 0.0)
+      if (options.chest && Vector3.Dot(r.root.up, r.chest.position - GetUpperArmCentroid(r)) > 0.0)
       {
         options.chest = false;
-        if ((UnityEngine.Object) r.spine != (UnityEngine.Object) null)
+        if (r.spine != null)
           options.spine = true;
       }
       return options;
@@ -49,7 +50,7 @@ namespace RootMotion.Dynamics
       string empty = string.Empty;
       if (!r.IsValid(ref empty))
       {
-        Debug.LogWarning((object) empty);
+        Debug.LogWarning(empty);
       }
       else
       {
@@ -65,16 +66,16 @@ namespace RootMotion.Dynamics
       Options options)
     {
       Vector3 armToHeadCentroid = GetUpperArmToHeadCentroid(r);
-      if ((UnityEngine.Object) r.spine == (UnityEngine.Object) null)
+      if (r.spine == null)
         options.spine = false;
-      if ((UnityEngine.Object) r.chest == (UnityEngine.Object) null)
+      if (r.chest == null)
         options.chest = false;
       Vector3 widthDirection = r.rightUpperArm.position - r.leftUpperArm.position;
       float magnitude = widthDirection.magnitude;
       float proportionAspect = 0.6f;
       Vector3 vector3_1 = r.hips.position;
       float num1 = Vector3.Distance(r.head.position, r.root.position);
-      if ((double) Vector3.Distance(r.hips.position, r.root.position) < num1 * 0.20000000298023224)
+      if (Vector3.Distance(r.hips.position, r.root.position) < num1 * 0.20000000298023224)
         vector3_1 = Vector3.Lerp(r.leftUpperLeg.position, r.rightUpperLeg.position, 0.5f);
       Vector3 endPoint = options.spine ? r.spine.position : (options.chest ? r.chest.position : armToHeadCentroid);
       Vector3 startPoint1 = vector3_1 + (vector3_1 - armToHeadCentroid) * 0.1f;
@@ -135,7 +136,7 @@ namespace RootMotion.Dynamics
       Vector3 vector3_2 = Vector3.Project(vector3_1 - hand.position, onNormal);
       Vector3 normalized = vector3_2.normalized;
       vector3_2 = vector3_1 - hand.position;
-      double magnitude = (double) vector3_2.magnitude;
+      double magnitude = vector3_2.magnitude;
       Vector3 vector3_3 = normalized * (float) magnitude;
       Vector3 vector3_4 = position + vector3_3;
       CreateCollider(hand, hand.position, vector3_4, options.handColliders, options.colliderLengthOverlap, Vector3.Distance(vector3_4, hand.position) * 0.5f);
@@ -155,12 +156,12 @@ namespace RootMotion.Dynamics
       Vector3 vector3_2 = Vector3.Project(vector3_1 - foot.position, onNormal);
       Vector3 normalized = vector3_2.normalized;
       vector3_2 = vector3_1 - foot.position;
-      double magnitude2 = (double) vector3_2.magnitude;
+      double magnitude2 = vector3_2.magnitude;
       Vector3 vector3_3 = normalized * (float) magnitude2;
       Vector3 a = position1 + vector3_3;
       float width = Vector3.Distance(a, foot.position) * 0.5f;
       Vector3 position2 = foot.position;
-      Vector3 vector3_4 = (double) Vector3.Dot(root.up, foot.position - root.position) < 0.0 ? Vector3.zero : Vector3.Project(position2 - root.up * width * 0.5f - root.position, root.up);
+      Vector3 vector3_4 = Vector3.Dot(root.up, foot.position - root.position) < 0.0 ? Vector3.zero : Vector3.Project(position2 - root.up * width * 0.5f - root.position, root.up);
       Vector3 vector3_5 = a - position2;
       Vector3 vector3_6 = position2 - vector3_5 * 0.2f;
       CreateCollider(foot, vector3_6 - vector3_4, a - vector3_4, options.footColliders, options.colliderLengthOverlap, width);
@@ -173,18 +174,18 @@ namespace RootMotion.Dynamics
       Vector3 zero = Vector3.zero;
       for (int index = 0; index < t.childCount; ++index)
         zero += t.GetChild(index).position;
-      return zero / (float) t.childCount;
+      return zero / t.childCount;
     }
 
     private static void MassDistribution(BipedRagdollReferences r, Options o)
     {
       int num1 = 3;
-      if ((UnityEngine.Object) r.spine == (UnityEngine.Object) null)
+      if (r.spine == null)
       {
         o.spine = false;
         --num1;
       }
-      if ((UnityEngine.Object) r.chest == (UnityEngine.Object) null)
+      if (r.chest == null)
       {
         o.chest = false;
         --num1;
@@ -224,21 +225,21 @@ namespace RootMotion.Dynamics
 
     private static void CreateJoints(BipedRagdollReferences r, Options o)
     {
-      if ((UnityEngine.Object) r.spine == (UnityEngine.Object) null)
+      if (r.spine == null)
         o.spine = false;
-      if ((UnityEngine.Object) r.chest == (UnityEngine.Object) null)
+      if (r.chest == null)
         o.chest = false;
       float minSwing = -30f * o.jointRange;
       float maxSwing = 10f * o.jointRange;
       float swing2 = 25f * o.jointRange;
       float twist = 25f * o.jointRange;
-      CreateJoint(new CreateJointParams(r.hips.GetComponent<Rigidbody>(), (Rigidbody) null, o.spine ? r.spine : (o.chest ? r.chest : r.head), r.root.right, new CreateJointParams.Limits(0.0f, 0.0f, 0.0f, 0.0f), o.joints));
+      CreateJoint(new CreateJointParams(r.hips.GetComponent<Rigidbody>(), null, o.spine ? r.spine : (o.chest ? r.chest : r.head), r.root.right, new CreateJointParams.Limits(0.0f, 0.0f, 0.0f, 0.0f), o.joints));
       if (o.spine)
         CreateJoint(new CreateJointParams(r.spine.GetComponent<Rigidbody>(), r.hips.GetComponent<Rigidbody>(), o.chest ? r.chest : r.head, r.root.right, new CreateJointParams.Limits(minSwing, maxSwing, swing2, twist), o.joints));
       if (o.chest)
         CreateJoint(new CreateJointParams(r.chest.GetComponent<Rigidbody>(), o.spine ? r.spine.GetComponent<Rigidbody>() : r.hips.GetComponent<Rigidbody>(), r.head, r.root.right, new CreateJointParams.Limits(minSwing, maxSwing, swing2, twist), o.joints));
       Transform connectedBone = o.chest ? r.chest : (o.spine ? r.spine : r.hips);
-      CreateJoint(new CreateJointParams(r.head.GetComponent<Rigidbody>(), connectedBone.GetComponent<Rigidbody>(), (Transform) null, r.root.right, new CreateJointParams.Limits(-30f, 30f, 30f, 85f), o.joints));
+      CreateJoint(new CreateJointParams(r.head.GetComponent<Rigidbody>(), connectedBone.GetComponent<Rigidbody>(), null, r.root.right, new CreateJointParams.Limits(-30f, 30f, 30f, 85f), o.joints));
       CreateJointParams.Limits limits1_1 = new CreateJointParams.Limits(-35f * o.jointRange, 120f * o.jointRange, 85f * o.jointRange, 45f * o.jointRange);
       CreateJointParams.Limits limits2_1 = new CreateJointParams.Limits(0.0f, 140f * o.jointRange, 10f * o.jointRange, 45f * o.jointRange);
       CreateJointParams.Limits limits3_1 = new CreateJointParams.Limits(-50f * o.jointRange, 50f * o.jointRange, 50f * o.jointRange, 25f * o.jointRange);
@@ -269,14 +270,14 @@ namespace RootMotion.Dynamics
       Vector3 normalized2 = (bone3.position - bone2.position).normalized;
       Vector3 worldSwingAxis = -Vector3.Cross(normalized1, normalized2);
       float num1 = Vector3.Angle(normalized1, normalized2);
-      bool flag = (double) Mathf.Abs(Vector3.Dot(normalized1, root.up)) > 0.5;
+      bool flag = Mathf.Abs(Vector3.Dot(normalized1, root.up)) > 0.5;
       float num2 = flag ? 100f : 1f;
       if (num1 < 0.0099999997764825821 * num2)
-        worldSwingAxis = !flag ? ((double) Vector3.Dot(normalized1, root.right) > 0.0 ? root.up : -root.up) : ((double) Vector3.Dot(normalized1, root.up) > 0.0 ? root.right : -root.right);
+        worldSwingAxis = !flag ? (Vector3.Dot(normalized1, root.right) > 0.0 ? root.up : -root.up) : (Vector3.Dot(normalized1, root.up) > 0.0 ? root.right : -root.right);
       CreateJoint(new CreateJointParams(bone1.GetComponent<Rigidbody>(), connectedBone.GetComponent<Rigidbody>(), bone2, worldSwingAxis, limits1, jointType));
       CreateJoint(new CreateJointParams(bone2.GetComponent<Rigidbody>(), bone1.GetComponent<Rigidbody>(), bone3, worldSwingAxis, new CreateJointParams.Limits(limits2.minSwing - num1, limits2.maxSwing - num1, limits2.swing2, limits2.twist), jointType));
-      if ((UnityEngine.Object) bone3.GetComponent<Rigidbody>() != (UnityEngine.Object) null)
-        CreateJoint(new CreateJointParams(bone3.GetComponent<Rigidbody>(), bone2.GetComponent<Rigidbody>(), (Transform) null, worldSwingAxis, limits3, jointType));
+      if (bone3.GetComponent<Rigidbody>() != null)
+        CreateJoint(new CreateJointParams(bone3.GetComponent<Rigidbody>(), bone2.GetComponent<Rigidbody>(), null, worldSwingAxis, limits3, jointType));
       bone1.localRotation = localRotation;
     }
 
@@ -290,7 +291,7 @@ namespace RootMotion.Dynamics
     {
       foreach (Component ragdollTransform in r.GetRagdollTransforms())
       {
-        if ((UnityEngine.Object) ragdollTransform.GetComponent<Rigidbody>() != (UnityEngine.Object) null)
+        if (ragdollTransform.GetComponent<Rigidbody>() != null)
           return false;
       }
       return true;

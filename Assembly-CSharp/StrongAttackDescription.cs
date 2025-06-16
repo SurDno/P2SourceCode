@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(fileName = "StrongAttack", menuName = "Pathologic2/States/Strong attack", order = 101)]
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "StrongAttack", menuName = "Pathologic2/States/Strong attack", order = 101)]
 public class StrongAttackDescription : ScriptableObject
 {
   [Tooltip("Время атаки")]

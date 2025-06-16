@@ -7,6 +7,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Projectiles
 {
@@ -33,10 +34,10 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
     {
       PivotSanitar component1 = ((IEntityView) self).GameObject.GetComponent<PivotSanitar>();
-      if ((UnityEngine.Object) component1 == (UnityEngine.Object) null)
+      if (component1 == null)
         return;
       targets.Targets = component1.Targets.Select(o => o.GetComponent<EffectsComponent>()).Where(o => o != null).ToList();
-      if (component1.Flamethrower && (UnityEngine.Object) component1.TargetObject != (UnityEngine.Object) null && component1.AimingTime > (double) flameEffectiveTime)
+      if (component1.Flamethrower && component1.TargetObject != null && component1.AimingTime > (double) flameEffectiveTime)
       {
         EngineGameObject component2 = component1.TargetObject.GetComponent<EngineGameObject>();
         EffectsComponent component3 = component2?.Owner?.GetComponent<EffectsComponent>();
@@ -44,7 +45,7 @@ namespace Engine.Source.Commons.Abilities.Projectiles
         {
           Vector3 forward = ((IEntityView) self).GameObject.transform.forward;
           Vector3 to = component1.TargetObject.position - ((IEntityView) self).GameObject.transform.position;
-          if ((double) Mathf.Abs(Vector3.Angle(forward, to)) < hitAngle && (double) to.magnitude < radius)
+          if (Mathf.Abs(Vector3.Angle(forward, to)) < (double) hitAngle && to.magnitude < (double) radius)
           {
             DetectorComponent component4 = self?.GetComponent<DetectorComponent>();
             if (component4 == null)

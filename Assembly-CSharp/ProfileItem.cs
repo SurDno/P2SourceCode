@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class ProfileItem : MonoBehaviour
 {
@@ -11,7 +13,7 @@ public class ProfileItem : MonoBehaviour
 
   public string Name { get; set; }
 
-  public void SetText(string text) => this.GetComponent<Text>().text = text;
+  public void SetText(string text) => GetComponent<Text>().text = text;
 
   public void OnPress()
   {
@@ -27,7 +29,7 @@ public class ProfileItem : MonoBehaviour
     set
     {
       slection = value;
-      this.GetComponent<Text>().color = slection ? activeColor : baseColor;
+      GetComponent<Text>().color = slection ? activeColor : baseColor;
     }
   }
 }

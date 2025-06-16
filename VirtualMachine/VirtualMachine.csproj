@@ -1,13 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <!--Project was exported from assembly: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.dll-->
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{285B2A8D-6C7D-4BA0-8A61-72E5C07D1C8E}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AssemblyName>VirtualMachine</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8.1</TargetFrameworkVersion>
     <ApplicationVersion>1.0.0.0</ApplicationVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -31,206 +30,255 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Cofe">
-      <HintPath>lib\Cofe.dll</HintPath>
+    <ProjectReference Include="..\Engine.Common\Engine.Common.csproj" />
+    <ProjectReference Include="..\VirtualMachine\VirtualMachine.csproj" />
+    <ProjectReference Include="..\VirtualMachine.Common\VirtualMachine.Common.csproj" />
+    <Reference Include="AmplifyBloom">
+      <HintPath>..\Managed\AmplifyBloom.dll</HintPath>
     </Reference>
-    <Reference Include="Engine.Common">
-      <HintPath>lib\Engine.Common.dll</HintPath>
+    <Reference Include="AmplifyColor">
+      <HintPath>..\Managed\AmplifyColor.dll</HintPath>
+    </Reference>
+    <Reference Include="AmplifyOcclusion">
+      <HintPath>..\Managed\AmplifyOcclusion.dll</HintPath>
+    </Reference>
+    <Reference Include="Cofe">
+      <HintPath>..\Managed\Cofe.dll</HintPath>
+    </Reference>
+    <Reference Include="KdTreeLib">
+      <HintPath>..\Managed\KdTreeLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Posix">
+      <HintPath>..\Managed\Mono.Posix.dll</HintPath>
+    </Reference>
+    <Reference Include="Mono.Security">
+      <HintPath>..\Managed\Mono.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib">
+      <HintPath>..\Managed\mscorlib.dll</HintPath>
+    </Reference>
+    <Reference Include="pb_Stl">
+      <HintPath>..\Managed\pb_Stl.dll</HintPath>
+    </Reference>
+    <Reference Include="Poly2Tri">
+      <HintPath>..\Managed\Poly2Tri.dll</HintPath>
+    </Reference>
+    <Reference Include="ProBuilderCore-Unity5">
+      <HintPath>..\Managed\ProBuilderCore-Unity5.dll</HintPath>
+    </Reference>
+    <Reference Include="ProBuilderMeshOps-Unity5">
+      <HintPath>..\Managed\ProBuilderMeshOps-Unity5.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration">
+      <HintPath>..\Managed\System.Configuration.dll</HintPath>
+    </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Security">
+      <HintPath>..\Managed\System.Security.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
-    <Reference Include="VirtualMachine.Common">
-      <HintPath>lib\VirtualMachine.Common.dll</HintPath>
+    <Reference Include="Unity.MemoryProfiler">
+      <HintPath>..\Managed\Unity.MemoryProfiler.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\Managed\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine">
+      <HintPath>..\Managed\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AccessibilityModule">
+      <HintPath>..\Managed\UnityEngine.AccessibilityModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AIModule">
+      <HintPath>..\Managed\UnityEngine.AIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\Managed\UnityEngine.AnimationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ARModule">
+      <HintPath>..\Managed\UnityEngine.ARModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AssetBundleModule">
+      <HintPath>..\Managed\UnityEngine.AssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AudioModule">
+      <HintPath>..\Managed\UnityEngine.AudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.BaselibModule">
+      <HintPath>..\Managed\UnityEngine.BaselibModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClothModule">
+      <HintPath>..\Managed\UnityEngine.ClothModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterInputModule">
+      <HintPath>..\Managed\UnityEngine.ClusterInputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ClusterRendererModule">
+      <HintPath>..\Managed\UnityEngine.ClusterRendererModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CoreModule">
+      <HintPath>..\Managed\UnityEngine.CoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.CrashReportingModule">
+      <HintPath>..\Managed\UnityEngine.CrashReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.DirectorModule">
+      <HintPath>..\Managed\UnityEngine.DirectorModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.FileSystemHttpModule">
+      <HintPath>..\Managed\UnityEngine.FileSystemHttpModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GameCenterModule">
+      <HintPath>..\Managed\UnityEngine.GameCenterModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.GridModule">
+      <HintPath>..\Managed\UnityEngine.GridModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.HotReloadModule">
+      <HintPath>..\Managed\UnityEngine.HotReloadModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ImageConversionModule">
+      <HintPath>..\Managed\UnityEngine.ImageConversionModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.IMGUIModule">
+      <HintPath>..\Managed\UnityEngine.IMGUIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.InputModule">
+      <HintPath>..\Managed\UnityEngine.InputModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.JSONSerializeModule">
+      <HintPath>..\Managed\UnityEngine.JSONSerializeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.LocalizationModule">
+      <HintPath>..\Managed\UnityEngine.LocalizationModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Networking">
+      <HintPath>..\Managed\UnityEngine.Networking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ParticleSystemModule">
+      <HintPath>..\Managed\UnityEngine.ParticleSystemModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PerformanceReportingModule">
+      <HintPath>..\Managed\UnityEngine.PerformanceReportingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Physics2DModule">
+      <HintPath>..\Managed\UnityEngine.Physics2DModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.PhysicsModule">
+      <HintPath>..\Managed\UnityEngine.PhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ProfilerModule">
+      <HintPath>..\Managed\UnityEngine.ProfilerModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.ScreenCaptureModule">
+      <HintPath>..\Managed\UnityEngine.ScreenCaptureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SharedInternalsModule">
+      <HintPath>..\Managed\UnityEngine.SharedInternalsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpatialTracking">
+      <HintPath>..\Managed\UnityEngine.SpatialTracking.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteMaskModule">
+      <HintPath>..\Managed\UnityEngine.SpriteMaskModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SpriteShapeModule">
+      <HintPath>..\Managed\UnityEngine.SpriteShapeModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StreamingModule">
+      <HintPath>..\Managed\UnityEngine.StreamingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.StyleSheetsModule">
+      <HintPath>..\Managed\UnityEngine.StyleSheetsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.SubstanceModule">
+      <HintPath>..\Managed\UnityEngine.SubstanceModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainModule">
+      <HintPath>..\Managed\UnityEngine.TerrainModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TerrainPhysicsModule">
+      <HintPath>..\Managed\UnityEngine.TerrainPhysicsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextCoreModule">
+      <HintPath>..\Managed\UnityEngine.TextCoreModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TextRenderingModule">
+      <HintPath>..\Managed\UnityEngine.TextRenderingModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TilemapModule">
+      <HintPath>..\Managed\UnityEngine.TilemapModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.Timeline">
+      <HintPath>..\Managed\UnityEngine.Timeline.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TimelineModule">
+      <HintPath>..\Managed\UnityEngine.TimelineModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.TLSModule">
+      <HintPath>..\Managed\UnityEngine.TLSModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>..\Managed\UnityEngine.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIElementsModule">
+      <HintPath>..\Managed\UnityEngine.UIElementsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UIModule">
+      <HintPath>..\Managed\UnityEngine.UIModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UmbraModule">
+      <HintPath>..\Managed\UnityEngine.UmbraModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UNETModule">
+      <HintPath>..\Managed\UnityEngine.UNETModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityAnalyticsModule">
+      <HintPath>..\Managed\UnityEngine.UnityAnalyticsModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityConnectModule">
+      <HintPath>..\Managed\UnityEngine.UnityConnectModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityTestProtocolModule">
+      <HintPath>..\Managed\UnityEngine.UnityTestProtocolModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAssetBundleModule">
+      <HintPath>..\Managed\UnityEngine.UnityWebRequestAssetBundleModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestAudioModule">
+      <HintPath>..\Managed\UnityEngine.UnityWebRequestAudioModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestModule">
+      <HintPath>..\Managed\UnityEngine.UnityWebRequestModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestTextureModule">
+      <HintPath>..\Managed\UnityEngine.UnityWebRequestTextureModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UnityWebRequestWWWModule">
+      <HintPath>..\Managed\UnityEngine.UnityWebRequestWWWModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VehiclesModule">
+      <HintPath>..\Managed\UnityEngine.VehiclesModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VFXModule">
+      <HintPath>..\Managed\UnityEngine.VFXModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VideoModule">
+      <HintPath>..\Managed\UnityEngine.VideoModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.VRModule">
+      <HintPath>..\Managed\UnityEngine.VRModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.WindModule">
+      <HintPath>..\Managed\UnityEngine.WindModule.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.XRModule">
+      <HintPath>..\Managed\UnityEngine.XRModule.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PLVirtualMachine\AssyncProcessManager.cs" />
-    <Compile Include="PLVirtualMachine\CreateHierarchyHelper.cs" />
-    <Compile Include="PLVirtualMachine\CreateEntityUtility.cs" />
-    <Compile Include="PLVirtualMachine\CreateHierarchyEntityUtility.cs" />
-    <Compile Include="PLVirtualMachine\DebugUtility.cs" />
-    <Compile Include="PLVirtualMachine\DelayTimer.cs" />
-    <Compile Include="PLVirtualMachine\DynamicFsmUtility.cs" />
-    <Compile Include="PLVirtualMachine\ExpressionUtility.cs" />
-    <Compile Include="PLVirtualMachine\GlobalVariableUtility.cs" />
-    <Compile Include="PLVirtualMachine\HierarchyManager.cs" />
-    <Compile Include="PLVirtualMachine\ItemsStorageAddingInfo.cs" />
-    <Compile Include="PLVirtualMachine\VirtualMachine.cs" />
-    <Compile Include="PLVirtualMachine\WorldEntityUtility.cs" />
-    <Compile Include="PLVirtualMachine\Common\CSDequeue`1.cs" />
-    <Compile Include="PLVirtualMachine\Common\ITalkingProcessor.cs" />
-    <Compile Include="PLVirtualMachine\Common\VMDebug\DebugServer.cs" />
-    <Compile Include="PLVirtualMachine\Common\EngineAPI\ItemTradePriceInfo.cs" />
-    <Compile Include="PLVirtualMachine\Base\EntityMethodExecuteData.cs" />
-    <Compile Include="PLVirtualMachine\Base\MethodExecuteContext.cs" />
-    <Compile Include="PLVirtualMachine\Base\VMBaseObjectUtility.cs" />
-    <Compile Include="PLVirtualMachine\Base\VMGameString.cs" />
-    <Compile Include="PLVirtualMachine\Base\VMBaseObject.cs" />
-    <Compile Include="PLVirtualMachine\Base\VMEngineAPIManager.cs" />
-    <Compile Include="PLVirtualMachine\FSM\FiniteStateMachine.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMBranch.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMEntryPoint.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMEventLink.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMSpeechReply.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMSpeech.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMState.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMTalkingGraph.cs" />
-    <Compile Include="PLVirtualMachine\FSM\VMMessageCastInfo.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMActionLine.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMCondition.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMCustomType.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMEvent.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMExpression.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMFunctionalComponent.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMGameAction.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMParameter.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMPartCondition.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMBlueprintRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMEventRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMGameModeRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMLogicMapNodeRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMObjRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMSampleRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMStateRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMTextRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\FunctionInfo.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMLogicMapRef.cs" />
-    <Compile Include="PLVirtualMachine\GameLogic\VMFunction.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMBlueprint.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMCharacter.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMCombinationItem.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMGameMode.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMGameRoot.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMGeomLogicObject.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMItem.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMOtherObject.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMQuest.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMSample.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMWorldGroup.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMBlueprintUtility.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMWorldHierarchyObject.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMLogicObject.cs" />
-    <Compile Include="PLVirtualMachine\Objects\VMWorldObject.cs" />
-    <Compile Include="PLVirtualMachine\LogicMap\VMLogicLink.cs" />
-    <Compile Include="PLVirtualMachine\LogicMap\VMLogicMapNodeContent.cs" />
-    <Compile Include="PLVirtualMachine\LogicMap\VMLogicMapNode.cs" />
-    <Compile Include="PLVirtualMachine\LogicMap\VMLogicMap.cs" />
-    <Compile Include="PLVirtualMachine\Data\XMLDataLoader.cs" />
-    <Compile Include="PLVirtualMachine\Data\SaveLoad\FreeEntityInfo.cs" />
-    <Compile Include="PLVirtualMachine\Data\SaveLoad\VMSaveLoadManager.cs" />
-    <Compile Include="PLVirtualMachine\Data\SaveLoad\VMSaveLoadManagerUtility.cs" />
-    <Compile Include="PLVirtualMachine\Debug\DebugFSMInfo.cs" />
-    <Compile Include="PLVirtualMachine\Debug\DebugRaisingEventInfo.cs" />
-    <Compile Include="PLVirtualMachine\Debug\VMDebugger.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicEventBody.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\EEventUpdateMode.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\EEventRaisingMode.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\SubscribtionInfo.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicParameterUtility.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\FSMEventManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\FSMFunctionManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\FSMGraphManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\FSMParamsManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\FSMTalkingManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\LockedFSMInfo.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\LoopInfo.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\OwnHashInfo.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\OwnHashInfoEqualityComparer.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\RaisedEventInfo.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\EStateStackType.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\StateInfo.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\StateStack.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\IAssyncUpdateable.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\IInitialiseComponentFromHierarchy.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\IInitialiseEvents.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\VMEntityUtility.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\VMVariableService.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicMindMap.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicMindMapNode.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicMindMapNodeContent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\IDynamicMindMapObject.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicTalkingFSM.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\StatePoint.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\IDependedEventRef.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\VMDynamicCommonList.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicEvent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicFSM.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicObject.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\DynamicParameter.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\EventMessage.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\IDynamicGameObjectContext.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\QuestFSM.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\VMEntity.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\HierachyInfo.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\AttackerPlayer.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Behavior.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\BlueprintComponent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\BoundCharacterComponent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Building.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Combination.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Common.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Controller.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\CrowdItem.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Detectable.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Detector.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Disease.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Door.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\DynamicModel.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\FastTravel.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\GameComponent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\GlobalDoorsManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\GlobalMarketManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\GlobalStorageManager.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\HerbRoots.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\IndoorCrowd.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Interactable.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Inventory.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\LipSync.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\LocationItem.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Location.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Mail.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\MapItem.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Market.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\MessangerComponent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\MessangerStationaryComponent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Navigation.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\NpcController.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\OutdoorCrowd.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\PlayerController.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\QuestComponent.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Region.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Repairable.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Scene.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Spawnpoint.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Speaking.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Storable.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Storage.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Support.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Tags.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Trigger.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\WaterSupplyController.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\Weather.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\CrowdStorageCommand.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\CrowdStorageCommandProcessor.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\IStorageCommand.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\StorageCommand.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\StorageCommandProcessor.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\StorageGroupCommandProcessor.cs" />
-    <Compile Include="PLVirtualMachine\Dynamic\Components\EStorageCommandType.cs" />
-    <Compile Include="PLVirtualMachine\Time\EGameTimerType.cs" />
-    <Compile Include="PLVirtualMachine\Time\GameTimer.cs" />
-    <Compile Include="PLVirtualMachine\Time\GameTimeContext.cs" />
-    <Compile Include="PLVirtualMachine\Time\GameTimeManager.cs" />
-    <Compile Include="VirtualMachine\Data\EditorDataReadUtility.cs" />
-    <Compile Include="VirtualMachine\Data\GameDataInfo.cs" />
-    <Compile Include="VirtualMachine\Data\IDataCreator.cs" />
-    <Compile Include="VirtualMachine\Data\IEditorDataReader.cs" />
-    <Compile Include="VirtualMachine\Data\Customs\ActionLoopInfoData.cs" />
-    <Compile Include="VirtualMachine\Data\Customs\BaseToEngineGuidsTableData.cs" />
-    <Compile Include="VirtualMachine\Data\Customs\HierarchySceneInfoData.cs" />
-    <Compile Include="VirtualMachine\Data\Customs\NameTypeData.cs" />
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="**/*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

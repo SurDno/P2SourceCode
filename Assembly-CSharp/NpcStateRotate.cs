@@ -4,6 +4,9 @@ using Engine.Common.Components;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
+using Object = UnityEngine.Object;
 
 public class NpcStateRotate : INpcState
 {
@@ -40,9 +43,9 @@ public class NpcStateRotate : INpcState
     weaponService = pivot.GetNpcWeaponService();
     rigidbody = pivot.GetRigidbody();
     agent = pivot.GetAgent();
-    if ((UnityEngine.Object) agent == (UnityEngine.Object) null)
+    if (agent == null)
     {
-      Debug.LogError((object) ("No navmesh agent " + GameObject.name), (UnityEngine.Object) GameObject);
+      Debug.LogError("No navmesh agent " + GameObject.name, GameObject);
       failed = true;
       return false;
     }
@@ -71,20 +74,20 @@ public class NpcStateRotate : INpcState
       LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
       if (component == null)
       {
-        Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+        Debug.LogWarning(GameObject.name + ": location component not found");
         return;
       }
       indoor = component.IsIndoor;
     }
     NPCStateHelper.SetAgentAreaMask(agent, indoor);
     agent.enabled = true;
-    if ((UnityEngine.Object) rigidbody != (UnityEngine.Object) null)
+    if (rigidbody != null)
     {
       rigidbodyWasGravity = rigidbody.useGravity;
       rigidbody.useGravity = false;
     }
     mode = ModeEnum.Transform;
-    if (!((UnityEngine.Object) weaponService != (UnityEngine.Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = WeaponEnum.Unknown;
   }
@@ -94,7 +97,7 @@ public class NpcStateRotate : INpcState
     this.rotation = rotation;
     done = false;
     mode = ModeEnum.Quaternion;
-    if (!((UnityEngine.Object) weaponService != (UnityEngine.Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = WeaponEnum.Unknown;
   }
@@ -104,7 +107,7 @@ public class NpcStateRotate : INpcState
     if (failed)
       return;
     weaponService.Weapon = npcState.Weapon;
-    if (!(bool) (UnityEngine.Object) rigidbody)
+    if (!(bool) (Object) rigidbody)
       return;
     rigidbody.useGravity = rigidbodyWasGravity;
   }
@@ -129,9 +132,9 @@ public class NpcStateRotate : INpcState
     Vector3 direction;
     if (mode == ModeEnum.Transform)
     {
-      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+      if (target == null)
       {
-        Debug.LogWarning((object) "null target");
+        Debug.LogWarning("null target");
         done = true;
         return;
       }
@@ -143,7 +146,7 @@ public class NpcStateRotate : INpcState
         throw new NotSupportedException();
       direction = rotation * Vector3.forward;
     }
-    if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
+    if (behavior == null)
       return;
     done = behavior.Rotate(direction);
   }

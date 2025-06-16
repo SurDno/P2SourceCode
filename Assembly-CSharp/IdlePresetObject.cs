@@ -1,5 +1,6 @@
 ﻿using System;
 using Inspectors;
+using UnityEngine;
 
 [Serializable]
 public class IdlePresetObject : MonoBehaviour

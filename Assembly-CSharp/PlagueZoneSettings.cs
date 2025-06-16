@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Settings", menuName = "Plague/Zone Settings")]
 public class PlagueZoneSettings : ScriptableObject

@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -37,7 +39,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_FilmicDepthOfFieldShader == (UnityEngine.Object) null)
+        if (m_FilmicDepthOfFieldShader == null)
           m_FilmicDepthOfFieldShader = Shader.Find("Hidden/DepthOfField/DepthOfField");
         return m_FilmicDepthOfFieldShader;
       }
@@ -47,7 +49,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_MedianFilterShader == (UnityEngine.Object) null)
+        if (m_MedianFilterShader == null)
           m_MedianFilterShader = Shader.Find("Hidden/DepthOfField/MedianFilter");
         return m_MedianFilterShader;
       }
@@ -57,7 +59,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_TextureBokehShader == (UnityEngine.Object) null)
+        if (m_TextureBokehShader == null)
           m_TextureBokehShader = Shader.Find("Hidden/DepthOfField/BokehSplatting");
         return m_TextureBokehShader;
       }
@@ -67,7 +69,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_FilmicDepthOfFieldMaterial == (UnityEngine.Object) null)
+        if (m_FilmicDepthOfFieldMaterial == null)
           m_FilmicDepthOfFieldMaterial = ImageEffectHelper.CheckShaderAndCreateMaterial(filmicDepthOfFieldShader);
         return m_FilmicDepthOfFieldMaterial;
       }
@@ -77,7 +79,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_MedianFilterMaterial == (UnityEngine.Object) null)
+        if (m_MedianFilterMaterial == null)
           m_MedianFilterMaterial = ImageEffectHelper.CheckShaderAndCreateMaterial(medianFilterShader);
         return m_MedianFilterMaterial;
       }
@@ -87,7 +89,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_TextureBokehMaterial == (UnityEngine.Object) null)
+        if (m_TextureBokehMaterial == null)
           m_TextureBokehMaterial = ImageEffectHelper.CheckShaderAndCreateMaterial(textureBokehShader);
         return m_TextureBokehMaterial;
       }
@@ -100,7 +102,7 @@ namespace UnityStandardAssets.CinematicEffects
         if (m_ComputeBufferDrawArgs == null)
         {
           m_ComputeBufferDrawArgs = new ComputeBuffer(1, 16, ComputeBufferType.DrawIndirect);
-          m_ComputeBufferDrawArgs.SetData((Array) new int[4]
+          m_ComputeBufferDrawArgs.SetData(new int[4]
           {
             0,
             1,
@@ -124,39 +126,39 @@ namespace UnityStandardAssets.CinematicEffects
 
     private void OnEnable()
     {
-      if (!ImageEffectHelper.IsSupported(filmicDepthOfFieldShader, true, true, (MonoBehaviour) this) || !ImageEffectHelper.IsSupported(medianFilterShader, true, true, (MonoBehaviour) this))
-        this.enabled = false;
-      else if (ImageEffectHelper.supportsDX11 && !ImageEffectHelper.IsSupported(textureBokehShader, true, true, (MonoBehaviour) this))
+      if (!ImageEffectHelper.IsSupported(filmicDepthOfFieldShader, true, true, this) || !ImageEffectHelper.IsSupported(medianFilterShader, true, true, this))
+        enabled = false;
+      else if (ImageEffectHelper.supportsDX11 && !ImageEffectHelper.IsSupported(textureBokehShader, true, true, this))
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
         ComputeBlurDirections(true);
-        this.GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
+        GetComponent<Camera>().depthTextureMode |= DepthTextureMode.Depth;
       }
     }
 
     private void OnDisable()
     {
       ReleaseComputeResources();
-      if ((UnityEngine.Object) m_FilmicDepthOfFieldMaterial != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_FilmicDepthOfFieldMaterial);
-      if ((UnityEngine.Object) m_TextureBokehMaterial != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_TextureBokehMaterial);
-      if ((UnityEngine.Object) m_MedianFilterMaterial != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_MedianFilterMaterial);
-      m_FilmicDepthOfFieldMaterial = (Material) null;
-      m_TextureBokehMaterial = (Material) null;
-      m_MedianFilterMaterial = (Material) null;
+      if (m_FilmicDepthOfFieldMaterial != null)
+        DestroyImmediate(m_FilmicDepthOfFieldMaterial);
+      if (m_TextureBokehMaterial != null)
+        DestroyImmediate(m_TextureBokehMaterial);
+      if (m_MedianFilterMaterial != null)
+        DestroyImmediate(m_MedianFilterMaterial);
+      m_FilmicDepthOfFieldMaterial = null;
+      m_TextureBokehMaterial = null;
+      m_MedianFilterMaterial = null;
       m_RTU.ReleaseAllTemporaryRenderTextures();
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      if ((UnityEngine.Object) medianFilterMaterial == (UnityEngine.Object) null || (UnityEngine.Object) filmicDepthOfFieldMaterial == (UnityEngine.Object) null)
+      if (medianFilterMaterial == null || filmicDepthOfFieldMaterial == null)
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -167,7 +169,7 @@ namespace UnityStandardAssets.CinematicEffects
           ComputeCocParameters(out blurParams, out blurCoe);
           filmicDepthOfFieldMaterial.SetVector("_BlurParams", blurParams);
           filmicDepthOfFieldMaterial.SetVector("_BlurCoe", blurCoe);
-          Graphics.Blit((Texture) null, destination, filmicDepthOfFieldMaterial, 5);
+          Graphics.Blit(null, destination, filmicDepthOfFieldMaterial, 5);
         }
         else
           DoDepthOfField(source, destination);
@@ -178,9 +180,9 @@ namespace UnityStandardAssets.CinematicEffects
     private void DoDepthOfField(RenderTexture source, RenderTexture destination)
     {
       m_CurrentQualitySettings = QualitySettings.presetQualitySettings[(int) settings.filteringQuality];
-      float num1 = (float) source.height / 720f;
+      float num1 = source.height / 720f;
       float num2 = num1;
-      float num3 = (float) ((double) Mathf.Max(focus.nearBlurRadius, focus.farBlurRadius) * num2 * 0.75);
+      float num3 = (float) (Mathf.Max(focus.nearBlurRadius, focus.farBlurRadius) * (double) num2 * 0.75);
       float a = focus.nearBlurRadius * num1;
       float b = focus.farBlurRadius * num1;
       float maxRadius = Mathf.Max(a, b);
@@ -195,7 +197,7 @@ namespace UnityStandardAssets.CinematicEffects
       }
       if (maxRadius < 0.5)
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -209,43 +211,43 @@ namespace UnityStandardAssets.CinematicEffects
         ComputeCocParameters(out blurParams, out blurCoe);
         filmicDepthOfFieldMaterial.SetVector("_BlurParams", blurParams);
         filmicDepthOfFieldMaterial.SetVector("_BlurCoe", blurCoe);
-        Graphics.Blit((Texture) source, temporaryRenderTexture2, filmicDepthOfFieldMaterial, 4);
+        Graphics.Blit(source, temporaryRenderTexture2, filmicDepthOfFieldMaterial, 4);
         RenderTexture src = temporaryRenderTexture2;
         RenderTexture dst = temporaryRenderTexture1;
         if (shouldPerformBokeh)
         {
           RenderTexture temporaryRenderTexture3 = m_RTU.GetTemporaryRenderTexture(width, height);
-          Graphics.Blit((Texture) src, temporaryRenderTexture3, filmicDepthOfFieldMaterial, 1);
+          Graphics.Blit(src, temporaryRenderTexture3, filmicDepthOfFieldMaterial, 1);
           filmicDepthOfFieldMaterial.SetVector("_Offsets", new Vector4(0.0f, 1.5f, 0.0f, 1.5f));
-          Graphics.Blit((Texture) temporaryRenderTexture3, dst, filmicDepthOfFieldMaterial, 0);
+          Graphics.Blit(temporaryRenderTexture3, dst, filmicDepthOfFieldMaterial, 0);
           filmicDepthOfFieldMaterial.SetVector("_Offsets", new Vector4(1.5f, 0.0f, 0.0f, 1.5f));
-          Graphics.Blit((Texture) dst, temporaryRenderTexture3, filmicDepthOfFieldMaterial, 0);
-          textureBokehMaterial.SetTexture("_BlurredColor", (Texture) temporaryRenderTexture3);
+          Graphics.Blit(dst, temporaryRenderTexture3, filmicDepthOfFieldMaterial, 0);
+          textureBokehMaterial.SetTexture("_BlurredColor", temporaryRenderTexture3);
           textureBokehMaterial.SetFloat("_SpawnHeuristic", bokehTexture.spawnHeuristic);
           textureBokehMaterial.SetVector("_BokehParams", new Vector4(bokehTexture.scale * num2, bokehTexture.intensity, bokehTexture.threshold, num3));
           Graphics.SetRandomWriteTarget(1, computeBufferPoints);
-          Graphics.Blit((Texture) src, dst, textureBokehMaterial, 1);
+          Graphics.Blit(src, dst, textureBokehMaterial, 1);
           Graphics.ClearRandomWriteTargets();
           SwapRenderTexture(ref src, ref dst);
           m_RTU.ReleaseTemporaryRenderTexture(temporaryRenderTexture3);
         }
         filmicDepthOfFieldMaterial.SetVector("_BlurParams", blurParams);
         filmicDepthOfFieldMaterial.SetVector("_BlurCoe", vector4);
-        RenderTexture renderTexture = (RenderTexture) null;
+        RenderTexture renderTexture = null;
         if (m_CurrentQualitySettings.dilateNearBlur)
         {
           RenderTexture temporaryRenderTexture4 = m_RTU.GetTemporaryRenderTexture(width, height, format: RenderTextureFormat.RGHalf);
           renderTexture = m_RTU.GetTemporaryRenderTexture(width, height, format: RenderTextureFormat.RGHalf);
           filmicDepthOfFieldMaterial.SetVector("_Offsets", new Vector4(0.0f, a * 0.75f, 0.0f, 0.0f));
-          Graphics.Blit((Texture) src, temporaryRenderTexture4, filmicDepthOfFieldMaterial, 2);
+          Graphics.Blit(src, temporaryRenderTexture4, filmicDepthOfFieldMaterial, 2);
           filmicDepthOfFieldMaterial.SetVector("_Offsets", new Vector4(a * 0.75f, 0.0f, 0.0f, 0.0f));
-          Graphics.Blit((Texture) temporaryRenderTexture4, renderTexture, filmicDepthOfFieldMaterial, 3);
+          Graphics.Blit(temporaryRenderTexture4, renderTexture, filmicDepthOfFieldMaterial, 3);
           m_RTU.ReleaseTemporaryRenderTexture(temporaryRenderTexture4);
           renderTexture.filterMode = FilterMode.Point;
         }
         if (m_CurrentQualitySettings.prefilterBlur)
         {
-          Graphics.Blit((Texture) src, dst, filmicDepthOfFieldMaterial, 6);
+          Graphics.Blit(src, dst, filmicDepthOfFieldMaterial, 6);
           SwapRenderTexture(ref src, ref dst);
         }
         switch (settings.apertureShape)
@@ -264,36 +266,36 @@ namespace UnityStandardAssets.CinematicEffects
         {
           case FilterQuality.Normal:
             medianFilterMaterial.SetVector("_Offsets", new Vector4(1f, 0.0f, 0.0f, 0.0f));
-            Graphics.Blit((Texture) src, dst, medianFilterMaterial, 0);
+            Graphics.Blit(src, dst, medianFilterMaterial, 0);
             SwapRenderTexture(ref src, ref dst);
             medianFilterMaterial.SetVector("_Offsets", new Vector4(0.0f, 1f, 0.0f, 0.0f));
-            Graphics.Blit((Texture) src, dst, medianFilterMaterial, 0);
+            Graphics.Blit(src, dst, medianFilterMaterial, 0);
             SwapRenderTexture(ref src, ref dst);
             break;
           case FilterQuality.High:
-            Graphics.Blit((Texture) src, dst, medianFilterMaterial, 1);
+            Graphics.Blit(src, dst, medianFilterMaterial, 1);
             SwapRenderTexture(ref src, ref dst);
             break;
         }
         filmicDepthOfFieldMaterial.SetVector("_BlurCoe", vector4);
-        filmicDepthOfFieldMaterial.SetVector("_Convolved_TexelSize", new Vector4((float) src.width, (float) src.height, 1f / (float) src.width, 1f / (float) src.height));
-        filmicDepthOfFieldMaterial.SetTexture("_SecondTex", (Texture) src);
+        filmicDepthOfFieldMaterial.SetVector("_Convolved_TexelSize", new Vector4(src.width, src.height, 1f / src.width, 1f / src.height));
+        filmicDepthOfFieldMaterial.SetTexture("_SecondTex", src);
         int pass = 11;
         if (shouldPerformBokeh)
         {
           RenderTexture temporaryRenderTexture5 = m_RTU.GetTemporaryRenderTexture(source.height, source.width, format: source.format);
-          Graphics.Blit((Texture) source, temporaryRenderTexture5, filmicDepthOfFieldMaterial, pass);
+          Graphics.Blit(source, temporaryRenderTexture5, filmicDepthOfFieldMaterial, pass);
           Graphics.SetRenderTarget(temporaryRenderTexture5);
           ComputeBuffer.CopyCount(computeBufferPoints, computeBufferDrawArgs, 0);
           textureBokehMaterial.SetBuffer("pointBuffer", computeBufferPoints);
-          textureBokehMaterial.SetTexture("_MainTex", (Texture) bokehTexture.texture);
-          textureBokehMaterial.SetVector("_Screen", (Vector4) new Vector3((float) (1.0 / (1.0 * (double) source.width)), (float) (1.0 / (1.0 * (double) source.height)), num3));
+          textureBokehMaterial.SetTexture("_MainTex", bokehTexture.texture);
+          textureBokehMaterial.SetVector("_Screen", new Vector3((float) (1.0 / (1.0 * source.width)), (float) (1.0 / (1.0 * source.height)), num3));
           textureBokehMaterial.SetPass(0);
           Graphics.DrawProceduralIndirect(MeshTopology.Points, computeBufferDrawArgs, 0);
-          Graphics.Blit((Texture) temporaryRenderTexture5, destination);
+          Graphics.Blit(temporaryRenderTexture5, destination);
         }
         else
-          Graphics.Blit((Texture) source, destination, filmicDepthOfFieldMaterial, pass);
+          Graphics.Blit(source, destination, filmicDepthOfFieldMaterial, pass);
       }
     }
 
@@ -307,15 +309,15 @@ namespace UnityStandardAssets.CinematicEffects
       int blurPass;
       int blurAndMergePass;
       GetDirectionalBlurPassesFromRadius(blurredFgCoc, maxRadius, out blurPass, out blurAndMergePass);
-      filmicDepthOfFieldMaterial.SetTexture("_SecondTex", (Texture) blurredFgCoc);
+      filmicDepthOfFieldMaterial.SetTexture("_SecondTex", blurredFgCoc);
       RenderTexture temporaryRenderTexture = m_RTU.GetTemporaryRenderTexture(src.width, src.height, format: src.format);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_HexagonalBokehDirection1);
-      Graphics.Blit((Texture) src, temporaryRenderTexture, filmicDepthOfFieldMaterial, blurPass);
+      Graphics.Blit(src, temporaryRenderTexture, filmicDepthOfFieldMaterial, blurPass);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_HexagonalBokehDirection2);
-      Graphics.Blit((Texture) temporaryRenderTexture, src, filmicDepthOfFieldMaterial, blurPass);
+      Graphics.Blit(temporaryRenderTexture, src, filmicDepthOfFieldMaterial, blurPass);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_HexagonalBokehDirection3);
-      filmicDepthOfFieldMaterial.SetTexture("_ThirdTex", (Texture) src);
-      Graphics.Blit((Texture) temporaryRenderTexture, dst, filmicDepthOfFieldMaterial, blurAndMergePass);
+      filmicDepthOfFieldMaterial.SetTexture("_ThirdTex", src);
+      Graphics.Blit(temporaryRenderTexture, dst, filmicDepthOfFieldMaterial, blurAndMergePass);
       m_RTU.ReleaseTemporaryRenderTexture(temporaryRenderTexture);
       SwapRenderTexture(ref src, ref dst);
     }
@@ -330,17 +332,17 @@ namespace UnityStandardAssets.CinematicEffects
       int blurPass;
       int blurAndMergePass;
       GetDirectionalBlurPassesFromRadius(blurredFgCoc, maxRadius, out blurPass, out blurAndMergePass);
-      filmicDepthOfFieldMaterial.SetTexture("_SecondTex", (Texture) blurredFgCoc);
+      filmicDepthOfFieldMaterial.SetTexture("_SecondTex", blurredFgCoc);
       RenderTexture temporaryRenderTexture = m_RTU.GetTemporaryRenderTexture(src.width, src.height, format: src.format);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_OctogonalBokehDirection1);
-      Graphics.Blit((Texture) src, temporaryRenderTexture, filmicDepthOfFieldMaterial, blurPass);
+      Graphics.Blit(src, temporaryRenderTexture, filmicDepthOfFieldMaterial, blurPass);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_OctogonalBokehDirection2);
-      Graphics.Blit((Texture) temporaryRenderTexture, dst, filmicDepthOfFieldMaterial, blurPass);
+      Graphics.Blit(temporaryRenderTexture, dst, filmicDepthOfFieldMaterial, blurPass);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_OctogonalBokehDirection3);
-      Graphics.Blit((Texture) src, temporaryRenderTexture, filmicDepthOfFieldMaterial, blurPass);
+      Graphics.Blit(src, temporaryRenderTexture, filmicDepthOfFieldMaterial, blurPass);
       filmicDepthOfFieldMaterial.SetVector("_Offsets", m_OctogonalBokehDirection4);
-      filmicDepthOfFieldMaterial.SetTexture("_ThirdTex", (Texture) dst);
-      Graphics.Blit((Texture) temporaryRenderTexture, src, filmicDepthOfFieldMaterial, blurAndMergePass);
+      filmicDepthOfFieldMaterial.SetTexture("_ThirdTex", dst);
+      Graphics.Blit(temporaryRenderTexture, src, filmicDepthOfFieldMaterial, blurAndMergePass);
       m_RTU.ReleaseTemporaryRenderTexture(temporaryRenderTexture);
     }
 
@@ -351,27 +353,27 @@ namespace UnityStandardAssets.CinematicEffects
       float maxRadius)
     {
       int pass;
-      if ((UnityEngine.Object) blurredFgCoc != (UnityEngine.Object) null)
+      if (blurredFgCoc != null)
       {
-        filmicDepthOfFieldMaterial.SetTexture("_SecondTex", (Texture) blurredFgCoc);
+        filmicDepthOfFieldMaterial.SetTexture("_SecondTex", blurredFgCoc);
         pass = maxRadius > 10.0 ? 8 : 10;
       }
       else
         pass = maxRadius > 10.0 ? 7 : 9;
-      Graphics.Blit((Texture) src, dst, filmicDepthOfFieldMaterial, pass);
+      Graphics.Blit(src, dst, filmicDepthOfFieldMaterial, pass);
       SwapRenderTexture(ref src, ref dst);
     }
 
     private void ComputeCocParameters(out Vector4 blurParams, out Vector4 blurCoe)
     {
-      Camera component = this.GetComponent<Camera>();
+      Camera component = GetComponent<Camera>();
       float num1 = focus.nearFalloff * 2f;
       float num2 = focus.farFalloff * 2f;
       float num3 = focus.nearPlane;
       float num4 = focus.farPlane;
       if (settings.tweakMode == TweakMode.Range)
       {
-        float num5 = !((UnityEngine.Object) focus.transform != (UnityEngine.Object) null) ? focus.focusPlane : component.WorldToViewportPoint(focus.transform.position).z;
+        float num5 = !(focus.transform != null) ? focus.focusPlane : component.WorldToViewportPoint(focus.transform.position).z;
         float num6 = focus.range * 0.5f;
         num3 = num5 - num6;
         num4 = num5 + num6;
@@ -413,8 +415,8 @@ namespace UnityStandardAssets.CinematicEffects
         m_ComputeBufferDrawArgs.Release();
       if (m_ComputeBufferPoints != null)
         m_ComputeBufferPoints.Release();
-      m_ComputeBufferDrawArgs = (ComputeBuffer) null;
-      m_ComputeBufferPoints = (ComputeBuffer) null;
+      m_ComputeBufferDrawArgs = null;
+      m_ComputeBufferPoints = null;
     }
 
     private void ComputeBlurDirections(bool force)
@@ -447,15 +449,15 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        return ImageEffectHelper.supportsDX11 && (UnityEngine.Object) bokehTexture.texture != (UnityEngine.Object) null && (bool) (UnityEngine.Object) textureBokehMaterial;
+        return ImageEffectHelper.supportsDX11 && bokehTexture.texture != null && (bool) (Object) textureBokehMaterial;
       }
     }
 
     private static void Rotate2D(ref Vector4 direction, float cosinus, float sinus)
     {
       Vector4 vector4 = direction;
-      direction.x = (float) ((double) vector4.x * cosinus - (double) vector4.y * sinus);
-      direction.y = (float) ((double) vector4.x * sinus + (double) vector4.y * cosinus);
+      direction.x = (float) (vector4.x * (double) cosinus - vector4.y * (double) sinus);
+      direction.y = (float) (vector4.x * (double) sinus + vector4.y * (double) cosinus);
     }
 
     private static void SwapRenderTexture(ref RenderTexture src, ref RenderTexture dst)
@@ -471,7 +473,7 @@ namespace UnityStandardAssets.CinematicEffects
       out int blurPass,
       out int blurAndMergePass)
     {
-      if ((UnityEngine.Object) blurredFgCoc == (UnityEngine.Object) null)
+      if (blurredFgCoc == null)
       {
         if (maxRadius > 10.0)
         {
@@ -667,7 +669,7 @@ namespace UnityStandardAssets.CinematicEffects
         get
         {
           return new FocusSettings {
-            transform = (Transform) null,
+            transform = null,
             focusPlane = 20f,
             range = 35f,
             nearPlane = 2.5f,
@@ -704,7 +706,7 @@ namespace UnityStandardAssets.CinematicEffects
         get
         {
           return new BokehTextureSettings {
-            texture = (Texture2D) null,
+            texture = null,
             scale = 1f,
             intensity = 50f,
             threshold = 2f,

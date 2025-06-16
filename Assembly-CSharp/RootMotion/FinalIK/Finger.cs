@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -46,7 +47,7 @@ namespace RootMotion.FinalIK
 
     public bool IsValid(ref string errorMessage)
     {
-      if (!((UnityEngine.Object) bone1 == (UnityEngine.Object) null) && !((UnityEngine.Object) bone2 == (UnityEngine.Object) null) && !((UnityEngine.Object) tip == (UnityEngine.Object) null))
+      if (!(bone1 == null) && !(bone2 == null) && !(tip == null))
         return true;
       errorMessage = "One of the bones in the Finger Rig is null, can not initiate solvers.";
       return false;
@@ -71,7 +72,7 @@ namespace RootMotion.FinalIK
         tipAxis = Quaternion.Inverse(tip.rotation) * vector3;
         IKPosition = tip.position;
         IKRotation = tip.rotation;
-        if ((UnityEngine.Object) bone3 != (UnityEngine.Object) null)
+        if (bone3 != null)
         {
           bone3RelativeToTarget = Quaternion.Inverse(IKRotation) * bone3.rotation;
           bone3DefaultLocalPosition = bone3.localPosition;
@@ -88,7 +89,7 @@ namespace RootMotion.FinalIK
       if (!initiated)
         return;
       solver.FixTransforms();
-      if (!((UnityEngine.Object) bone3 != (UnityEngine.Object) null))
+      if (!(bone3 != null))
         return;
       bone3.localPosition = bone3DefaultLocalPosition;
       bone3.localRotation = bone3DefaultLocalRotation;
@@ -102,14 +103,14 @@ namespace RootMotion.FinalIK
       if (num <= 0.0)
         return;
       solver.target = target;
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
       {
         IKPosition = target.position;
         IKRotation = target.rotation;
       }
       if (rotationDOF == DOF.One)
         IKRotation = Quaternion.FromToRotation(IKRotation * tipAxis, bone1.rotation * bone1Axis) * IKRotation;
-      if ((UnityEngine.Object) bone3 != (UnityEngine.Object) null)
+      if (bone3 != null)
         bone3.rotation = num * (double) rotationWeight < 1.0 ? Quaternion.Lerp(bone3.rotation, IKRotation * bone3RelativeToTarget, num * rotationWeight) : IKRotation * bone3RelativeToTarget;
       solver.IKPositionWeight = num;
       solver.IKRotationWeight = rotationWeight;

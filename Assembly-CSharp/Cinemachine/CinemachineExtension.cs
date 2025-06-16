@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -13,8 +14,8 @@ namespace Cinemachine
     {
       get
       {
-        if ((Object) m_vcamOwner == (Object) null)
-          m_vcamOwner = this.GetComponent<CinemachineVirtualCameraBase>();
+        if (m_vcamOwner == null)
+          m_vcamOwner = GetComponent<CinemachineVirtualCameraBase>();
         return m_vcamOwner;
       }
     }
@@ -23,15 +24,15 @@ namespace Cinemachine
 
     protected virtual void OnDestroy()
     {
-      if (!((Object) VirtualCamera != (Object) null))
+      if (!(VirtualCamera != null))
         return;
       VirtualCamera.RemovePostPipelineStageHook(PostPipelineStageCallback);
     }
 
     private void ConnectToVcam()
     {
-      if ((Object) VirtualCamera == (Object) null)
-        Debug.LogError((object) "CinemachineExtension requires a Cinemachine Virtual Camera component");
+      if (VirtualCamera == null)
+        Debug.LogError("CinemachineExtension requires a Cinemachine Virtual Camera component");
       else
         VirtualCamera.AddPostPipelineStageHook(PostPipelineStageCallback);
       mExtraState = null;

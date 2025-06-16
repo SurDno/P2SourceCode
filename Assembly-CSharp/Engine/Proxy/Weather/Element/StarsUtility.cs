@@ -9,7 +9,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyTo(Stars stars)
     {
       TOD_Sky tod = ServiceLocator.GetService<EnvironmentService>().Tod;
-      if ((Object) tod == (Object) null)
+      if (tod == null)
         return;
       stars.Size = tod.Stars.Size;
       stars.Brightness = tod.Stars.Brightness;
@@ -18,7 +18,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyFrom(Stars stars)
     {
       TOD_Sky tod = ServiceLocator.GetService<EnvironmentService>().Tod;
-      if ((Object) tod == (Object) null)
+      if (tod == null)
         return;
       tod.Stars.Size = stars.Size;
       tod.Stars.Brightness = stars.Brightness;

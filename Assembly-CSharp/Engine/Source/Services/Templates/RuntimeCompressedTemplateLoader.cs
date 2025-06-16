@@ -13,6 +13,7 @@ using Engine.Common.Services;
 using Engine.Common.Threads;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
+using Debug = UnityEngine.Debug;
 
 namespace Engine.Source.Services.Templates
 {
@@ -65,7 +66,7 @@ namespace Engine.Source.Services.Templates
       }
       WaitThreads(state);
       sw.Stop();
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (RuntimeCompressedTemplateLoader)).Append(" : ").Append(nameof (Load)).Append(" , elapsed : ").Append(sw.Elapsed).Append(" , created : ").Append(created));
+      Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (RuntimeCompressedTemplateLoader)).Append(" : ").Append(nameof (Load)).Append(" , elapsed : ").Append(sw.Elapsed).Append(" , created : ").Append(created));
       yield break;
     }
 
@@ -104,12 +105,12 @@ namespace Engine.Source.Services.Templates
               AddTemplateImpl(template, state.Context);
             }
             else
-              UnityEngine.Debug.LogError((object) ("Error load template from : " + fileName));
+              Debug.LogError("Error load template from : " + fileName);
           }
         }
       }
       stopwatch.Stop();
-      UnityEngine.Debug.Log((object) new StringBuilder().Append(nameof (RuntimeCompressedTemplateLoader)).Append(" : ").Append(nameof (LoadTemplateFile)).Append(" , file name : ").Append(fileName).Append(" , elapsed : ").Append(stopwatch.Elapsed).Append(" , thread : ").Append(Thread.CurrentThread.ManagedThreadId));
+      Debug.Log(new StringBuilder().Append(nameof (RuntimeCompressedTemplateLoader)).Append(" : ").Append(nameof (LoadTemplateFile)).Append(" , file name : ").Append(fileName).Append(" , elapsed : ").Append(stopwatch.Elapsed).Append(" , thread : ").Append(Thread.CurrentThread.ManagedThreadId));
     }
 
     private static void AddTemplateImpl(IObject template, Dictionary<Guid, IObject> items)

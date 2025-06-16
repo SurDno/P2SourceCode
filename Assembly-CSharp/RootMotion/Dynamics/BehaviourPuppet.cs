@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -128,12 +129,12 @@ namespace RootMotion.Dynamics
       state = puppetMaster.state == PuppetMaster.State.Alive ? State.Puppet : State.Unpinned;
       foreach (Muscle muscle in puppetMaster.muscles)
         SetColliders(muscle, state == State.Unpinned);
-      this.enabled = true;
+      enabled = true;
     }
 
     public void Reset(Vector3 position, Quaternion rotation)
     {
-      Debug.LogWarning((object) "BehaviourPuppet.Reset has been deprecated, please use PuppetMaster.Teleport instead.");
+      Debug.LogWarning("BehaviourPuppet.Reset has been deprecated, please use PuppetMaster.Teleport instead.");
     }
 
     public override void OnTeleport(
@@ -153,15 +154,15 @@ namespace RootMotion.Dynamics
     {
       foreach (CollisionResistanceMultiplier resistanceMultiplier in collisionResistanceMultipliers)
       {
-        if ((int) resistanceMultiplier.layers == 0)
-          Debug.LogWarning((object) "BehaviourPuppet has a Collision Resistance Multiplier that's layers is set to Nothing. Please add some layers.", (UnityEngine.Object) this.transform);
+        if (resistanceMultiplier.layers == 0)
+          Debug.LogWarning("BehaviourPuppet has a Collision Resistance Multiplier that's layers is set to Nothing. Please add some layers.", transform);
       }
       foreach (Muscle muscle in puppetMaster.muscles)
       {
         if (muscle.joint.gameObject.layer == puppetMaster.targetRoot.gameObject.layer)
-          Debug.LogWarning((object) "One of the ragdoll bones is on the same layer as the animated character. This might make the ragdoll collide with the character controller.");
+          Debug.LogWarning("One of the ragdoll bones is on the same layer as the animated character. This might make the ragdoll collide with the character controller.");
         if (!Physics.GetIgnoreLayerCollision(muscle.joint.gameObject.layer, puppetMaster.targetRoot.gameObject.layer))
-          Debug.LogWarning((object) ("The ragdoll layer (" + (object) muscle.joint.gameObject.layer + ") and the character controller layer (" + (object) puppetMaster.targetRoot.gameObject.layer + ") are not set to ignore each other in Edit/Project Settings/Physics/Layer Collision Matrix. This might cause the ragdoll bones to collide with the character controller."));
+          Debug.LogWarning("The ragdoll layer (" + muscle.joint.gameObject.layer + ") and the character controller layer (" + puppetMaster.targetRoot.gameObject.layer + ") are not set to ignore each other in Edit/Project Settings/Physics/Layer Collision Matrix. This might cause the ragdoll bones to collide with the character controller.");
       }
       hipsForward = Quaternion.Inverse(puppetMaster.muscles[0].transform.rotation) * puppetMaster.targetRoot.forward;
       hipsUp = Quaternion.Inverse(puppetMaster.muscles[0].transform.rotation) * puppetMaster.targetRoot.up;
@@ -249,7 +250,7 @@ namespace RootMotion.Dynamics
         if (state == State.Unpinned)
         {
           unpinnedTimer += Time.deltaTime;
-          if (unpinnedTimer >= (double) getUpDelay && canGetUp && !getupDisabled && (double) puppetMaster.muscles[0].rigidbody.velocity.magnitude < maxGetUpVelocity)
+          if (unpinnedTimer >= (double) getUpDelay && canGetUp && !getupDisabled && puppetMaster.muscles[0].rigidbody.velocity.magnitude < (double) maxGetUpVelocity)
           {
             SetState(State.GetUp);
             return;
@@ -359,7 +360,7 @@ namespace RootMotion.Dynamics
 
     protected override void OnReadBehaviour()
     {
-      if (!this.enabled)
+      if (!enabled)
         return;
       if (!puppetMaster.isFrozen && state == State.Unpinned && puppetMaster.isActive)
       {
@@ -536,7 +537,7 @@ namespace RootMotion.Dynamics
 
     public void Unpin()
     {
-      Debug.Log((object) "BehaviourPuppet.Unpin() has been deprecated. Use SetState(BehaviourPuppet.State) instead.");
+      Debug.Log("BehaviourPuppet.Unpin() has been deprecated. Use SetState(BehaviourPuppet.State) instead.");
       SetState(State.Unpinned);
     }
 
@@ -551,21 +552,21 @@ namespace RootMotion.Dynamics
 
     protected override void OnMuscleCollisionBehaviour(MuscleCollision m)
     {
-      if (!this.enabled || state == State.Unpinned || collisions > maxCollisions || !LayerMaskExtensions.Contains(collisionLayers, m.collision.gameObject.layer) || masterProps.normalMode == NormalMode.Kinematic && !puppetMaster.isActive && !masterProps.activateOnStaticCollisions && m.collision.gameObject.isStatic)
+      if (!enabled || state == State.Unpinned || collisions > maxCollisions || !LayerMaskExtensions.Contains(collisionLayers, m.collision.gameObject.layer) || masterProps.normalMode == NormalMode.Kinematic && !puppetMaster.isActive && !masterProps.activateOnStaticCollisions && m.collision.gameObject.isStatic)
         return;
       float collisionThreshold = this.collisionThreshold;
       float impulse = GetImpulse(m, ref collisionThreshold);
       if (OnCollisionImpulse != null)
         OnCollisionImpulse(m, impulse);
-      float num1 = (UnityEngine.Object) Singleton<PuppetMasterSettings>.instance != (UnityEngine.Object) null ? (float) (1.0 + Singleton<PuppetMasterSettings>.instance.currentlyActivePuppets * (double) Singleton<PuppetMasterSettings>.instance.activePuppetCollisionThresholdMlp) : 1f;
+      float num1 = Singleton<PuppetMasterSettings>.instance != null ? (float) (1.0 + Singleton<PuppetMasterSettings>.instance.currentlyActivePuppets * (double) Singleton<PuppetMasterSettings>.instance.activePuppetCollisionThresholdMlp) : 1f;
       float num2 = collisionThreshold * num1;
       if (impulse <= (double) num2)
         return;
       ++collisions;
-      if ((UnityEngine.Object) m.collision.collider.attachedRigidbody != (UnityEngine.Object) null)
+      if (m.collision.collider.attachedRigidbody != null)
       {
         broadcaster = m.collision.collider.attachedRigidbody.GetComponent<MuscleCollisionBroadcaster>();
-        if ((UnityEngine.Object) broadcaster != (UnityEngine.Object) null && broadcaster.muscleIndex < broadcaster.puppetMaster.muscles.Length)
+        if (broadcaster != null && broadcaster.muscleIndex < broadcaster.puppetMaster.muscles.Length)
           impulse *= broadcaster.puppetMaster.muscles[broadcaster.muscleIndex].state.impulseMlp;
       }
       if (Activate(m.collision, impulse))
@@ -623,7 +624,7 @@ namespace RootMotion.Dynamics
 
     public bool IsProne()
     {
-      return (double) Vector3.Dot(puppetMaster.muscles[0].transform.rotation * hipsForward, puppetMaster.targetRoot.up) < 0.0;
+      return Vector3.Dot(puppetMaster.muscles[0].transform.rotation * hipsForward, puppetMaster.targetRoot.up) < 0.0;
     }
 
     private float GetFalloff(int i, int muscleIndex, float falloffParents, float falloffChildren)
@@ -632,7 +633,7 @@ namespace RootMotion.Dynamics
         return 1f;
       bool childFlag = puppetMaster.muscles[muscleIndex].childFlags[i];
       int kinshipDegree = puppetMaster.muscles[muscleIndex].kinshipDegrees[i];
-      return Mathf.Pow(childFlag ? falloffChildren : falloffParents, (float) kinshipDegree);
+      return Mathf.Pow(childFlag ? falloffChildren : falloffParents, kinshipDegree);
     }
 
     private float GetFalloff(
@@ -807,7 +808,7 @@ namespace RootMotion.Dynamics
       {
         foreach (Collider collider in m.colliders)
         {
-          collider.material = (UnityEngine.Object) props.unpinnedMaterial != (UnityEngine.Object) null ? props.unpinnedMaterial : defaults.unpinnedMaterial;
+          collider.material = props.unpinnedMaterial != null ? props.unpinnedMaterial : defaults.unpinnedMaterial;
           if (props.disableColliders)
             collider.enabled = true;
         }
@@ -816,7 +817,7 @@ namespace RootMotion.Dynamics
       {
         foreach (Collider collider in m.colliders)
         {
-          collider.material = (UnityEngine.Object) props.puppetMaterial != (UnityEngine.Object) null ? props.puppetMaterial : defaults.puppetMaterial;
+          collider.material = props.puppetMaterial != null ? props.puppetMaterial : defaults.puppetMaterial;
           if (props.disableColliders)
             collider.enabled = false;
         }

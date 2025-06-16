@@ -22,7 +22,7 @@ namespace Engine.Source.UI.Menu.Main
 
     protected override void RegisterLayer()
     {
-      RegisterLayer((IGameLoadGameWindow) this);
+      RegisterLayer<IGameLoadGameWindow>(this);
     }
 
     public override Type GetWindowType() => typeof (IGameLoadGameWindow);

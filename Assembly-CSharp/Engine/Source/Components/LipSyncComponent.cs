@@ -11,6 +11,8 @@ using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Components
 {
@@ -26,7 +28,7 @@ namespace Engine.Source.Components
     [Inspected]
     public bool IsPlaying
     {
-      get => audioState != null && (UnityEngine.Object) audioState.AudioSource != (UnityEngine.Object) null;
+      get => audioState != null && audioState.AudioSource != null;
     }
 
     public bool IsIndoor
@@ -42,13 +44,13 @@ namespace Engine.Source.Components
     {
       Stop();
       AudioMixerGroup mixer = IsIndoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcSpeechIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcSpeechOutdoorMixer;
-      if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (mixer == null)
         return;
       LipSyncInfo lipSyncInfo = LipSyncUtility.GetLipSyncInfo(lipSync);
       if (lipSyncInfo == null)
         return;
       AudioClip clip = lipSyncInfo.Clip.Value;
-      if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
+      if (clip == null)
         return;
       audioState = SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, usePause, Owner.GetInfo(), (Action) (() =>
       {
@@ -73,17 +75,17 @@ namespace Engine.Source.Components
       bool usePause)
     {
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
       {
-        Debug.LogWarning((object) (Owner.Name + ": gameobject not found"));
+        Debug.LogWarning(Owner.Name + ": gameobject not found");
       }
       else
       {
         Transform transform = gameObject.transform;
         Pivot component = gameObject.GetComponent<Pivot>();
-        if ((UnityEngine.Object) component == (UnityEngine.Object) null)
-          Debug.LogWarning((object) (Owner.Name + ": Pivot not found"));
-        if ((UnityEngine.Object) component?.Head != (UnityEngine.Object) null)
+        if (component == null)
+          Debug.LogWarning(Owner.Name + ": Pivot not found");
+        if (component?.Head != null)
           transform = component?.Head?.transform;
         Play(lipSync, transform, minDistance, maxDistance, usePause);
       }
@@ -92,17 +94,17 @@ namespace Engine.Source.Components
     public void Play3D(ILipSyncObject lipSync, GameObject customSource, bool usePause)
     {
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
       {
-        Debug.LogWarning((object) (Owner.Name + ": gameobject not found"));
+        Debug.LogWarning(Owner.Name + ": gameobject not found");
       }
       else
       {
         Transform transform = gameObject.transform;
         Pivot component = gameObject?.GetComponent<Pivot>();
-        if ((UnityEngine.Object) component == (UnityEngine.Object) null)
-          Debug.LogWarning((object) (Owner.Name + ": Pivot not found"));
-        if ((UnityEngine.Object) component?.Head != (UnityEngine.Object) null)
+        if (component == null)
+          Debug.LogWarning(Owner.Name + ": Pivot not found");
+        if (component?.Head != null)
           transform = component?.Head?.transform;
         Play(lipSync, transform, customSource, usePause);
       }
@@ -122,13 +124,13 @@ namespace Engine.Source.Components
     {
       Stop();
       AudioMixerGroup mixer = IsIndoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcSpeechIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcSpeechOutdoorMixer;
-      if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (mixer == null)
         return;
       LipSyncInfo lipSyncInfo = LipSyncUtility.GetLipSyncInfo(lipSync, lastIndex, out lastIndex);
       if (lipSyncInfo == null)
         return;
       AudioClip clip = lipSyncInfo.Clip.Value;
-      if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
+      if (clip == null)
         return;
       audioState = SoundUtility.PlayAudioClip3D(transform, clip, mixer, 1f, minDistance, maxDistance, false, 0.0f, usePause, Owner.GetInfo(), (Action) (() =>
       {
@@ -149,13 +151,13 @@ namespace Engine.Source.Components
     {
       Stop();
       AudioMixerGroup mixer = IsIndoor ? ScriptableObjectInstance<GameSettingsData>.Instance.NpcSpeechIndoorMixer : ScriptableObjectInstance<GameSettingsData>.Instance.NpcSpeechOutdoorMixer;
-      if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (mixer == null)
         return;
       LipSyncInfo lipSyncInfo = LipSyncUtility.GetLipSyncInfo(lipSync, lastIndex, out lastIndex);
       if (lipSyncInfo == null)
         return;
       AudioClip clip = lipSyncInfo.Clip.Value;
-      if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
+      if (clip == null)
         return;
       audioState = SoundUtility.PlayAudioClip3D(transform, clip, mixer, 1f, false, 0.0f, customSource, usePause, Owner.GetInfo(), (Action) (() =>
       {
@@ -173,13 +175,13 @@ namespace Engine.Source.Components
       if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableLipSync)
         return;
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       byte[] data = lipsync.Data;
       if (data == null)
         return;
       Lipsync component = gameObject.GetComponent<Lipsync>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return;
       component.Play(audioState, data);
     }
@@ -207,7 +209,7 @@ namespace Engine.Source.Components
 
     private void OnGameObjectChangedEvent()
     {
-      if (!((UnityEngine.Object) ((IEntityView) Owner).GameObject == (UnityEngine.Object) null))
+      if (!(((IEntityView) Owner).GameObject == null))
         return;
       Stop();
     }
@@ -217,7 +219,7 @@ namespace Engine.Source.Components
       if (audioState != null)
       {
         audioState.Complete = true;
-        if ((UnityEngine.Object) audioState.AudioSource != (UnityEngine.Object) null)
+        if (audioState.AudioSource != null)
           audioState.AudioSource.Stop();
         audioState = null;
       }
@@ -226,15 +228,15 @@ namespace Engine.Source.Components
 
     private void AddSubtitles(string tag, AudioState state)
     {
-      if ((double) (EngineApplication.PlayerPosition with
-      {
-        y = 0.0f
-      } - ((IEntityView) Owner).Position with
-      {
-        y = 0.0f
-      }).magnitude > ExternalSettingsInstance<ExternalCommonSettings>.Instance.EntitySubtitlesDistanceMax)
+      if ((EngineApplication.PlayerPosition with
+          {
+            y = 0.0f
+          } - ((IEntityView) Owner).Position with
+          {
+            y = 0.0f
+          }).magnitude > (double) ExternalSettingsInstance<ExternalCommonSettings>.Instance.EntitySubtitlesDistanceMax)
         return;
-      ServiceLocator.GetService<SubtitlesService>().AddSubtitles(Owner, tag, state, (UnityEngine.Object) ((IEntityView) Owner).GameObject);
+      ServiceLocator.GetService<SubtitlesService>().AddSubtitles(Owner, tag, state, ((IEntityView) Owner).GameObject);
     }
   }
 }

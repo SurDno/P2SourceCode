@@ -1,13 +1,14 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.UI;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
   public class OpenWindowEventView<T> : EventView where T : class, IWindow
   {
     [SerializeField]
-    private bool swap = false;
+    private bool swap;
 
     public override void Invoke()
     {

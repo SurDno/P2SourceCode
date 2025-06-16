@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Color Adjustments/Color Correction (Ramp)")]
@@ -9,7 +11,7 @@
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
       material.SetTexture("_RampTex", textureRamp);
-      Graphics.Blit((Texture) source, destination, material);
+      Graphics.Blit(source, destination, material);
     }
   }
 }

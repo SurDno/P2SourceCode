@@ -1,6 +1,7 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Source.Commons;
+using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {
@@ -19,11 +20,11 @@ namespace Engine.Source.Services.CameraServices
       if (target == null)
         return;
       IEntityView entityView = (IEntityView) target;
-      if ((Object) entityView.GameObject == (Object) null)
+      if (entityView.GameObject == null)
         return;
       Transform transform = entityView.GameObject.transform;
       Pivot component = entityView.GameObject.GetComponent<Pivot>();
-      if ((Object) component != (Object) null)
+      if (component != null)
         transform = component.AnchorCameraFPS.transform;
       GameCamera.Instance.CameraTransform.position = transform.position;
       GameCamera.Instance.CameraTransform.rotation = transform.rotation;

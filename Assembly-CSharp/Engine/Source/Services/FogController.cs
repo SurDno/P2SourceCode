@@ -1,7 +1,9 @@
 ﻿using System;
 using Engine.Common;
 using Engine.Impl.Weather.Element;
+using UnityEngine;
 using UnityStandardAssets.ImageEffects;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Services
 {
@@ -12,7 +14,7 @@ namespace Engine.Source.Services
 
     public event Action<float> DensityChangedEvent;
 
-    public void Initialise() => engineFog = UnityEngine.Object.FindObjectOfType<GlobalFog>();
+    public void Initialise() => engineFog = Object.FindObjectOfType<GlobalFog>();
 
     public void Terminate()
     {
@@ -20,7 +22,7 @@ namespace Engine.Source.Services
 
     public void CopyTo(Fog fog)
     {
-      if ((UnityEngine.Object) engineFog == (UnityEngine.Object) null)
+      if (engineFog == null)
         return;
       fog.Density = RenderSettings.fogDensity;
       fog.StartDistance = engineFog.startDistance;
@@ -29,9 +31,9 @@ namespace Engine.Source.Services
 
     public void CopyFrom(Fog fog)
     {
-      if ((UnityEngine.Object) engineFog == (UnityEngine.Object) null)
+      if (engineFog == null)
         return;
-      if ((double) RenderSettings.fogDensity != fog.Density)
+      if (RenderSettings.fogDensity != (double) fog.Density)
       {
         RenderSettings.fogDensity = fog.Density;
         Action<float> densityChangedEvent = DensityChangedEvent;

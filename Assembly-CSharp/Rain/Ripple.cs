@@ -1,4 +1,6 @@
-﻿namespace Rain
+﻿using UnityEngine;
+
+namespace Rain
 {
   public class Ripple
   {
@@ -29,7 +31,7 @@
       _strength -= Time.deltaTime * 0.5f;
       if (_strength <= 0.0)
       {
-        Object.Destroy((Object) material);
+        Object.Destroy(material);
         return true;
       }
       _radius += Time.deltaTime * 0.5f;

@@ -1,4 +1,6 @@
-﻿namespace Engine.Behaviours.Components
+﻿using UnityEngine;
+
+namespace Engine.Behaviours.Components
 {
   [DisallowMultipleComponent]
   public class PivotSoldier : MonoBehaviour

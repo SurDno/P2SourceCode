@@ -1,4 +1,5 @@
 ﻿using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -7,7 +8,7 @@ namespace FlowCanvas.Nodes
   {
     public override T Invoke(T original, Vector3 position, Quaternion rotation, Transform parent)
     {
-      return (Object) original == (Object) null ? default (T) : Object.Instantiate<T>(original, position, rotation, parent);
+      return original == null ? default (T) : Object.Instantiate(original, position, rotation, parent);
     }
   }
 }

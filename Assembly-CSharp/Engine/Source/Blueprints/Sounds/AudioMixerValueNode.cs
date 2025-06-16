@@ -4,6 +4,7 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using Inspectors;
 using ParadoxNotion.Design;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints.Sounds
 {

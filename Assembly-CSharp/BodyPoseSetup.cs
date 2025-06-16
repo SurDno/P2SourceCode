@@ -1,4 +1,5 @@
 ﻿using Inspectors;
+using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (Animation))]
@@ -24,17 +25,17 @@ public class BodyPoseSetup : MonoBehaviour
 
   private void Awake()
   {
-    animation = this.GetComponent<Animation>();
-    if (!((Object) animation == (Object) null))
+    animation = GetComponent<Animation>();
+    if (!(animation == null))
       return;
-    Debug.LogError((object) (typeof (BodyPoseSetup).Name + ":" + this.gameObject.name + " should contain Animation component"));
+    Debug.LogError(typeof (BodyPoseSetup).Name + ":" + gameObject.name + " should contain Animation component");
   }
 
   private void Start() => Sample();
 
   private void Sample()
   {
-    if ((Object) animation == (Object) null || clips.Length < 0 || clips.Length <= currentClip)
+    if (animation == null || clips.Length < 0 || clips.Length <= currentClip)
       return;
     animation.AddClip(clips[currentClip], clips[currentClip].name);
     animation.clip = clips[currentClip];

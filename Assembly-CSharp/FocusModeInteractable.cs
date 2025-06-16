@@ -6,6 +6,7 @@ using Engine.Source.Components;
 using Engine.Source.Components.Interactable;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 public class FocusModeInteractable : MonoBehaviour, IEntityAttachable
@@ -109,18 +110,18 @@ public class FocusModeInteractable : MonoBehaviour, IEntityAttachable
     if (visible == value)
       return;
     visible = value;
-    if ((UnityEngine.Object) effect == (UnityEngine.Object) null)
+    if (effect == null)
     {
-      effect = this.GetComponent<FocusEffect>();
+      effect = GetComponent<FocusEffect>();
       if (visible)
       {
-        if (!((UnityEngine.Object) effect == (UnityEngine.Object) null))
+        if (!(effect == null))
           return;
-        effect = this.gameObject.AddComponent<FocusEffect>();
+        effect = gameObject.AddComponent<FocusEffect>();
       }
       else
       {
-        if (!((UnityEngine.Object) effect != (UnityEngine.Object) null))
+        if (!(effect != null))
           return;
         effect.SetActive(false);
       }

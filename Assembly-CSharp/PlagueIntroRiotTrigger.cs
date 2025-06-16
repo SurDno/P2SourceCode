@@ -2,6 +2,9 @@
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 public class PlagueIntroRiotTrigger : MonoBehaviour
 {
@@ -41,7 +44,7 @@ public class PlagueIntroRiotTrigger : MonoBehaviour
     if (done)
       return;
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null || !((UnityEngine.Object) playerGameObject == (UnityEngine.Object) other.gameObject))
+    if (playerGameObject == null || !(playerGameObject == other.gameObject))
       return;
     director.Play();
     done = true;

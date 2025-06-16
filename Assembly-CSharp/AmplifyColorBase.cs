@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using AmplifyColor;
+using UnityEngine;
+using UnityEngine.Serialization;
+using Object = UnityEngine.Object;
 
 [AddComponentMenu("")]
 public class AmplifyColorBase : MonoBehaviour
@@ -13,45 +16,41 @@ public class AmplifyColorBase : MonoBehaviour
   public float Exposure = 1f;
   public float LinearWhitePoint = 11.2f;
   [FormerlySerializedAs("UseDithering")]
-  public bool ApplyDithering = false;
+  public bool ApplyDithering;
   public Quality QualityLevel = Quality.Standard;
   public float BlendAmount;
-  public Texture LutTexture = (Texture) null;
-  public Texture LutBlendTexture = (Texture) null;
-  public Texture MaskTexture = (Texture) null;
-  public bool UseDepthMask = false;
-  public AnimationCurve DepthMaskCurve = new AnimationCurve(new Keyframe[2]
-  {
-    new Keyframe(0.0f, 1f),
-    new Keyframe(1f, 1f)
-  });
-  public bool UseVolumes = false;
+  public Texture LutTexture;
+  public Texture LutBlendTexture;
+  public Texture MaskTexture;
+  public bool UseDepthMask;
+  public AnimationCurve DepthMaskCurve = new AnimationCurve(new Keyframe(0.0f, 1f), new Keyframe(1f, 1f));
+  public bool UseVolumes;
   public float ExitVolumeBlendTime = 1f;
-  public Transform TriggerVolumeProxy = (Transform) null;
+  public Transform TriggerVolumeProxy;
   public LayerMask VolumeCollisionMask = (LayerMask) -1;
-  private Camera ownerCamera = (Camera) null;
-  private Shader shaderBase = (Shader) null;
-  private Shader shaderBlend = (Shader) null;
-  private Shader shaderBlendCache = (Shader) null;
-  private Shader shaderMask = (Shader) null;
-  private Shader shaderMaskBlend = (Shader) null;
-  private Shader shaderDepthMask = (Shader) null;
-  private Shader shaderDepthMaskBlend = (Shader) null;
-  private Shader shaderProcessOnly = (Shader) null;
-  private RenderTexture blendCacheLut = (RenderTexture) null;
-  private Texture2D defaultLut = (Texture2D) null;
-  private Texture2D depthCurveLut = (Texture2D) null;
-  private Color32[] depthCurveColors = (Color32[]) null;
+  private Camera ownerCamera;
+  private Shader shaderBase;
+  private Shader shaderBlend;
+  private Shader shaderBlendCache;
+  private Shader shaderMask;
+  private Shader shaderMaskBlend;
+  private Shader shaderDepthMask;
+  private Shader shaderDepthMaskBlend;
+  private Shader shaderProcessOnly;
+  private RenderTexture blendCacheLut;
+  private Texture2D defaultLut;
+  private Texture2D depthCurveLut;
+  private Color32[] depthCurveColors;
   private ColorSpace colorSpace = ColorSpace.Uninitialized;
   private Quality qualityLevel = Quality.Standard;
-  private Material materialBase = (Material) null;
-  private Material materialBlend = (Material) null;
-  private Material materialBlendCache = (Material) null;
-  private Material materialMask = (Material) null;
-  private Material materialMaskBlend = (Material) null;
-  private Material materialDepthMask = (Material) null;
-  private Material materialDepthMaskBlend = (Material) null;
-  private Material materialProcessOnly = (Material) null;
+  private Material materialBase;
+  private Material materialBlend;
+  private Material materialBlendCache;
+  private Material materialMask;
+  private Material materialMaskBlend;
+  private Material materialDepthMask;
+  private Material materialDepthMaskBlend;
+  private Material materialProcessOnly;
   private bool blending;
   private float blendingTime;
   private float blendingTimeCountdown;
@@ -60,11 +59,11 @@ public class AmplifyColorBase : MonoBehaviour
   private bool volumesBlending;
   private float volumesBlendingTime;
   private float volumesBlendingTimeCountdown;
-  private Texture volumesLutBlendTexture = (Texture) null;
+  private Texture volumesLutBlendTexture;
   private float volumesBlendAmount;
-  private Texture worldLUT = (Texture) null;
+  private Texture worldLUT;
   private AmplifyColorVolumeBase currentVolumeLut;
-  private RenderTexture midBlendLUT = (RenderTexture) null;
+  private RenderTexture midBlendLUT;
   private bool blendingFromMidBlend;
   private VolumeEffect worldVolumeEffects;
   private VolumeEffect currentVolumeEffects;
@@ -84,7 +83,7 @@ public class AmplifyColorBase : MonoBehaviour
 
   public Texture2D DefaultLut
   {
-    get => (UnityEngine.Object) defaultLut == (UnityEngine.Object) null ? CreateDefaultLut() : defaultLut;
+    get => defaultLut == null ? CreateDefaultLut() : defaultLut;
   }
 
   public bool IsBlending => blending;
@@ -103,7 +102,7 @@ public class AmplifyColorBase : MonoBehaviour
   {
     get
     {
-      return (UnityEngine.Object) LutTexture != (UnityEngine.Object) null && (UnityEngine.Object) LutBlendTexture != (UnityEngine.Object) null && !blending;
+      return LutTexture != null && LutBlendTexture != null && !blending;
     }
   }
 
@@ -111,19 +110,19 @@ public class AmplifyColorBase : MonoBehaviour
 
   private void ReportMissingShaders()
   {
-    Debug.LogError((object) "[AmplifyColor] Failed to initialize shaders. Please attempt to re-enable the Amplify Color Effect component. If that fails, please reinstall Amplify Color.");
-    this.enabled = false;
+    Debug.LogError("[AmplifyColor] Failed to initialize shaders. Please attempt to re-enable the Amplify Color Effect component. If that fails, please reinstall Amplify Color.");
+    enabled = false;
   }
 
   private void ReportNotSupported()
   {
-    Debug.LogError((object) "[AmplifyColor] This image effect is not supported on this platform. Please make sure your Unity 4 license supports Full-Screen Post-Processing Effects which is usually reserved for Pro licenses. If this is the case, please contact support@amplify.pt");
-    this.enabled = false;
+    Debug.LogError("[AmplifyColor] This image effect is not supported on this platform. Please make sure your Unity 4 license supports Full-Screen Post-Processing Effects which is usually reserved for Pro licenses. If this is the case, please contact support@amplify.pt");
+    enabled = false;
   }
 
   private bool CheckShader(Shader s)
   {
-    if ((UnityEngine.Object) s == (UnityEngine.Object) null)
+    if (s == null)
     {
       ReportMissingShaders();
       return false;
@@ -151,7 +150,7 @@ public class AmplifyColorBase : MonoBehaviour
   {
     if (SystemInfo.graphicsDeviceName == "Null Device")
     {
-      Debug.LogWarning((object) "[AmplifyColor] Null graphics device detected. Skipping effect silently.");
+      Debug.LogWarning("[AmplifyColor] Null graphics device detected. Skipping effect silently.");
       silentError = true;
     }
     else
@@ -160,17 +159,17 @@ public class AmplifyColorBase : MonoBehaviour
         return;
       Texture2D lutTexture = LutTexture as Texture2D;
       Texture2D lutBlendTexture = LutBlendTexture as Texture2D;
-      if ((!((UnityEngine.Object) lutTexture != (UnityEngine.Object) null) || lutTexture.mipmapCount <= 1) && (!((UnityEngine.Object) lutBlendTexture != (UnityEngine.Object) null) || lutBlendTexture.mipmapCount <= 1))
+      if ((!(lutTexture != null) || lutTexture.mipmapCount <= 1) && (!(lutBlendTexture != null) || lutBlendTexture.mipmapCount <= 1))
         return;
-      Debug.LogError((object) "[AmplifyColor] Please disable \"Generate Mip Maps\" import settings on all LUT textures to avoid visual glitches. Change Texture Type to \"Advanced\" to access Mip settings.");
+      Debug.LogError("[AmplifyColor] Please disable \"Generate Mip Maps\" import settings on all LUT textures to avoid visual glitches. Change Texture Type to \"Advanced\" to access Mip settings.");
     }
   }
 
   private void OnDisable()
   {
-    if ((UnityEngine.Object) actualTriggerProxy != (UnityEngine.Object) null)
+    if (actualTriggerProxy != null)
     {
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) actualTriggerProxy.gameObject);
+      DestroyImmediate(actualTriggerProxy.gameObject);
       actualTriggerProxy = null;
     }
     ReleaseMaterials();
@@ -198,8 +197,8 @@ public class AmplifyColorBase : MonoBehaviour
 
   private void CheckCamera()
   {
-    if ((UnityEngine.Object) ownerCamera == (UnityEngine.Object) null)
-      ownerCamera = this.GetComponent<Camera>();
+    if (ownerCamera == null)
+      ownerCamera = GetComponent<Camera>();
     if (!UseDepthMask || (ownerCamera.depthTextureMode & DepthTextureMode.Depth) != DepthTextureMode.None)
       return;
     ownerCamera.depthTextureMode |= DepthTextureMode.Depth;
@@ -244,7 +243,7 @@ public class AmplifyColorBase : MonoBehaviour
         LutTexture = LutBlendTexture;
         BlendAmount = 0.0f;
         blending = false;
-        LutBlendTexture = (Texture) null;
+        LutBlendTexture = null;
         Action onFinishBlend = this.onFinishBlend;
         if (onFinishBlend != null)
           onFinishBlend();
@@ -254,18 +253,18 @@ public class AmplifyColorBase : MonoBehaviour
       BlendAmount = Mathf.Clamp01(BlendAmount);
     if (UseVolumes)
     {
-      if ((UnityEngine.Object) actualTriggerProxy == (UnityEngine.Object) null)
+      if (actualTriggerProxy == null)
       {
-        GameObject gameObject = new GameObject(this.name + "+ACVolumeProxy");
+        GameObject gameObject = new GameObject(name + "+ACVolumeProxy");
         gameObject.hideFlags = HideFlags.HideAndDontSave;
-        actualTriggerProxy = (AmplifyColorTriggerProxyBase) gameObject.AddComponent<AmplifyColorTriggerProxy>();
+        actualTriggerProxy = gameObject.AddComponent<AmplifyColorTriggerProxy>();
         actualTriggerProxy.OwnerEffect = this;
       }
       UpdateVolumes();
     }
-    else if ((UnityEngine.Object) actualTriggerProxy != (UnityEngine.Object) null)
+    else if (actualTriggerProxy != null)
     {
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) actualTriggerProxy.gameObject);
+      DestroyImmediate(actualTriggerProxy.gameObject);
       actualTriggerProxy = null;
     }
     if (!flag)
@@ -273,12 +272,12 @@ public class AmplifyColorBase : MonoBehaviour
     LutTexture = volumesLutBlendTexture;
     volumesBlendAmount = 0.0f;
     volumesBlending = false;
-    volumesLutBlendTexture = (Texture) null;
+    volumesLutBlendTexture = null;
     effectVolumesBlendAdjust = 0.0f;
     currentVolumeEffects = blendVolumeEffects;
     currentVolumeEffects.SetValues(this);
     currentExposure = blendExposure;
-    if (blendingFromMidBlend && (UnityEngine.Object) midBlendLUT != (UnityEngine.Object) null)
+    if (blendingFromMidBlend && midBlendLUT != null)
       midBlendLUT.DiscardContents();
     blendingFromMidBlend = false;
   }
@@ -303,8 +302,8 @@ public class AmplifyColorBase : MonoBehaviour
       currentVolumeEffects.BlendValues(this, blendVolumeEffects, effectVolumesBlendAdjusted);
     if (volumesBlending)
       Exposure = Mathf.Lerp(currentExposure, blendExposure, effectVolumesBlendAdjusted);
-    Transform transform = (UnityEngine.Object) TriggerVolumeProxy == (UnityEngine.Object) null ? this.transform : TriggerVolumeProxy;
-    if ((UnityEngine.Object) actualTriggerProxy.transform.parent != (UnityEngine.Object) transform)
+    Transform transform = TriggerVolumeProxy == null ? this.transform : TriggerVolumeProxy;
+    if (actualTriggerProxy.transform.parent != transform)
     {
       actualTriggerProxy.Reference = transform;
       actualTriggerProxy.gameObject.layer = transform.gameObject.layer;
@@ -320,12 +319,12 @@ public class AmplifyColorBase : MonoBehaviour
         num = enteredVolume.Priority;
       }
     }
-    if (!((UnityEngine.Object) amplifyColorVolumeBase != (UnityEngine.Object) currentVolumeLut))
+    if (!(amplifyColorVolumeBase != currentVolumeLut))
       return;
     currentVolumeLut = amplifyColorVolumeBase;
-    Texture blendTargetLUT = (UnityEngine.Object) amplifyColorVolumeBase == (UnityEngine.Object) null ? worldLUT : (Texture) amplifyColorVolumeBase.LutTexture;
-    float blendTimeInSec = (UnityEngine.Object) amplifyColorVolumeBase == (UnityEngine.Object) null ? ExitVolumeBlendTime : amplifyColorVolumeBase.EnterBlendTime;
-    if (volumesBlending && !blendingFromMidBlend && (UnityEngine.Object) blendTargetLUT == (UnityEngine.Object) LutTexture)
+    Texture blendTargetLUT = amplifyColorVolumeBase == null ? worldLUT : amplifyColorVolumeBase.LutTexture;
+    float blendTimeInSec = amplifyColorVolumeBase == null ? ExitVolumeBlendTime : amplifyColorVolumeBase.EnterBlendTime;
+    if (volumesBlending && !blendingFromMidBlend && blendTargetLUT == LutTexture)
     {
       LutTexture = volumesLutBlendTexture;
       volumesLutBlendTexture = blendTargetLUT;
@@ -343,13 +342,13 @@ public class AmplifyColorBase : MonoBehaviour
         materialBlendCache.SetFloat("_LerpAmount", volumesBlendAmount);
         if (blendingFromMidBlend)
         {
-          Graphics.Blit((Texture) midBlendLUT, blendCacheLut);
-          materialBlendCache.SetTexture("_RgbTex", (Texture) blendCacheLut);
+          Graphics.Blit(midBlendLUT, blendCacheLut);
+          materialBlendCache.SetTexture("_RgbTex", blendCacheLut);
         }
         else
           materialBlendCache.SetTexture("_RgbTex", LutTexture);
-        materialBlendCache.SetTexture("_LerpRgbTex", (UnityEngine.Object) volumesLutBlendTexture != (UnityEngine.Object) null ? volumesLutBlendTexture : (Texture) defaultLut);
-        Graphics.Blit((Texture) midBlendLUT, midBlendLUT, materialBlendCache);
+        materialBlendCache.SetTexture("_LerpRgbTex", volumesLutBlendTexture != null ? volumesLutBlendTexture : defaultLut);
+        Graphics.Blit(midBlendLUT, midBlendLUT, materialBlendCache);
         blendCacheLut.DiscardContents();
         midBlendLUT.MarkRestoreExpected();
         currentVolumeEffects = VolumeEffect.BlendValuesToVolumeEffect(EffectFlags, currentVolumeEffects, blendVolumeEffects, effectVolumesBlendAdjusted);
@@ -359,8 +358,8 @@ public class AmplifyColorBase : MonoBehaviour
       }
       VolumesBlendTo(blendTargetLUT, blendTimeInSec);
     }
-    blendVolumeEffects = (UnityEngine.Object) amplifyColorVolumeBase == (UnityEngine.Object) null ? worldVolumeEffects : amplifyColorVolumeBase.EffectContainer.FindVolumeEffect(this);
-    blendExposure = (UnityEngine.Object) amplifyColorVolumeBase == (UnityEngine.Object) null ? worldExposure : amplifyColorVolumeBase.Exposure;
+    blendVolumeEffects = amplifyColorVolumeBase == null ? worldVolumeEffects : amplifyColorVolumeBase.EffectContainer.FindVolumeEffect(this);
+    blendExposure = amplifyColorVolumeBase == null ? worldExposure : amplifyColorVolumeBase.Exposure;
     if (blendVolumeEffects == null)
       blendVolumeEffects = worldVolumeEffects;
   }
@@ -441,13 +440,13 @@ public class AmplifyColorBase : MonoBehaviour
 
   private void UpdateDepthCurveLut()
   {
-    if ((UnityEngine.Object) depthCurveLut == (UnityEngine.Object) null)
+    if (depthCurveLut == null)
       CreateDepthCurveLut();
     float time = 0.0f;
     int index = 0;
     while (index < 1024)
     {
-      depthCurveColors[index].a = (byte) Mathf.FloorToInt(Mathf.Clamp01(DepthMaskCurve.Evaluate(time)) * (float) byte.MaxValue);
+      depthCurveColors[index].a = (byte) Mathf.FloorToInt(Mathf.Clamp01(DepthMaskCurve.Evaluate(time)) * byte.MaxValue);
       ++index;
       time += 0.0009775171f;
     }
@@ -468,7 +467,7 @@ public class AmplifyColorBase : MonoBehaviour
       int num = 0;
       while (num < DepthMaskCurve.length)
       {
-        if ((double) Mathf.Abs(DepthMaskCurve.Evaluate(time) - prevDepthMaskCurve.Evaluate(time)) > 1.4012984643248171E-45)
+        if (Mathf.Abs(DepthMaskCurve.Evaluate(time) - prevDepthMaskCurve.Evaluate(time)) > 1.4012984643248171E-45)
         {
           flag = true;
           break;
@@ -477,7 +476,7 @@ public class AmplifyColorBase : MonoBehaviour
         time += 0.0009775171f;
       }
     }
-    if (!((UnityEngine.Object) depthCurveLut == (UnityEngine.Object) null | flag))
+    if (!(depthCurveLut == null | flag))
       return;
     UpdateDepthCurveLut();
     prevDepthMaskCurve = new AnimationCurve(DepthMaskCurve.keys);
@@ -511,19 +510,19 @@ public class AmplifyColorBase : MonoBehaviour
 
   private bool CheckMaterialAndShader(Material material, string name)
   {
-    if ((UnityEngine.Object) material == (UnityEngine.Object) null || (UnityEngine.Object) material.shader == (UnityEngine.Object) null)
+    if (material == null || material.shader == null)
     {
-      Debug.LogWarning((object) ("[AmplifyColor] Error creating " + name + " material. Effect disabled."));
-      this.enabled = false;
+      Debug.LogWarning("[AmplifyColor] Error creating " + name + " material. Effect disabled.");
+      enabled = false;
     }
     else if (!material.shader.isSupported)
     {
-      Debug.LogWarning((object) ("[AmplifyColor] " + name + " shader not supported on this platform. Effect disabled."));
-      this.enabled = false;
+      Debug.LogWarning("[AmplifyColor] " + name + " shader not supported on this platform. Effect disabled.");
+      enabled = false;
     }
     else
       material.hideFlags = HideFlags.HideAndDontSave;
-    return this.enabled;
+    return enabled;
   }
 
   private bool CreateMaterials()
@@ -554,19 +553,19 @@ public class AmplifyColorBase : MonoBehaviour
       Shader.DisableKeyword(keyword);
   }
 
-  private void SafeRelease<T>(ref T obj) where T : UnityEngine.Object
+  private void SafeRelease<T>(ref T obj) where T : Object
   {
-    if (!((UnityEngine.Object) obj != (UnityEngine.Object) null))
+    if (!(obj != null))
       return;
     if (obj.GetType() == typeof (RenderTexture))
       ((object) obj as RenderTexture).Release();
-    UnityEngine.Object.DestroyImmediate((UnityEngine.Object) obj);
+    DestroyImmediate(obj);
     obj = default (T);
   }
 
   private void ReleaseTextures()
   {
-    RenderTexture.active = (RenderTexture) null;
+    RenderTexture.active = null;
     SafeRelease(ref blendCacheLut);
     SafeRelease(ref midBlendLUT);
     SafeRelease(ref defaultLut);
@@ -576,11 +575,11 @@ public class AmplifyColorBase : MonoBehaviour
   public static bool ValidateLutDimensions(Texture lut)
   {
     bool flag = true;
-    if ((UnityEngine.Object) lut != (UnityEngine.Object) null)
+    if (lut != null)
     {
       if (lut.width / lut.height != lut.height)
       {
-        Debug.LogWarning((object) ("[AmplifyColor] Lut " + lut.name + " has invalid dimensions."));
+        Debug.LogWarning("[AmplifyColor] Lut " + lut.name + " has invalid dimensions.");
         flag = false;
       }
       else if (lut.anisoLevel != 0)
@@ -609,7 +608,7 @@ public class AmplifyColorBase : MonoBehaviour
   {
     if (silentError)
     {
-      Graphics.Blit((Texture) source, destination);
+      Graphics.Blit(source, destination);
     }
     else
     {
@@ -619,15 +618,15 @@ public class AmplifyColorBase : MonoBehaviour
       UpdatePostEffectParams();
       bool flag1 = ValidateLutDimensions(LutTexture);
       bool flag2 = ValidateLutDimensions(LutBlendTexture);
-      bool flag3 = (UnityEngine.Object) LutTexture == (UnityEngine.Object) null && (UnityEngine.Object) LutBlendTexture == (UnityEngine.Object) null && (UnityEngine.Object) volumesLutBlendTexture == (UnityEngine.Object) null;
-      Texture source1 = (UnityEngine.Object) LutTexture == (UnityEngine.Object) null ? (Texture) defaultLut : LutTexture;
+      bool flag3 = LutTexture == null && LutBlendTexture == null && volumesLutBlendTexture == null;
+      Texture source1 = LutTexture == null ? defaultLut : LutTexture;
       Texture lutBlendTexture = LutBlendTexture;
       int shaderPass = ComputeShaderPass();
       bool flag4 = BlendAmount != 0.0 || blending;
-      bool flag5 = flag4 || flag4 && (UnityEngine.Object) lutBlendTexture != (UnityEngine.Object) null;
+      bool flag5 = flag4 || flag4 && lutBlendTexture != null;
       bool flag6 = flag5;
       bool flag7 = ((!flag1 ? 1 : (!flag2 ? 1 : 0)) | (flag3 ? 1 : 0)) != 0;
-      Material mat = !flag7 ? (!flag5 && !volumesBlending ? (!UseDepthMask ? ((UnityEngine.Object) MaskTexture != (UnityEngine.Object) null ? materialMask : materialBase) : materialDepthMask) : (!UseDepthMask ? ((UnityEngine.Object) MaskTexture != (UnityEngine.Object) null ? materialMaskBlend : materialBlend) : materialDepthMaskBlend)) : materialProcessOnly;
+      Material mat = !flag7 ? (!flag5 && !volumesBlending ? (!UseDepthMask ? (MaskTexture != null ? materialMask : materialBase) : materialDepthMask) : (!UseDepthMask ? (MaskTexture != null ? materialMaskBlend : materialBlend) : materialDepthMaskBlend)) : materialProcessOnly;
       mat.SetFloat("_Exposure", Exposure);
       mat.SetFloat("_ShoulderStrength", 0.22f);
       mat.SetFloat("_LinearStrength", 0.3f);
@@ -637,10 +636,10 @@ public class AmplifyColorBase : MonoBehaviour
       mat.SetFloat("_ToeDenominator", 0.3f);
       mat.SetFloat("_LinearWhite", LinearWhitePoint);
       mat.SetFloat("_LerpAmount", BlendAmount);
-      if ((UnityEngine.Object) MaskTexture != (UnityEngine.Object) null)
+      if (MaskTexture != null)
         mat.SetTexture("_MaskTex", MaskTexture);
       if (UseDepthMask)
-        mat.SetTexture("_DepthCurveLut", (Texture) depthCurveLut);
+        mat.SetTexture("_DepthCurveLut", depthCurveLut);
       if (!flag7)
       {
         if (volumesBlending)
@@ -648,43 +647,43 @@ public class AmplifyColorBase : MonoBehaviour
           volumesBlendAmount = Mathf.Clamp01(volumesBlendAmount);
           materialBlendCache.SetFloat("_LerpAmount", volumesBlendAmount);
           if (blendingFromMidBlend)
-            materialBlendCache.SetTexture("_RgbTex", (Texture) midBlendLUT);
+            materialBlendCache.SetTexture("_RgbTex", midBlendLUT);
           else
             materialBlendCache.SetTexture("_RgbTex", source1);
-          materialBlendCache.SetTexture("_LerpRgbTex", (UnityEngine.Object) volumesLutBlendTexture != (UnityEngine.Object) null ? volumesLutBlendTexture : (Texture) defaultLut);
+          materialBlendCache.SetTexture("_LerpRgbTex", volumesLutBlendTexture != null ? volumesLutBlendTexture : defaultLut);
           Graphics.Blit(source1, blendCacheLut, materialBlendCache);
         }
         if (flag6)
         {
           materialBlendCache.SetFloat("_LerpAmount", BlendAmount);
-          RenderTexture renderTexture = (RenderTexture) null;
+          RenderTexture renderTexture = null;
           if (volumesBlending)
           {
             renderTexture = RenderTexture.GetTemporary(blendCacheLut.width, blendCacheLut.height, blendCacheLut.depth, blendCacheLut.format, RenderTextureReadWrite.Linear);
-            Graphics.Blit((Texture) blendCacheLut, renderTexture);
-            materialBlendCache.SetTexture("_RgbTex", (Texture) renderTexture);
+            Graphics.Blit(blendCacheLut, renderTexture);
+            materialBlendCache.SetTexture("_RgbTex", renderTexture);
           }
           else
             materialBlendCache.SetTexture("_RgbTex", source1);
-          materialBlendCache.SetTexture("_LerpRgbTex", (UnityEngine.Object) lutBlendTexture != (UnityEngine.Object) null ? lutBlendTexture : (Texture) defaultLut);
+          materialBlendCache.SetTexture("_LerpRgbTex", lutBlendTexture != null ? lutBlendTexture : defaultLut);
           Graphics.Blit(source1, blendCacheLut, materialBlendCache);
-          if ((UnityEngine.Object) renderTexture != (UnityEngine.Object) null)
+          if (renderTexture != null)
             RenderTexture.ReleaseTemporary(renderTexture);
-          mat.SetTexture("_RgbBlendCacheTex", (Texture) blendCacheLut);
+          mat.SetTexture("_RgbBlendCacheTex", blendCacheLut);
         }
         else if (volumesBlending)
         {
-          mat.SetTexture("_RgbBlendCacheTex", (Texture) blendCacheLut);
+          mat.SetTexture("_RgbBlendCacheTex", blendCacheLut);
         }
         else
         {
-          if ((UnityEngine.Object) source1 != (UnityEngine.Object) null)
+          if (source1 != null)
             mat.SetTexture("_RgbTex", source1);
-          if ((UnityEngine.Object) lutBlendTexture != (UnityEngine.Object) null)
+          if (lutBlendTexture != null)
             mat.SetTexture("_LerpRgbTex", lutBlendTexture);
         }
       }
-      Graphics.Blit((Texture) source, destination, mat, shaderPass);
+      Graphics.Blit(source, destination, mat, shaderPass);
       if (!flag6 && !volumesBlending)
         return;
       blendCacheLut.DiscardContents();

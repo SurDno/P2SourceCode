@@ -12,6 +12,7 @@ using Engine.Source.Commons;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
 
 namespace Engine.Source.Components.Interactable
 {

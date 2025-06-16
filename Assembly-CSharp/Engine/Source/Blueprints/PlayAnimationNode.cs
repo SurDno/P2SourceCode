@@ -3,6 +3,7 @@ using Cofe.Utility;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -19,7 +20,7 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         Animation animation1 = inputAnimation.value;
-        if (!((Object) animation1 != (Object) null))
+        if (!(animation1 != null))
           return;
         animation1.wrapMode = WrapMode.Once;
         string animation2 = inputName.value;

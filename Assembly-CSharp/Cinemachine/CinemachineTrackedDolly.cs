@@ -1,5 +1,7 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -19,10 +21,10 @@ namespace Cinemachine
     public Vector3 m_PathOffset = Vector3.zero;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to maintain its position in a direction perpendicular to the path.  Small numbers are more responsive, rapidly translating the camera to keep the target's x-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
-    public float m_XDamping = 0.0f;
+    public float m_XDamping;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to maintain its position in the path-local up direction.  Small numbers are more responsive, rapidly translating the camera to keep the target's y-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
-    public float m_YDamping = 0.0f;
+    public float m_YDamping;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to maintain its position in a direction parallel to the path.  Small numbers are more responsive, rapidly translating the camera to keep the target's z-axis offset.  Larger numbers give a more heavy slowly responding camera. Using different settings per axis can yield a wide range of camera behaviors.")]
     public float m_ZDamping = 1f;
@@ -30,20 +32,20 @@ namespace Cinemachine
     public CameraUpMode m_CameraUp = CameraUpMode.Default;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-    public float m_PitchDamping = 0.0f;
+    public float m_PitchDamping;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-    public float m_YawDamping = 0.0f;
+    public float m_YawDamping;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-    public float m_RollDamping = 0.0f;
+    public float m_RollDamping;
     [Tooltip("Controls how automatic dollying occurs.  A Follow target is necessary to use this feature.")]
     public AutoDolly m_AutoDolly = new AutoDolly(false, 0.0f, 2, 5);
     private float m_PreviousPathPosition;
     private Quaternion m_PreviousOrientation = Quaternion.identity;
     private Vector3 m_PreviousCameraPosition = Vector3.zero;
 
-    public override bool IsValid => this.enabled && (UnityEngine.Object) m_Path != (UnityEngine.Object) null;
+    public override bool IsValid => enabled && m_Path != null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
@@ -56,7 +58,7 @@ namespace Cinemachine
       }
       if (!IsValid)
         return;
-      if (m_AutoDolly.m_Enabled && (UnityEngine.Object) FollowTarget != (UnityEngine.Object) null)
+      if (m_AutoDolly.m_Enabled && FollowTarget != null)
       {
         float num = m_PreviousPathPosition;
         if (m_PositionUnits == CinemachinePathBase.PositionUnits.Distance)
@@ -74,7 +76,7 @@ namespace Cinemachine
         {
           float num2 = m_Path.NormalizeUnit(m_PreviousPathPosition, m_PositionUnits);
           float num3 = m_Path.NormalizeUnit(pos, m_PositionUnits);
-          if (m_Path.Looped && (double) Mathf.Abs(num3 - num2) > num1 / 2.0)
+          if (m_Path.Looped && Mathf.Abs(num3 - num2) > num1 / 2.0)
           {
             if (num3 > (double) num2)
               num2 += num1;
@@ -115,7 +117,7 @@ namespace Cinemachine
           Vector3 vector3_6 = (Quaternion.Inverse(m_PreviousOrientation) * quaternion).eulerAngles;
           for (int index = 0; index < 3; ++index)
           {
-            if ((double) vector3_6[index] > 180.0)
+            if (vector3_6[index] > 180.0)
               vector3_6[index] -= 360f;
           }
           vector3_6 = Damper.Damp(vector3_6, AngularDamping, deltaTime);
@@ -141,15 +143,15 @@ namespace Cinemachine
         case CameraUpMode.PathNoRoll:
           return Quaternion.LookRotation(pathOrientation * Vector3.forward, up);
         case CameraUpMode.FollowTarget:
-          if ((UnityEngine.Object) FollowTarget != (UnityEngine.Object) null)
+          if (FollowTarget != null)
             return FollowTarget.rotation;
           break;
         case CameraUpMode.FollowTargetNoRoll:
-          if ((UnityEngine.Object) FollowTarget != (UnityEngine.Object) null)
+          if (FollowTarget != null)
             return Quaternion.LookRotation(FollowTarget.rotation * Vector3.forward, up);
           break;
       }
-      return Quaternion.LookRotation(this.transform.rotation * Vector3.forward, up);
+      return Quaternion.LookRotation(transform.rotation * Vector3.forward, up);
     }
 
     private Vector3 AngularDamping

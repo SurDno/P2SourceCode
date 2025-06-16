@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SelectedCheck : MonoBehaviour, ISelectHandler, IEventSystemHandler, IDeselectHandler
   {
@@ -7,14 +10,14 @@
 
     public void OnDeselect(BaseEventData eventData)
     {
-      if (!((Object) hideableView != (Object) null))
+      if (!(hideableView != null))
         return;
       hideableView.Visible = false;
     }
 
     public void OnSelect(BaseEventData eventData)
     {
-      if (!((Object) hideableView != (Object) null))
+      if (!(hideableView != null))
         return;
       hideableView.Visible = true;
     }

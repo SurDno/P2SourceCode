@@ -4,6 +4,7 @@ using Engine.Common.Services;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
 
 public class DisableInIsolatedIndoor : EngineDependent
 {
@@ -57,12 +58,12 @@ public class DisableInIsolatedIndoor : EngineDependent
           isolatedIndoor = ScriptableObjectInstance<IndoorSettingsData>.Instance.IsIndoorIsolated(building.Building);
       }
       else
-        Debug.LogError((object) ("LocationItemComponent not found, owner : " + player.GetInfo()));
+        Debug.LogError("LocationItemComponent not found, owner : " + player.GetInfo());
     }
     Apply();
   }
 
-  private void Apply() => this.gameObject.SetActive(!isolatedIndoor);
+  private void Apply() => gameObject.SetActive(!isolatedIndoor);
 
   protected override void OnDisable()
   {

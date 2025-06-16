@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class CutsceneIndoorCheck : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class CutsceneIndoorCheck : MonoBehaviour
 
   private void ApplyState()
   {
-    if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
+    if (!(view != null))
       return;
     view.Visible = overridenInsideIndoor;
   }

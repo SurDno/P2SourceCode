@@ -10,6 +10,7 @@ using Engine.Source.Saves;
 using Engine.Source.Settings.External;
 using Engine.Source.Unity;
 using Scripts.Utility;
+using Debug = UnityEngine.Debug;
 
 namespace Engine.Source.Services.Saves
 {
@@ -28,11 +29,11 @@ namespace Engine.Source.Services.Saves
 
     public IEnumerator Load()
     {
-      UnityEngine.Debug.Log((object) "Try default load");
+      Debug.Log("Try default load");
       ErrorLoading = null;
       if (saveLoadState)
       {
-        UnityEngine.Debug.LogError((object) "Save load already state");
+        Debug.LogError("Save load already state");
       }
       else
       {
@@ -45,7 +46,7 @@ namespace Engine.Source.Services.Saves
           sw.Restart();
           yield return serializable.Load(this);
           sw.Stop();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append(sw.Elapsed));
+          Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append(sw.Elapsed));
           if (!HasErrorLoading)
             serializable = null;
           else
@@ -57,11 +58,11 @@ namespace Engine.Source.Services.Saves
 
     public IEnumerator Load(string saveName)
     {
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try load ").Append(saveName));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Try load ").Append(saveName));
       ErrorLoading = null;
       if (saveLoadState)
       {
-        UnityEngine.Debug.LogError((object) "Save load already state");
+        Debug.LogError("Save load already state");
       }
       else
       {
@@ -91,7 +92,7 @@ namespace Engine.Source.Services.Saves
           }
           yield return serializable.Load(doc.DocumentElement, fileName, this);
           sw.Stop();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , file name : ").Append(fileName).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append(sw.Elapsed));
+          Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Load)).Append(" , file name : ").Append(fileName).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append(sw.Elapsed));
           if (!HasErrorLoading)
           {
             serializable = null;
@@ -110,10 +111,10 @@ namespace Engine.Source.Services.Saves
 
     public void Unload()
     {
-      UnityEngine.Debug.Log((object) "Try unload");
+      Debug.Log("Try unload");
       if (saveLoadState)
       {
-        UnityEngine.Debug.LogError((object) "Save load already state");
+        Debug.LogError("Save load already state");
       }
       else
       {
@@ -127,11 +128,11 @@ namespace Engine.Source.Services.Saves
             stopwatch.Restart();
             serializable.Unload();
             stopwatch.Stop();
-            UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Unload)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append(stopwatch.Elapsed));
+            Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Unload)).Append(" , type : ").Append(TypeUtility.GetTypeName(serializable.GetType())).Append(" , elapsed : ").Append(stopwatch.Elapsed));
           }
           catch (Exception ex)
           {
-            UnityEngine.Debug.LogException(ex);
+            Debug.LogException(ex);
           }
         }
         serializables = null;
@@ -145,10 +146,10 @@ namespace Engine.Source.Services.Saves
 
     public void Save(string saveName)
     {
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try save ").Append(saveName));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Try save ").Append(saveName));
       if (saveLoadState)
       {
-        UnityEngine.Debug.LogError((object) "Save load already state");
+        Debug.LogError("Save load already state");
       }
       else
       {
@@ -163,7 +164,7 @@ namespace Engine.Source.Services.Saves
           stopwatch.Restart();
           SavesServiceUtility.SaveToFile("Document", serializable, fileName, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.SaveCompress);
           stopwatch.Stop();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Save)).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append(stopwatch.Elapsed));
+          Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (SavesService)).Append(" : ").Append(nameof (Save)).Append(" , type : ").Append(typeName).Append(" , elapsed : ").Append(stopwatch.Elapsed));
         }
         saveLoadState = false;
       }
@@ -172,13 +173,13 @@ namespace Engine.Source.Services.Saves
     public void LogError(string text)
     {
       ErrorLoading = text;
-      UnityEngine.Debug.LogError((object) text);
+      Debug.LogError(text);
     }
 
     public void LogException(Exception e)
     {
       ErrorLoading = e.ToString();
-      UnityEngine.Debug.LogException(e);
+      Debug.LogException(e);
     }
 
     public struct SaveInfo

@@ -1,4 +1,6 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 [ExecuteInEditMode]
 public class CameraDistance : MonoBehaviour
@@ -19,20 +21,20 @@ public class CameraDistance : MonoBehaviour
 
   private void OnPreCullEvent2(Camera camera)
   {
-    if ((1 << this.gameObject.layer & camera.cullingMask) == 0 || (Object) view == (Object) null)
+    if ((1 << gameObject.layer & camera.cullingMask) == 0 || view == null)
       return;
     view.FloatValue = Vector3.Distance(camera.transform.position, cachedTransform.position);
   }
 
   private void OnEnable()
   {
-    cachedTransform = this.transform;
-    Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
+    cachedTransform = transform;
+    Camera.onPreCull += OnPreCullEvent;
   }
 
   private void OnDisable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
-    cachedTransform = (Transform) null;
+    Camera.onPreCull -= OnPreCullEvent;
+    cachedTransform = null;
   }
 }

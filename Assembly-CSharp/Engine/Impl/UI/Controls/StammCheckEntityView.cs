@@ -1,6 +1,7 @@
 ﻿using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -26,7 +27,7 @@ namespace Engine.Impl.UI.Controls
 
     private void ApplyParameter()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       if (parameter == null)
       {
@@ -49,7 +50,7 @@ namespace Engine.Impl.UI.Controls
 
     public override void SkipAnimation()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.SkipAnimation();
     }

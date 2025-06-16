@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
+using UnityEngine;
 
 [RequireComponent(typeof (AudioSource))]
 public class DisableSoundAtMaxDistance : MonoBehaviour
@@ -10,13 +11,13 @@ public class DisableSoundAtMaxDistance : MonoBehaviour
 
   private IEnumerator Start()
   {
-    if ((Object) audioSource == (Object) null)
+    if (audioSource == null)
     {
-      Debug.LogError((object) ("Null audio source, gameobject (need to fix by level designer), trying to get component: " + this.GetInfo()), (Object) this.gameObject);
-      audioSource = this.GetComponent<AudioSource>();
-      if ((Object) audioSource == (Object) null)
+      Debug.LogError("Null audio source, gameobject (need to fix by level designer), trying to get component: " + this.GetInfo(), gameObject);
+      audioSource = GetComponent<AudioSource>();
+      if (audioSource == null)
       {
-        Debug.LogError((object) ("Can't get component: " + this.GetInfo()), (Object) this.gameObject);
+        Debug.LogError("Can't get component: " + this.GetInfo(), gameObject);
         yield break;
       }
     }
@@ -27,11 +28,11 @@ public class DisableSoundAtMaxDistance : MonoBehaviour
       {
         if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableAudio)
         {
-          yield return (object) wait;
+          yield return wait;
         }
         else
         {
-          yield return (object) wait;
+          yield return wait;
           UpdateEnable();
         }
       }
@@ -40,7 +41,7 @@ public class DisableSoundAtMaxDistance : MonoBehaviour
 
   private void UpdateEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
+    bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
     if (audioSource.enabled == flag)
       return;
     audioSource.enabled = flag;

@@ -1,4 +1,6 @@
-﻿public class XMLMarker
+﻿using UnityEngine;
+
+public class XMLMarker
 {
   private int msStart;
   private int msEnd;

@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityNavMeshAgent
 {
@@ -56,7 +58,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityNavMeshAgent
     public override void OnStart()
     {
       GameObject defaultGameObject = GetDefaultGameObject(targetGameObject.Value);
-      if (!((UnityEngine.Object) defaultGameObject != (UnityEngine.Object) prevGameObject))
+      if (!(defaultGameObject != prevGameObject))
         return;
       navMeshAgent = defaultGameObject.GetComponent<NavMeshAgent>();
       prevGameObject = defaultGameObject;
@@ -64,9 +66,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.UnityNavMeshAgent
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) navMeshAgent == (UnityEngine.Object) null)
+      if (navMeshAgent == null)
       {
-        Debug.LogWarning((object) "NavMeshAgent is null");
+        Debug.LogWarning("NavMeshAgent is null");
         return TaskStatus.Failure;
       }
       navMeshAgent.speed = speed.Value;

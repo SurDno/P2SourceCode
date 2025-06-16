@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -7,7 +9,7 @@ namespace Engine.Impl.UI.Controls
   {
     [SerializeField]
     [AssignableObject(typeof (IValueView<Color>))]
-    private UnityEngine.Object view;
+    private Object view;
     [SerializeField]
     private int id;
 

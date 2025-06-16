@@ -5,6 +5,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -26,19 +27,19 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       owner = gameObject.GetComponentNonAlloc<EnemyBase>();
-      if (!((UnityEngine.Object) owner == (UnityEngine.Object) null))
+      if (!(owner == null))
         return;
-      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (EnemyBase).Name + " engine component"), (UnityEngine.Object) gameObject);
+      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (EnemyBase).Name + " engine component", gameObject);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) owner == (UnityEngine.Object) null || (UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner == null || owner.Enemy == null)
         return TaskStatus.Failure;
       Vector3 forward = owner.Enemy.transform.position - transform.position;
       forward = new Vector3(forward.x, 0.0f, forward.z);
       forward.Normalize();
-      return (double) Quaternion.Angle(transform.rotation, Quaternion.LookRotation(forward)) < AngleDelta ? TaskStatus.Success : TaskStatus.Running;
+      return Quaternion.Angle(transform.rotation, Quaternion.LookRotation(forward)) < (double) AngleDelta ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public void DataWrite(IDataWriter writer)

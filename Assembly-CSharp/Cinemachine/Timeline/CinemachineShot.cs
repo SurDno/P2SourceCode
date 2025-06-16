@@ -1,4 +1,6 @@
-﻿using UnityEngine.Timeline;
+﻿using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 
 namespace Cinemachine.Timeline
 {
@@ -10,7 +12,7 @@ namespace Cinemachine.Timeline
     {
       ScriptPlayable<CinemachineShotPlayable> playable = ScriptPlayable<CinemachineShotPlayable>.Create(graph);
       playable.GetBehaviour().VirtualCamera = VirtualCamera.Resolve(graph.GetResolver());
-      return (Playable) playable;
+      return playable;
     }
 
     public void GatherProperties(PlayableDirector director, IPropertyCollector driver)

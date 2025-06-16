@@ -2,6 +2,7 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -26,7 +27,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     {
       this.abilityItem = abilityItem;
       IEntityView owner = (IEntityView) this.abilityItem.Ability.Owner;
-      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null)
+      if (owner.GameObject == null)
         owner.OnGameObjectChangedEvent += OnViewGameObjectChanged;
       else
         OnViewGameObjectChanged();
@@ -35,10 +36,10 @@ namespace Engine.Source.Commons.Abilities.Controllers
     private void OnViewGameObjectChanged()
     {
       IEntityView owner = (IEntityView) abilityItem.Ability.Owner;
-      if ((UnityEngine.Object) owner.GameObject == (UnityEngine.Object) null)
+      if (owner.GameObject == null)
         return;
       playerMoveController = owner.GameObject.GetComponent<PlayerMoveController>();
-      if (!(bool) (UnityEngine.Object) playerMoveController)
+      if (!(bool) (Object) playerMoveController)
         return;
       owner.OnGameObjectChangedEvent -= OnViewGameObjectChanged;
       playerMoveController.FallDamageEvent += OnFallDamageEvent;
@@ -47,7 +48,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Shutdown()
     {
       ((IEntityView) abilityItem.Ability.Owner).OnGameObjectChangedEvent -= OnViewGameObjectChanged;
-      if (!(bool) (UnityEngine.Object) playerMoveController)
+      if (!(bool) (Object) playerMoveController)
         return;
       playerMoveController.FallDamageEvent -= OnFallDamageEvent;
     }
@@ -56,7 +57,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     {
       if (fallDistance < (double) minFall || fallDistance > (double) maxFall)
         return;
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("<color=red>Fall damage : ").Append(fallDistance).Append("</color> , min : ").Append(minFall).Append(" , max : ").Append(maxFall));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("<color=red>Fall damage : ").Append(fallDistance).Append("</color> , min : ").Append(minFall).Append(" , max : ").Append(maxFall));
       abilityItem.Active = true;
       abilityItem.Active = false;
     }

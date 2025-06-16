@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page11.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Grounder/Grounder Quadruped")]
@@ -70,14 +72,14 @@
 
     private bool IsReadyToInitiate()
     {
-      return !((Object) pelvis == (Object) null) && !((Object) lastSpineBone == (Object) null) && legs.Length != 0 && forelegs.Length != 0 && !((Object) characterRoot == (Object) null) && IsReadyToInitiateLegs(legs) && IsReadyToInitiateLegs(forelegs);
+      return !(pelvis == null) && !(lastSpineBone == null) && legs.Length != 0 && forelegs.Length != 0 && !(characterRoot == null) && IsReadyToInitiateLegs(legs) && IsReadyToInitiateLegs(forelegs);
     }
 
     private bool IsReadyToInitiateLegs(IK[] ikComponents)
     {
       foreach (IK ikComponent in ikComponents)
       {
-        if ((Object) ikComponent == (Object) null)
+        if (ikComponent == null)
           return false;
         switch (ikComponent)
         {
@@ -126,12 +128,12 @@
       Transform[] feet2 = InitiateFeet(forelegs, ref feet, legs.Length);
       animatedPelvisLocalPosition = pelvis.localPosition;
       animatedPelvisLocalRotation = pelvis.localRotation;
-      if ((Object) head != (Object) null)
+      if (head != null)
         animatedHeadLocalRotation = head.localRotation;
       forefeetRoot = new GameObject().transform;
-      forefeetRoot.parent = this.transform;
+      forefeetRoot.parent = transform;
       forefeetRoot.name = "Forefeet Root";
-      solver.Initiate(this.transform, feet1);
+      solver.Initiate(transform, feet1);
       forelegSolver.Initiate(forefeetRoot, feet2);
       for (int index = 0; index < feet1.Length; ++index)
         feet[index].leg = solver.legs[index];
@@ -189,7 +191,7 @@
 
     private void OnSolverUpdate()
     {
-      if (!this.enabled)
+      if (!enabled)
         return;
       if (weight <= 0.0)
       {
@@ -210,7 +212,7 @@
         animatedPelvisLocalRotation = pelvis.localRotation;
       else
         pelvis.localRotation = animatedPelvisLocalRotation;
-      if ((Object) head != (Object) null)
+      if (head != null)
       {
         if (head.localRotation != solvedHeadLocalRotation)
           animatedHeadLocalRotation = head.localRotation;
@@ -219,7 +221,7 @@
       }
       for (int index = 0; index < feet.Length; ++index)
         feet[index].rotation = feet[index].transform.rotation;
-      if ((Object) head != (Object) null)
+      if (head != null)
         headRotation = head.rotation;
       UpdateForefeetRoot();
       solver.Update();
@@ -240,11 +242,11 @@
       Vector3 zero = Vector3.zero;
       for (int index = 0; index < forelegSolver.legs.Length; ++index)
         zero += forelegSolver.legs[index].transform.position;
-      Vector3 vector3 = zero / (float) forelegs.Length - this.transform.position;
-      Vector3 up = this.transform.up;
+      Vector3 vector3 = zero / forelegs.Length - transform.position;
+      Vector3 up = transform.up;
       Vector3 tangent = vector3;
       Vector3.OrthoNormalize(ref up, ref tangent);
-      forefeetRoot.position = this.transform.position + tangent.normalized * vector3.magnitude;
+      forefeetRoot.position = transform.position + tangent.normalized * vector3.magnitude;
     }
 
     private void SetFootIK(Foot foot, float maxOffset)
@@ -256,18 +258,18 @@
 
     private void OnPostSolverUpdate()
     {
-      if (weight <= 0.0 || !this.enabled)
+      if (weight <= 0.0 || !enabled)
         return;
       ++solvedFeet;
       if (solvedFeet < feet.Length)
         return;
       for (int index = 0; index < feet.Length; ++index)
         feet[index].transform.rotation = Quaternion.Slerp(Quaternion.identity, feet[index].leg.rotationOffset, weight) * feet[index].rotation;
-      if ((Object) head != (Object) null)
+      if (head != null)
         head.rotation = Quaternion.Lerp(head.rotation, headRotation, maintainHeadRotationWeight * weight);
       solvedPelvisLocalPosition = pelvis.localPosition;
       solvedPelvisLocalRotation = pelvis.localRotation;
-      if (!((Object) head != (Object) null))
+      if (!(head != null))
         return;
       solvedHeadLocalRotation = head.localRotation;
     }
@@ -284,7 +286,7 @@
     {
       foreach (IK ikComponent in ikComponents)
       {
-        if ((Object) ikComponent != (Object) null)
+        if (ikComponent != null)
         {
           ikComponent.GetIKSolver().OnPreUpdate -= OnSolverUpdate;
           ikComponent.GetIKSolver().OnPostUpdate -= OnPostSolverUpdate;

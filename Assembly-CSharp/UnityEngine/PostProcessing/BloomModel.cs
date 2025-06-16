@@ -69,7 +69,7 @@ namespace UnityEngine.PostProcessing
         get
         {
           return new LensDirtSettings {
-            texture = (Texture) null,
+            texture = null,
             intensity = 3f
           };
         }

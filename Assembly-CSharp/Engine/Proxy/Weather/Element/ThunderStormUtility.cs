@@ -8,13 +8,13 @@ namespace Engine.Proxy.Weather.Element
   {
     public static void CopyTo(ThunderStorm thunderStorm)
     {
-      if (!((Object) ServiceLocator.GetService<EnvironmentService>().Tod == (Object) null))
+      if (!(ServiceLocator.GetService<EnvironmentService>().Tod == null))
         ;
     }
 
     public static void CopyFrom(ThunderStorm thunderStorm)
     {
-      if (!((Object) ServiceLocator.GetService<EnvironmentService>().Tod == (Object) null))
+      if (!(ServiceLocator.GetService<EnvironmentService>().Tod == null))
         ;
     }
   }

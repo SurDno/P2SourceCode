@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityStandardAssets.ImageEffects
 {
@@ -27,8 +29,8 @@ namespace UnityStandardAssets.ImageEffects
 
     private static Material CreateMaterial(Shader shader)
     {
-      if (!(bool) (UnityEngine.Object) shader)
-        return (Material) null;
+      if (!(bool) (Object) shader)
+        return null;
       Material material = new Material(shader);
       material.hideFlags = HideFlags.HideAndDontSave;
       return material;
@@ -36,10 +38,10 @@ namespace UnityStandardAssets.ImageEffects
 
     private static void DestroyMaterial(Material mat)
     {
-      if (!(bool) (UnityEngine.Object) mat)
+      if (!(bool) (Object) mat)
         return;
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) mat);
-      mat = (Material) null;
+      DestroyImmediate(mat);
+      mat = null;
     }
 
     private void OnDisable() => DestroyMaterial(m_SSAOMaterial);
@@ -49,15 +51,15 @@ namespace UnityStandardAssets.ImageEffects
       if (!SystemInfo.supportsImageEffects || !SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth))
       {
         m_Supported = false;
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
         CreateMaterials();
-        if (!(bool) (UnityEngine.Object) m_SSAOMaterial || m_SSAOMaterial.passCount != 5)
+        if (!(bool) (Object) m_SSAOMaterial || m_SSAOMaterial.passCount != 5)
         {
           m_Supported = false;
-          this.enabled = false;
+          enabled = false;
         }
         else
           m_Supported = true;
@@ -66,15 +68,15 @@ namespace UnityStandardAssets.ImageEffects
 
     private void OnEnable()
     {
-      this.GetComponent<Camera>().depthTextureMode |= DepthTextureMode.DepthNormals;
+      GetComponent<Camera>().depthTextureMode |= DepthTextureMode.DepthNormals;
     }
 
     private void CreateMaterials()
     {
-      if ((bool) (UnityEngine.Object) m_SSAOMaterial || !m_SSAOShader.isSupported)
+      if ((bool) (Object) m_SSAOMaterial || !m_SSAOShader.isSupported)
         return;
       m_SSAOMaterial = CreateMaterial(m_SSAOShader);
-      m_SSAOMaterial.SetTexture("_RandomTexture", (Texture) m_RandomTexture);
+      m_SSAOMaterial.SetTexture("_RandomTexture", m_RandomTexture);
     }
 
     [ImageEffectOpaque]
@@ -82,7 +84,7 @@ namespace UnityStandardAssets.ImageEffects
     {
       if (!m_Supported || !m_SSAOShader.isSupported)
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
@@ -94,13 +96,13 @@ namespace UnityStandardAssets.ImageEffects
         m_OcclusionAttenuation = Mathf.Clamp(m_OcclusionAttenuation, 0.2f, 2f);
         m_Blur = Mathf.Clamp(m_Blur, 0, 4);
         RenderTexture renderTexture = RenderTexture.GetTemporary(source.width / m_Downsampling, source.height / m_Downsampling, 0);
-        float fieldOfView = this.GetComponent<Camera>().fieldOfView;
-        float farClipPlane = this.GetComponent<Camera>().farClipPlane;
+        float fieldOfView = GetComponent<Camera>().fieldOfView;
+        float farClipPlane = GetComponent<Camera>().farClipPlane;
         float y = Mathf.Tan((float) (fieldOfView * (Math.PI / 180.0) * 0.5)) * farClipPlane;
-        m_SSAOMaterial.SetVector("_FarCorner", (Vector4) new Vector3(y * this.GetComponent<Camera>().aspect, y, farClipPlane));
+        m_SSAOMaterial.SetVector("_FarCorner", new Vector3(y * GetComponent<Camera>().aspect, y, farClipPlane));
         int num1;
         int num2;
-        if ((bool) (UnityEngine.Object) m_RandomTexture)
+        if ((bool) (Object) m_RandomTexture)
         {
           num1 = m_RandomTexture.width;
           num2 = m_RandomTexture.height;
@@ -110,26 +112,26 @@ namespace UnityStandardAssets.ImageEffects
           num1 = 1;
           num2 = 1;
         }
-        m_SSAOMaterial.SetVector("_NoiseScale", (Vector4) new Vector3((float) renderTexture.width / num1, (float) renderTexture.height / num2, 0.0f));
+        m_SSAOMaterial.SetVector("_NoiseScale", new Vector3(renderTexture.width / (float) num1, renderTexture.height / (float) num2, 0.0f));
         m_SSAOMaterial.SetVector("_Params", new Vector4(m_Radius, m_MinZ, 1f / m_OcclusionAttenuation, m_OcclusionIntensity));
         bool flag = m_Blur > 0;
-        Graphics.Blit(flag ? (Texture) null : (Texture) source, renderTexture, m_SSAOMaterial, (int) m_SampleCount);
+        Graphics.Blit(flag ? null : (Texture) source, renderTexture, m_SSAOMaterial, (int) m_SampleCount);
         if (flag)
         {
           RenderTexture temporary1 = RenderTexture.GetTemporary(source.width, source.height, 0);
           m_SSAOMaterial.SetVector("_TexelOffsetScale", new Vector4(m_Blur / (float) source.width, 0.0f, 0.0f, 0.0f));
-          m_SSAOMaterial.SetTexture("_SSAO", (Texture) renderTexture);
-          Graphics.Blit((Texture) null, temporary1, m_SSAOMaterial, 3);
+          m_SSAOMaterial.SetTexture("_SSAO", renderTexture);
+          Graphics.Blit(null, temporary1, m_SSAOMaterial, 3);
           RenderTexture.ReleaseTemporary(renderTexture);
           RenderTexture temporary2 = RenderTexture.GetTemporary(source.width, source.height, 0);
           m_SSAOMaterial.SetVector("_TexelOffsetScale", new Vector4(0.0f, m_Blur / (float) source.height, 0.0f, 0.0f));
-          m_SSAOMaterial.SetTexture("_SSAO", (Texture) temporary1);
-          Graphics.Blit((Texture) source, temporary2, m_SSAOMaterial, 3);
+          m_SSAOMaterial.SetTexture("_SSAO", temporary1);
+          Graphics.Blit(source, temporary2, m_SSAOMaterial, 3);
           RenderTexture.ReleaseTemporary(temporary1);
           renderTexture = temporary2;
         }
-        m_SSAOMaterial.SetTexture("_SSAO", (Texture) renderTexture);
-        Graphics.Blit((Texture) source, destination, m_SSAOMaterial, 4);
+        m_SSAOMaterial.SetTexture("_SSAO", renderTexture);
+        Graphics.Blit(source, destination, m_SSAOMaterial, 4);
         RenderTexture.ReleaseTemporary(renderTexture);
       }
     }

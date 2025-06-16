@@ -1,4 +1,7 @@
-﻿namespace Cinemachine
+﻿using Cinemachine.Utility;
+using UnityEngine;
+
+namespace Cinemachine
 {
   [DocumentationSorting(14f, DocumentationSortingAttribute.Level.UserRef)]
   [RequireComponent(typeof (Camera))]
@@ -9,7 +12,7 @@
   {
     [Tooltip("The object that the camera is looking at.  Setting this will improve the quality of the blends to and from this camera")]
     [NoSaveDuringPlay]
-    public Transform m_LookAt = (Transform) null;
+    public Transform m_LookAt;
     private Camera m_Camera;
     private CameraState m_State = CameraState.Default;
 
@@ -25,15 +28,15 @@
 
     public override void UpdateCameraState(Vector3 worldUp, float deltaTime)
     {
-      if ((Object) m_Camera == (Object) null)
-        m_Camera = this.GetComponent<Camera>();
+      if (m_Camera == null)
+        m_Camera = GetComponent<Camera>();
       m_State = CameraState.Default;
-      m_State.RawPosition = this.transform.position;
-      m_State.RawOrientation = this.transform.rotation;
+      m_State.RawPosition = transform.position;
+      m_State.RawOrientation = transform.rotation;
       m_State.ReferenceUp = m_State.RawOrientation * Vector3.up;
-      if ((Object) m_Camera != (Object) null)
+      if (m_Camera != null)
         m_State.Lens = LensSettings.FromCamera(m_Camera);
-      if (!((Object) m_LookAt != (Object) null))
+      if (!(m_LookAt != null))
         return;
       m_State.ReferenceLookAt = m_LookAt.transform.position;
       Vector3 vector3 = m_State.ReferenceLookAt - State.RawPosition;

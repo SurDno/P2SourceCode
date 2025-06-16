@@ -2,6 +2,7 @@
 using System.Collections;
 using Engine.Impl.UI.Menu;
 using Engine.Impl.UI.Menu.Main;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -16,14 +17,14 @@ namespace Engine.Source.Services
 
     private static IEnumerator DefaultTransition(UIWindow closeWindow, UIWindow openWindow)
     {
-      if ((UnityEngine.Object) closeWindow != (UnityEngine.Object) null)
+      if (closeWindow != null)
       {
         IEnumerator closed = closeWindow.OnClosed();
         while (closed.MoveNext())
           yield return closed.Current;
         closed = null;
       }
-      if ((UnityEngine.Object) openWindow != (UnityEngine.Object) null)
+      if (openWindow != null)
       {
         IEnumerator opened = openWindow.OnOpened();
         while (opened.MoveNext())
@@ -34,7 +35,7 @@ namespace Engine.Source.Services
 
     private static IEnumerator OpenGameWindow(UIWindow closeWindow, UIWindow openWindow)
     {
-      if ((UnityEngine.Object) closeWindow != (UnityEngine.Object) null)
+      if (closeWindow != null)
       {
         IEnumerator closed = closeWindow.OnClosed();
         while (closed.MoveNext())
@@ -42,7 +43,7 @@ namespace Engine.Source.Services
         closed = null;
       }
       GameWindow gameWindow = openWindow as GameWindow;
-      if (!((UnityEngine.Object) gameWindow == (UnityEngine.Object) null))
+      if (!(gameWindow == null))
       {
         gameWindow.IsEnabled = true;
         gameWindow.Menu.transform.localScale = Vector3.zero;

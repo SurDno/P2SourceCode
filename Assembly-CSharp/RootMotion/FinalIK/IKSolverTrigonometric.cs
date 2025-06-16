@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -62,11 +63,11 @@ namespace RootMotion.FinalIK
 
     public override Point GetPoint(Transform transform)
     {
-      if ((UnityEngine.Object) bone1.transform == (UnityEngine.Object) transform)
+      if (bone1.transform == transform)
         return bone1;
-      if ((UnityEngine.Object) bone2.transform == (UnityEngine.Object) transform)
+      if (bone2.transform == transform)
         return bone2;
-      return (UnityEngine.Object) bone3.transform == (UnityEngine.Object) transform ? bone3 : (Point) null;
+      return bone3.transform == transform ? bone3 : (Point) null;
     }
 
     public override void StoreDefaultLocalState()
@@ -87,18 +88,18 @@ namespace RootMotion.FinalIK
 
     public override bool IsValid(ref string message)
     {
-      if ((UnityEngine.Object) bone1.transform == (UnityEngine.Object) null || (UnityEngine.Object) bone2.transform == (UnityEngine.Object) null || (UnityEngine.Object) bone3.transform == (UnityEngine.Object) null)
+      if (bone1.transform == null || bone2.transform == null || bone3.transform == null)
       {
         message = "Please assign all Bones to the IK solver.";
         return false;
       }
-      Transform transform = (Transform) Hierarchy.ContainsDuplicate((UnityEngine.Object[]) new Transform[3]
+      Transform transform = (Transform) Hierarchy.ContainsDuplicate(new Transform[3]
       {
         bone1.transform,
         bone2.transform,
         bone3.transform
       });
-      if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
+      if (transform != null)
       {
         message = transform.name + " is represented multiple times in the Bones.";
         return false;
@@ -162,7 +163,7 @@ namespace RootMotion.FinalIK
       float sqrMag2)
     {
       float z = (float) ((directionMag * (double) directionMag + (sqrMag1 - (double) sqrMag2)) / 2.0) / directionMag;
-      float y = (float) Math.Sqrt((double) Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
+      float y = (float) Math.Sqrt(Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
       return direction == Vector3.zero ? Vector3.zero : Quaternion.LookRotation(direction, bendDirection) * new Vector3(0.0f, y, z);
     }
 
@@ -179,7 +180,7 @@ namespace RootMotion.FinalIK
 
     private bool IsDirectHierarchy()
     {
-      return !((UnityEngine.Object) bone3.transform.parent != (UnityEngine.Object) bone2.transform) && !((UnityEngine.Object) bone2.transform.parent != (UnityEngine.Object) bone1.transform);
+      return !(bone3.transform.parent != bone2.transform) && !(bone2.transform.parent != bone1.transform);
     }
 
     private void InitiateBones()
@@ -193,7 +194,7 @@ namespace RootMotion.FinalIK
     {
       IKPositionWeight = Mathf.Clamp(IKPositionWeight, 0.0f, 1f);
       IKRotationWeight = Mathf.Clamp(IKRotationWeight, 0.0f, 1f);
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
       {
         IKPosition = target.position;
         IKRotation = target.rotation;
@@ -243,7 +244,7 @@ namespace RootMotion.FinalIK
       float sqrMagnitude = vector3.sqrMagnitude;
       float num = (float) Math.Sqrt(sqrMagnitude);
       float z = (float) ((sqrMagnitude + (double) bone1.sqrMag - bone2.sqrMag) / 2.0) / num;
-      float y = (float) Math.Sqrt((double) Mathf.Clamp(bone1.sqrMag - z * z, 0.0f, float.PositiveInfinity));
+      float y = (float) Math.Sqrt(Mathf.Clamp(bone1.sqrMag - z * z, 0.0f, float.PositiveInfinity));
       Vector3 upwards = Vector3.Cross(vector3, bendNormal);
       return Quaternion.LookRotation(vector3, upwards) * new Vector3(0.0f, y, z);
     }

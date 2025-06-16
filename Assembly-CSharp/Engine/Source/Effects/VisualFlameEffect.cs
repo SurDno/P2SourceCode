@@ -9,6 +9,7 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -83,7 +84,7 @@ namespace Engine.Source.Effects
       }
       startTime = num;
       effect = ((IEntityView) Target).GameObject.GetComponentInChildren<SkinnedMeshRenderer>()?.gameObject?.AddComponent<BurnedSurfaceEffect>();
-      if ((UnityEngine.Object) effect != (UnityEngine.Object) null)
+      if (effect != null)
       {
         effect.SmokeLevel = 1f;
         effect.FireLevel = 1f;
@@ -105,7 +106,7 @@ namespace Engine.Source.Effects
       float num2 = num1 - previousTime;
       previousTime = num1;
       bool flag = num1 - (double) startTime > duration;
-      if ((UnityEngine.Object) effect != (UnityEngine.Object) null)
+      if (effect != null)
       {
         bool needRemove = GetNeedRemove();
         float num3 = Mathf.Max(duration - (num1 - startTime), 0.0f);
@@ -130,9 +131,9 @@ namespace Engine.Source.Effects
     {
       if (GetNeedRemove())
       {
-        if (!((UnityEngine.Object) effect != (UnityEngine.Object) null))
+        if (!(effect != null))
           return;
-        UnityEngine.Object.Destroy((UnityEngine.Object) effect);
+        Object.Destroy(effect);
         effect = null;
       }
       else

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -16,7 +17,7 @@ namespace RootMotion.FinalIK
     [Range(0.0f, 1f)]
     public float rotationWeight;
 
-    public bool IsValid() => (UnityEngine.Object) transform != (UnityEngine.Object) null;
+    public bool IsValid() => transform != null;
 
     public void Initiate(Transform transform)
     {
@@ -29,12 +30,12 @@ namespace RootMotion.FinalIK
     {
       if (!IsValid())
         return;
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
         position = target.position;
       transform.position += positionOffset;
       if (positionWeight > 0.0)
         transform.position = Vector3.Lerp(transform.position, position, positionWeight);
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
         rotation = target.eulerAngles;
       transform.rotation = Quaternion.Euler(rotationOffset) * transform.rotation;
       if (rotationWeight <= 0.0)

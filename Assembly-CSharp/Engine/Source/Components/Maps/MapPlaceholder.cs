@@ -5,6 +5,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components.Maps
 {
@@ -55,10 +56,10 @@ namespace Engine.Source.Components.Maps
     [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
     protected UnitySubAsset<Sprite> npcSprite;
     private bool cached;
-    private Sprite cachedMainSprite = (Sprite) null;
-    private Sprite cachedHoverSprite = (Sprite) null;
-    private Sprite cachedNormalSprite = (Sprite) null;
-    private Sprite cachedShadowSprite = (Sprite) null;
+    private Sprite cachedMainSprite;
+    private Sprite cachedHoverSprite;
+    private Sprite cachedNormalSprite;
+    private Sprite cachedShadowSprite;
 
     public MapPlaceholderKind Kind => kind;
 

@@ -17,6 +17,7 @@ using Engine.Source.Services.Notifications;
 using Engine.Source.Services.Saves;
 using Engine.Source.UI;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -132,7 +133,7 @@ namespace Engine.Source.Services
         if (!InstanceByRequest<EngineApplication>.Instance.IsPaused || UpdateLayerOnPause(layer.Key))
         {
           NotificationLayerItem notificationLayerItem = layer.Value;
-          if ((UnityEngine.Object) notificationLayerItem.Notifaction != (UnityEngine.Object) null)
+          if ((Object) notificationLayerItem.Notifaction != null)
           {
             if (notificationLayerItem.Notifaction.Complete)
             {

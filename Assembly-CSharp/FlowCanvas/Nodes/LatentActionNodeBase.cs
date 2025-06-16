@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NodeCanvas;
 using ParadoxNotion.Services;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -25,7 +26,7 @@ namespace FlowCanvas.Nodes
     public override sealed void OnGraphStarted()
     {
       queue = new Queue<IEnumerator>();
-      currentCoroutine = (Coroutine) null;
+      currentCoroutine = null;
     }
 
     public override sealed void OnGraphStoped() => Break();
@@ -49,7 +50,7 @@ namespace FlowCanvas.Nodes
         return;
       BlueprintManager.current.StopCoroutine(currentCoroutine);
       queue = new Queue<IEnumerator>();
-      currentCoroutine = (Coroutine) null;
+      currentCoroutine = null;
       outFlow.parent.SetStatus(Status.Resting);
       OnBreak();
       done.Call();
@@ -69,7 +70,7 @@ namespace FlowCanvas.Nodes
       }
       parentNode.SetStatus(Status.Resting);
       done.Call();
-      currentCoroutine = (Coroutine) null;
+      currentCoroutine = null;
       if (queue.Count > 0)
       {
         queue.Dequeue();

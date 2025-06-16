@@ -68,10 +68,10 @@ namespace Engine.Source.Services
     {
       foreach (LandingSpotObject zone in zones)
       {
-        if (!zone.Preseted && (UnityEngine.Object) zone.Flock == (UnityEngine.Object) null)
+        if (!zone.Preseted && zone.Flock == null)
         {
           FlockObject withMinimumZones = GetFlockWithMinimumZones(zone);
-          if ((UnityEngine.Object) withMinimumZones != (UnityEngine.Object) null)
+          if (withMinimumZones != null)
             withMinimumZones.AddLandingZone(zone);
         }
       }

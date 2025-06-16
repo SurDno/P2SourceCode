@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using Engine.Behaviours.Engines.Controllers;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Behaviours.Components
 {
@@ -43,15 +44,15 @@ namespace Engine.Behaviours.Components
         movementController = new Rootmotion45MovementController();
       else if (movementControllerKind == MovementControllerEnum.DeprecatedChangeToRootmotion45)
       {
-        Debug.LogError((object) string.Format("Deprecated movement controller type {0}", movementControllerKind), (UnityEngine.Object) this.gameObject);
+        Debug.LogError(string.Format("Deprecated movement controller type {0}", movementControllerKind), gameObject);
         movementController = new Rootmotion45MovementController();
       }
       else
       {
-        Debug.LogError((object) string.Format("Wrong movement controller type {0}", movementControllerKind), (UnityEngine.Object) this.gameObject);
+        Debug.LogError(string.Format("Wrong movement controller type {0}", movementControllerKind), gameObject);
         return;
       }
-      movementController.Initialize(this.gameObject);
+      movementController.Initialize(gameObject);
     }
 
     private void Update() => movementController.Update();
@@ -83,7 +84,7 @@ namespace Engine.Behaviours.Components
     }
 
     [SpecialName]
-    GameObject IFlamable.get_gameObject() => this.gameObject;
+    GameObject IFlamable.get_gameObject() => gameObject;
 
     public enum GaitType
     {

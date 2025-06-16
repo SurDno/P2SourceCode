@@ -44,7 +44,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
 
     private void OnGameObjectChangedEvent()
     {
-      if ((UnityEngine.Object) sanitar != (UnityEngine.Object) null)
+      if (sanitar != null)
       {
         InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
         sanitar = null;
@@ -52,7 +52,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
       if (!((IEntityView) owner).IsAttached)
         return;
       sanitar = ((IEntityView) owner).GameObject.GetComponent<PivotSanitar>();
-      if ((UnityEngine.Object) sanitar != (UnityEngine.Object) null)
+      if (sanitar != null)
       {
         time = 0.0;
         InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
@@ -61,7 +61,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
 
     public void ComputeUpdate()
     {
-      if ((UnityEngine.Object) sanitar == (UnityEngine.Object) null)
+      if (sanitar == null)
         return;
       if (!sanitar.Flamethrower)
       {

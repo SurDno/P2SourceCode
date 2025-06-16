@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressPosition : ProgressView
   {
@@ -37,7 +39,7 @@
 
     protected override void ApplyProgress()
     {
-      this.transform.localPosition = Vector3.Lerp(minPosition, maxPosition, Progress);
+      transform.localPosition = Vector3.Lerp(minPosition, maxPosition, Progress);
     }
   }
 }

@@ -1,4 +1,7 @@
-﻿namespace Cinemachine
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+namespace Cinemachine
 {
   [DocumentationSorting(8f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -18,7 +21,7 @@
     private float mNoiseTime;
     private Vector3 mNoiseOffsets = Vector3.zero;
 
-    public override bool IsValid => this.enabled && (Object) m_NoiseProfile != (Object) null;
+    public override bool IsValid => enabled && m_NoiseProfile != null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Noise;
 

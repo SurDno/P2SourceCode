@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -12,22 +14,22 @@
     public bool simpleTweakMode = true;
     public float focalPoint = 1f;
     public float smoothness = 0.5f;
-    public float focalZDistance = 0.0f;
+    public float focalZDistance;
     public float focalZStartCurve = 1f;
     public float focalZEndCurve = 1f;
     private float focalStartCurve = 2f;
     private float focalEndCurve = 2f;
     private float focalDistance01 = 0.1f;
-    public Transform objectFocus = (Transform) null;
-    public float focalSize = 0.0f;
+    public Transform objectFocus;
+    public float focalSize;
     public DofBlurriness bluriness = DofBlurriness.High;
     public float maxBlurSpread = 1.75f;
     public float foregroundBlurExtrude = 1.15f;
     public Shader dofBlurShader;
-    private Material dofBlurMaterial = (Material) null;
+    private Material dofBlurMaterial;
     public Shader dofShader;
-    private Material dofMaterial = (Material) null;
-    public bool visualize = false;
+    private Material dofMaterial;
+    public bool visualize;
     public BokehDestination bokehDestination = BokehDestination.Background;
     private float widthOverHeight = 1.25f;
     private float oneOverBaseSize = 1f / 512f;
@@ -42,12 +44,12 @@
     public int bokehDownsample = 1;
     private Material bokehMaterial;
     private Camera _camera;
-    private RenderTexture foregroundTexture = (RenderTexture) null;
-    private RenderTexture mediumRezWorkTexture = (RenderTexture) null;
-    private RenderTexture finalDefocus = (RenderTexture) null;
-    private RenderTexture lowRezWorkTexture = (RenderTexture) null;
-    private RenderTexture bokehSource = (RenderTexture) null;
-    private RenderTexture bokehSource2 = (RenderTexture) null;
+    private RenderTexture foregroundTexture;
+    private RenderTexture mediumRezWorkTexture;
+    private RenderTexture finalDefocus;
+    private RenderTexture lowRezWorkTexture;
+    private RenderTexture bokehSource;
+    private RenderTexture bokehSource2;
 
     private void CreateMaterials()
     {
@@ -76,7 +78,7 @@
 
     private void OnEnable()
     {
-      _camera = this.GetComponent<Camera>();
+      _camera = GetComponent<Camera>();
       _camera.depthTextureMode |= DepthTextureMode.Depth;
     }
 
@@ -109,7 +111,7 @@
     {
       if (!CheckResources())
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
@@ -125,7 +127,7 @@
           focalDistance01 = (bool) (Object) objectFocus ? _camera.WorldToViewportPoint(objectFocus.position).z / _camera.farClipPlane : FocalDistance01(focalPoint);
           focalStartCurve = focalDistance01 * smoothness;
           focalEndCurve = focalStartCurve;
-          blurForeground = flag && focalPoint > (double) _camera.nearClipPlane + (double) Mathf.Epsilon;
+          blurForeground = flag && focalPoint > _camera.nearClipPlane + (double) Mathf.Epsilon;
         }
         else
         {
@@ -139,24 +141,24 @@
             focalDistance01 = FocalDistance01(focalZDistance);
           focalStartCurve = focalZStartCurve;
           focalEndCurve = focalZEndCurve;
-          blurForeground = flag && focalPoint > (double) _camera.nearClipPlane + (double) Mathf.Epsilon;
+          blurForeground = flag && focalPoint > _camera.nearClipPlane + (double) Mathf.Epsilon;
         }
-        widthOverHeight = (float) (1.0 * (double) source.width / (1.0 * (double) source.height));
+        widthOverHeight = (float) (1.0 * source.width / (1.0 * source.height));
         oneOverBaseSize = 1f / 512f;
         dofMaterial.SetFloat("_ForegroundBlurExtrude", foregroundBlurExtrude);
         dofMaterial.SetVector("_CurveParams", new Vector4(simpleTweakMode ? 1f / focalStartCurve : focalStartCurve, simpleTweakMode ? 1f / focalEndCurve : focalEndCurve, num2 * 0.5f, focalDistance01));
-        dofMaterial.SetVector("_InvRenderTargetSize", new Vector4((float) (1.0 / (1.0 * (double) source.width)), (float) (1.0 / (1.0 * (double) source.height)), 0.0f, 0.0f));
+        dofMaterial.SetVector("_InvRenderTargetSize", new Vector4((float) (1.0 / (1.0 * source.width)), (float) (1.0 / (1.0 * source.height)), 0.0f, 0.0f));
         int dividerBasedOnQuality1 = GetDividerBasedOnQuality();
         int dividerBasedOnQuality2 = GetLowResolutionDividerBasedOnQuality(dividerBasedOnQuality1);
         AllocateTextures(blurForeground, source, dividerBasedOnQuality1, dividerBasedOnQuality2);
-        Graphics.Blit((Texture) source, source, dofMaterial, 3);
+        Graphics.Blit(source, source, dofMaterial, 3);
         Downsample(source, mediumRezWorkTexture);
         Blur(mediumRezWorkTexture, mediumRezWorkTexture, DofBlurriness.Low, 4, maxBlurSpread);
         if (bokeh && (BokehDestination.Foreground & bokehDestination) != 0)
         {
           dofMaterial.SetVector("_Threshhold", new Vector4(bokehThresholdContrast, bokehThresholdLuminance, 0.95f, 0.0f));
-          Graphics.Blit((Texture) mediumRezWorkTexture, bokehSource2, dofMaterial, 11);
-          Graphics.Blit((Texture) mediumRezWorkTexture, lowRezWorkTexture);
+          Graphics.Blit(mediumRezWorkTexture, bokehSource2, dofMaterial, 11);
+          Graphics.Blit(mediumRezWorkTexture, lowRezWorkTexture);
           Blur(lowRezWorkTexture, lowRezWorkTexture, bluriness, 0, maxBlurSpread * num1);
         }
         else
@@ -164,31 +166,31 @@
           Downsample(mediumRezWorkTexture, lowRezWorkTexture);
           Blur(lowRezWorkTexture, lowRezWorkTexture, bluriness, 0, maxBlurSpread);
         }
-        dofBlurMaterial.SetTexture("_TapLow", (Texture) lowRezWorkTexture);
-        dofBlurMaterial.SetTexture("_TapMedium", (Texture) mediumRezWorkTexture);
-        Graphics.Blit((Texture) null, finalDefocus, dofBlurMaterial, 3);
+        dofBlurMaterial.SetTexture("_TapLow", lowRezWorkTexture);
+        dofBlurMaterial.SetTexture("_TapMedium", mediumRezWorkTexture);
+        Graphics.Blit(null, finalDefocus, dofBlurMaterial, 3);
         if (bokeh && (BokehDestination.Foreground & bokehDestination) != 0)
           AddBokeh(bokehSource2, bokehSource, finalDefocus);
-        dofMaterial.SetTexture("_TapLowBackground", (Texture) finalDefocus);
-        dofMaterial.SetTexture("_TapMedium", (Texture) mediumRezWorkTexture);
-        Graphics.Blit((Texture) source, blurForeground ? foregroundTexture : destination, dofMaterial, visualize ? 2 : 0);
+        dofMaterial.SetTexture("_TapLowBackground", finalDefocus);
+        dofMaterial.SetTexture("_TapMedium", mediumRezWorkTexture);
+        Graphics.Blit(source, blurForeground ? foregroundTexture : destination, dofMaterial, visualize ? 2 : 0);
         if (blurForeground)
         {
-          Graphics.Blit((Texture) foregroundTexture, source, dofMaterial, 5);
+          Graphics.Blit(foregroundTexture, source, dofMaterial, 5);
           Downsample(source, mediumRezWorkTexture);
           BlurFg(mediumRezWorkTexture, mediumRezWorkTexture, DofBlurriness.Low, 2, maxBlurSpread);
           if (bokeh && (BokehDestination.Foreground & bokehDestination) != 0)
           {
             dofMaterial.SetVector("_Threshhold", new Vector4(bokehThresholdContrast * 0.5f, bokehThresholdLuminance, 0.0f, 0.0f));
-            Graphics.Blit((Texture) mediumRezWorkTexture, bokehSource2, dofMaterial, 11);
-            Graphics.Blit((Texture) mediumRezWorkTexture, lowRezWorkTexture);
+            Graphics.Blit(mediumRezWorkTexture, bokehSource2, dofMaterial, 11);
+            Graphics.Blit(mediumRezWorkTexture, lowRezWorkTexture);
             BlurFg(lowRezWorkTexture, lowRezWorkTexture, bluriness, 1, maxBlurSpread * num1);
           }
           else
             BlurFg(mediumRezWorkTexture, lowRezWorkTexture, bluriness, 1, maxBlurSpread);
-          Graphics.Blit((Texture) lowRezWorkTexture, finalDefocus);
-          dofMaterial.SetTexture("_TapLowForeground", (Texture) finalDefocus);
-          Graphics.Blit((Texture) source, destination, dofMaterial, visualize ? 1 : 4);
+          Graphics.Blit(lowRezWorkTexture, finalDefocus);
+          dofMaterial.SetTexture("_TapLowForeground", finalDefocus);
+          Graphics.Blit(source, destination, dofMaterial, visualize ? 1 : 4);
           if (bokeh && (BokehDestination.Foreground & bokehDestination) != 0)
             AddBokeh(bokehSource2, bokehSource, destination);
         }
@@ -210,17 +212,17 @@
         if (iterations > DofBlurriness.High)
         {
           dofBlurMaterial.SetVector("offsets", new Vector4(0.0f, spread * oneOverBaseSize, 0.0f, 0.0f));
-          Graphics.Blit((Texture) to, temporary, dofBlurMaterial, blurPass);
+          Graphics.Blit(to, temporary, dofBlurMaterial, blurPass);
           dofBlurMaterial.SetVector("offsets", new Vector4(spread / widthOverHeight * oneOverBaseSize, 0.0f, 0.0f, 0.0f));
-          Graphics.Blit((Texture) temporary, to, dofBlurMaterial, blurPass);
+          Graphics.Blit(temporary, to, dofBlurMaterial, blurPass);
         }
       }
       else
       {
         dofBlurMaterial.SetVector("offsets", new Vector4(0.0f, spread * oneOverBaseSize, 0.0f, 0.0f));
-        Graphics.Blit((Texture) from, temporary, dofBlurMaterial, blurPass);
+        Graphics.Blit(from, temporary, dofBlurMaterial, blurPass);
         dofBlurMaterial.SetVector("offsets", new Vector4(spread / widthOverHeight * oneOverBaseSize, 0.0f, 0.0f, 0.0f));
-        Graphics.Blit((Texture) temporary, to, dofBlurMaterial, blurPass);
+        Graphics.Blit(temporary, to, dofBlurMaterial, blurPass);
       }
       RenderTexture.ReleaseTemporary(temporary);
     }
@@ -232,7 +234,7 @@
       int blurPass,
       float spread)
     {
-      dofBlurMaterial.SetTexture("_TapHigh", (Texture) from);
+      dofBlurMaterial.SetTexture("_TapHigh", from);
       RenderTexture temporary = RenderTexture.GetTemporary(to.width, to.height);
       if (iterations > DofBlurriness.Low)
       {
@@ -240,17 +242,17 @@
         if (iterations > DofBlurriness.High)
         {
           dofBlurMaterial.SetVector("offsets", new Vector4(0.0f, spread * oneOverBaseSize, 0.0f, 0.0f));
-          Graphics.Blit((Texture) to, temporary, dofBlurMaterial, blurPass);
+          Graphics.Blit(to, temporary, dofBlurMaterial, blurPass);
           dofBlurMaterial.SetVector("offsets", new Vector4(spread / widthOverHeight * oneOverBaseSize, 0.0f, 0.0f, 0.0f));
-          Graphics.Blit((Texture) temporary, to, dofBlurMaterial, blurPass);
+          Graphics.Blit(temporary, to, dofBlurMaterial, blurPass);
         }
       }
       else
       {
         dofBlurMaterial.SetVector("offsets", new Vector4(0.0f, spread * oneOverBaseSize, 0.0f, 0.0f));
-        Graphics.Blit((Texture) from, temporary, dofBlurMaterial, blurPass);
+        Graphics.Blit(from, temporary, dofBlurMaterial, blurPass);
         dofBlurMaterial.SetVector("offsets", new Vector4(spread / widthOverHeight * oneOverBaseSize, 0.0f, 0.0f, 0.0f));
-        Graphics.Blit((Texture) temporary, to, dofBlurMaterial, blurPass);
+        Graphics.Blit(temporary, to, dofBlurMaterial, blurPass);
       }
       RenderTexture.ReleaseTemporary(temporary);
     }
@@ -263,19 +265,19 @@
       RenderTexture tmp)
     {
       dofBlurMaterial.SetVector("offsets", new Vector4(0.0f, spread * oneOverBaseSize, 0.0f, 0.0f));
-      Graphics.Blit((Texture) from, tmp, dofBlurMaterial, blurPass);
+      Graphics.Blit(from, tmp, dofBlurMaterial, blurPass);
       dofBlurMaterial.SetVector("offsets", new Vector4(spread / widthOverHeight * oneOverBaseSize, 0.0f, 0.0f, 0.0f));
-      Graphics.Blit((Texture) tmp, to, dofBlurMaterial, blurPass);
+      Graphics.Blit(tmp, to, dofBlurMaterial, blurPass);
       dofBlurMaterial.SetVector("offsets", new Vector4(spread / widthOverHeight * oneOverBaseSize, spread * oneOverBaseSize, 0.0f, 0.0f));
-      Graphics.Blit((Texture) to, tmp, dofBlurMaterial, blurPass);
+      Graphics.Blit(to, tmp, dofBlurMaterial, blurPass);
       dofBlurMaterial.SetVector("offsets", new Vector4(spread / widthOverHeight * oneOverBaseSize, -spread * oneOverBaseSize, 0.0f, 0.0f));
-      Graphics.Blit((Texture) tmp, to, dofBlurMaterial, blurPass);
+      Graphics.Blit(tmp, to, dofBlurMaterial, blurPass);
     }
 
     private void Downsample(RenderTexture from, RenderTexture to)
     {
-      dofMaterial.SetVector("_InvRenderTargetSize", new Vector4((float) (1.0 / (1.0 * (double) to.width)), (float) (1.0 / (1.0 * (double) to.height)), 0.0f, 0.0f));
-      Graphics.Blit((Texture) from, to, dofMaterial, SMOOTH_DOWNSAMPLE_PASS);
+      dofMaterial.SetVector("_InvRenderTargetSize", new Vector4((float) (1.0 / (1.0 * to.width)), (float) (1.0 / (1.0 * to.height)), 0.0f, 0.0f));
+      Graphics.Blit(from, to, dofMaterial, SMOOTH_DOWNSAMPLE_PASS);
     }
 
     private void AddBokeh(
@@ -291,10 +293,10 @@
       GL.PushMatrix();
       GL.LoadIdentity();
       bokehInfo.filterMode = FilterMode.Point;
-      float num = (float) ((double) bokehInfo.width * 1.0 / ((double) bokehInfo.height * 1.0));
-      float x = (float) (2.0 / (1.0 * (double) bokehInfo.width)) + bokehScale * maxBlurSpread * BOKEH_EXTRA_BLUR * oneOverBaseSize;
-      bokehMaterial.SetTexture("_Source", (Texture) bokehInfo);
-      bokehMaterial.SetTexture("_MainTex", (Texture) bokehTexture);
+      float num = (float) (bokehInfo.width * 1.0 / (bokehInfo.height * 1.0));
+      float x = (float) (2.0 / (1.0 * bokehInfo.width)) + bokehScale * maxBlurSpread * BOKEH_EXTRA_BLUR * oneOverBaseSize;
+      bokehMaterial.SetTexture("_Source", bokehInfo);
+      bokehMaterial.SetTexture("_MainTex", bokehTexture);
       bokehMaterial.SetVector("_ArScale", new Vector4(x, x * num, 0.5f, 0.5f * num));
       bokehMaterial.SetFloat("_Intensity", bokehIntensity);
       bokehMaterial.SetPass(0);
@@ -304,7 +306,7 @@
           Graphics.DrawMeshNow(mesh, Matrix4x4.identity);
       }
       GL.PopMatrix();
-      Graphics.Blit((Texture) tempTex, finalTarget, dofMaterial, 8);
+      Graphics.Blit(tempTex, finalTarget, dofMaterial, 8);
       bokehInfo.filterMode = FilterMode.Bilinear;
     }
 
@@ -331,14 +333,14 @@
       int divider,
       int lowTexDivider)
     {
-      foregroundTexture = (RenderTexture) null;
+      foregroundTexture = null;
       if (blurForeground)
         foregroundTexture = RenderTexture.GetTemporary(source.width, source.height, 0);
       mediumRezWorkTexture = RenderTexture.GetTemporary(source.width / divider, source.height / divider, 0);
       finalDefocus = RenderTexture.GetTemporary(source.width / divider, source.height / divider, 0);
       lowRezWorkTexture = RenderTexture.GetTemporary(source.width / lowTexDivider, source.height / lowTexDivider, 0);
-      bokehSource = (RenderTexture) null;
-      bokehSource2 = (RenderTexture) null;
+      bokehSource = null;
+      bokehSource2 = null;
       if (bokeh)
       {
         bokehSource = RenderTexture.GetTemporary(source.width / (lowTexDivider * bokehDownsample), source.height / (lowTexDivider * bokehDownsample), 0, RenderTextureFormat.ARGBHalf);

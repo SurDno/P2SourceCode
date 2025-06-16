@@ -6,31 +6,34 @@ using Engine.Common.Components.Storable;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 public class ItemSelector : MonoBehaviour, IChangeParameterListener
 {
   private static List<IStorableComponent> searchBuffer = new List<IStorableComponent>();
   [SerializeField]
-  private SwitchingItemView2 view = null;
+  private SwitchingItemView2 view;
   [SerializeField]
-  private EntityView itemEntityView = null;
+  private EntityView itemEntityView;
   [SerializeField]
-  public Button previousButton = (Button) null;
+  public Button previousButton;
   [SerializeField]
-  public Button nextButton = (Button) null;
+  public Button nextButton;
   [SerializeField]
   private List<StorableGroup> groups = new List<StorableGroup>();
   [SerializeField]
-  private bool avoidNull = false;
+  private bool avoidNull;
   [SerializeField]
   [FormerlySerializedAs("filterDurability")]
-  private bool sortByDurability = false;
+  private bool sortByDurability;
   [SerializeField]
-  private bool ignoreBroken = false;
+  private bool ignoreBroken;
   [SerializeField]
   private Image selectedImage;
   [Inspected(Mode = ExecuteMode.Runtime, Mutable = false)]
-  private IStorageComponent storage = null;
+  private IStorageComponent storage;
 
   public event Func<ItemSelector, IStorableComponent, bool> ValidateItemEvent;
 
@@ -53,13 +56,13 @@ public class ItemSelector : MonoBehaviour, IChangeParameterListener
     get => view?.Storable;
     set
     {
-      if ((UnityEngine.Object) view == (UnityEngine.Object) null)
+      if (view == null)
         return;
       StorableComponent storable = view.Storable;
       if (storable == value)
         return;
       view.Storable = (StorableComponent) value;
-      if ((UnityEngine.Object) itemEntityView != (UnityEngine.Object) null)
+      if (itemEntityView != null)
         itemEntityView.Value = value?.Owner;
       if (storable != null && (sortByDurability || ignoreBroken))
         storable.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability)?.RemoveListener(this);
@@ -97,18 +100,18 @@ public class ItemSelector : MonoBehaviour, IChangeParameterListener
 
   private void Awake()
   {
-    if ((UnityEngine.Object) previousButton != (UnityEngine.Object) null)
-      previousButton.onClick.AddListener(new UnityAction(SelectPrevious));
-    if (!((UnityEngine.Object) nextButton != (UnityEngine.Object) null))
+    if (previousButton != null)
+      previousButton.onClick.AddListener(SelectPrevious);
+    if (!(nextButton != null))
       return;
-    nextButton.onClick.AddListener(new UnityAction(SelectNext));
+    nextButton.onClick.AddListener(SelectNext);
   }
 
   private void SetButtonsInteractable(bool value)
   {
-    if ((UnityEngine.Object) previousButton != (UnityEngine.Object) null)
+    if (previousButton != null)
       previousButton.interactable = value;
-    if (!((UnityEngine.Object) nextButton != (UnityEngine.Object) null))
+    if (!(nextButton != null))
       return;
     nextButton.interactable = value;
   }
@@ -205,7 +208,7 @@ public class ItemSelector : MonoBehaviour, IChangeParameterListener
 
   public void OnParameterChanged(IParameter parameter)
   {
-    Debug.Log((object) ObjectInfoUtility.GetStream().Append("Item Selector : Durability changed to ").Append(((IParameter<float>) parameter).Value));
+    Debug.Log(ObjectInfoUtility.GetStream().Append("Item Selector : Durability changed to ").Append(((IParameter<float>) parameter).Value));
     if (((IParameter<float>) parameter).Value > 0.0)
       return;
     SelectDefaultItem();

@@ -10,6 +10,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -31,7 +32,7 @@ namespace Engine.BehaviourNodes.Conditionals
       IEntity entity = EntityUtility.GetEntity(gameObject);
       if (entity == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
         return TaskStatus.Failure;
       }
       StorageComponent component1 = entity.GetComponent<StorageComponent>();

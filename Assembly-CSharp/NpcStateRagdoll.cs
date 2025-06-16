@@ -2,6 +2,8 @@
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateRagdoll : INpcState, INpcStateRagdoll
 {
@@ -37,22 +39,22 @@ public class NpcStateRagdoll : INpcState, INpcStateRagdoll
     if (inited)
       return true;
     enemy = pivot.GetNpcEnemy();
-    behavior = (Behaviour) pivot.GetBehavior();
+    behavior = pivot.GetBehavior();
     rigidbody = pivot.GetRigidbody();
     collider = GameObject.GetComponent<CapsuleCollider>();
     animator = pivot.GetAnimator();
     weaponService = pivot.GetNpcWeaponService();
     agent = pivot.GetAgent();
-    if ((UnityEngine.Object) agent == (UnityEngine.Object) null)
+    if (agent == null)
     {
-      Debug.LogError((object) ("No navmesh agent " + GameObject.name), (UnityEngine.Object) GameObject);
+      Debug.LogError("No navmesh agent " + GameObject.name, GameObject);
       failed = true;
       return false;
     }
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -74,17 +76,17 @@ public class NpcStateRagdoll : INpcState, INpcStateRagdoll
   {
     if (!TryInit())
       return;
-    if ((bool) (UnityEngine.Object) rigidbody)
+    if ((bool) (Object) rigidbody)
       initiallyKinematic = rigidbody.isKinematic;
-    if ((bool) (UnityEngine.Object) collider)
+    if ((bool) (Object) collider)
       initiallyColliderEnabled = collider.enabled;
-    if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+    if (weaponService != null)
       weaponService.Weapon = npcState.Weapon;
     npcState.WeaponChangeEvent += State_WeaponChangeEvent;
     Status = NpcStateStatusEnum.Running;
-    if ((bool) (UnityEngine.Object) rigidbody)
+    if ((bool) (Object) rigidbody)
       rigidbody.isKinematic = true;
-    if ((bool) (UnityEngine.Object) collider)
+    if ((bool) (Object) collider)
       collider.enabled = false;
     if (pivot.HierarhyStructure == Pivot.HierarhyStructureEnum.PuppetMaster)
       animatorState.SetTrigger("Triggers/Ragdoll");
@@ -105,15 +107,15 @@ public class NpcStateRagdoll : INpcState, INpcStateRagdoll
     agent.enabled = true;
     animatorState.SetTrigger("Fight.Triggers/CancelAttack");
     animatorState.SetTrigger("Fight.Triggers/CancelEscape");
-    if (!(bool) (UnityEngine.Object) enemy)
+    if (!(bool) (Object) enemy)
       return;
-    enemy.RotationTarget = (Transform) null;
+    enemy.RotationTarget = null;
     enemy.RotateByPath = false;
   }
 
   private void State_WeaponChangeEvent(WeaponEnum weapon)
   {
-    if (!((UnityEngine.Object) weaponService != (UnityEngine.Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = weapon;
   }
@@ -122,9 +124,9 @@ public class NpcStateRagdoll : INpcState, INpcStateRagdoll
   {
     if (failed)
       return;
-    if ((bool) (UnityEngine.Object) rigidbody)
+    if ((bool) (Object) rigidbody)
       rigidbody.isKinematic = initiallyKinematic;
-    if ((bool) (UnityEngine.Object) collider)
+    if ((bool) (Object) collider)
       collider.enabled = initiallyColliderEnabled;
     if (pivot.HierarhyStructure == Pivot.HierarhyStructureEnum.PuppetMaster)
       animator.SetLayerWeight(ragdollLayerIndex, initialRagdollLayerWeight);

@@ -6,6 +6,8 @@ using Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay;
 using Engine.Source.Audio;
 using Engine.Source.Services.Notifications;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -62,9 +64,9 @@ namespace Engine.Impl.UI.Controls
 
     private void Play()
     {
-      if ((Object) clip == (Object) null || (Object) mixer == (Object) null)
+      if (clip == null || mixer == null)
         return;
-      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     }
 
     protected override void Awake()
@@ -80,7 +82,7 @@ namespace Engine.Impl.UI.Controls
       int result = 0;
       ApplyValue(ref result, values, 0);
       float num1 = 0.0f;
-      int num2 = (int) Mathf.Sign((float) result);
+      int num2 = (int) Mathf.Sign(result);
       int index = result * num2;
       if (index >= 0 && index < deltas.Length)
         num1 = (float) (deltas[index] * (double) num2 * 0.5);
@@ -96,7 +98,7 @@ namespace Engine.Impl.UI.Controls
       downEffect.Visible = !flag;
     }
 
-    public void Shutdown() => Object.Destroy((Object) this.gameObject);
+    public void Shutdown() => Destroy(gameObject);
 
     private void SetAlpha(float value)
     {

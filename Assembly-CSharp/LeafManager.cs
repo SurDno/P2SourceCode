@@ -5,6 +5,8 @@ using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
 {
@@ -15,7 +17,7 @@ public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
   [Tooltip("Отсюда будет случайным образом выбираться листья")]
   public GameObject[] leafPrefabs;
   public int poolCapacity = 64;
-  public LayerMask collideLayers = (LayerMask) (int) byte.MaxValue;
+  public LayerMask collideLayers = byte.MaxValue;
   [Space]
   public float radius = 30f;
   [Tooltip("Высота над playerPosition, с которой начинается поиск столкновений. Должно быть выше крыш")]
@@ -50,7 +52,7 @@ public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
       _pool.Push(leafAnimator);
     }
     else
-      UnityEngine.Object.Destroy((UnityEngine.Object) leafAnimator.gameObject);
+      Destroy(leafAnimator.gameObject);
   }
 
   private void Spawn()
@@ -63,21 +65,21 @@ public class LeafManager : MonoBehaviourInstance<LeafManager>, IUpdatable
       else
         goto label_4;
     }
-    while ((UnityEngine.Object) leafAnimator == (UnityEngine.Object) null);
+    while (leafAnimator == null);
     leafAnimator.gameObject.SetActive(true);
 label_4:
-    if ((UnityEngine.Object) leafAnimator == (UnityEngine.Object) null)
+    if (leafAnimator == null)
     {
-      GameObject gameObject1 = UnityEngine.Object.Instantiate<GameObject>(animatorPrefab);
-      gameObject1.transform.SetParent(this.transform, false);
+      GameObject gameObject1 = Instantiate(animatorPrefab);
+      gameObject1.transform.SetParent(transform, false);
       leafAnimator = gameObject1.GetComponent<LeafAnimator>();
       leafAnimator.manager = this;
-      GameObject gameObject2 = UnityEngine.Object.Instantiate<GameObject>(leafPrefabs[UnityEngine.Random.Range(0, leafPrefabs.Length)]);
+      GameObject gameObject2 = Instantiate(leafPrefabs[Random.Range(0, leafPrefabs.Length)]);
       gameObject2.transform.SetParent(leafAnimator.transform, false);
       leafAnimator.leafTransform = gameObject2.transform;
       leafAnimator.leafRenderer = gameObject2.GetComponent<Renderer>();
     }
-    float t = UnityEngine.Random.value;
+    float t = Random.value;
     leafAnimator.flyFade = Mathf.Lerp(leafAnimator.flyFade, alternativeSettings.flyFade, t);
     leafAnimator.layFade = Mathf.Lerp(leafAnimator.layFade, alternativeSettings.layFade, t);
     leafAnimator.firstPeriod = Mathf.Lerp(leafAnimator.firstPeriod, alternativeSettings.firstPeriod, t);
@@ -89,22 +91,22 @@ label_4:
     leafAnimator.secondRadius = Mathf.Lerp(leafAnimator.secondRadius, alternativeSettings.secondRadius, t);
     leafAnimator.slope = Mathf.Lerp(leafAnimator.slope, alternativeSettings.slope, t);
     leafAnimator.velocity = Vector3.Lerp(leafAnimator.velocity, alternativeSettings.velocity, t);
-    leafAnimator.rotation = UnityEngine.Random.Range(0.0f, 360f);
+    leafAnimator.rotation = Random.Range(0.0f, 360f);
     Vector3 vector3_1 = playerPosition + _halfPlayerVelocity * leafAnimator.flyTime;
-    Vector2 vector2_1 = UnityEngine.Random.insideUnitCircle * this.radius;
+    Vector2 vector2_1 = Random.insideUnitCircle * this.radius;
     Vector3 vector3_2 = new Vector3(vector3_1.x + vector2_1.x, playerPosition.y, vector3_1.z + vector2_1.y);
-    Vector2 vector2_2 = UnityEngine.Random.insideUnitCircle * deviation + wind;
+    Vector2 vector2_2 = Random.insideUnitCircle * deviation + wind;
     Vector3 direction = new Vector3(vector2_2.x, -1f, vector2_2.y);
     float radius = leafAnimator.firstRadius + leafAnimator.secondRadius;
     Vector3 origin1 = vector3_2 - direction * raycastOriginElevation;
     RaycastHit hitInfo;
     Vector3 vector3_3;
-    if (Physics.SphereCast(origin1, radius, direction, out hitInfo, (float) (raycastOriginElevation * (double) direction.magnitude * 2.0), (int) collideLayers, QueryTriggerInteraction.Ignore))
+    if (Physics.SphereCast(origin1, radius, direction, out hitInfo, (float) (raycastOriginElevation * (double) direction.magnitude * 2.0), collideLayers, QueryTriggerInteraction.Ignore))
     {
       Vector3 origin2 = origin1 + direction.normalized * hitInfo.distance;
-      if (Physics.Raycast(origin2, direction, out hitInfo, (float) (radius * (double) direction.magnitude * 1.5), (int) collideLayers, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(origin2, direction, out hitInfo, (float) (radius * (double) direction.magnitude * 1.5), collideLayers, QueryTriggerInteraction.Ignore))
       {
-        if ((double) hitInfo.normal.y > minLandingNormalY)
+        if (hitInfo.normal.y > (double) minLandingNormalY)
         {
           leafAnimator.landing = true;
           leafAnimator.landingNormal = hitInfo.normal;
@@ -165,7 +167,7 @@ label_4:
 
   void IUpdatable.ComputeUpdate()
   {
-    if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableLeaf || !this.gameObject.activeInHierarchy)
+    if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableLeaf || !gameObject.activeInHierarchy)
       return;
     TimeSpan timeSpan = timeService.RealTime - prevTime;
     prevTime = timeService.RealTime;

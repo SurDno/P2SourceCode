@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class HideableEventView : EventView
   {
@@ -14,13 +16,13 @@
     public override void Invoke()
     {
       Show();
-      this.CancelInvoke("Hide");
-      this.Invoke("Hide", length);
+      CancelInvoke("Hide");
+      Invoke("Hide", length);
     }
 
     private void OnDisable()
     {
-      this.CancelInvoke("Hide");
+      CancelInvoke("Hide");
       Hide();
     }
   }

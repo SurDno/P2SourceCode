@@ -1,6 +1,8 @@
 ﻿using Cofe.Utility;
 using Engine.Behaviours.Components;
 using Engine.Source.Audio;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Behaviours.Unity.Mecanim
 {
@@ -25,13 +27,13 @@ namespace Engine.Behaviours.Unity.Mecanim
       AnimatorStateInfo stateInfo,
       int layerIndex)
     {
-      if ((UnityEngine.Object) Clip == (UnityEngine.Object) null)
+      if (Clip == null)
         return;
       Pivot pivot = animator.gameObject.GetComponent<Pivot>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
-        Debug.LogWarningFormat("{0} doesn't contain {1} unity component.", (object) animator.gameObject.name, (object) typeof (Pivot).Name);
+      if (pivot == null)
+        Debug.LogWarningFormat("{0} doesn't contain {1} unity component.", animator.gameObject.name, typeof (Pivot).Name);
       else
-        CoroutineService.Instance.WaitFrame(() => SoundUtility.PlayAudioClip3D(pivot.GetAimTransform(BodyPart), Clip, AudioMixer2, Volume, MinDistance, MaxDistance, true, 0.0f, context: TypeUtility.GetTypeName(GetType()) + " " + this.name));
+        CoroutineService.Instance.WaitFrame(() => SoundUtility.PlayAudioClip3D(pivot.GetAimTransform(BodyPart), Clip, AudioMixer2, Volume, MinDistance, MaxDistance, true, 0.0f, context: TypeUtility.GetTypeName(GetType()) + " " + name));
     }
   }
 }

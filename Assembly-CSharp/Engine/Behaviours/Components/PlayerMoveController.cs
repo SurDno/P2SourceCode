@@ -5,6 +5,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Utility;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Behaviours.Components
 {
@@ -50,14 +51,14 @@ namespace Engine.Behaviours.Components
 
     private void Awake()
     {
-      characterController = this.GetComponent<CharacterController>();
-      behavior = this.GetComponent<EngineBehavior>();
-      weaponService = this.GetComponent<PlayerWeaponServiceNew>();
+      characterController = GetComponent<CharacterController>();
+      behavior = GetComponent<EngineBehavior>();
+      weaponService = GetComponent<PlayerWeaponServiceNew>();
     }
 
     protected void FixedUpdate()
     {
-      if ((UnityEngine.Object) characterController == (UnityEngine.Object) null || controllerComponent == null || !PlayerUtility.IsPlayerCanControlling)
+      if (characterController == null || controllerComponent == null || !PlayerUtility.IsPlayerCanControlling)
         return;
       UpdateCharacterPhysics(Time.fixedDeltaTime);
       UpdateStandart(Time.fixedDeltaTime);
@@ -85,7 +86,7 @@ namespace Engine.Behaviours.Components
       {
         if (falling)
         {
-          float num = beginFallingY - this.transform.position.y;
+          float num = beginFallingY - transform.position.y;
           Action<float> fallDamageEvent = FallDamageEvent;
           if (fallDamageEvent != null)
             fallDamageEvent(num);
@@ -103,7 +104,7 @@ namespace Engine.Behaviours.Components
       if (!characterController.isGrounded && !jumping && previouslyGrounded)
         moveDir.y = 0.0f;
       previouslyGrounded = characterController.isGrounded;
-      prevPositionY = this.transform.position.y;
+      prevPositionY = transform.position.y;
     }
 
     private void UpdateCharacterPhysics(float deltaTime)
@@ -113,10 +114,10 @@ namespace Engine.Behaviours.Components
         if (weaponService.IsWeaponOn())
         {
           Vector3 fightVelocity = GetFightVelocity();
-          Vector3 vector = this.transform.forward * fightVelocity.z + this.transform.right * fightVelocity.x;
+          Vector3 vector = transform.forward * fightVelocity.z + transform.right * fightVelocity.x;
           LayerMask puddlesLayer = ScriptableObjectInstance<GameSettingsData>.Instance.PuddlesLayer;
           RaycastHit hitInfo;
-          bool flag = Physics.Raycast(this.transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out hitInfo, 1f, -1 ^ (int) puddlesLayer, QueryTriggerInteraction.Ignore);
+          bool flag = Physics.Raycast(transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out hitInfo, 1f, -1 ^ puddlesLayer, QueryTriggerInteraction.Ignore);
           Vector3 vector3 = Vector3.ProjectOnPlane(vector, flag ? hitInfo.normal : Vector3.up).normalized * fightVelocity.magnitude;
           moveDir.x = vector3.x;
           moveDir.z = vector3.z;
@@ -124,13 +125,13 @@ namespace Engine.Behaviours.Components
         else
         {
           Vector3 velocity = GetVelocity();
-          float num1 = (double) velocity.z > 0.0 ? ScriptableObjectInstance<InputSettingsData>.Instance.RunSpeed : ScriptableObjectInstance<InputSettingsData>.Instance.RunBackSpeed;
-          float num2 = (double) velocity.z > 0.0 ? ScriptableObjectInstance<InputSettingsData>.Instance.WalkSpeed : ScriptableObjectInstance<InputSettingsData>.Instance.WalkBackSpeed;
+          float num1 = velocity.z > 0.0 ? ScriptableObjectInstance<InputSettingsData>.Instance.RunSpeed : ScriptableObjectInstance<InputSettingsData>.Instance.RunBackSpeed;
+          float num2 = velocity.z > 0.0 ? ScriptableObjectInstance<InputSettingsData>.Instance.WalkSpeed : ScriptableObjectInstance<InputSettingsData>.Instance.WalkBackSpeed;
           float num3 = controllerComponent.IsRun.Value ? num1 * controllerComponent.RunModifier.Value : (controllerComponent.IsStelth.Value ? ScriptableObjectInstance<InputSettingsData>.Instance.SneakSpeed : num2);
-          Vector3 vector = this.transform.forward * velocity.z + this.transform.right * velocity.x;
+          Vector3 vector = transform.forward * velocity.z + transform.right * velocity.x;
           LayerMask puddlesLayer = ScriptableObjectInstance<GameSettingsData>.Instance.PuddlesLayer;
           RaycastHit hitInfo;
-          bool flag = Physics.Raycast(this.transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out hitInfo, 1f, -1 ^ (int) puddlesLayer, QueryTriggerInteraction.Ignore);
+          bool flag = Physics.Raycast(transform.position + new Vector3(0.0f, 0.5f, 0.0f), Vector3.down, out hitInfo, 1f, -1 ^ puddlesLayer, QueryTriggerInteraction.Ignore);
           Vector3 vector3 = Vector3.ProjectOnPlane(vector, flag ? hitInfo.normal : Vector3.up).normalized * velocity.magnitude;
           moveDir.x = vector3.x * num3;
           moveDir.z = vector3.z * num3;

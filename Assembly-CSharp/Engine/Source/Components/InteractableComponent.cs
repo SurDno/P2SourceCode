@@ -18,6 +18,7 @@ using Engine.Source.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -66,13 +67,13 @@ namespace Engine.Source.Components
       {
         if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
+          Debug.LogError("Template not found, owner : " + Owner.GetInfo());
           return true;
         }
         InteractableComponent component = template.GetComponent<InteractableComponent>();
         if (component == null)
         {
-          Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
+          Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
           return true;
         }
         return isEnabled != component.isEnabled || Title != component.Title;
@@ -103,9 +104,9 @@ namespace Engine.Source.Components
 
     private IEnumerator ShowSmallLoading()
     {
-      yield return (object) new WaitForSeconds(0.05f);
+      yield return new WaitForSeconds(0.05f);
       ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(true);
-      showSmallLoadingCoroutine = (Coroutine) null;
+      showSmallLoadingCoroutine = null;
     }
 
     public void BeginInteract(IEntity player, InteractType type)

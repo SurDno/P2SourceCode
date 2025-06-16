@@ -5,6 +5,8 @@ using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Audio;
 using Engine.Source.Components.BoundCharacters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class BoundCharacterStateChangeView : MonoBehaviour
 {
@@ -49,11 +51,11 @@ public class BoundCharacterStateChangeView : MonoBehaviour
 
   public event Action FinishEvent;
 
-  public void ContinueWithoutRoll() => this.Invoke("Reveal", delayWithoutRoll);
+  public void ContinueWithoutRoll() => Invoke("Reveal", delayWithoutRoll);
 
   private float FakeRoll(float min, float max)
   {
-    float num = UnityEngine.Random.value;
+    float num = Random.value;
     float t = (float) (0.10000000149011612 + num * num * 0.89999997615814209);
     return Mathf.LerpUnclamped(min, max, t);
   }

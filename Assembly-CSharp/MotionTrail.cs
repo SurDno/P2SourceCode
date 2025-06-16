@@ -1,15 +1,17 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+
+[ExecuteInEditMode]
 public class MotionTrail : MonoBehaviour
 {
   [SerializeField]
-  private Shader blendShader = (Shader) null;
+  private Shader blendShader;
   [SerializeField]
   [Range(0.0f, 1f)]
   [Tooltip("Approximate opacity of the previous frame at 30 fps")]
   private float strength;
-  private Material material = (Material) null;
+  private Material material;
   private int propertyId;
-  private RenderTexture historyBuffer = (RenderTexture) null;
+  private RenderTexture historyBuffer;
 
   public float Strength
   {
@@ -19,7 +21,7 @@ public class MotionTrail : MonoBehaviour
 
   private void OnDisable()
   {
-    if (!((Object) historyBuffer != (Object) null))
+    if (!(historyBuffer != null))
       return;
     DestroyBuffer(ref historyBuffer);
   }
@@ -28,15 +30,15 @@ public class MotionTrail : MonoBehaviour
   {
     if (strength == 0.0 || !MaterialValid())
     {
-      if ((Object) historyBuffer != (Object) null)
+      if (historyBuffer != null)
         DestroyBuffer(ref historyBuffer);
-      Graphics.Blit((Texture) source, destination);
+      Graphics.Blit(source, destination);
     }
-    else if ((Object) this.historyBuffer == (Object) null)
+    else if (this.historyBuffer == null)
     {
       CreateHistoryBuffer(source);
-      Graphics.Blit((Texture) source, historyBuffer);
-      Graphics.Blit((Texture) source, destination);
+      Graphics.Blit(source, historyBuffer);
+      Graphics.Blit(source, destination);
     }
     else
     {
@@ -44,12 +46,12 @@ public class MotionTrail : MonoBehaviour
       {
         RenderTexture historyBuffer = this.historyBuffer;
         CreateHistoryBuffer(source);
-        Graphics.Blit((Texture) historyBuffer, this.historyBuffer);
+        Graphics.Blit(historyBuffer, this.historyBuffer);
         DestroyBuffer(ref historyBuffer);
       }
       material.SetFloat(propertyId, 1f - Mathf.Pow(strength, Time.deltaTime * 30f));
-      Graphics.Blit((Texture) source, this.historyBuffer, material);
-      Graphics.Blit((Texture) this.historyBuffer, destination);
+      Graphics.Blit(source, this.historyBuffer, material);
+      Graphics.Blit(this.historyBuffer, destination);
     }
   }
 
@@ -60,9 +62,9 @@ public class MotionTrail : MonoBehaviour
 
   private bool MaterialValid()
   {
-    if ((Object) material != (Object) null)
+    if (material != null)
       return true;
-    if ((Object) blendShader == (Object) null || !blendShader.isSupported)
+    if (blendShader == null || !blendShader.isSupported)
       return false;
     material = new Material(blendShader);
     propertyId = Shader.PropertyToID("_Opacity");
@@ -77,7 +79,7 @@ public class MotionTrail : MonoBehaviour
   private void DestroyBuffer(ref RenderTexture buffer)
   {
     buffer.Release();
-    Object.Destroy((Object) buffer);
-    buffer = (RenderTexture) null;
+    Destroy(buffer);
+    buffer = null;
   }
 }

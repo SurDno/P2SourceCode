@@ -29,6 +29,11 @@ using Engine.Source.Utility;
 using InputServices;
 using Inspectors;
 using Pingle;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -193,7 +198,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       switch (eventData.button)
       {
         case PointerEventData.InputButton.Left:
-          if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
+          if (windowContextMenu != null)
           {
             HideContextMenu();
             break;
@@ -202,7 +207,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           {
             if (intersect.Storables == null)
             {
-              Debug.LogError((object) "intersect.Storables == null");
+              Debug.LogError("intersect.Storables == null");
               break;
             }
             StorableComponent storable = intersect.Storables.FirstOrDefault();
@@ -248,7 +253,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             DragCancel();
             break;
           }
-          if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
+          if (windowContextMenu != null)
           {
             HideContextMenu();
             break;
@@ -277,14 +282,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       HideContextMenu();
       HideMainNavigationPanel();
       windowContextMenu = ContextMenuWindowNew.Instantiate(InputService.Instance.JoystickUsed ? joystickContextMenuPrefab : contextMenuPrefab);
-      windowContextMenu.Transform.SetParent(this.transform, false);
+      windowContextMenu.Transform.SetParent(transform, false);
       windowContextMenu.Target = storable;
       StorableUI storableUi;
       if (storables.TryGetValue(storable, out storableUi))
       {
-        if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null)
+        if (selectedStorable == null)
           selectedStorable = storableUi;
-        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) storableUi && !selectedStorable.IsSliderItem)
+        if (selectedStorable != storableUi && !selectedStorable.IsSliderItem)
           selectedStorable = storableUi;
         if (InputService.Instance.JoystickUsed)
         {
@@ -320,7 +325,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected void HideContextMenu()
     {
-      if (!((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null))
+      if (!(windowContextMenu != null))
         return;
       windowContextMenu.OnButtonInvestigate -= ShowInvestigationWindow;
       windowContextMenu.OnButtonDrop -= OnButtonDrop;
@@ -328,11 +333,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       windowContextMenu.OnButtonUse -= OnButtonUse;
       windowContextMenu.OnButtonSplit -= OnButtonSplit;
       windowContextMenu.OnClose -= HideContextMenu;
-      UnityEngine.Object.Destroy((UnityEngine.Object) windowContextMenu.gameObject);
+      Destroy(windowContextMenu.gameObject);
       windowContextMenu = null;
       SubscribeNavigation();
       Subscribe();
-      if (storables.Count > 0 && (UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (storables.Count > 0 && selectedStorable != null)
         ShowInfoWindow(selectedStorable.Internal);
       else
         selectedStorable = null;
@@ -368,7 +373,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (storables.TryGetValue(storable, out storableUi))
       {
         storables.Remove(storable);
-        UnityEngine.Object.Destroy((UnityEngine.Object) storableUi.gameObject);
+        Destroy(storableUi.gameObject);
       }
       if (storable.IsDisposed)
         return;
@@ -422,12 +427,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ClearItems();
       drag.Reset();
       HideInfoWindow();
-      if ((UnityEngine.Object) windowInfoNew != (UnityEngine.Object) null)
+      if (windowInfoNew != null)
       {
-        UnityEngine.Object.Destroy((UnityEngine.Object) windowInfoNew.gameObject);
+        Destroy(windowInfoNew.gameObject);
         windowInfoNew = null;
       }
-      if ((UnityEngine.Object) windowSplit != (UnityEngine.Object) null)
+      if (windowSplit != null)
       {
         windowSplit.Dispose();
         windowSplit = null;
@@ -442,13 +447,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       tipsPannelController = controlPanel.GetComponent<ControlTipsController>();
       base.OnEnable();
-      LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
-      if ((UnityEngine.Object) selectionFrame != (UnityEngine.Object) null)
+      LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
+      if (selectionFrame != null)
         selectionFrame.gameObject.SetActive(false);
       lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
       ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
       CursorService.Instance.Free = CursorService.Instance.Visible = true;
-      buttonCancel?.onClick.AddListener(new UnityAction(UICancelClickHandler));
+      buttonCancel?.onClick.AddListener(UICancelClickHandler);
       SubscribeNavigation();
       Subscribe();
     }
@@ -461,7 +466,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       Clear();
       Actor?.Owner?.GetComponent<AttackerPlayerComponent>()?.ApplyInventoryChange();
       ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
-      buttonCancel?.onClick.RemoveListener(new UnityAction(UICancelClickHandler));
+      buttonCancel?.onClick.RemoveListener(UICancelClickHandler);
       UnsubscribeNavigation();
       UnsubscribeConsoleDragNavigation();
       Unsubscribe();
@@ -479,29 +484,29 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (drag.IsEnabled)
         DragCancel();
       controlPanel.gameObject.SetActive(joystick);
-      if (!((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null))
+      if (!(selectedStorable != null))
         return;
       selectedStorable.SetSelected(joystick);
-      if ((UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null && windowContextMenu.IsEnabled)
+      if (windowContextMenu != null && windowContextMenu.IsEnabled)
       {
         HideContextMenu();
         ShowContextMenu((StorableComponent) selectedStorable.Internal);
       }
-      if (InputService.Instance.JoystickUsed && !selectedStorable.IsSliderItem && ((UnityEngine.Object) windowContextMenu == (UnityEngine.Object) null || (UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null && !windowContextMenu.IsEnabled))
+      if (InputService.Instance.JoystickUsed && !selectedStorable.IsSliderItem && (windowContextMenu == null || windowContextMenu != null && !windowContextMenu.IsEnabled))
       {
         HideInfoWindow();
         ShowInfoWindow(selectedStorable.Internal);
       }
-      if ((UnityEngine.Object) windowInfoNew != (UnityEngine.Object) null && windowInfoNew.IsEnabled)
+      if (windowInfoNew != null && windowInfoNew.IsEnabled)
         PositionWindow(windowInfoNew, selectedStorable.Internal);
     }
 
     protected virtual void GetFirstStorable()
     {
       SelectFirstStorableInContainer(storables.Values.ToList());
-      if ((UnityEngine.Object) _selectedStorable == (UnityEngine.Object) null && storables.Count > 0)
-        selectedStorable = this.GetComponentInChildren<StorableUI>();
-      if (!((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null))
+      if (_selectedStorable == null && storables.Count > 0)
+        selectedStorable = GetComponentInChildren<StorableUI>();
+      if (!(_selectedStorable != null))
         return;
       selectedStorable.SetSelected(true);
       ShowInfoWindow(_selectedStorable.Internal);
@@ -514,18 +519,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       PlayerUtility.ShowPlayerHands(false);
       Clear();
       HideInfoWindow();
-      if ((UnityEngine.Object) windowInfoNew == (UnityEngine.Object) null && (UnityEngine.Object) inventoryInfoPrefabNew != (UnityEngine.Object) null)
+      if (windowInfoNew == null && inventoryInfoPrefabNew != null)
       {
         windowInfoNew = InfoWindowNew.Instantiate(WithPrice(), inventoryInfoPrefabNew);
-        windowInfoNew.Transform.SetParent(this.transform, false);
+        windowInfoNew.Transform.SetParent(transform, false);
         windowInfoNew.IsEnabled = false;
       }
-      if ((UnityEngine.Object) windowSplit == (UnityEngine.Object) null)
+      if (windowSplit == null)
       {
         windowSplit = SplitGraphic.Instantiate(inventorySplitPrefab);
-        if ((UnityEngine.Object) windowSplit != (UnityEngine.Object) null)
+        if (windowSplit != null)
         {
-          windowSplit.Transform.SetParent(this.transform, false);
+          windowSplit.Transform.SetParent(transform, false);
           windowSplit.IsEnabled = false;
           windowSplit.Disable_Event += SplitDisableHandler;
         }
@@ -586,12 +591,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (inventoryContainer == null)
         return;
       bool b = CanOpenContainer(inventoryContainer);
-      if ((UnityEngine.Object) uiContainer.ImageForeground != (UnityEngine.Object) null)
+      if (uiContainer.ImageForeground != null)
       {
-        uiContainer.ImageForeground.sprite = inventoryContainer.OpenState.Value == ContainerOpenStateEnum.Open ? (Sprite) null : inventoryContainer.GetImageForeground();
-        uiContainer.ImageForeground.gameObject.SetActive((UnityEngine.Object) uiContainer.ImageForeground.sprite != (UnityEngine.Object) null);
+        uiContainer.ImageForeground.sprite = inventoryContainer.OpenState.Value == ContainerOpenStateEnum.Open ? null : inventoryContainer.GetImageForeground();
+        uiContainer.ImageForeground.gameObject.SetActive(uiContainer.ImageForeground.sprite != null);
       }
-      if ((UnityEngine.Object) uiContainer.ImageIcon != (UnityEngine.Object) null)
+      if (uiContainer.ImageIcon != null)
       {
         if (!inventoryContainer.Available.Value)
         {
@@ -604,12 +609,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           uiContainer.SetIconEnabled(b);
         }
         else
-          uiContainer.ImageIcon.sprite = (Sprite) null;
-        uiContainer.ImageIcon.gameObject.SetActive((UnityEngine.Object) uiContainer.ImageIcon.sprite != (UnityEngine.Object) null);
+          uiContainer.ImageIcon.sprite = null;
+        uiContainer.ImageIcon.gameObject.SetActive(uiContainer.ImageIcon.sprite != null);
       }
-      if ((UnityEngine.Object) uiContainer.ImageDisease != (UnityEngine.Object) null)
+      if (uiContainer.ImageDisease != null)
         uiContainer.ImageDisease.gameObject.SetActive(inventoryContainer.OpenState.Value != ContainerOpenStateEnum.Open && inventoryContainer.Disease.Value > 0.0);
-      if ((UnityEngine.Object) uiContainer.ImageLock != (UnityEngine.Object) null)
+      if (uiContainer.ImageLock != null)
       {
         if (inventoryContainer.OpenState.Value == ContainerOpenStateEnum.Locked)
         {
@@ -617,10 +622,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           uiContainer.SetLockEnabled(b);
         }
         else
-          uiContainer.ImageLock.sprite = (Sprite) null;
-        uiContainer.ImageLock.gameObject.SetActive((UnityEngine.Object) uiContainer.ImageLock.sprite != (UnityEngine.Object) null);
+          uiContainer.ImageLock.sprite = null;
+        uiContainer.ImageLock.gameObject.SetActive(uiContainer.ImageLock.sprite != null);
       }
-      if ((UnityEngine.Object) uiContainer.Button != (UnityEngine.Object) null)
+      if (uiContainer.Button != null)
       {
         bool flag = ((!inventoryContainer.Available.Value ? 0 : (inventoryContainer.OpenState.Value != ContainerOpenStateEnum.Open ? 1 : 0)) & (b ? 1 : 0)) != 0;
         if (flag)
@@ -632,14 +637,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
       IStorableComponent itemInContainer = GetItemInContainer(inventoryContainer, inventoryContainer.GetStorage());
       if (itemInContainer == null || drag.IsEnabled && drag.Storable == itemInContainer)
-        uiContainer.ImageBackground.gameObject.SetActive((UnityEngine.Object) uiContainer.ImageBackground.sprite != (UnityEngine.Object) null);
+        uiContainer.ImageBackground.gameObject.SetActive(uiContainer.ImageBackground.sprite != null);
       else
         uiContainer.ImageBackground.gameObject.SetActive(false);
     }
 
     protected virtual void UpdateCoins()
     {
-      if ((UnityEngine.Object) moneyText == (UnityEngine.Object) null)
+      if (moneyText == null)
         return;
       int num = 0;
       foreach (IStorableComponent storableComponent in Actor.Items)
@@ -766,7 +771,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         StorableUI storable1 = storables[storable];
         InventoryContainerUI container1 = GetContainer(storage, container);
-        if ((UnityEngine.Object) container1 == (UnityEngine.Object) null)
+        if (container1 == null)
         {
           storable1.gameObject.SetActive(false);
         }
@@ -791,7 +796,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           storable1.Image.sprite = spriteByStyle;
           storable1.transform.SetParent(container1.Storables.transform, false);
           Vector2 storablePosition = InventoryUtility.CalculateStorablePosition(storable.Cell, style);
-          storable1.Transform.localPosition = (Vector3) storablePosition;
+          storable1.Transform.localPosition = storablePosition;
         }
       }
     }
@@ -832,7 +837,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected bool AddItemToView(IStorableComponent storable)
     {
       InventoryContainerUI container = GetContainer(storable.Storage, storable.Container);
-      if ((UnityEngine.Object) container == (UnityEngine.Object) null)
+      if (container == null)
         return false;
       InventoryCellStyle inventoryCellStyle;
       switch (container.InventoryContainer.GetKind())
@@ -888,10 +893,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       drag.MouseOffset = InventoryUtility.GetCenter(storable1);
       storable1.Dragging = true;
       Vector3 vector3 = Vector3.zero;
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
         vector3 = selectedStorable.transform.position;
       storable1.transform.SetParent(dragAnchor.transform, false);
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
         storable1.transform.position = vector3;
       if (storable.Container == null)
         return true;
@@ -899,7 +904,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       foreach (CellInfo cell1 in intersect.Cells)
       {
         InventoryContainerUI container = GetContainer(drag.Storage, drag.Container);
-        if (!((UnityEngine.Object) container == (UnityEngine.Object) null))
+        if (!(container == null))
         {
           foreach (KeyValuePair<Cell, InventoryCellUI> cell2 in container.Cells)
           {
@@ -921,16 +926,16 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return;
       if (!storables.ContainsKey(drag.Storable))
       {
-        Debug.LogError((object) "!storables.ContainsKey(drag.Storable), Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
+        Debug.LogError("!storables.ContainsKey(drag.Storable), Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
       }
       else
       {
         StorableUI storable = storables[drag.Storable];
         storable.Dragging = true;
         drag.MouseOffset = InventoryUtility.GetCenter(storable);
-        if ((UnityEngine.Object) storable.Transform.parent != (UnityEngine.Object) dragAnchor.transform.transform)
+        if (storable.Transform.parent != dragAnchor.transform.transform)
         {
-          if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null)
+          if (selectedStorable == null)
             selectedStorable = storable;
           Vector3 position = selectedStorable.transform.position;
           storable.Transform.SetParent(dragAnchor.transform.transform, false);
@@ -939,7 +944,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         drag.MouseOffset = InventoryUtility.GetCenter(storable);
         if (InputService.Instance.JoystickUsed)
           return;
-        storable.Transform.position = (Vector3) (CursorService.Instance.Position + drag.MouseOffset);
+        storable.Transform.position = CursorService.Instance.Position + drag.MouseOffset;
       }
     }
 
@@ -949,7 +954,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return;
       if (!storables.ContainsKey(drag.Storable))
       {
-        Debug.LogError((object) "!storables.ContainsKey(drag.Storable), Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
+        Debug.LogError("!storables.ContainsKey(drag.Storable), Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
       }
       else
       {
@@ -957,7 +962,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           return;
         foreach (InventoryCellUI actionCell in drag.ActionCells)
         {
-          if ((UnityEngine.Object) actionCell != (UnityEngine.Object) null)
+          if (actionCell != null)
             actionCell.State = CellState.Default;
         }
         drag.ActionCells.Clear();
@@ -977,7 +982,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
               break;
             }
           }
-          if (!((UnityEngine.Object) inventoryCellUi == (UnityEngine.Object) null))
+          if (!(inventoryCellUi == null))
           {
             drag.ActionCells.Add(inventoryCellUi);
             if (cell1.State == CellState.Disabled)
@@ -1040,7 +1045,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       SubscribeNavigation();
       isConsoleDragging = false;
       SaveCurrentSelectedInstance(selectedStorable);
-      if ((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null)
+      if (_selectedStorable != null)
         currentInventory = selectedStorable.GetComponentInParent<ContainerResizableWindow>();
     }
 
@@ -1051,7 +1056,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return;
       if (!storables.ContainsKey(drag.Storable))
       {
-        Debug.LogError((object) "!storables.ContainsKey(drag.Storable), Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
+        Debug.LogError("!storables.ContainsKey(drag.Storable), Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
       }
       else
       {
@@ -1126,13 +1131,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             }
             if (!storables.TryGetValue(storableComponent1, out storable))
             {
-              Debug.LogError((object) ("Item not found, storable : " + storableComponent1.Owner.GetInfo() + " , count : " + storables.Count));
+              Debug.LogError("Item not found, storable : " + storableComponent1.Owner.GetInfo() + " , count : " + storables.Count);
               return;
             }
             Vector3 lossyScale = storable.Transform.lossyScale;
             Vector2 vector2 = inventoryCellStyle.Size * 0.5f;
-            vector2.Scale((Vector2) lossyScale);
-            storable.Transform.position = (Vector3) (CursorService.Instance.Position - vector2);
+            vector2.Scale(lossyScale);
+            storable.Transform.position = CursorService.Instance.Position - vector2;
             ClearShadow();
             drag.Reset();
             storableComponent1.Container = intersect.Container;
@@ -1187,11 +1192,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         {
           storableUi.Dragging = false;
           storables.Remove(drag.Storable);
-          UnityEngine.Object.Destroy((UnityEngine.Object) storableUi.gameObject);
-          Debug.LogError((object) "-");
+          Destroy(storableUi.gameObject);
+          Debug.LogError("-");
         }
         else
-          Debug.LogError((object) ("View not found : " + drag.Storable.Owner.GetInfo()));
+          Debug.LogError("View not found : " + drag.Storable.Owner.GetInfo());
         MoveItem(drag.Storable, Actor);
       }
       else
@@ -1225,7 +1230,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       SaveCurrentSelectedInstance(selectedStorable);
       CursorService.Instance.Visible = true;
       windowSplit.Actor = null;
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
         OnSelectObject(selectedStorable.gameObject);
       ClearShadow();
       OnInvalidate();
@@ -1233,7 +1238,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected void SaveCurrentSelectedInstance(StorableUI selectedStorable)
     {
-      if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+      if (selectedStorable != null)
       {
         lastStorablePosition = selectedStorable.transform.position;
         try
@@ -1248,9 +1253,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       else
       {
         float num = 0.0f;
-        if ((UnityEngine.Object) currentInventory != (UnityEngine.Object) null)
+        if (currentInventory != null)
           num = currentInventory.GetComponent<RectTransform>().sizeDelta.y;
-        lastStorablePosition = new Vector3(0.0f, (UnityEngine.Object) currentContainer != (UnityEngine.Object) null ? currentContainer.transform.position.y + num / 2f : 0.0f);
+        lastStorablePosition = new Vector3(0.0f, currentContainer != null ? currentContainer.transform.position.y + num / 2f : 0.0f);
         lastSelectedTemplateId = new Guid();
       }
     }
@@ -1281,8 +1286,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       offset.Scale(scale);
       position -= vector2;
       return new Pair<int, int> {
-        Item1 = (int) Math.Round((double) position.x / ((double) size.x + (double) offset.x)),
-        Item2 = (int) Math.Round((double) position.y / ((double) size.y + (double) offset.y))
+        Item1 = (int) Math.Round(position.x / (size.x + (double) offset.x)),
+        Item2 = (int) Math.Round(position.y / (size.y + (double) offset.y))
       };
     }
 
@@ -1292,9 +1297,9 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         Vector3 lossyScale = cell.Value.Transform.lossyScale;
         Rect scaledCoordinates = InventoryUtility.GetScaledCoordinates(cell.Value.Transform);
-        Vector2 position1 = (Vector2) cell.Value.Transform.position;
+        Vector2 position1 = cell.Value.Transform.position;
         scaledCoordinates.position += position1;
-        if (scaledCoordinates.Contains((Vector3) position, true))
+        if (scaledCoordinates.Contains(position, true))
           return cell.Key;
       }
       return null;
@@ -1305,18 +1310,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       foreach (KeyValuePair<InventoryContainerUI, IStorageComponent> container in containers)
       {
         Rect scaledCoordinates1 = InventoryUtility.GetScaledCoordinates(container.Key.Transform);
-        Vector2 position1 = (Vector2) container.Key.Transform.position;
+        Vector2 position1 = container.Key.Transform.position;
         scaledCoordinates1.position += position1;
         bool flag = true;
         if (container.Key is ComplexInventoryContainerUI)
         {
           ComplexInventoryContainerUI key = container.Key as ComplexInventoryContainerUI;
           Rect scaledCoordinates2 = InventoryUtility.GetScaledCoordinates(key.Mask);
-          Vector2 position2 = (Vector2) key.Mask.position;
+          Vector2 position2 = key.Mask.position;
           scaledCoordinates2.position += position2;
-          flag = scaledCoordinates2.Contains((Vector3) position, true);
+          flag = scaledCoordinates2.Contains(position, true);
         }
-        if (scaledCoordinates1.Contains((Vector3) position, true) & flag)
+        if (scaledCoordinates1.Contains(position, true) & flag)
           return container.Key;
       }
       return null;
@@ -1329,7 +1334,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         if (container.Key.InventoryContainer.GetKind() == ContainerCellKind.OneCellToOneStorable)
         {
           Rect scaledCoordinates = InventoryUtility.GetScaledCoordinates(container.Key.Transform);
-          Vector2 position = (Vector2) container.Key.Transform.position;
+          Vector2 position = container.Key.Transform.position;
           scaledCoordinates.position += position;
           if (scaledCoordinates.Contains(rectangle.center))
             return container.Key;
@@ -1338,7 +1343,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       foreach (KeyValuePair<InventoryContainerUI, IStorageComponent> container in containers)
       {
         Rect scaledCoordinates = InventoryUtility.GetScaledCoordinates(container.Key.Transform);
-        Vector2 position = (Vector2) container.Key.Transform.position;
+        Vector2 position = container.Key.Transform.position;
         scaledCoordinates.position += position;
         if (scaledCoordinates.Overlaps(rectangle, true))
           return container.Key;
@@ -1352,11 +1357,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return new Intersect();
       StorableUI storable1 = storables[storable];
       Vector3 lossyScale1 = storable1.Transform.lossyScale;
-      InventoryContainerUI key = this.ContainerIntersect(new Rect {
+      InventoryContainerUI key = ContainerIntersect(new Rect {
         position = storable1.PivotedPosition,
-        size = Vector2.Scale((Vector2) (storable1.Transform.rotation * (Vector3) storable1.Transform.sizeDelta), (Vector2) lossyScale1)
+        size = Vector2.Scale(storable1.Transform.rotation * storable1.Transform.sizeDelta, lossyScale1)
       });
-      if ((UnityEngine.Object) key == (UnityEngine.Object) null || !containers.ContainsKey(key))
+      if (key == null || !containers.ContainsKey(key))
         return new Intersect();
       if (!key.InventoryContainer.Available.Value || key.InventoryContainer.OpenState.Value != ContainerOpenStateEnum.Open)
         return new Intersect();
@@ -1376,15 +1381,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       Vector3 lossyScale2 = key.Transform.lossyScale;
       Vector2 vector2_1 = inventoryCellStyle.Size * 0.5f;
       Vector2 offset = inventoryCellStyle.Offset;
-      vector2_1.Scale((Vector2) lossyScale2);
-      offset.Scale((Vector2) lossyScale2);
+      vector2_1.Scale(lossyScale2);
+      offset.Scale(lossyScale2);
       Rect scaledCoordinates = InventoryUtility.GetScaledCoordinates(key.Transform);
       Vector2 position = scaledCoordinates.position;
       Vector2 size = scaledCoordinates.size;
-      Vector2 vector2_2 = (Vector2) (storable1.Transform.rotation * (Vector3) vector2_1);
+      Vector2 vector2_2 = storable1.Transform.rotation * vector2_1;
       Vector2 vector2_3 = (Vector2) storable1.Transform.position + vector2_2;
       Vector2 vector2_4 = (Vector2) key.Content.Transform.position + position;
-      Pair<int, int> grid = PositionToGrid(key.InventoryContainer, vector2_3 - vector2_4, (Vector2) key.Transform.lossyScale);
+      Pair<int, int> grid = PositionToGrid(key.InventoryContainer, vector2_3 - vector2_4, key.Transform.lossyScale);
       Cell cell = ProxyFactory.Create<Cell>();
       cell.Column = grid.Item1;
       cell.Row = grid.Item2;
@@ -1393,8 +1398,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private Intersect GetIntersect(Vector2 position)
     {
-      InventoryContainerUI key = this.ContainerIntersect(position);
-      if ((UnityEngine.Object) key == (UnityEngine.Object) null || !containers.ContainsKey(key))
+      InventoryContainerUI key = ContainerIntersect(position);
+      if (key == null || !containers.ContainsKey(key))
         return new Intersect();
       if (key is ComplexInventoryContainerUI)
       {
@@ -1413,7 +1418,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       Vector2 position1 = scaledCoordinates.position;
       Vector2 size = scaledCoordinates.size;
       Vector3 lossyScale = key.Transform.lossyScale;
-      Pair<int, int> grid = PositionToGrid(key.InventoryContainer, position - ((Vector2) key.Content.Transform.position + position1), (Vector2) lossyScale);
+      Pair<int, int> grid = PositionToGrid(key.InventoryContainer, position - ((Vector2) key.Content.Transform.position + position1), lossyScale);
       Cell cell1 = ProxyFactory.Create<Cell>();
       cell1.Column = grid.Item1;
       cell1.Row = grid.Item2;
@@ -1447,16 +1452,16 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
       if (!showInfo)
         return;
-      IStorableComponent storable1 = !InputService.Instance.JoystickUsed || !((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null) ? intersect.Storables.FirstOrDefault() : selectedStorable.Internal;
-      if ((UnityEngine.Object) windowContextMenu == (UnityEngine.Object) null && !drag.IsEnabled && intersect.IsIntersected && storable1 != null && ((UnityEngine.Object) windowSplit == (UnityEngine.Object) null || !windowSplit.IsEnabled))
+      IStorableComponent storable1 = !InputService.Instance.JoystickUsed || !(selectedStorable != null) ? intersect.Storables.FirstOrDefault() : selectedStorable.Internal;
+      if (windowContextMenu == null && !drag.IsEnabled && intersect.IsIntersected && storable1 != null && (windowSplit == null || !windowSplit.IsEnabled))
         ShowInfoWindow(storable1);
-      else if (!InputService.Instance.JoystickUsed && (UnityEngine.Object) windowContextMenu == (UnityEngine.Object) null)
+      else if (!InputService.Instance.JoystickUsed && windowContextMenu == null)
         HideInfoWindow();
     }
 
     protected virtual void HideInfoWindow()
     {
-      if (!((UnityEngine.Object) windowInfoNew != (UnityEngine.Object) null))
+      if (!(windowInfoNew != null))
         return;
       windowInfoNew.IsEnabled = false;
       windowInfoNew.Target = null;
@@ -1479,7 +1484,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected virtual void ShowInfoWindow(IStorableComponent storable)
     {
-      if (!CanShowInfoWindows || (UnityEngine.Object) windowInfoNew == (UnityEngine.Object) null || drag != null && drag.IsEnabled)
+      if (!CanShowInfoWindows || windowInfoNew == null || drag != null && drag.IsEnabled)
         return;
       bool flag = false;
       if (windowInfoNew.IsEnabled)
@@ -1495,7 +1500,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         AddActionsToInfoWindow(windowInfoNew, storable);
         windowInfoNew.IsEnabled = true;
         StorableUI storableByComponent = GetStorableByComponent(storable);
-        if ((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null && !storableByComponent.IsSliderItem)
+        if (storableByComponent != null && !storableByComponent.IsSliderItem)
           selectedStorable = storableByComponent;
       }
       windowInfoNew.ShowSimpliedWindow(ShowSimplifiedInfoWindows, ShowActionTooltips);
@@ -1506,7 +1511,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       get
       {
-        return (UnityEngine.Object) actorContainerWindow == (UnityEngine.Object) null ? 40f * this.transform.lossyScale.y : this.GetComponent<RectTransform>().position.y - 450f * actorContainerWindow.transform.lossyScale.y;
+        return actorContainerWindow == null ? 40f * transform.lossyScale.y : GetComponent<RectTransform>().position.y - 450f * actorContainerWindow.transform.lossyScale.y;
       }
     }
 
@@ -1528,47 +1533,47 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           case ContainerCellKind.MultipleCellToOneStorable:
             num3 = storableUi.Image.rectTransform.localPosition.x * x1 + num2;
             Rect rect1;
-            if ((double) storableUi.Image.transform.position.x + num3 + (double) component.rect.width * x1 > (double) Screen.width - num1)
+            if (storableUi.Image.transform.position.x + (double) num3 + component.rect.width * (double) x1 > Screen.width - (double) num1)
             {
-              double x2 = (double) storableUi.Image.rectTransform.localPosition.x;
+              double x2 = storableUi.Image.rectTransform.localPosition.x;
               rect1 = storableUi.Image.rectTransform.rect;
-              double width1 = (double) rect1.width;
+              double width1 = rect1.width;
               double num5 = x2 - width1;
               rect1 = component.rect;
-              double width2 = (double) rect1.width;
+              double width2 = rect1.width;
               num3 = (float) (num5 - width2) * x1 - num2;
             }
             rect1 = storableUi.Image.rectTransform.rect;
             num4 = rect1.height / 2f * x1;
-            double num6 = (double) storableUi.Image.transform.position.y + num4;
+            double num6 = storableUi.Image.transform.position.y + (double) num4;
             rect1 = component.rect;
-            double num7 = (double) rect1.height * x1;
+            double num7 = rect1.height * (double) x1;
             if (num6 - num7 < num1)
             {
               rect1 = storableUi.Image.rectTransform.rect;
-              double num8 = (double) rect1.height / 2.0;
+              double num8 = rect1.height / 2.0;
               rect1 = component.rect;
-              double height1 = (double) rect1.height;
+              double height1 = rect1.height;
               double num9 = num8 + height1;
               rect1 = storableUi.Image.rectTransform.rect;
-              double height2 = (double) rect1.height;
+              double height2 = rect1.height;
               num4 = (float) (num9 - height2) * x1;
             }
             break;
           case ContainerCellKind.OneCellToOneStorable:
             num3 = storableUi.Image.rectTransform.rect.width / 2f * x1 + num2;
-            if ((double) storableUi.Image.transform.position.x + num3 + (double) component.rect.width * x1 > (double) Screen.width - num1)
+            if (storableUi.Image.transform.position.x + (double) num3 + component.rect.width * (double) x1 > Screen.width - (double) num1)
               num3 = ((float) (-(double) storableUi.Image.rectTransform.rect.width / 2.0) - component.rect.width) * x1 - num2;
             num4 = storableUi.Image.rectTransform.rect.height / 2f * x1;
-            double num10 = (double) storableUi.Image.transform.position.y + num4;
+            double num10 = storableUi.Image.transform.position.y + (double) num4;
             Rect rect2 = component.rect;
-            double num11 = (double) rect2.height * x1;
+            double num11 = rect2.height * (double) x1;
             if (num10 - num11 < num1)
             {
               rect2 = component.rect;
-              double height3 = (double) rect2.height;
+              double height3 = rect2.height;
               rect2 = storableUi.Image.rectTransform.rect;
-              double height4 = (double) rect2.height;
+              double height4 = rect2.height;
               num4 = (float) ((height3 - height4) * x1 / 2.0);
             }
             break;
@@ -1579,35 +1584,35 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       else
       {
         ContainerResizableWindow componentInParent = storableUi.GetComponentInParent<ContainerResizableWindow>();
-        if ((UnityEngine.Object) componentInParent == (UnityEngine.Object) null)
+        if (componentInParent == null)
           return;
         RectTransform containerRect = componentInParent.GetContainerRect();
         float hintsBottomBorder = HintsBottomBorder;
         Rect rect3 = storableUi.Image.rectTransform.rect;
         num4 = rect3.height / 2f * x1;
-        double num12 = (double) storableUi.Image.transform.position.y + num4;
+        double num12 = storableUi.Image.transform.position.y + (double) num4;
         rect3 = component.rect;
-        double num13 = (double) rect3.height * x1;
+        double num13 = rect3.height * (double) x1;
         if (num12 - num13 < hintsBottomBorder)
         {
           rect3 = component.rect;
-          double height = (double) rect3.height;
+          double height = rect3.height;
           rect3 = storableUi.Image.rectTransform.rect;
-          double num14 = (double) rect3.height / 2.0;
+          double num14 = rect3.height / 2.0;
           num4 = (float) (height - num14) * x1;
         }
-        if ((UnityEngine.Object) componentInParent == (UnityEngine.Object) actorContainerWindow)
+        if (componentInParent == actorContainerWindow)
         {
-          double x3 = (double) containerRect.position.x;
+          double x3 = containerRect.position.x;
           rect3 = component.rect;
-          double num15 = (double) rect3.width * x1;
-          num3 = (float) (x3 - num15 - (double) storableUi.Image.transform.position.x - num1 / 2.0);
+          double num15 = rect3.width * (double) x1;
+          num3 = (float) (x3 - num15 - storableUi.Image.transform.position.x - num1 / 2.0);
         }
         else
         {
-          double x4 = (double) containerRect.position.x;
+          double x4 = containerRect.position.x;
           rect3 = containerRect.rect;
-          double num16 = (double) rect3.width * x1;
+          double num16 = rect3.width * (double) x1;
           num3 = (float) (x4 + num16) + num1 - storableUi.Image.transform.position.x;
         }
       }
@@ -1759,7 +1764,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         }
         else
         {
-          storables[storableComponent].Transform.position = (Vector3) CursorService.Instance.Position;
+          storables[storableComponent].Transform.position = CursorService.Instance.Position;
           DragBegin(storableComponent);
         }
         if (drag.Storable.Container != null)
@@ -1791,7 +1796,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         IStorableComponent storable = null;
         if (InputService.Instance.JoystickUsed)
         {
-          if (!((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null))
+          if (!(selectedStorable != null))
             return false;
           storable = selectedStorable.Internal;
         }
@@ -1867,7 +1872,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private void OnContainerOpenBegin(IInventoryComponent container)
     {
       StartOpenAudio(container.GetOpenStartAudio());
-      if (container.OpenState.Value == ContainerOpenStateEnum.Locked && (UnityEngine.Object) overrideUnlockProgressAudio != (UnityEngine.Object) null)
+      if (container.OpenState.Value == ContainerOpenStateEnum.Locked && overrideUnlockProgressAudio != null)
         StartOpenAudio(overrideUnlockProgressAudio);
       else
         StartOpenAudio(container.GetOpenProgressAudio());
@@ -1878,7 +1883,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       StopOpenAudio();
       if (complete)
       {
-        if (container.OpenState.Value == ContainerOpenStateEnum.Closed && (UnityEngine.Object) overrideUnlockCompleteAudio != (UnityEngine.Object) null)
+        if (container.OpenState.Value == ContainerOpenStateEnum.Closed && overrideUnlockCompleteAudio != null)
           StartOpenAudio(overrideUnlockCompleteAudio);
         else
           StartOpenAudio(container.GetOpenCompleteAudio());
@@ -1892,16 +1897,16 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected void PlayAudio(AudioClip audio)
     {
-      if (!((UnityEngine.Object) audio != (UnityEngine.Object) null))
+      if (!(audio != null))
         return;
-      SoundUtility.PlayAudioClip2D(audio, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(audio, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     }
 
     protected void StartOpenAudio(AudioClip audio)
     {
-      if (!((UnityEngine.Object) audio != (UnityEngine.Object) null))
+      if (!(audio != null))
         return;
-      currentOpenedAudioState = SoundUtility.PlayAudioClip2D(audio, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      currentOpenedAudioState = SoundUtility.PlayAudioClip2D(audio, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     }
 
     protected void StopOpenAudio()
@@ -1909,7 +1914,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (currentOpenedAudioState == null)
         return;
       currentOpenedAudioState.Complete = true;
-      if ((UnityEngine.Object) currentOpenedAudioState.AudioSource != (UnityEngine.Object) null)
+      if (currentOpenedAudioState.AudioSource != null)
         currentOpenedAudioState.AudioSource.Stop();
       currentOpenedAudioState = null;
     }
@@ -1953,7 +1958,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         key = InfinitedInventoryContainerUI.Instantiate(container, style, inventoryContainerInfinitedPrefab);
       }
       key.ImageBackground.sprite = container.GetImageBackground();
-      key.ImageBackground.gameObject.SetActive(GetItemInContainer(container, container.GetStorage()) == null && (UnityEngine.Object) key.ImageBackground.sprite != (UnityEngine.Object) null);
+      key.ImageBackground.gameObject.SetActive(GetItemInContainer(container, container.GetStorage()) == null && key.ImageBackground.sprite != null);
       key.transform.SetParent(anchor.transform, false);
       containers.Add(key, storage);
       containerViews.Add(container, key);
@@ -1994,7 +1999,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ContainerResizableWindow window,
       List<InventoryContainerUI> containers)
     {
-      if (!((UnityEngine.Object) window != (UnityEngine.Object) null))
+      if (!(window != null))
         return;
       window.Resize(containers);
     }
@@ -2057,10 +2062,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
                   throw new Exception("Grid Type not found : " + (container.GetGrid() != null ? container.GetGrid().GetType().ToString() : "null"));
                 key = InfinitedInventoryContainerUI.Instantiate(container, style, inventoryContainerInfinitedPrefab);
               }
-              if ((UnityEngine.Object) key.ImageBackground != (UnityEngine.Object) null)
+              if (key.ImageBackground != null)
               {
                 key.ImageBackground.sprite = container.GetImageBackground();
-                key.ImageBackground.gameObject.SetActive((UnityEngine.Object) key.ImageBackground.sprite != (UnityEngine.Object) null);
+                key.ImageBackground.gameObject.SetActive(key.ImageBackground.sprite != null);
               }
               if (flag)
                 key.transform.SetParent(slotAnchor.UIBehaviour.transform, false);
@@ -2093,7 +2098,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         container.Key.OpenBegin -= OpenBegin;
         container.Key.OpenEnd -= OpenEnd;
-        UnityEngine.Object.Destroy((UnityEngine.Object) container.Key.gameObject);
+        Destroy(container.Key.gameObject);
       }
       containers.Clear();
       containerViews.Clear();
@@ -2146,19 +2151,19 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       get
       {
-        if ((UnityEngine.Object) _selectedStorable == (UnityEngine.Object) null && InputService.Instance.JoystickUsed && HaveToFindSelected())
+        if (_selectedStorable == null && InputService.Instance.JoystickUsed && HaveToFindSelected())
           FindCurrentCellInstance();
         return _selectedStorable;
       }
       set
       {
-        if ((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null)
+        if (_selectedStorable != null)
           _selectedStorable.SetSelected(false);
         _selectedStorable = value;
-        if ((UnityEngine.Object) selectionFrame == (UnityEngine.Object) null)
+        if (selectionFrame == null)
           return;
         selectionFrame.gameObject.SetActive(false);
-        if (!((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null))
+        if (!(_selectedStorable != null))
           return;
         _selectedStorable.SetSelected(true);
         SaveCurrentSelectedInstance(selectedStorable);
@@ -2167,10 +2172,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected void SetSelectedFrame()
     {
-      if ((UnityEngine.Object) selectionFrame == (UnityEngine.Object) null)
+      if (selectionFrame == null)
         return;
-      selectionFrame.gameObject.SetActive(InputService.Instance.JoystickUsed && (UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null && !drag.IsEnabled);
-      if (!((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null))
+      selectionFrame.gameObject.SetActive(InputService.Instance.JoystickUsed && _selectedStorable != null && !drag.IsEnabled);
+      if (!(_selectedStorable != null))
         return;
       InventoryCellStyle style = _selectedStorable.Style;
       Vector2 innerSize = InventoryUtility.CalculateInnerSize(((StorableComponent) _selectedStorable.Internal).Placeholder.Grid, style);
@@ -2212,7 +2217,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       service.RemoveListener(GameActionType.Submit, DragListener);
       if (scrollCoroutine == null)
         return;
-      this.StopCoroutine(scrollCoroutine);
+      StopCoroutine(scrollCoroutine);
     }
 
     protected void SubscribeConsoleDragNavigation()
@@ -2248,15 +2253,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (down)
       {
         if (scrollCoroutine != null)
-          this.StopCoroutine(scrollCoroutine);
-        scrollCoroutine = this.StartCoroutine(ScrollCoroutine(OnMoveItem, navigation));
+          StopCoroutine(scrollCoroutine);
+        scrollCoroutine = StartCoroutine(ScrollCoroutine(OnMoveItem, navigation));
         coroutineNavigation = navigation;
         return true;
       }
       if (scrollCoroutine != null && navigation == coroutineNavigation)
       {
-        this.StopCoroutine(scrollCoroutine);
-        scrollCoroutine = (Coroutine) null;
+        StopCoroutine(scrollCoroutine);
+        scrollCoroutine = null;
       }
       return false;
     }
@@ -2274,7 +2279,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       service.RemoveListener(GameActionType.DPadLeft, NavigationListener);
       if (scrollCoroutine == null)
         return;
-      this.StopCoroutine(scrollCoroutine);
+      StopCoroutine(scrollCoroutine);
     }
 
     protected virtual void Unsubscribe()
@@ -2295,13 +2300,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         return false;
       if (!drag.IsEnabled && type != GameActionType.Submit)
       {
-        if ((UnityEngine.Object) selectedContainer != (UnityEngine.Object) null)
+        if (selectedContainer != null)
           return true;
-        if ((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null)
+        if (selectedStorable != null)
           SaveCurrentSelectedInstance(selectedStorable);
         else
           FindCurrentCellInstance();
-        if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null)
+        if (selectedStorable == null)
           return false;
         selectedStorable.SetSelected(false);
         if (DragBegin(selectedStorable.Internal))
@@ -2324,7 +2329,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         SubscribeNavigation();
         isConsoleDragging = false;
         SaveCurrentSelectedInstance(selectedStorable);
-        if ((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null)
+        if (_selectedStorable != null)
           currentInventory = selectedStorable.GetComponentInParent<ContainerResizableWindow>();
       }
       return true;
@@ -2342,7 +2347,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       {
         if (handle != null)
           handle(navigation);
-        yield return (object) new WaitForSeconds(0.2f);
+        yield return new WaitForSeconds(0.2f);
       }
     }
 
@@ -2381,15 +2386,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (down)
       {
         if (scrollCoroutine != null)
-          this.StopCoroutine(scrollCoroutine);
-        scrollCoroutine = this.StartCoroutine(ScrollCoroutine(OnNavigate, navigation));
+          StopCoroutine(scrollCoroutine);
+        scrollCoroutine = StartCoroutine(ScrollCoroutine(OnNavigate, navigation));
         coroutineNavigation = navigation;
         return true;
       }
       if (scrollCoroutine != null && navigation == coroutineNavigation)
       {
-        this.StopCoroutine(scrollCoroutine);
-        scrollCoroutine = (Coroutine) null;
+        StopCoroutine(scrollCoroutine);
+        scrollCoroutine = null;
       }
       return false;
     }
@@ -2400,10 +2405,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       foreach (KeyValuePair<IStorableComponent, StorableUI> storable in storables)
       {
         IInventoryComponent container = storable.Key.Container;
-        if (addSelected || !((UnityEngine.Object) storable.Value == (UnityEngine.Object) selectedStorable))
+        if (addSelected || !(storable.Value == selectedStorable))
         {
           Vector3 position = storable.Value.transform.position;
-          if ((double) position.x >= 0.0 && (double) position.y >= 0.0 && (double) position.x <= (double) Screen.width && (double) position.y <= (double) Screen.height && (!block || container == null || !((UnityEngine.Object) selectedStorable != (UnityEngine.Object) null) || container != selectedStorable.Internal.Container) && AdditionalConditionOfSelectableList(storable.Value))
+          if (position.x >= 0.0 && position.y >= 0.0 && position.x <= (double) Screen.width && position.y <= (double) Screen.height && (!block || container == null || !(selectedStorable != null) || container != selectedStorable.Internal.Container) && AdditionalConditionOfSelectableList(storable.Value))
             list.Add(storable.Value.gameObject);
         }
       }
@@ -2413,14 +2418,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     protected virtual Vector2 CurentNavigationPosition()
     {
-      RectTransform transform = (UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null ? _selectedStorable.transform as RectTransform : (RectTransform) null;
-      return (Vector2) ((UnityEngine.Object) transform != (UnityEngine.Object) null ? transform.TransformPoint((Vector3) transform.rect.center) : this.transform.position);
+      RectTransform transform = _selectedStorable != null ? _selectedStorable.transform as RectTransform : null;
+      return transform != null ? transform.TransformPoint(transform.rect.center) : this.transform.position;
     }
 
     protected virtual void OnSelectObject(GameObject selected)
     {
       StorableUI component = selected?.GetComponent<StorableUI>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
       selectedStorable = component;
       if (InputService.Instance.JoystickUsed)
@@ -2450,7 +2455,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       }
       if (!(direction != Vector2.zero))
         return;
-      if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null)
+      if (selectedStorable == null)
         FindCurrentCellInstance();
       Vector3 position = selectedStorable.transform.position;
       StorableComponent storableComponent = selectedStorable.Internal as StorableComponent;
@@ -2465,18 +2470,18 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           IEnumerable<KeyValuePair<Cell, InventoryCellUI>> source = inventory.Cells.Where(c =>
           {
             Cell key2 = c.Key;
-            if (selectedStorable.transform.position == c.Value.transform.position || (double) c.Value.transform.position.x < 0.0 || (double) c.Value.transform.position.y < 0.0 || (double) c.Value.transform.position.x > (double) Screen.width || (double) c.Value.transform.position.y > (double) Screen.height)
+            if (selectedStorable.transform.position == c.Value.transform.position || c.Value.transform.position.x < 0.0 || c.Value.transform.position.y < 0.0 || c.Value.transform.position.x > (double) Screen.width || c.Value.transform.position.y > (double) Screen.height)
               return false;
             if (inventory.InventoryContainer.GetGroup() == InventoryGroup.Clothes || inventory.InventoryContainer.GetGroup() == InventoryGroup.Weapons)
-              return (double) Vector2.Dot((Vector2) (c.Value.transform.position - selectedStorable.transform.position).normalized, direction) >= 0.85000002384185791;
-            return key2.Column + columns <= inventory.InventoryContainer.GetGrid().Columns && key2.Row + rows <= inventory.InventoryContainer.GetGrid().Rows && (inventory.InventoryContainer.GetGroup() == InventoryGroup.Backpack || inventory.InventoryContainer.GetGroup() == InventoryGroup.Loot) && (double) Vector2.Dot((Vector2) (c.Value.transform.position - selectedStorable.transform.position).normalized, direction) >= 0.85000002384185791;
+              return Vector2.Dot((c.Value.transform.position - selectedStorable.transform.position).normalized, direction) >= 0.85000002384185791;
+            return key2.Column + columns <= inventory.InventoryContainer.GetGrid().Columns && key2.Row + rows <= inventory.InventoryContainer.GetGrid().Rows && (inventory.InventoryContainer.GetGroup() == InventoryGroup.Backpack || inventory.InventoryContainer.GetGroup() == InventoryGroup.Loot) && Vector2.Dot((c.Value.transform.position - selectedStorable.transform.position).normalized, direction) >= 0.85000002384185791;
           });
           if (source != null)
-            objects.AddRange((IEnumerable<GameObject>) source.Select((Func<KeyValuePair<Cell, InventoryCellUI>, GameObject>) (c => c.Value.gameObject)).ToList());
+            objects.AddRange(source.Select(c => c.Value.gameObject).ToList());
         }
       }
-      GameObject gameObject = UISelectableHelper.Select((IEnumerable<GameObject>) objects, selectedStorable.transform.position, (Vector3) direction);
-      if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+      GameObject gameObject = UISelectableHelper.Select(objects, selectedStorable.transform.position, direction);
+      if (gameObject != null)
         position = gameObject.transform.position;
       selectedStorable.transform.position = position;
     }
@@ -2492,7 +2497,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected virtual void OnNavigate(Navigation navigation)
     {
       Vector2 dirrection = Vector2.zero;
-      if ((UnityEngine.Object) selectedStorable == (UnityEngine.Object) null && (UnityEngine.Object) selectedContainer == (UnityEngine.Object) null)
+      if (selectedStorable == null && selectedContainer == null)
       {
         GetFirstStorable();
       }
@@ -2503,7 +2508,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         switch (navigation)
         {
           case Navigation.CellClosest:
-            OnSelectObject(UISelectableHelper.SelectClosest((IEnumerable<GameObject>) selectableList, (Vector3) origin));
+            OnSelectObject(UISelectableHelper.SelectClosest(selectableList, origin));
             break;
           case Navigation.CellUp:
           case Navigation.ContainerUp:
@@ -2522,22 +2527,22 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
             dirrection = Vector2.left;
             break;
         }
-        OnSelectObject(UISelectableHelper.Select((IEnumerable<GameObject>) selectableList, (Vector3) origin, (Vector3) dirrection));
+        OnSelectObject(UISelectableHelper.Select(selectableList, origin, dirrection));
       }
     }
 
     protected void FindCurrentCellInstance()
     {
-      List<StorableUI> list1 = storables.Values.Where(storable => (storable.Internal.Owner.TemplateId == lastSelectedTemplateId || lastSelectedTemplateId == new Guid()) && (double) Vector3.Distance(storable.transform.position, lastStorablePosition) <= 500.0 && ItemIsInteresting(storable.Internal)).ToList();
+      List<StorableUI> list1 = storables.Values.Where(storable => (storable.Internal.Owner.TemplateId == lastSelectedTemplateId || lastSelectedTemplateId == new Guid()) && Vector3.Distance(storable.transform.position, lastStorablePosition) <= 500.0 && ItemIsInteresting(storable.Internal)).ToList();
       StorableUI storableUi = null;
       if (list1 == null)
         return;
-      List<StorableUI> list2 = list1.Where(storable => storable.IsEnabled).OrderBy((Func<StorableUI, float>) (storable => Vector3.Distance(lastStorablePosition, storable.gameObject.transform.position))).ToList();
+      List<StorableUI> list2 = list1.Where(storable => storable.IsEnabled).OrderBy(storable => Vector3.Distance(lastStorablePosition, storable.gameObject.transform.position)).ToList();
       if (list2.Count > 0)
         storableUi = list2.First();
-      if ((UnityEngine.Object) storableUi == (UnityEngine.Object) null)
+      if (storableUi == null)
         return;
-      if ((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null)
+      if (_selectedStorable != null)
       {
         if (shouldDeselectStorable || _selectedStorable is StorableUITrade && ((StorableUITrade) _selectedStorable).GetSelectedCount() == 0 || InputService.Instance.JoystickUsed)
         {
@@ -2554,44 +2559,44 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void OnNavigateContainers(Navigation navigation)
     {
-      if ((UnityEngine.Object) currentInventory == (UnityEngine.Object) null)
+      if (currentInventory == null)
         currentInventory = _selectedStorable?.GetComponentInParent<ContainerResizableWindow>();
       currentContainer = _selectedStorable?.GetComponentInParent<LimitedInventoryContainerUI>();
-      if ((UnityEngine.Object) currentInventory == (UnityEngine.Object) null)
-        currentInventory = new List<ContainerResizableWindow>((IEnumerable<ContainerResizableWindow>) this.GetComponentsInChildren<ContainerResizableWindow>())[0];
-      List<LimitedInventoryContainerUI> source = new List<LimitedInventoryContainerUI>((IEnumerable<LimitedInventoryContainerUI>) currentInventory.GetComponentsInChildren<LimitedInventoryContainerUI>());
+      if (currentInventory == null)
+        currentInventory = new List<ContainerResizableWindow>(GetComponentsInChildren<ContainerResizableWindow>())[0];
+      List<LimitedInventoryContainerUI> source = new List<LimitedInventoryContainerUI>(currentInventory.GetComponentsInChildren<LimitedInventoryContainerUI>());
       for (int index = 0; index < source.Count; ++index)
       {
         if (source[index].GetComponentsInChildren<StorableUI>().Length < 1)
           source.Remove(source[index]);
       }
-      if ((UnityEngine.Object) currentContainer == (UnityEngine.Object) null)
+      if (currentContainer == null)
         currentContainer = source[0];
       source.Remove(currentContainer);
       if (source.Count <= 1)
         return;
       foreach (Component component in source)
-        Debug.Log((object) Vector3.Distance(component.transform.position, currentContainer.transform.position));
-      List<LimitedInventoryContainerUI> list = source.Where(container => (double) Vector3.Distance(container.transform.position, currentContainer.transform.position) <= 800.0).ToList();
+        Debug.Log(Vector3.Distance(component.transform.position, currentContainer.transform.position));
+      List<LimitedInventoryContainerUI> list = source.Where(container => Vector3.Distance(container.transform.position, currentContainer.transform.position) <= 800.0).ToList();
       switch (navigation)
       {
         case Navigation.ContainerUp:
-          list = list.Where(container => (double) container.transform.position.y > (double) currentContainer.transform.position.y).ToList();
+          list = list.Where(container => container.transform.position.y > (double) currentContainer.transform.position.y).ToList();
           break;
         case Navigation.ContainerDown:
-          list = list.Where(container => (double) container.transform.position.y < (double) currentContainer.transform.position.y).ToList();
+          list = list.Where(container => container.transform.position.y < (double) currentContainer.transform.position.y).ToList();
           break;
         case Navigation.ContainerRight:
-          list = list.Where(container => (double) container.transform.position.x > (double) currentContainer.transform.position.x).ToList();
+          list = list.Where(container => container.transform.position.x > (double) currentContainer.transform.position.x).ToList();
           break;
         case Navigation.ContainerLeft:
-          list = list.Where(container => (double) container.transform.position.x < (double) currentContainer.transform.position.x).ToList();
+          list = list.Where(container => container.transform.position.x < (double) currentContainer.transform.position.x).ToList();
           break;
       }
       if (list.Count <= 0)
         return;
-      currentContainer = list.OrderBy((Func<LimitedInventoryContainerUI, float>) (container => Vector3.Distance(currentContainer.transform.position, container.gameObject.transform.position))).First();
-      SelectFirstStorableInContainer(new List<StorableUI>((IEnumerable<StorableUI>) currentContainer.GetComponentsInChildren<StorableUI>()));
+      currentContainer = list.OrderBy(container => Vector3.Distance(currentContainer.transform.position, container.gameObject.transform.position)).First();
+      SelectFirstStorableInContainer(new List<StorableUI>(currentContainer.GetComponentsInChildren<StorableUI>()));
       SetSelectedFrame();
     }
 
@@ -2602,19 +2607,19 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (lastStorablePosition == Vector3.zero)
         lastStorablePosition = new Vector3(0.0f, actorContainerWindow.transform.position.y + actorContainerWindow.GetComponent<RectTransform>().sizeDelta.y);
       FillSelectableList(selectableList, false, true);
-      OnSelectObject(UISelectableHelper.SelectClosest((IEnumerable<GameObject>) selectableList, lastStorablePosition));
+      OnSelectObject(UISelectableHelper.SelectClosest(selectableList, lastStorablePosition));
     }
 
     protected bool ContextListener(GameActionType type, bool down)
     {
       if (!InputService.Instance.JoystickUsed)
         return false;
-      if (down && (UnityEngine.Object) windowContextMenu != (UnityEngine.Object) null)
+      if (down && windowContextMenu != null)
       {
         HideContextMenu();
         return down;
       }
-      if (!down || !((UnityEngine.Object) _selectedStorable != (UnityEngine.Object) null))
+      if (!down || !(_selectedStorable != null))
         return down;
       ShowContextMenu((StorableComponent) _selectedStorable.Internal);
       return down;
@@ -2623,7 +2628,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     protected bool SetStorableByComponent(IStorableComponent component)
     {
       StorableUI storableByComponent = GetStorableByComponent(component);
-      if (!((UnityEngine.Object) storableByComponent != (UnityEngine.Object) null))
+      if (!(storableByComponent != null))
         return false;
       selectedStorable = storableByComponent;
       selectedStorable.SetSelected(true);

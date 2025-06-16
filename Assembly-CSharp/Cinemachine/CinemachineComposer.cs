@@ -1,5 +1,6 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -17,7 +18,7 @@ namespace Cinemachine
     public Vector3 m_TrackedObjectOffset = Vector3.zero;
     [Tooltip("This setting will instruct the composer to adjust its target offset based on the motion of the target.  The composer will look at a point where it estimates the target will be this many seconds into the future.  Note that this setting is sensitive to noisy animation, and can amplify the noise, resulting in undesirable camera jitter.  If the camera jitters unacceptably when the target is in motion, turn down this setting, or animate the target more smoothly.")]
     [Range(0.0f, 1f)]
-    public float m_LookaheadTime = 0.0f;
+    public float m_LookaheadTime;
     [Tooltip("Controls the smoothness of the lookahead algorithm.  Larger values smooth out jittery predictions and also increase prediction lag")]
     [Range(3f, 30f)]
     public float m_LookaheadSmoothing = 10f;
@@ -59,7 +60,7 @@ namespace Cinemachine
     private Quaternion m_CameraOrientationPrevFrame = Quaternion.identity;
     private PositionPredictor m_Predictor = new PositionPredictor();
 
-    public override bool IsValid => this.enabled && (UnityEngine.Object) LookAtTarget != (UnityEngine.Object) null;
+    public override bool IsValid => enabled && LookAtTarget != null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 
@@ -68,7 +69,7 @@ namespace Cinemachine
     protected virtual Vector3 GetLookAtPointAndSetTrackedPoint(Vector3 lookAt)
     {
       Vector3 pos = lookAt;
-      if ((UnityEngine.Object) LookAtTarget != (UnityEngine.Object) null)
+      if (LookAtTarget != null)
         pos += LookAtTarget.transform.rotation * m_TrackedObjectOffset;
       m_Predictor.Smoothing = m_LookaheadSmoothing;
       m_Predictor.AddPosition(pos);
@@ -105,7 +106,7 @@ namespace Cinemachine
         {
           fov1 = 114.59156f * Mathf.Atan(curState.Lens.OrthographicSize / magnitude);
           lens = curState.Lens;
-          fovH1 = (float) (114.59156036376953 * (double) Mathf.Atan(lens.Aspect * curState.Lens.OrthographicSize / magnitude));
+          fovH1 = (float) (114.59156036376953 * Mathf.Atan(lens.Aspect * curState.Lens.OrthographicSize / magnitude));
         }
         else
         {
@@ -188,19 +189,19 @@ namespace Cinemachine
     {
       Rect fov1 = new Rect(rScreen);
       Matrix4x4 inverse = Matrix4x4.Perspective(fov, aspect, 0.01f, 10000f).inverse;
-      Vector3 to1 = inverse.MultiplyPoint(new Vector3(0.0f, (float) ((double) fov1.yMin * 2.0 - 1.0), 0.1f));
+      Vector3 to1 = inverse.MultiplyPoint(new Vector3(0.0f, (float) (fov1.yMin * 2.0 - 1.0), 0.1f));
       to1.z = -to1.z;
       float num1 = UnityVectorExtensions.SignedAngle(Vector3.forward, to1, Vector3.left);
       fov1.yMin = (fov / 2f + num1) / fov;
-      Vector3 to2 = inverse.MultiplyPoint(new Vector3(0.0f, (float) ((double) fov1.yMax * 2.0 - 1.0), 0.1f));
+      Vector3 to2 = inverse.MultiplyPoint(new Vector3(0.0f, (float) (fov1.yMax * 2.0 - 1.0), 0.1f));
       to2.z = -to2.z;
       float num2 = UnityVectorExtensions.SignedAngle(Vector3.forward, to2, Vector3.left);
       fov1.yMax = (fov / 2f + num2) / fov;
-      Vector3 to3 = inverse.MultiplyPoint(new Vector3((float) ((double) fov1.xMin * 2.0 - 1.0), 0.0f, 0.1f));
+      Vector3 to3 = inverse.MultiplyPoint(new Vector3((float) (fov1.xMin * 2.0 - 1.0), 0.0f, 0.1f));
       to3.z = -to3.z;
       float num3 = UnityVectorExtensions.SignedAngle(Vector3.forward, to3, Vector3.up);
       fov1.xMin = (fovH / 2f + num3) / fovH;
-      Vector3 to4 = inverse.MultiplyPoint(new Vector3((float) ((double) fov1.xMax * 2.0 - 1.0), 0.0f, 0.1f));
+      Vector3 to4 = inverse.MultiplyPoint(new Vector3((float) (fov1.xMax * 2.0 - 1.0), 0.0f, 0.1f));
       to4.z = -to4.z;
       float num4 = UnityVectorExtensions.SignedAngle(Vector3.forward, to4, Vector3.up);
       fov1.xMax = (fovH / 2f + num4) / fovH;
@@ -220,17 +221,17 @@ namespace Cinemachine
       ClampVerticalBounds(ref screenRect, vector3, state.ReferenceUp, fov);
       float num1 = (screenRect.yMin - 0.5f) * fov;
       float num2 = (screenRect.yMax - 0.5f) * fov;
-      if ((double) rotationToTarget.x < num1)
+      if (rotationToTarget.x < (double) num1)
         rotationToTarget.x -= num1;
-      else if ((double) rotationToTarget.x > num2)
+      else if (rotationToTarget.x > (double) num2)
         rotationToTarget.x -= num2;
       else
         rotationToTarget.x = 0.0f;
       float num3 = (screenRect.xMin - 0.5f) * fovH;
       float num4 = (screenRect.xMax - 0.5f) * fovH;
-      if ((double) rotationToTarget.y < num3)
+      if (rotationToTarget.y < (double) num3)
         rotationToTarget.y -= num3;
-      else if ((double) rotationToTarget.y > num4)
+      else if (rotationToTarget.y > (double) num4)
         rotationToTarget.y -= num4;
       else
         rotationToTarget.y = 0.0f;
@@ -250,7 +251,7 @@ namespace Cinemachine
       if (num1 < (double) num2)
       {
         float b = (float) (1.0 - (num2 - (double) num1) / fov);
-        if ((double) r.yMax > b)
+        if (r.yMax > (double) b)
         {
           r.yMin = Mathf.Min(r.yMin, b);
           r.yMax = Mathf.Min(r.yMax, b);

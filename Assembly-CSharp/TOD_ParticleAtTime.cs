@@ -1,4 +1,6 @@
-﻿[RequireComponent(typeof (ParticleSystem))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (ParticleSystem))]
 public class TOD_ParticleAtTime : MonoBehaviour
 {
   public AnimationCurve Emission = new AnimationCurve {
@@ -11,7 +13,7 @@ public class TOD_ParticleAtTime : MonoBehaviour
   };
   private ParticleSystem particleComponent;
 
-  protected void Start() => particleComponent = this.GetComponent<ParticleSystem>();
+  protected void Start() => particleComponent = GetComponent<ParticleSystem>();
 
   protected void Update()
   {

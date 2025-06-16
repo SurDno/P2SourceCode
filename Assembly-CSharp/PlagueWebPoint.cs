@@ -1,4 +1,6 @@
-﻿public class PlagueWebPoint : IPlagueWebPoint
+﻿using UnityEngine;
+
+public class PlagueWebPoint : IPlagueWebPoint
 {
   public PlagueWebCell Cell;
   private Vector3 position;

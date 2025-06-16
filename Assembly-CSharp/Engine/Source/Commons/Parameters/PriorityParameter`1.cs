@@ -6,6 +6,7 @@ using Engine.Common.Components.Parameters;
 using Engine.Common.Generator;
 using Engine.Common.Services;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Parameters
 {
@@ -54,7 +55,7 @@ namespace Engine.Source.Commons.Parameters
       get => default (T);
       set
       {
-        Debug.LogError((object) ("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
+        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
       }
     }
 
@@ -64,7 +65,7 @@ namespace Engine.Source.Commons.Parameters
       get => default (T);
       set
       {
-        Debug.LogError((object) ("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
+        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
       }
     }
 
@@ -74,7 +75,7 @@ namespace Engine.Source.Commons.Parameters
       get => default (T);
       set
       {
-        Debug.LogError((object) ("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter"));
+        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
       }
     }
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -31,8 +32,8 @@ namespace RootMotion.FinalIK
     {
       if (OnPreInitiate != null)
         OnPreInitiate();
-      if ((UnityEngine.Object) root == (UnityEngine.Object) null)
-        Debug.LogError((object) "Initiating IKSolver with null root Transform.");
+      if (root == null)
+        Debug.LogError("Initiating IKSolver with null root Transform.");
       this.root = root;
       initiated = false;
       string empty = string.Empty;
@@ -101,11 +102,11 @@ namespace RootMotion.FinalIK
       {
         for (int index2 = 0; index2 < bones.Length; ++index2)
         {
-          if (index1 != index2 && (UnityEngine.Object) bones[index1].transform == (UnityEngine.Object) bones[index2].transform)
+          if (index1 != index2 && bones[index1].transform == bones[index2].transform)
             return bones[index1].transform;
         }
       }
-      return (Transform) null;
+      return null;
     }
 
     public static bool HierarchyIsValid(Bone[] bones)
@@ -202,15 +203,15 @@ namespace RootMotion.FinalIK
         {
           if (!isLimited)
             return null;
-          if ((UnityEngine.Object) _rotationLimit == (UnityEngine.Object) null)
+          if (_rotationLimit == null)
             _rotationLimit = transform.GetComponent<RotationLimit>();
-          isLimited = (UnityEngine.Object) _rotationLimit != (UnityEngine.Object) null;
+          isLimited = _rotationLimit != null;
           return _rotationLimit;
         }
         set
         {
           _rotationLimit = value;
-          isLimited = (UnityEngine.Object) value != (UnityEngine.Object) null;
+          isLimited = value != null;
         }
       }
 

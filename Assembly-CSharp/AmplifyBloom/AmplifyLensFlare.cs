@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace AmplifyBloom
 {
@@ -54,10 +56,10 @@ namespace AmplifyBloom
 
     public void Destroy()
     {
-      if (!((UnityEngine.Object) m_lensFlareGradTexture != (UnityEngine.Object) null))
+      if (!(m_lensFlareGradTexture != null))
         return;
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_lensFlareGradTexture);
-      m_lensFlareGradTexture = (Texture2D) null;
+      Object.DestroyImmediate(m_lensFlareGradTexture);
+      m_lensFlareGradTexture = null;
     }
 
     public void CreateLUTexture()
@@ -71,11 +73,11 @@ namespace AmplifyBloom
     {
       RenderTexture tempRenderTarget = AmplifyUtils.GetTempRenderTarget(source.width, source.height);
       material.SetVector(AmplifyUtils.LensFlareGhostsParamsId, m_lensFlareGhostsParams);
-      material.SetTexture(AmplifyUtils.LensFlareLUTId, (Texture) m_lensFlareGradTexture);
+      material.SetTexture(AmplifyUtils.LensFlareLUTId, m_lensFlareGradTexture);
       material.SetVector(AmplifyUtils.LensFlareHaloParamsId, m_lensFlareHaloParams);
       material.SetFloat(AmplifyUtils.LensFlareGhostChrDistortionId, m_lensFlareGhostChrDistortion);
       material.SetFloat(AmplifyUtils.LensFlareHaloChrDistortionId, m_lensFlareHaloChrDistortion);
-      Graphics.Blit((Texture) source, tempRenderTarget, material, 3 + m_lensFlareGhostAmount);
+      Graphics.Blit(source, tempRenderTarget, material, 3 + m_lensFlareGhostAmount);
       return tempRenderTarget;
     }
 

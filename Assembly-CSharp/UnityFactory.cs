@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cofe.Utility;
+using UnityEngine;
 
 public static class UnityFactory
 {
@@ -51,12 +52,12 @@ public static class UnityFactory
   private static T InstantiateObject<T>(T prefab, string group) where T : Object
   {
     if (!Application.isEditor || group.IsNullOrEmpty())
-      return Object.Instantiate<T>(prefab);
+      return Object.Instantiate(prefab);
     GameObject group1 = GetOrCreateGroup(group);
-    return Object.Instantiate<T>(prefab, group1.transform);
+    return Object.Instantiate(prefab, group1.transform);
   }
 
-  public static void Destroy(GameObject go) => Object.Destroy((Object) go);
+  public static void Destroy(GameObject go) => Object.Destroy(go);
 
-  public static void Destroy(MonoBehaviour mono) => Object.Destroy((Object) mono.gameObject);
+  public static void Destroy(MonoBehaviour mono) => Object.Destroy(mono.gameObject);
 }

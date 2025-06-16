@@ -4,6 +4,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Inventory
 {

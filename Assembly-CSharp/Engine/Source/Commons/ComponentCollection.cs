@@ -11,6 +11,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Impl.Services.Simulations;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -127,7 +128,7 @@ namespace Engine.Source.Commons
       foreach (RequiredAttribute customAttribute in type.GetCustomAttributes(typeof (RequiredAttribute), false))
       {
         if (!customAttribute.Type.IsClass)
-          Debug.LogError((object) ("Need component type : " + type + " , required : " + customAttribute.Type));
+          Debug.LogError("Need component type : " + type + " , required : " + customAttribute.Type);
         else
           Add(customAttribute.Type);
       }
@@ -147,7 +148,7 @@ namespace Engine.Source.Commons
         else
         {
           components.RemoveAt(index);
-          Debug.LogError((object) ("Component not found : " + this.GetInfo()));
+          Debug.LogError("Component not found : " + this.GetInfo());
         }
       }
     }

@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [AddComponentMenu("Image Effects/Blur/Blur")]
@@ -8,14 +10,14 @@
     public int iterations = 3;
     [Range(0.0f, 1f)]
     public float blurSpread = 0.6f;
-    public Shader blurShader = (Shader) null;
-    private static Material m_Material = (Material) null;
+    public Shader blurShader;
+    private static Material m_Material;
 
     protected Material material
     {
       get
       {
-        if ((Object) m_Material == (Object) null)
+        if (m_Material == null)
         {
           m_Material = new Material(blurShader);
           m_Material.hideFlags = HideFlags.DontSave;
@@ -28,33 +30,33 @@
     {
       if (!(bool) (Object) m_Material)
         return;
-      Object.DestroyImmediate((Object) m_Material);
+      DestroyImmediate(m_Material);
     }
 
     protected void Start()
     {
       if (!SystemInfo.supportsImageEffects)
       {
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
         if ((bool) (Object) blurShader && material.shader.isSupported)
           return;
-        this.enabled = false;
+        enabled = false;
       }
     }
 
     public void FourTapCone(RenderTexture source, RenderTexture dest, int iteration)
     {
       float num = (float) (0.5 + iteration * (double) blurSpread);
-      Graphics.BlitMultiTap((Texture) source, dest, material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
+      Graphics.BlitMultiTap(source, dest, material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
     }
 
     private void DownSample4x(RenderTexture source, RenderTexture dest)
     {
       float num = 1f;
-      Graphics.BlitMultiTap((Texture) source, dest, material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
+      Graphics.BlitMultiTap(source, dest, material, new Vector2(-num, -num), new Vector2(-num, num), new Vector2(num, num), new Vector2(num, -num));
     }
 
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
@@ -70,7 +72,7 @@
         RenderTexture.ReleaseTemporary(renderTexture);
         renderTexture = temporary;
       }
-      Graphics.Blit((Texture) renderTexture, destination);
+      Graphics.Blit(renderTexture, destination);
       RenderTexture.ReleaseTemporary(renderTexture);
     }
   }

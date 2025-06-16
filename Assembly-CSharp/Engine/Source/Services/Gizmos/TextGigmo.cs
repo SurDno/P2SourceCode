@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.Services.Gizmos
+﻿using UnityEngine;
+
+namespace Engine.Source.Services.Gizmos
 {
   public struct TextGigmo
   {

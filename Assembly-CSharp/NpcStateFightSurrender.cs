@@ -5,6 +5,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateFightSurrender : INpcState
 {
@@ -35,10 +37,10 @@ public class NpcStateFightSurrender : INpcState
     agent = pivot.GetAgent();
     animator = pivot.GetAnimator();
     weaponService = pivot.GetNpcWeaponService();
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -69,7 +71,7 @@ public class NpcStateFightSurrender : INpcState
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
       Status = NpcStateStatusEnum.Failed;
     }
     else
@@ -127,7 +129,7 @@ public class NpcStateFightSurrender : INpcState
   {
     if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || Status != 0)
       return;
-    if ((UnityEngine.Object) enemy == (UnityEngine.Object) null || (UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) null)
+    if (enemy == null || enemy.Enemy == null)
     {
       Status = NpcStateStatusEnum.Failed;
     }

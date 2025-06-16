@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -9,7 +10,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
       AnimationCurve model,
       Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + SerializeMember<Keyframe[]>(serialized, null, "keys", model.keys) + SerializeMember<WrapMode>(serialized, null, "preWrapMode", model.preWrapMode) + SerializeMember<WrapMode>(serialized, null, "postWrapMode", model.postWrapMode);
+      return fsResult.Success + SerializeMember(serialized, null, "keys", model.keys) + SerializeMember(serialized, null, "preWrapMode", model.preWrapMode) + SerializeMember(serialized, null, "postWrapMode", model.postWrapMode);
     }
 
     protected override fsResult DoDeserialize(
@@ -31,7 +32,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new AnimationCurve();
+      return new AnimationCurve();
     }
   }
 }

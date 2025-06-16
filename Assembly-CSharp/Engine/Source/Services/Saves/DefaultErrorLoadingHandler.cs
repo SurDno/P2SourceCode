@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine.Source.Services.Saves
 {
@@ -11,7 +12,7 @@ namespace Engine.Source.Services.Saves
     public void LogError(string text)
     {
       ErrorLoading = text;
-      Debug.LogError((object) text);
+      Debug.LogError(text);
     }
 
     public void LogException(Exception e)

@@ -1,4 +1,7 @@
-﻿public class PlagueIntroSceneLoader : MonoBehaviour
+﻿using UnityEngine;
+using UnityEngine.SceneManagement;
+
+public class PlagueIntroSceneLoader : MonoBehaviour
 {
   private void Start()
   {

@@ -24,7 +24,7 @@ namespace UnityEngine.AI
     private bool m_AutoUpdatePosition;
     [SerializeField]
     private int m_Area;
-    private NavMeshLinkInstance m_LinkInstance = new NavMeshLinkInstance();
+    private NavMeshLinkInstance m_LinkInstance;
     private Vector3 m_LastPosition = Vector3.zero;
     private Quaternion m_LastRotation = Quaternion.identity;
     private static readonly List<NavMeshLink> s_Tracked = new List<NavMeshLink>();
@@ -128,7 +128,7 @@ namespace UnityEngine.AI
     private static void AddTracking(NavMeshLink link)
     {
       if (s_Tracked.Count == 0)
-        NavMesh.onPreUpdate += new NavMesh.OnNavMeshPreUpdate(UpdateTrackedInstances);
+        NavMesh.onPreUpdate += UpdateTrackedInstances;
       s_Tracked.Add(link);
     }
 
@@ -137,7 +137,7 @@ namespace UnityEngine.AI
       s_Tracked.Remove(link);
       if (s_Tracked.Count != 0)
         return;
-      NavMesh.onPreUpdate -= new NavMesh.OnNavMeshPreUpdate(UpdateTrackedInstances);
+      NavMesh.onPreUpdate -= UpdateTrackedInstances;
     }
 
     private void SetAutoUpdate(bool value)
@@ -157,20 +157,20 @@ namespace UnityEngine.AI
         startPosition = m_StartPoint,
         endPosition = m_EndPoint,
         width = m_Width,
-        costModifier = (float) m_CostModifier,
+        costModifier = m_CostModifier,
         bidirectional = m_Bidirectional,
         area = m_Area,
         agentTypeID = m_AgentTypeID
-      }, this.transform.position, this.transform.rotation);
+      }, transform.position, transform.rotation);
       if (m_LinkInstance.valid)
-        m_LinkInstance.owner = (Object) this;
-      m_LastPosition = this.transform.position;
-      m_LastRotation = this.transform.rotation;
+        m_LinkInstance.owner = this;
+      m_LastPosition = transform.position;
+      m_LastRotation = transform.rotation;
     }
 
     private bool HasTransformChanged()
     {
-      return m_LastPosition != this.transform.position || m_LastRotation != this.transform.rotation;
+      return m_LastPosition != transform.position || m_LastRotation != transform.rotation;
     }
 
     private void OnDidApplyAnimationProperties() => UpdateLink();

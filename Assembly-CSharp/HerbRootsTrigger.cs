@@ -3,6 +3,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 public class HerbRootsTrigger : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class HerbRootsTrigger : MonoBehaviour
 
   private void Awake()
   {
-    trigger = this.gameObject.AddComponent<SphereCollider>();
+    trigger = gameObject.AddComponent<SphereCollider>();
     trigger.isTrigger = true;
     trigger.radius = 5f;
   }
@@ -31,7 +32,7 @@ public class HerbRootsTrigger : MonoBehaviour
   private bool IsPlayer(GameObject gameObject)
   {
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-    return player != null && (UnityEngine.Object) ((IEntityView) player).GameObject == (UnityEngine.Object) gameObject;
+    return player != null && ((IEntityView) player).GameObject == gameObject;
   }
 
   private void OnTriggerEnter(Collider collider)

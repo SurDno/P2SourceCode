@@ -2,6 +2,9 @@
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.SceneManagement;
 
 public class PlagueIntroRatsManager : MonoBehaviour
 {
@@ -32,14 +35,14 @@ public class PlagueIntroRatsManager : MonoBehaviour
     spawnRootGO = new GameObject("[PlagueIntroRatsManager Root]");
     for (int index = 0; index < ratPoolCount; ++index)
     {
-      PlagueIntroRat component = UnityEngine.Object.Instantiate<GameObject>(ratPrefab, spawnRootGO.transform).GetComponent<PlagueIntroRat>();
+      PlagueIntroRat component = Instantiate(ratPrefab, spawnRootGO.transform).GetComponent<PlagueIntroRat>();
       component.Init(this);
       ratPool.Add(component);
     }
-    for (int index = 0; index < this.transform.childCount; ++index)
+    for (int index = 0; index < transform.childCount; ++index)
     {
       NavMeshHit hit;
-      if (NavMesh.SamplePosition(this.transform.GetChild(index).transform.position, out hit, 0.5f, -1))
+      if (NavMesh.SamplePosition(transform.GetChild(index).transform.position, out hit, 0.5f, -1))
         allSpawnPoints.Add(hit.position);
     }
   }
@@ -48,10 +51,10 @@ public class PlagueIntroRatsManager : MonoBehaviour
   {
     for (int index = 0; index < ratPoolCount; ++index)
     {
-      if ((UnityEngine.Object) ratPool[index] != (UnityEngine.Object) null)
-        UnityEngine.Object.Destroy((UnityEngine.Object) ratPool[index].gameObject);
+      if (ratPool[index] != null)
+        Destroy(ratPool[index].gameObject);
     }
-    UnityEngine.Object.Destroy((UnityEngine.Object) spawnRootGO);
+    Destroy(spawnRootGO);
   }
 
   private GameObject GetPlayerGameObject()
@@ -66,27 +69,27 @@ public class PlagueIntroRatsManager : MonoBehaviour
     UpdateSpawnPoints();
     if (ratCount == ratPoolCount || spawnPointsIndices.Count < 1)
       return;
-    int index = UnityEngine.Random.Range(0, spawnPointsIndices.Count);
+    int index = Random.Range(0, spawnPointsIndices.Count);
     int spawnPointsIndex = spawnPointsIndices[index];
     if (lockedPoints.Contains(spawnPointsIndex))
       return;
     Vector3 allSpawnPoint1 = allSpawnPoints[spawnPointsIndex];
     if (ratCount == ratPoolCount)
       return;
-    Vector3 allSpawnPoint2 = allSpawnPoints[spawnPointsIndices[(index + 1 + UnityEngine.Random.Range(0, spawnPointsIndices.Count)) % spawnPointsIndices.Count]];
+    Vector3 allSpawnPoint2 = allSpawnPoints[spawnPointsIndices[(index + 1 + Random.Range(0, spawnPointsIndices.Count)) % spawnPointsIndices.Count]];
     Spawn(spawnPointsIndex, allSpawnPoint1, allSpawnPoint2);
   }
 
   private void UpdateSpawnPoints()
   {
     GameObject playerGameObject = GetPlayerGameObject();
-    if (!(bool) (UnityEngine.Object) playerGameObject)
+    if (!(bool) (Object) playerGameObject)
       return;
     Vector3 position = playerGameObject.transform.position;
     spawnPointsIndices.Clear();
     for (int index = 0; index < allSpawnPoints.Count; ++index)
     {
-      if ((double) (position - allSpawnPoints[index]).magnitude < spawnPointCollectRadius)
+      if ((position - allSpawnPoints[index]).magnitude < (double) spawnPointCollectRadius)
         spawnPointsIndices.Add(index);
     }
   }
@@ -106,7 +109,7 @@ public class PlagueIntroRatsManager : MonoBehaviour
     lockedPoints.Remove(lockIndex);
     if (ratCount > 1)
     {
-      ratPool[ratPool.FindIndex(0, v => (UnityEngine.Object) v == (UnityEngine.Object) rat)] = ratPool[ratCount - 1];
+      ratPool[ratPool.FindIndex(0, v => v == rat)] = ratPool[ratCount - 1];
       ratPool[ratCount - 1] = rat;
     }
     --ratCount;

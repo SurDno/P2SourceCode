@@ -5,6 +5,8 @@ using System.Linq;
 using Cofe.Utility;
 using Engine.Common;
 using ParadoxNotion;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace FlowCanvas
 {
@@ -43,11 +45,11 @@ namespace FlowCanvas
         {
           try
           {
-            return (object) (sourceFunc() as Component).transform.position;
+            return (sourceFunc() as Component).transform.position;
           }
           catch
           {
-            return (object) Vector3.zero;
+            return Vector3.zero;
           }
         };
       if (targetType == typeof (Vector3) && sourceType == typeof (GameObject))
@@ -55,11 +57,11 @@ namespace FlowCanvas
         {
           try
           {
-            return (object) (sourceFunc() as GameObject).transform.position;
+            return (sourceFunc() as GameObject).transform.position;
           }
           catch
           {
-            return (object) Vector3.zero;
+            return Vector3.zero;
           }
         };
       if (targetType == typeof (Quaternion) && typeof (Component).RTIsAssignableFrom(sourceType))
@@ -67,11 +69,11 @@ namespace FlowCanvas
         {
           try
           {
-            return (object) (sourceFunc() as Component).transform.rotation;
+            return (sourceFunc() as Component).transform.rotation;
           }
           catch
           {
-            return (object) Quaternion.identity;
+            return Quaternion.identity;
           }
         };
       if (targetType == typeof (Quaternion) && sourceType == typeof (GameObject))
@@ -79,11 +81,11 @@ namespace FlowCanvas
         {
           try
           {
-            return (object) (sourceFunc() as GameObject).transform.rotation;
+            return (sourceFunc() as GameObject).transform.rotation;
           }
           catch
           {
-            return (object) Quaternion.identity;
+            return Quaternion.identity;
           }
         };
       if (typeof (Component).RTIsAssignableFrom(targetType) && typeof (Component).RTIsAssignableFrom(sourceType))
@@ -91,7 +93,7 @@ namespace FlowCanvas
         {
           try
           {
-            return (object) (sourceFunc() as Component).GetComponent(targetType);
+            return (sourceFunc() as Component).GetComponent(targetType);
           }
           catch
           {
@@ -103,7 +105,7 @@ namespace FlowCanvas
         {
           try
           {
-            return (object) (sourceFunc() as GameObject).GetComponent(targetType);
+            return (sourceFunc() as GameObject).GetComponent(targetType);
           }
           catch
           {
@@ -115,17 +117,17 @@ namespace FlowCanvas
         {
           try
           {
-            return (object) (sourceFunc() as Component).gameObject;
+            return (sourceFunc() as Component).gameObject;
           }
           catch
           {
             return null;
           }
         };
-      if (targetType == typeof (bool) && typeof (UnityEngine.Object).RTIsAssignableFrom(sourceType))
-        return () => (object) (sourceFunc() as UnityEngine.Object != (UnityEngine.Object) null);
+      if (targetType == typeof (bool) && typeof (Object).RTIsAssignableFrom(sourceType))
+        return () => sourceFunc() as Object != null;
       if (targetType == typeof (int) && sourceType == typeof (LayerMask))
-        return () => (object) ((LayerMask) sourceFunc()).value;
+        return () => ((LayerMask) sourceFunc()).value;
       if (targetType.RTIsSubclassOf(sourceType))
         return sourceFunc;
       if (typeof (IList).RTIsAssignableFrom(sourceType) && typeof (IList).RTIsAssignableFrom(targetType))
@@ -206,7 +208,7 @@ namespace FlowCanvas
         return () =>
         {
           GameObject gameObject = sourceFunc() as GameObject;
-          if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+          if (gameObject != null)
           {
             IEntity entity = EntityUtility.GetEntity(gameObject);
             if (entity != null)
@@ -218,7 +220,7 @@ namespace FlowCanvas
         return () =>
         {
           GameObject gameObject = sourceFunc() as GameObject;
-          return (UnityEngine.Object) gameObject != (UnityEngine.Object) null ? EntityUtility.GetEntity(gameObject) : (object) null;
+          return gameObject != null ? EntityUtility.GetEntity(gameObject) : (object) null;
         };
       if (TypeUtility.IsAssignableFrom(typeof (IObject), sourceType) && TypeUtility.IsAssignableFrom(typeof (IObject), targetType))
         return () => !(sourceFunc() is IObject @object) ? null : (object) @object;

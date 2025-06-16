@@ -9,6 +9,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 using Action = BehaviorDesigner.Runtime.Tasks.Action;
 
 [TaskDescription("Enable PlagueCloud sound.")]
@@ -33,12 +34,12 @@ public class EnableCloudSound : Action, IStub, ISerializeDataWrite, ISerializeDa
 
   public override TaskStatus OnUpdate()
   {
-    if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+    if (pivot == null)
     {
       pivot = gameObject.GetComponent<PivotCloud>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (PivotCloud).Name + " component"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (PivotCloud).Name + " component", gameObject);
         return TaskStatus.Failure;
       }
     }

@@ -7,6 +7,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -33,12 +34,12 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
+      if (behavior == null)
       {
         behavior = gameObject.GetComponent<EngineBehavior>();
-        if ((UnityEngine.Object) behavior == (UnityEngine.Object) null)
+        if (behavior == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (EngineBehavior).Name + " unity component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (EngineBehavior).Name + " unity component", gameObject);
           return TaskStatus.Failure;
         }
       }

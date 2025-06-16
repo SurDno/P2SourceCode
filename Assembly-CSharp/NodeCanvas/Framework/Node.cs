@@ -7,6 +7,7 @@ using ParadoxNotion;
 using ParadoxNotion.Design;
 using ParadoxNotion.Serialization;
 using ParadoxNotion.Services;
+using UnityEngine;
 
 namespace NodeCanvas.Framework
 {
@@ -118,7 +119,7 @@ namespace NodeCanvas.Framework
     {
       if (targetGraph == null)
       {
-        Debug.LogError((object) "Can't Create a Node without providing a Target Graph");
+        Debug.LogError("Can't Create a Node without providing a Target Graph");
         return null;
       }
       Node instance = (Node) Activator.CreateInstance(nodeType);
@@ -133,7 +134,7 @@ namespace NodeCanvas.Framework
     {
       if (targetGraph == null)
       {
-        Debug.LogError((object) "Can't duplicate a Node without providing a Target Graph");
+        Debug.LogError("Can't duplicate a Node without providing a Target Graph");
         return null;
       }
       Node o = JSONSerializer.Deserialize<Node>(JSONSerializer.Serialize(typeof (Node), this));
@@ -161,7 +162,7 @@ namespace NodeCanvas.Framework
       if (isChecked)
         return Error("Infinite Loop. Please check for other errors that may have caused this in the log before this.");
       isChecked = true;
-      status = OnExecute((Component) agent, blackboard);
+      status = OnExecute(agent, blackboard);
       isChecked = false;
       return status;
     }
@@ -175,7 +176,7 @@ namespace NodeCanvas.Framework
 
     protected Status Error(string log)
     {
-      Debug.LogError((object) ("<b>Graph Error:</b> '" + log + "' On node '" + name + "' ID " + Id + " | On graph '" + graph.agent + "'"));
+      Debug.LogError("<b>Graph Error:</b> '" + log + "' On node '" + name + "' ID " + Id + " | On graph '" + graph.agent + "'");
       return Status.Error;
     }
 
@@ -194,19 +195,19 @@ namespace NodeCanvas.Framework
 
     public void RegisterEvents(params string[] eventNames)
     {
-      RegisterEvents((Component) graphAgent, eventNames);
+      RegisterEvents(graphAgent, eventNames);
     }
 
     public void RegisterEvents(Component targetAgent, params string[] eventNames)
     {
-      if ((UnityEngine.Object) targetAgent == (UnityEngine.Object) null)
+      if (targetAgent == null)
       {
-        Debug.LogError((object) "Null Agent provided for event registration");
+        Debug.LogError("Null Agent provided for event registration");
       }
       else
       {
         MessageRouter messageRouter = targetAgent.GetComponent<MessageRouter>();
-        if ((UnityEngine.Object) messageRouter == (UnityEngine.Object) null)
+        if (messageRouter == null)
           messageRouter = targetAgent.gameObject.AddComponent<MessageRouter>();
         messageRouter.Register(this, eventNames);
       }
@@ -214,27 +215,27 @@ namespace NodeCanvas.Framework
 
     public void UnRegisterEvents(params string[] eventNames)
     {
-      UnRegisterEvents((Component) graphAgent, eventNames);
+      UnRegisterEvents(graphAgent, eventNames);
     }
 
     public void UnRegisterEvents(Component targetAgent, params string[] eventNames)
     {
-      if ((UnityEngine.Object) targetAgent == (UnityEngine.Object) null)
+      if (targetAgent == null)
         return;
       MessageRouter component = targetAgent.GetComponent<MessageRouter>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
       component.UnRegister(this, eventNames);
     }
 
-    public void UnregisterAllEvents() => UnregisterAllEvents((Component) graphAgent);
+    public void UnregisterAllEvents() => UnregisterAllEvents(graphAgent);
 
     public void UnregisterAllEvents(Component targetAgent)
     {
-      if ((UnityEngine.Object) targetAgent == (UnityEngine.Object) null)
+      if (targetAgent == null)
         return;
       MessageRouter component = targetAgent.GetComponent<MessageRouter>();
-      if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+      if (!(component != null))
         return;
       component.UnRegister(this);
     }
@@ -247,18 +248,18 @@ namespace NodeCanvas.Framework
       {
         if (this == sourceNode)
         {
-          Debug.LogWarning((object) "Node can't connect to itself");
+          Debug.LogWarning("Node can't connect to itself");
           return false;
         }
         if (sourceNode.outConnections.Count >= sourceNode.maxOutConnections && sourceNode.maxOutConnections != -1)
         {
-          Debug.LogWarning((object) "Source node can have no more out connections.");
+          Debug.LogWarning("Source node can have no more out connections.");
           return false;
         }
       }
       if (maxInConnections > inConnections.Count || maxInConnections == -1)
         return true;
-      Debug.LogWarning((object) "Target node can have no more connections");
+      Debug.LogWarning("Target node can have no more connections");
       return false;
     }
 

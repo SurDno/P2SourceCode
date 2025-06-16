@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
 
 namespace JerboaAnimationInstancing
 {
@@ -22,7 +23,7 @@ namespace JerboaAnimationInstancing
       GameObject prefab,
       JerboaInstance instance)
     {
-      Debug.Assert((Object) prefab != (Object) null);
+      Debug.Assert(prefab != null);
       InstanceAnimationInfo instanceAnimationInfo = null;
       return animationInfo.TryGetValue(prefab, out instanceAnimationInfo) ? instanceAnimationInfo : CreateAnimationInfoFromFile(jerboaInstancingManager, textAsset, prefab);
     }

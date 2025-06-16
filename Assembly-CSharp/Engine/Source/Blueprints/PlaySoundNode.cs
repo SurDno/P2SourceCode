@@ -3,6 +3,8 @@ using Engine.Source.Audio;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -27,14 +29,14 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         AudioClip clip = clipInput.value;
-        if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
+        if (clip == null)
         {
           output.Call();
         }
         else
         {
           AudioMixerGroup mixer = mixerInput.value;
-          if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+          if (mixer == null)
             output.Call();
           else
             SoundUtility.PlayAudioClip2D(clip, mixer, volumeInput.value, fadeTime.value, usePause.value, "(blueprint) " + graph.agent.name, (Action) (() => output.Call()));

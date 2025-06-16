@@ -1,9 +1,11 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressHideable : ProgressDecorator
   {
     [SerializeField]
-    private HideableView hideableView = null;
+    private HideableView hideableView;
     [SerializeField]
     private Vector2 hiddenRange = Vector2.zero;
 
@@ -22,7 +24,7 @@
     public override void SkipAnimation()
     {
       base.SkipAnimation();
-      if (!((Object) hideableView != (Object) null))
+      if (!(hideableView != null))
         return;
       hideableView.SkipAnimation();
     }
@@ -30,7 +32,7 @@
     protected override void ApplyProgress()
     {
       base.ApplyProgress();
-      if (!((Object) hideableView != (Object) null))
+      if (!(hideableView != null))
         return;
       hideableView.Visible = Progress < (double) hiddenRange.x || Progress > (double) hiddenRange.y;
     }

@@ -1,4 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class CameraFarClippingPlaneSwitch : HideableView
 {
@@ -11,7 +12,7 @@ public class CameraFarClippingPlaneSwitch : HideableView
 
   protected override void ApplyVisibility()
   {
-    if (!((Object) targetCamera != (Object) null))
+    if (!(targetCamera != null))
       return;
     targetCamera.farClipPlane = Visible ? onDistance : offDistance;
   }

@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -37,12 +39,12 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnStart()
     {
       success = false;
-      if (!(bool) (UnityEngine.Object) Target.Value)
+      if (!(bool) (Object) Target.Value)
         return;
-      if ((UnityEngine.Object) Target.Value.GetComponent<PathPart>() != (UnityEngine.Object) null)
+      if (Target.Value.GetComponent<PathPart>() != null)
         success = true;
       else
-        Debug.LogError((object) (gameObject.name + " has wrong path object! Needs PathPart script"));
+        Debug.LogError(gameObject.name + " has wrong path object! Needs PathPart script");
     }
 
     public override TaskStatus OnUpdate() => success ? TaskStatus.Success : TaskStatus.Failure;

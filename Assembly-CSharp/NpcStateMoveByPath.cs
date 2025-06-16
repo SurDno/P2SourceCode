@@ -3,6 +3,8 @@ using Engine.Behaviours.Components;
 using Engine.Source.Commons;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateMoveByPath : INpcState
 {
@@ -68,13 +70,13 @@ public class NpcStateMoveByPath : INpcState
       }
       else
       {
-        Debug.Log((object) "Can't sample navmesh", (Object) GameObject);
+        Debug.Log("Can't sample navmesh", GameObject);
         Status = NpcStateStatusEnum.Failed;
         return;
       }
     }
     GoToNextPoint();
-    if (!((Object) weaponService != (Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = WeaponEnum.Unknown;
   }
@@ -99,7 +101,7 @@ public class NpcStateMoveByPath : INpcState
     if (failed)
       return;
     agent.enabled = agentWasEnabled;
-    if (!((Object) weaponService != (Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = npcState.Weapon;
   }

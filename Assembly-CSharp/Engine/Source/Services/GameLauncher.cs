@@ -3,6 +3,7 @@ using System.Reflection;
 using Cofe.Utility;
 using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -13,37 +14,37 @@ namespace Engine.Source.Services
 
     public void StartGame()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       CoroutineService.Instance.Route(StartGameRoute());
     }
 
     public void RestartGame()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       CoroutineService.Instance.Route(RestartGameRoute(null));
     }
 
     public void RestartGameWithSave(string saveName)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       CoroutineService.Instance.Route(RestartGameRoute(saveName));
     }
 
     public void StartNewGame()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       CoroutineService.Instance.Route(LoadGameRoute(null));
     }
 
     public void StartGameWithSave(string saveName)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       CoroutineService.Instance.Route(LoadGameRoute(saveName));
     }
 
     public void ExitToMainMenu()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       CoroutineService.Instance.Route(ExitToMainMenuRoute());
     }
 
@@ -51,7 +52,7 @@ namespace Engine.Source.Services
     {
       if (busy)
       {
-        Debug.LogError((object) (GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy"));
+        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
       }
       else
       {
@@ -65,7 +66,7 @@ namespace Engine.Source.Services
     {
       if (busy)
       {
-        Debug.LogError((object) (GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy"));
+        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
       }
       else
       {
@@ -80,7 +81,7 @@ namespace Engine.Source.Services
     {
       if (busy)
       {
-        Debug.LogError((object) (GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy"));
+        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
       }
       else
       {
@@ -95,7 +96,7 @@ namespace Engine.Source.Services
     {
       if (busy)
       {
-        Debug.LogError((object) (GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy"));
+        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
       }
       else
       {

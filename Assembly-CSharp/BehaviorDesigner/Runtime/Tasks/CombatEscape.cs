@@ -8,6 +8,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -27,13 +28,13 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       CombatService service = ServiceLocator.GetService<CombatService>();
-      if (service == null || (UnityEngine.Object) Enemy.Value == (UnityEngine.Object) null || (UnityEngine.Object) Owner == (UnityEngine.Object) null)
+      if (service == null || Enemy.Value == null || Owner == null)
         return;
       EnemyBase component1 = Enemy.Value.GetComponent<EnemyBase>();
-      if ((UnityEngine.Object) component1 == (UnityEngine.Object) null)
+      if (component1 == null)
         return;
       EnemyBase component2 = Owner.GetComponent<EnemyBase>();
-      if ((UnityEngine.Object) component2 == (UnityEngine.Object) null)
+      if (component2 == null)
         return;
       service.IndividualEscape(component2, component1);
     }

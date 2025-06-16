@@ -1,4 +1,6 @@
-﻿public class Rootmotion45 : MonoBehaviour
+﻿using UnityEngine;
+
+public class Rootmotion45 : MonoBehaviour
 {
   [Header("Agent speed")]
   [Tooltip("Желательно подобрать эту скорость максимально близко с скорости цикла шага. Навигационный агент будет передвигаться на такой скорости во время бега.")]
@@ -34,11 +36,11 @@
   public bool AngleL135ToLeft;
   public bool AngleL180ToLeft;
   [Header("Run Right")]
-  public bool AngleRunR000ToLeft = false;
-  public bool AngleRunR090ToLeft = false;
-  public bool AngleRunR180ToLeft = false;
+  public bool AngleRunR000ToLeft;
+  public bool AngleRunR090ToLeft;
+  public bool AngleRunR180ToLeft;
   [Header("Run Left")]
-  public bool AngleRunL000ToLeft = false;
+  public bool AngleRunL000ToLeft;
   public bool AngleRunL090ToLeft = true;
   public bool AngleRunL180ToLeft = true;
 }

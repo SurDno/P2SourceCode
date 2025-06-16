@@ -9,6 +9,7 @@ using Engine.Source.Blenders;
 using Engine.Source.Commons;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -42,7 +43,7 @@ namespace Engine.Source.Debugs
           {
             ITimeService service2 = ServiceLocator.GetService<ITimeService>();
             layerBlenderItem.Blender.BlendTo(weatherSnapshot, TimeSpan.FromSeconds(1.0 * service2.GameTimeFactor));
-            Debug.Log((object) ObjectInfoUtility.GetStream().Append("Change weather to : [").Append(weatherSnapshot.Name).Append("] : [").Append(weatherSnapshot.Source).Append("]"));
+            Debug.Log(ObjectInfoUtility.GetStream().Append("Change weather to : [").Append(weatherSnapshot.Name).Append("] : [").Append(weatherSnapshot.Source).Append("]"));
           }
         }
       }

@@ -10,14 +10,14 @@
       uberMaterial.SetColor(Uniforms._Vignette_Color, settings.color);
       if (settings.mode == VignetteModel.Mode.Classic)
       {
-        uberMaterial.SetVector(Uniforms._Vignette_Center, (Vector4) settings.center);
+        uberMaterial.SetVector(Uniforms._Vignette_Center, settings.center);
         uberMaterial.EnableKeyword("VIGNETTE_CLASSIC");
         float z = (float) ((1.0 - settings.roundness) * 6.0) + settings.roundness;
         uberMaterial.SetVector(Uniforms._Vignette_Settings, new Vector4(settings.intensity * 3f, settings.smoothness * 5f, z, settings.rounded ? 1f : 0.0f));
       }
       else
       {
-        if (settings.mode != VignetteModel.Mode.Masked || !((Object) settings.mask != (Object) null) || settings.opacity <= 0.0)
+        if (settings.mode != VignetteModel.Mode.Masked || !(settings.mask != null) || settings.opacity <= 0.0)
           return;
         uberMaterial.EnableKeyword("VIGNETTE_MASKED");
         uberMaterial.SetTexture(Uniforms._Vignette_Mask, settings.mask);

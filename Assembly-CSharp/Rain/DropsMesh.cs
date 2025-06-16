@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Rain
 {
@@ -22,10 +24,10 @@ namespace Rain
     {
       if (buffer == null)
         throw new Exception("buffer == null");
-      MeshFilter component = this.GetComponent<MeshFilter>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      MeshFilter component = GetComponent<MeshFilter>();
+      if (component == null)
         throw new Exception("filter == null");
-      if ((UnityEngine.Object) mesh == (UnityEngine.Object) null)
+      if (mesh == null)
       {
         mesh = new Mesh();
         mesh.MarkDynamic();
@@ -50,11 +52,11 @@ namespace Rain
 
     private void DestroyMesh()
     {
-      if (!((UnityEngine.Object) mesh != (UnityEngine.Object) null))
+      if (!(mesh != null))
         return;
-      this.GetComponent<MeshFilter>().sharedMesh = (Mesh) null;
-      UnityEngine.Object.Destroy((UnityEngine.Object) mesh);
-      mesh = (Mesh) null;
+      GetComponent<MeshFilter>().sharedMesh = null;
+      Destroy(mesh);
+      mesh = null;
     }
 
     private void AddRaindrop(int index, VertexBuffer buffer)
@@ -73,17 +75,17 @@ namespace Rain
       buffer.vertices.Add(impactPosition);
       buffer.vertices.Add(impactPosition);
       buffer.vertices.Add(impactPosition);
-      byte a = (byte) UnityEngine.Random.Range(0, 256);
-      buffer.colors.Add(new Color32((byte) 0, (byte) 0, (byte) 0, a));
-      buffer.colors.Add(new Color32((byte) 0, (byte) 0, byte.MaxValue, a));
-      buffer.colors.Add(new Color32((byte) 0, byte.MaxValue, byte.MaxValue, a));
-      buffer.colors.Add(new Color32((byte) 0, byte.MaxValue, (byte) 0, a));
-      buffer.colors.Add(new Color32(byte.MaxValue, (byte) 128, (byte) 128, a));
-      buffer.colors.Add(new Color32(byte.MaxValue, (byte) 0, (byte) 0, a));
-      buffer.colors.Add(new Color32(byte.MaxValue, (byte) 0, byte.MaxValue, a));
+      byte a = (byte) Random.Range(0, 256);
+      buffer.colors.Add(new Color32(0, 0, 0, a));
+      buffer.colors.Add(new Color32(0, 0, byte.MaxValue, a));
+      buffer.colors.Add(new Color32(0, byte.MaxValue, byte.MaxValue, a));
+      buffer.colors.Add(new Color32(0, byte.MaxValue, 0, a));
+      buffer.colors.Add(new Color32(byte.MaxValue, 128, 128, a));
+      buffer.colors.Add(new Color32(byte.MaxValue, 0, 0, a));
+      buffer.colors.Add(new Color32(byte.MaxValue, 0, byte.MaxValue, a));
       buffer.colors.Add(new Color32(byte.MaxValue, byte.MaxValue, byte.MaxValue, a));
-      buffer.colors.Add(new Color32(byte.MaxValue, byte.MaxValue, (byte) 0, a));
-      Vector2 vector2 = new Vector2(UnityEngine.Random.value, UnityEngine.Random.value);
+      buffer.colors.Add(new Color32(byte.MaxValue, byte.MaxValue, 0, a));
+      Vector2 vector2 = new Vector2(Random.value, Random.value);
       buffer.uvs.Add(vector2);
       buffer.uvs.Add(vector2);
       buffer.uvs.Add(vector2);
@@ -139,14 +141,14 @@ namespace Rain
     {
       Vector2 vector2_1 = Vector2.zero;
       RainManager instance = RainManager.Instance;
-      if ((UnityEngine.Object) instance != (UnityEngine.Object) null)
+      if (instance != null)
         vector2_1 = instance.actualWindVector;
-      Vector2 vector2_2 = UnityEngine.Random.insideUnitCircle * diviation - vector2_1;
+      Vector2 vector2_2 = Random.insideUnitCircle * diviation - vector2_1;
       originDirection = new Vector3(vector2_2.x, 1f, vector2_2.y).normalized;
-      Vector2 vector2_3 = UnityEngine.Random.insideUnitCircle * radius;
+      Vector2 vector2_3 = Random.insideUnitCircle * radius;
       Vector3 point = playerPosition + new Vector3(vector2_3.x, 0.0f, vector2_3.y) + originDirection * raycastLength * 0.5f;
       RaycastHit hitInfo;
-      if (Physics.Raycast(toWorldMatrix.MultiplyPoint(point), -originDirection, out hitInfo, raycastLength, (int) collisionMask, QueryTriggerInteraction.Ignore))
+      if (Physics.Raycast(toWorldMatrix.MultiplyPoint(point), -originDirection, out hitInfo, raycastLength, collisionMask, QueryTriggerInteraction.Ignore))
       {
         impactPosition = toLocalMatrix.MultiplyPoint(hitInfo.point);
         splashNormal = hitInfo.normal;
@@ -162,10 +164,10 @@ namespace Rain
 
     private void UpdateSettings()
     {
-      toLocalMatrix = this.transform.worldToLocalMatrix;
-      toWorldMatrix = this.transform.localToWorldMatrix;
+      toLocalMatrix = transform.worldToLocalMatrix;
+      toWorldMatrix = transform.localToWorldMatrix;
       RainManager instance = RainManager.Instance;
-      if (!((UnityEngine.Object) instance != (UnityEngine.Object) null))
+      if (!(instance != null))
         return;
       collisionMask = instance.rainColliders;
       playerPosition = instance.PlayerPosition;
@@ -173,7 +175,7 @@ namespace Rain
 
     public void UpdateMesh(VertexBuffer buffer)
     {
-      if ((UnityEngine.Object) mesh == (UnityEngine.Object) null || count != lastCount)
+      if (mesh == null || count != lastCount)
       {
         CreateMesh(buffer);
       }

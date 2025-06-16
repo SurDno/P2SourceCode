@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -24,7 +25,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     private void AddEventListener()
     {
       projectile = ((IEntityView) abilityItem.Ability.Owner).GameObject?.GetComponent<ProjectileObject>();
-      if (!((UnityEngine.Object) projectile != (UnityEngine.Object) null))
+      if (!(projectile != null))
         return;
       projectile.OnProjectileHit -= OnProjectileHitEvent;
       projectile.OnProjectileHit += OnProjectileHitEvent;
@@ -33,7 +34,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     public void Shutdown()
     {
       ((IEntityView) abilityItem.Ability.Owner).OnGameObjectChangedEvent -= OnGOChanged;
-      if (!((UnityEngine.Object) projectile != (UnityEngine.Object) null))
+      if (!(projectile != null))
         return;
       projectile.OnProjectileHit -= OnProjectileHitEvent;
     }

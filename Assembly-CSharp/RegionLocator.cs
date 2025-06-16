@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine.Common.Components.Regions;
+using UnityEngine;
 
 public class RegionLocator : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class RegionLocator : MonoBehaviour
     for (int index = 0; index < childCount; ++index)
     {
       RegionMesh component = instance.transform.GetChild(index).gameObject.GetComponent<RegionMesh>();
-      if (!((Object) component == (Object) null))
+      if (!(component == null))
       {
         component.Initialise();
         regionsCache[component.Region] = component;
@@ -40,11 +41,11 @@ public class RegionLocator : MonoBehaviour
 
   private RegionEnum GetRegionNameInternal(Vector3 position)
   {
-    int layerMask = 1 << this.gameObject.layer;
+    int layerMask = 1 << gameObject.layer;
     RaycastHit hitInfo;
     if (!Physics.Raycast(new Ray(new Vector3(position.x, 2f, position.z), Vector3.down), out hitInfo, 3f, layerMask, QueryTriggerInteraction.Collide))
       return RegionEnum.None;
     RegionMesh component = hitInfo.collider.GetComponent<RegionMesh>();
-    return (Object) component == (Object) null ? RegionEnum.None : component.Region;
+    return component == null ? RegionEnum.None : component.Region;
   }
 }

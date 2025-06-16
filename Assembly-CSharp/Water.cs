@@ -1,4 +1,6 @@
-﻿public class Water : MonoBehaviour
+﻿using UnityEngine;
+
+public class Water : MonoBehaviour
 {
   private Vector2 _uvOffset = Vector2.zero;
   private Renderer _renderer;
@@ -6,7 +8,7 @@
 
   private void Start()
   {
-    _renderer = this.GetComponent<Renderer>();
+    _renderer = GetComponent<Renderer>();
     material = _renderer.materials[0];
   }
 

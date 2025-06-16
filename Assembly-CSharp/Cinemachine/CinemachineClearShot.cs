@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -10,13 +11,13 @@ namespace Cinemachine
   {
     [Tooltip("Default object for the camera children to look at (the aim target), if not specified in a child camera.  May be empty if all children specify targets of their own.")]
     [NoSaveDuringPlay]
-    public Transform m_LookAt = (Transform) null;
+    public Transform m_LookAt;
     [Tooltip("Default object for the camera children wants to move with (the body target), if not specified in a child camera.  May be empty if all children specify targets of their own.")]
     [NoSaveDuringPlay]
-    public Transform m_Follow = (Transform) null;
+    public Transform m_Follow;
     [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
     [NoSaveDuringPlay]
-    public bool m_ShowDebugText = false;
+    public bool m_ShowDebugText;
     [SerializeField]
     [HideInInspector]
     [NoSaveDuringPlay]
@@ -26,12 +27,12 @@ namespace Cinemachine
     [Tooltip("An active camera must be active for at least this many seconds")]
     public float m_MinDuration;
     [Tooltip("If checked, camera choice will be randomized if multiple cameras are equally desirable.  Otherwise, child list order and child camera priority will be used.")]
-    public bool m_RandomizeChoice = false;
+    public bool m_RandomizeChoice;
     [CinemachineBlendDefinitionProperty]
     [Tooltip("The blend which is used if you don't explicitly define a blend between two Virtual Cameras")]
     public CinemachineBlendDefinition m_DefaultBlend = new CinemachineBlendDefinition(CinemachineBlendDefinition.Style.Cut, 0.0f);
     [HideInInspector]
-    public CinemachineBlenderSettings m_CustomBlends = null;
+    public CinemachineBlenderSettings m_CustomBlends;
     private CameraState m_State = CameraState.Default;
     private float mActivationTime;
     private float mPendingActivationTime;
@@ -152,9 +153,9 @@ namespace Cinemachine
       if (m_ChildCameras != null)
         return;
       List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
-      foreach (CinemachineVirtualCameraBase componentsInChild in this.GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
+      foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
-        if ((UnityEngine.Object) componentsInChild.transform.parent == (UnityEngine.Object) this.transform)
+        if (componentsInChild.transform.parent == transform)
           virtualCameraBaseList.Add(componentsInChild);
       }
       m_ChildCameras = virtualCameraBaseList.ToArray();
@@ -186,7 +187,7 @@ namespace Cinemachine
       for (int index = 0; index < virtualCameraBaseArray.Length; ++index)
       {
         CinemachineVirtualCameraBase virtualCameraBase = virtualCameraBaseArray[index];
-        if ((UnityEngine.Object) virtualCameraBase != (UnityEngine.Object) null && virtualCameraBase.VirtualCameraGameObject.activeInHierarchy)
+        if (virtualCameraBase != null && virtualCameraBase.VirtualCameraGameObject.activeInHierarchy)
         {
           int num;
           if (cinemachineCamera != null)
@@ -266,7 +267,7 @@ label_20:
       for (int index = 0; index < src.Length; ++index)
         pairList.Add(new Pair {
           a = index,
-          b = UnityEngine.Random.Range(0.0f, 1000f)
+          b = Random.Range(0.0f, 1000f)
         });
       pairList.Sort((p1, p2) => (int) p1.b - (int) p2.b);
       CinemachineVirtualCameraBase[] virtualCameraBaseArray = new CinemachineVirtualCameraBase[src.Length];
@@ -282,7 +283,7 @@ label_20:
       out float duration)
     {
       AnimationCurve defaultCurve = m_DefaultBlend.BlendCurve;
-      if ((UnityEngine.Object) m_CustomBlends != (UnityEngine.Object) null)
+      if (m_CustomBlends != null)
         defaultCurve = m_CustomBlends.GetBlendCurveForVirtualCameras(fromKey != null ? fromKey.Name : string.Empty, toKey != null ? toKey.Name : string.Empty, defaultCurve);
       Keyframe[] keys = defaultCurve.keys;
       duration = keys == null || keys.Length == 0 ? 0.0f : keys[keys.Length - 1].time;

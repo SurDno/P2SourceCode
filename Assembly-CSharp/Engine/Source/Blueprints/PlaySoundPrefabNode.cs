@@ -4,6 +4,8 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using SoundPropagation;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints
 {
@@ -34,21 +36,21 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         AudioClip clip = clipInput.value;
-        if ((UnityEngine.Object) clip == (UnityEngine.Object) null)
+        if (clip == null)
         {
           output.Call();
         }
         else
         {
           AudioMixerGroup mixer = mixerInput.value;
-          if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+          if (mixer == null)
           {
             output.Call();
           }
           else
           {
             GameObject gameObject = targetInput.value;
-            if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+            if (gameObject == null)
             {
               output.Call();
             }

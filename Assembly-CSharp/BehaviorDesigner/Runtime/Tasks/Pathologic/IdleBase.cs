@@ -1,4 +1,5 @@
 ﻿using Engine.Common.Generator;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -49,14 +50,14 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnAwake()
     {
       npcState = gameObject.GetComponent<NpcState>();
-      if (!((Object) npcState == (Object) null))
+      if (!(npcState == null))
         return;
-      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
     }
 
     public override void OnStart()
     {
-      if ((Object) npcState == (Object) null)
+      if (npcState == null)
         return;
       infinite = idleTime.Value == 0.0 && !randomIdle.Value;
       DoIdle(npcState, primaryIdleProbability.Value);
@@ -69,9 +70,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      if ((Object) npcState == (Object) null)
+      if (npcState == null)
         return TaskStatus.Failure;
-      return infinite || startTime + (double) waitDuration >= (double) Time.time ? TaskStatus.Running : TaskStatus.Success;
+      return infinite || startTime + (double) waitDuration >= Time.time ? TaskStatus.Running : TaskStatus.Success;
     }
 
     public override void OnPause(bool paused)

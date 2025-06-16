@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   [RequireComponent(typeof (Button))]
   public class ButtonListener : MonoBehaviour
@@ -8,7 +11,7 @@
 
     private void Awake()
     {
-      this.GetComponent<Button>().onClick.AddListener(new UnityAction(OnClick));
+      GetComponent<Button>().onClick.AddListener(OnClick);
     }
 
     private void OnClick() => view?.Invoke();

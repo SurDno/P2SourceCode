@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -34,14 +35,14 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnAwake()
     {
       npcState = gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
+      if (!(npcState == null))
         return;
-      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
+      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component", gameObject);
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
         return;
       startTime = Time.time;
       npcState.Ragdoll(InternalCollisions.Value);
@@ -57,9 +58,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null || npcState.CurrentNpcState != NpcStateEnum.Ragdoll)
+      if (npcState == null || npcState.CurrentNpcState != NpcStateEnum.Ragdoll)
         return TaskStatus.Failure;
-      if (WaitTime.Value > 0.0 && startTime + (double) WaitTime.Value < (double) Time.time)
+      if (WaitTime.Value > 0.0 && startTime + (double) WaitTime.Value < Time.time)
         return TaskStatus.Success;
       switch (npcState.Status)
       {

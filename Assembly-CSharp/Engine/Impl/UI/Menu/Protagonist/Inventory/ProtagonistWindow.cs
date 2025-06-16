@@ -11,6 +11,7 @@ using Engine.Source.Inventory;
 using Engine.Source.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -132,7 +133,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      RegisterLayer((IInventoryWindow) this);
+      RegisterLayer<IInventoryWindow>(this);
       base.Initialize();
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using Engine.Common.Generator;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -107,7 +108,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     protected GameObject GetDefaultGameObject(GameObject go)
     {
-      return (UnityEngine.Object) go == (UnityEngine.Object) null ? gameObject : go;
+      return go == null ? gameObject : go;
     }
 
     public NodeData NodeData

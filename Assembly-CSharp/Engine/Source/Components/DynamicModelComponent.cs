@@ -15,6 +15,9 @@ using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Profiling;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Components
 {
@@ -149,9 +152,9 @@ namespace Engine.Source.Components
         return;
       bool flag = !locationItem.IsHibernation && Owner.IsEnabledInHierarchy && IsEnabled && InstanceByRequest<EngineApplication>.Instance.ViewEnabled;
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
       {
-        Debug.LogError((object) "go == null");
+        Debug.LogError("go == null");
       }
       else
       {
@@ -208,21 +211,21 @@ namespace Engine.Source.Components
         delaySetInstance = false;
         GameObject delayInstance = this.delayInstance;
         string delayInstanceName = this.delayInstanceName;
-        this.delayInstance = (GameObject) null;
+        this.delayInstance = null;
         this.delayInstanceName = null;
-        UnityEngine.Object.Destroy((UnityEngine.Object) delayInstance);
+        Object.Destroy(delayInstance);
       }
       if (!((IEntityView) Owner).IsAttached)
         return;
       GameObject gameObject = ((IEntityView) Owner).GameObject;
-      ((IEntityViewSetter) Owner).GameObject = (GameObject) null;
-      UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+      ((IEntityViewSetter) Owner).GameObject = null;
+      Object.Destroy(gameObject);
     }
 
     private void SetGameObject(GameObject go, string name)
     {
       go.name = Owner.Name + " : (" + name + ")";
-      if ((UnityEngine.Object) go.GetComponent<EngineGameObject>() == (UnityEngine.Object) null)
+      if (go.GetComponent<EngineGameObject>() == null)
         go.AddComponent<EngineGameObject>();
       if (Profiler.enabled)
         Profiler.BeginSample("Set GameObject : " + go.name);
@@ -255,8 +258,8 @@ namespace Engine.Source.Components
       {
         ServiceCache.OptimizationService.FrameHasSpike = true;
         GameObject gameObject = ((IEntityView) Owner).GameObject;
-        ((IEntityViewSetter) Owner).GameObject = (GameObject) null;
-        UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+        ((IEntityViewSetter) Owner).GameObject = null;
+        Object.Destroy(gameObject);
         modelInvalidate = true;
       }
       if (delaySetInstance && !ServiceCache.OptimizationService.FrameHasSpike)
@@ -265,7 +268,7 @@ namespace Engine.Source.Components
         delaySetInstance = false;
         GameObject delayInstance = this.delayInstance;
         string delayInstanceName = this.delayInstanceName;
-        this.delayInstance = (GameObject) null;
+        this.delayInstance = null;
         this.delayInstanceName = null;
         SetGameObject(delayInstance, delayInstanceName);
       }

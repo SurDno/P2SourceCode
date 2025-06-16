@@ -1,4 +1,5 @@
 ﻿using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -23,17 +24,17 @@ namespace Cinemachine
     public float m_ZDamping = 1f;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to track the target rotation's X angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-    public float m_PitchDamping = 0.0f;
+    public float m_PitchDamping;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to track the target rotation's Y angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-    public float m_YawDamping = 0.0f;
+    public float m_YawDamping;
     [Range(0.0f, 20f)]
     [Tooltip("How aggressively the camera tries to track the target rotation's Z angle.  Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
-    public float m_RollDamping = 0.0f;
+    public float m_RollDamping;
     private Vector3 m_PreviousTargetPosition = Vector3.zero;
     private Quaternion m_PreviousReferenceOrientation = Quaternion.identity;
     private Quaternion m_targetOrientationOnAssign = Quaternion.identity;
-    private Transform m_previousTarget = (Transform) null;
+    private Transform m_previousTarget;
 
     protected virtual void OnValidate() => m_FollowOffset = EffectiveOffset;
 
@@ -51,7 +52,7 @@ namespace Cinemachine
       }
     }
 
-    public override bool IsValid => this.enabled && (Object) FollowTarget != (Object) null;
+    public override bool IsValid => enabled && FollowTarget != null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
@@ -76,10 +77,10 @@ namespace Cinemachine
 
     protected void InitPrevFrameStateInfo(ref CameraState curState, float deltaTime)
     {
-      if ((Object) m_previousTarget != (Object) FollowTarget || deltaTime < 0.0)
+      if (m_previousTarget != FollowTarget || deltaTime < 0.0)
       {
         m_previousTarget = FollowTarget;
-        m_targetOrientationOnAssign = (Object) m_previousTarget == (Object) null ? Quaternion.identity : FollowTarget.rotation;
+        m_targetOrientationOnAssign = m_previousTarget == null ? Quaternion.identity : FollowTarget.rotation;
       }
       if (deltaTime >= 0.0)
         return;
@@ -101,7 +102,7 @@ namespace Cinemachine
         Vector3 vector3 = (Quaternion.Inverse(m_PreviousReferenceOrientation) * referenceOrientation).eulerAngles;
         for (int index = 0; index < 3; ++index)
         {
-          if ((double) vector3[index] > 180.0)
+          if (vector3[index] > 180.0)
             vector3[index] -= 360f;
         }
         vector3 = Damper.Damp(vector3, AngularDamping, deltaTime);
@@ -156,7 +157,7 @@ namespace Cinemachine
 
     public Quaternion GetReferenceOrientation(Vector3 worldUp)
     {
-      if ((Object) FollowTarget != (Object) null)
+      if (FollowTarget != null)
       {
         Quaternion rotation = FollowTarget.rotation;
         switch (m_BindingMode)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using UnityEngine;
 
 namespace SRDebugger.Profiler
 {
@@ -14,7 +15,7 @@ namespace SRDebugger.Profiler
 
     private void OnEnable()
     {
-      _camera = this.GetComponent<Camera>();
+      _camera = GetComponent<Camera>();
       _stopwatch = new Stopwatch();
     }
 
@@ -26,7 +27,7 @@ namespace SRDebugger.Profiler
       _stopwatch.Stop();
       _stopwatch.Reset();
       if (RenderDurationCallback == null)
-        UnityEngine.Object.Destroy((UnityEngine.Object) this);
+        Destroy(this);
       else
         RenderDurationCallback(this, totalSeconds);
     }

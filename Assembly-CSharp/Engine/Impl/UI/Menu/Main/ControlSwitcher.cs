@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -13,7 +14,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     public void SubmitAction(Button button, GameActionType type, Action action)
     {
-      button.onClick.AddListener((UnityAction) (() => action()));
+      button.onClick.AddListener(() => action());
       _buttons.Add(button);
       if (!_listeners.ContainsKey(type))
       {

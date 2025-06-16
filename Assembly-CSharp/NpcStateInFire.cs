@@ -1,6 +1,8 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateInFire : INpcState
 {
@@ -27,10 +29,10 @@ public class NpcStateInFire : INpcState
     behavior = pivot.GetBehavior();
     agent = pivot.GetAgent();
     animator = pivot.GetAnimator();
-    if ((Object) animator == (Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -57,7 +59,7 @@ public class NpcStateInFire : INpcState
     fireLayerWeight = animator.GetLayerWeight(fireLayerIndex);
     agent.enabled = true;
     Pivot component = GameObject.GetComponent<Pivot>();
-    if (!((Object) component != (Object) null) || !((Object) component.HidingOuterWeapon != (Object) null))
+    if (!(component != null) || !(component.HidingOuterWeapon != null))
       return;
     component.HidingOuterWeapon.SetActive(false);
   }

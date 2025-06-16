@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -7,7 +8,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
   {
     protected override fsResult DoSerialize(Rect model, Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + SerializeMember<float>(serialized, null, "xMin", model.xMin) + SerializeMember<float>(serialized, null, "yMin", model.yMin) + SerializeMember<float>(serialized, null, "xMax", model.xMax) + SerializeMember<float>(serialized, null, "yMax", model.yMax);
+      return fsResult.Success + SerializeMember(serialized, null, "xMin", model.xMin) + SerializeMember(serialized, null, "yMin", model.yMin) + SerializeMember(serialized, null, "xMax", model.xMax) + SerializeMember(serialized, null, "yMax", model.yMax);
     }
 
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Rect model)
@@ -30,7 +31,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new Rect();
+      return new Rect();
     }
   }
 }

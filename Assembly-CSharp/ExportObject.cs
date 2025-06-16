@@ -1,3 +1,5 @@
-﻿public class ExportObject : MonoBehaviour
+﻿using UnityEngine;
+
+public class ExportObject : MonoBehaviour
 {
 }

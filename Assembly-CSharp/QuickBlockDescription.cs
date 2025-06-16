@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(fileName = "QuickBlock", menuName = "Pathologic2/States/QuickBlock", order = 101)]
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "QuickBlock", menuName = "Pathologic2/States/QuickBlock", order = 101)]
 public class QuickBlockDescription : ScriptableObject
 {
   [Header("Быстрый блок")]

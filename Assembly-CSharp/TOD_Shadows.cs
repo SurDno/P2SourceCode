@@ -1,17 +1,19 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+
+[ExecuteInEditMode]
 [RequireComponent(typeof (Camera))]
 [AddComponentMenu("Time of Day/Camera Cloud Shadows")]
 public class TOD_Shadows : TOD_ImageEffect
 {
-  public Shader ShadowShader = (Shader) null;
-  public Texture2D CloudTexture = (Texture2D) null;
+  public Shader ShadowShader;
+  public Texture2D CloudTexture;
   [Range(0.0f, 1f)]
-  public float Cutoff = 0.0f;
+  public float Cutoff;
   [Range(0.0f, 1f)]
-  public float Fade = 0.0f;
+  public float Fade;
   [Range(0.0f, 1f)]
   public float Intensity = 0.5f;
-  private Material shadowMaterial = (Material) null;
+  private Material shadowMaterial;
 
   protected void OnEnable()
   {
@@ -24,7 +26,7 @@ public class TOD_Shadows : TOD_ImageEffect
   {
     if (!(bool) (Object) shadowMaterial)
       return;
-    Object.DestroyImmediate((Object) shadowMaterial);
+    DestroyImmediate(shadowMaterial);
   }
 
   [ImageEffectOpaque]
@@ -32,13 +34,13 @@ public class TOD_Shadows : TOD_ImageEffect
   {
     if (!CheckSupport(true))
     {
-      Graphics.Blit((Texture) source, destination);
+      Graphics.Blit(source, destination);
     }
     else
     {
       sky.Components.Shadows = this;
       shadowMaterial.SetMatrix("_FrustumCornersWS", FrustumCorners());
-      shadowMaterial.SetTexture("_CloudTex", (Texture) CloudTexture);
+      shadowMaterial.SetTexture("_CloudTex", CloudTexture);
       shadowMaterial.SetFloat("_Cutoff", Cutoff);
       shadowMaterial.SetFloat("_Fade", Fade);
       shadowMaterial.SetFloat("_Intensity", Intensity * Mathf.Clamp01((float) (1.0 - sky.SunZenith / 90.0)));

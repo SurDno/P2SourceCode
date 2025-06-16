@@ -10,22 +10,22 @@ namespace Engine.Common.Types
 
     public Position(float x, float y)
     {
-      this.X = x;
-      this.Y = y;
+      X = x;
+      Y = y;
     }
 
     public override string ToString()
     {
-      return DefaultConverter.ToString(this.X) + " " + DefaultConverter.ToString(this.Y);
+      return DefaultConverter.ToString(X) + " " + DefaultConverter.ToString(Y);
     }
 
-    public override int GetHashCode() => this.X.GetHashCode() ^ this.Y.GetHashCode();
+    public override int GetHashCode() => X.GetHashCode() ^ Y.GetHashCode();
 
     public override bool Equals(object other) => other is Position position && this == position;
 
     public static bool operator ==(Position a, Position b)
     {
-      return (double) a.X == (double) b.X && (double) a.Y == (double) b.Y;
+      return a.X == (double) b.X && a.Y == (double) b.Y;
     }
 
     public static bool operator !=(Position a, Position b) => !(a == b);

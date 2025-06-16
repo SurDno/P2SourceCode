@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(menuName = "Data/String Sprite Map")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(menuName = "Data/String Sprite Map")]
 public class StringSpriteMap : ScriptableObject
 {
   [SerializeField]
@@ -19,6 +21,6 @@ public class StringSpriteMap : ScriptableObject
           return map[index].Value;
       }
     }
-    return (Sprite) null;
+    return null;
   }
 }

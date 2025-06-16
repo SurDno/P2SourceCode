@@ -3,6 +3,7 @@ using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
 using Engine.Source.Services.Profiles;
+using UnityEngine;
 
 public class CurrentProfileView : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class CurrentProfileView : MonoBehaviour
 
   private void OnEnable()
   {
-    if ((Object) view == (Object) null)
+    if (view == null)
       return;
     ProfilesService service = ServiceLocator.GetService<ProfilesService>();
     if (service != null)

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -73,16 +74,16 @@ namespace RootMotion.FinalIK
 
     public void ResetRotation()
     {
-      if (!((UnityEngine.Object) pivot != (UnityEngine.Object) null))
+      if (!(pivot != null))
         return;
       pivot.localRotation = defaultLocalRotation;
     }
 
     public void RotateTo(Vector3 position)
     {
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
         return;
-      if ((UnityEngine.Object) pivot != (UnityEngine.Object) lastPivot)
+      if (pivot != lastPivot)
       {
         defaultLocalRotation = pivot.localRotation;
         lastPivot = pivot;
@@ -90,7 +91,7 @@ namespace RootMotion.FinalIK
       pivot.localRotation = defaultLocalRotation;
       if (twistWeight > 0.0)
       {
-        Vector3 tangent1 = this.transform.position - pivot.position;
+        Vector3 tangent1 = transform.position - pivot.position;
         Vector3 axis = pivot.rotation * twistAxis;
         Vector3 normal1 = axis;
         Vector3.OrthoNormalize(ref normal1, ref tangent1);
@@ -101,7 +102,7 @@ namespace RootMotion.FinalIK
       }
       if (swingWeight <= 0.0)
         return;
-      pivot.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.FromToRotation(this.transform.position - pivot.position, position - pivot.position), swingWeight) * pivot.rotation;
+      pivot.rotation = Quaternion.Lerp(Quaternion.identity, Quaternion.FromToRotation(transform.position - pivot.position, position - pivot.position), swingWeight) * pivot.rotation;
     }
 
     [ContextMenu("User Manual")]

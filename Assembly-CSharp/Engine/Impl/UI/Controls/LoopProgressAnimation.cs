@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class LoopProgressAnimation : FloatView
   {
@@ -18,7 +20,7 @@
 
     private void ApplyPhase()
     {
-      if ((Object) progressView == (Object) null)
+      if (progressView == null)
         return;
       progressView.FloatValue = phase;
     }

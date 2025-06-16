@@ -3,6 +3,8 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components.Utilities;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Pathologic.Prototype
 {
@@ -31,13 +33,13 @@ namespace Pathologic.Prototype
       if (player == null)
         return false;
       GameObject gameObject = ((IEntityView) player).GameObject;
-      return !((Object) gameObject == (Object) null) && (double) (gameObject.transform.position - this.transform.position).magnitude < CullDistance;
+      return !(gameObject == null) && (gameObject.transform.position - transform.position).magnitude < (double) CullDistance;
     }
 
     private Vector3 PointOfInterest(float distance)
     {
-      if ((double) Random.value > POIProbability)
-        return RandomNavSphere(this.gameObject.transform.position, distance, _agent.areaMask);
+      if (Random.value > (double) POIProbability)
+        return RandomNavSphere(gameObject.transform.position, distance, _agent.areaMask);
       GameObject[] gameObjectsWithTag;
       try
       {
@@ -45,15 +47,15 @@ namespace Pathologic.Prototype
       }
       catch (UnityException ex)
       {
-        return RandomNavSphere(this.gameObject.transform.position, distance, _agent.areaMask);
+        return RandomNavSphere(gameObject.transform.position, distance, _agent.areaMask);
       }
       if (gameObjectsWithTag.Length == 0)
-        return RandomNavSphere(this.gameObject.transform.position, distance, _agent.areaMask);
+        return RandomNavSphere(gameObject.transform.position, distance, _agent.areaMask);
       int index1 = Random.Range(0, gameObjectsWithTag.Length);
       for (int index2 = 0; index2 < gameObjectsWithTag.Length; ++index2)
       {
         int index3 = (index2 + index1) % gameObjectsWithTag.Length;
-        if ((double) (gameObjectsWithTag[index3].transform.position - this.gameObject.transform.position).magnitude < 2.0 * WanderRadius)
+        if ((gameObjectsWithTag[index3].transform.position - gameObject.transform.position).magnitude < 2.0 * WanderRadius)
           return SampleNavPoint(gameObjectsWithTag[index3].transform.position, _agent.areaMask);
       }
       return SampleNavPoint(gameObjectsWithTag[index1].transform.position, _agent.areaMask);
@@ -74,20 +76,20 @@ namespace Pathologic.Prototype
 
     private void Start()
     {
-      _agent = this.GetComponent<NavMeshAgent>();
-      _animator = this.GetComponent<Animator>();
+      _agent = GetComponent<NavMeshAgent>();
+      _animator = GetComponent<Animator>();
       _state = State.IDLING;
       _idleTime = 0.0f;
       float maxDistance = 1f;
       NavMeshHit hit;
-      if (NavMesh.SamplePosition(this.gameObject.transform.position, out hit, maxDistance, -1))
+      if (NavMesh.SamplePosition(gameObject.transform.position, out hit, maxDistance, -1))
       {
-        this.gameObject.transform.position = hit.position;
+        gameObject.transform.position = hit.position;
       }
       else
       {
-        Debug.LogWarningFormat("Can't find NavMesh for rat in radius of {0} meter ({1}), x = {2}, y = {3}, z = {4}. The rat will be deleted.", (object) maxDistance, (object) this.name, (object) this.transform.position.x, (object) this.transform.position.y, (object) this.transform.position.z);
-        Object.Destroy((Object) this.gameObject);
+        Debug.LogWarningFormat("Can't find NavMesh for rat in radius of {0} meter ({1}), x = {2}, y = {3}, z = {4}. The rat will be deleted.", maxDistance, name, transform.position.x, transform.position.y, transform.position.z);
+        Destroy(gameObject);
       }
       _agent.updatePosition = true;
       _agent.updateRotation = true;
@@ -96,7 +98,7 @@ namespace Pathologic.Prototype
 
     private void UpdateLOD()
     {
-      if ((double) Random.value > (double) Time.deltaTime / 0.20000000298023224)
+      if (Random.value > Time.deltaTime / 0.20000000298023224)
         return;
       Renderer.enabled = IsPlayerNear();
     }
@@ -130,13 +132,13 @@ namespace Pathologic.Prototype
         return;
 label_7:
         Vector3 vector3_1 = _pathCorners[_cornerPathIndex] + forward * _cornerPathDistance;
-        this.transform.rotation = Quaternion.Slerp(this.transform.rotation, Quaternion.LookRotation(forward), _agent.angularSpeed * Time.deltaTime);
-        this.transform.position = vector3_1;
+        transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(forward), _agent.angularSpeed * Time.deltaTime);
+        transform.position = vector3_1;
       }
       else if (_state == State.WANDERING)
       {
         _animator.SetFloat("Idle", 0.0f);
-        if (_agent.pathPending || _agent.hasPath && (double) _agent.remainingDistance >= (double) _agent.stoppingDistance)
+        if (_agent.pathPending || _agent.hasPath && _agent.remainingDistance >= (double) _agent.stoppingDistance)
           return;
         _agent.ResetPath();
         _state = State.IDLING;
@@ -178,7 +180,7 @@ label_7:
         {
           if (_agent.path == null || _agent.pathStatus != NavMeshPathStatus.PathComplete && _agent.pathStatus != NavMeshPathStatus.PathPartial)
             return;
-          if (!NavMeshUtility.HasPathNoGarbage(_agent) || (double) Random.value < (double) Time.deltaTime / 0.5 && !NavMeshUtility.HasPathWithGarbage(_agent))
+          if (!NavMeshUtility.HasPathNoGarbage(_agent) || Random.value < Time.deltaTime / 0.5 && !NavMeshUtility.HasPathWithGarbage(_agent))
           {
             _agent.destination = PointOfInterest(WanderRadius);
           }
@@ -200,15 +202,15 @@ label_7:
         if (putOnNavmeshTimeLeft < 0.0)
           return;
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(this.gameObject.transform.position, out hit, 1f, -1))
+        if (NavMesh.SamplePosition(gameObject.transform.position, out hit, 1f, -1))
         {
-          this.gameObject.transform.position = hit.position;
+          gameObject.transform.position = hit.position;
           _agent.Warp(hit.position);
           _state = State.WAITING_PATH;
         }
-        else if (NavMesh.SamplePosition(this.gameObject.transform.position, out hit, 10f, -1))
+        else if (NavMesh.SamplePosition(gameObject.transform.position, out hit, 10f, -1))
         {
-          this.gameObject.transform.position = hit.position;
+          gameObject.transform.position = hit.position;
           _agent.Warp(hit.position);
           _state = State.WAITING_PATH;
         }

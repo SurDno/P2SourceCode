@@ -1,6 +1,8 @@
 ﻿using Engine.Common.Components.MessangerStationary;
 using Engine.Common.Services;
 using Engine.Source.Services;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 public class Spawnpoint : MonoBehaviour
 {
@@ -18,7 +20,7 @@ public class Spawnpoint : MonoBehaviour
     if (service != null)
       service.AddSpawnpoints(this);
     else
-      Debug.LogError((object) "PostmanStaticTeleportService not found");
+      Debug.LogError("PostmanStaticTeleportService not found");
   }
 
   private void OnDisable()

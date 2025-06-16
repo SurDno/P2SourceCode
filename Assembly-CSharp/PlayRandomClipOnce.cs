@@ -1,4 +1,6 @@
-﻿public class PlayRandomClipOnce : MonoBehaviour
+﻿using UnityEngine;
+
+public class PlayRandomClipOnce : MonoBehaviour
 {
   [SerializeField]
   private AudioClip[] clips;
@@ -6,8 +8,8 @@
   private void Start()
   {
     AudioClip clip = clips[Random.Range(0, clips.Length)];
-    if ((Object) clip == (Object) null)
+    if (clip == null)
       return;
-    this.GetComponent<AudioSource>().PlayOneShot(clip);
+    GetComponent<AudioSource>().PlayOneShot(clip);
   }
 }

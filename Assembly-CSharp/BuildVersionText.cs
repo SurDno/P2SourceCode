@@ -1,4 +1,6 @@
 ﻿using Engine.Source.Commons;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BuildVersionText : MonoBehaviour
 {
@@ -10,6 +12,6 @@ public class BuildVersionText : MonoBehaviour
 
   private void OnInvalidate()
   {
-    this.GetComponent<Text>().text = InstanceByRequest<LabelService>.Instance.Label;
+    GetComponent<Text>().text = InstanceByRequest<LabelService>.Instance.Label;
   }
 }

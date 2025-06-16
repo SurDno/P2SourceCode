@@ -4,6 +4,8 @@ using FlowCanvas.Nodes;
 using InputServices;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using UnityEngine;
+using UnityEngine.Playables;
 
 namespace Engine.Source.Blueprints
 {
@@ -20,20 +22,20 @@ namespace Engine.Source.Blueprints
       FlowOutput output = AddFlowOutput("Out");
       AddFlowInput("In", () =>
       {
-        director = !((UnityEngine.Object) director != (UnityEngine.Object) null) ? directorInput.value : throw new Exception();
-        if ((UnityEngine.Object) director == (UnityEngine.Object) null)
+        director = !(director != null) ? directorInput.value : throw new Exception();
+        if (director == null)
         {
           output.Call();
         }
         else
         {
-          Action<PlayableDirector> stopped = (Action<PlayableDirector>) null;
-          stopped = (Action<PlayableDirector>) (tmp =>
+          Action<PlayableDirector> stopped = null;
+          stopped = tmp =>
           {
             director.stopped -= stopped;
-            director = (PlayableDirector) null;
+            director = null;
             output.Call();
-          });
+          };
           director.stopped += stopped;
           director.Play();
         }
@@ -44,7 +46,7 @@ namespace Engine.Source.Blueprints
 
     public void Update()
     {
-      if (!interruptibleInput.value || (UnityEngine.Object) director == (UnityEngine.Object) null || !Input.GetKeyDown(KeyCode.Escape) && !InputService.Instance.GetButtonDown("B", false))
+      if (!interruptibleInput.value || director == null || !Input.GetKeyDown(KeyCode.Escape) && !InputService.Instance.GetButtonDown("B", false))
         return;
       director.Stop();
     }

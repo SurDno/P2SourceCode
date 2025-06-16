@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class SwitchingSpriteView : SpriteViewBase
   {
@@ -11,25 +13,25 @@
 
     protected override void ApplyValue(bool instant)
     {
-      if ((Object) currentProgressView == (Object) null)
+      if (currentProgressView == null)
         instant = true;
       if (instant)
       {
-        backView?.SetValue((Sprite) null, true);
+        backView?.SetValue(null, true);
         frontView?.SetValue(GetValue(), true);
-        if ((Object) currentProgressView != (Object) null)
+        if (currentProgressView != null)
         {
           currentProgressView.Progress = 1f;
           currentProgressView.SkipAnimation();
         }
-        this.enabled = false;
+        enabled = false;
       }
       else
       {
-        if (this.enabled)
+        if (enabled)
           return;
         TransitionStart();
-        this.enabled = true;
+        enabled = true;
       }
     }
 
@@ -45,8 +47,8 @@
     {
       if (currentProgressView.Progress < 1.0)
         return;
-      if ((Object) GetValue() == (Object) frontView.GetValue())
-        this.enabled = false;
+      if (GetValue() == frontView.GetValue())
+        enabled = false;
       else
         TransitionStart();
     }

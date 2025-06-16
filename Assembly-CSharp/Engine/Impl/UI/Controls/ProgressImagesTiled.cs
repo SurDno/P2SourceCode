@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -13,8 +15,8 @@ namespace Engine.Impl.UI.Controls
         return;
       foreach (Tile tile in tiles)
       {
-        if ((UnityEngine.Object) tile.image != (UnityEngine.Object) null && (double) tile.mapping.x != (double) tile.mapping.y)
-          tile.image.fillAmount = (float) ((Progress - (double) tile.mapping.x) / ((double) tile.mapping.y - (double) tile.mapping.x));
+        if (tile.image != null && tile.mapping.x != (double) tile.mapping.y)
+          tile.image.fillAmount = (float) ((Progress - (double) tile.mapping.x) / (tile.mapping.y - (double) tile.mapping.x));
       }
     }
 

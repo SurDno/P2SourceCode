@@ -1,4 +1,5 @@
-﻿using UnityEngine.PostProcessing;
+﻿using UnityEngine;
+using UnityEngine.PostProcessing;
 
 public class CameraCutDetector : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class CameraCutDetector : MonoBehaviour
 
   private void Start()
   {
-    postProcessingBehaviour = this.GetComponent<PostProcessingBehaviour>();
+    postProcessingBehaviour = GetComponent<PostProcessingBehaviour>();
     Transform transform = this.transform;
     position = transform.position;
     rotation = transform.rotation;
@@ -26,9 +27,9 @@ public class CameraCutDetector : MonoBehaviour
     Vector3 position = transform.position;
     Quaternion rotation = transform.rotation;
     float num = maxContinuousTranslation * maxContinuousTranslation;
-    if ((double) Vector3.SqrMagnitude(position - this.position) > num)
+    if (Vector3.SqrMagnitude(position - this.position) > (double) num)
       Cut();
-    else if ((double) Quaternion.Angle(rotation, this.rotation) > maxContinuousRotation)
+    else if (Quaternion.Angle(rotation, this.rotation) > (double) maxContinuousRotation)
       Cut();
     this.position = position;
     this.rotation = rotation;

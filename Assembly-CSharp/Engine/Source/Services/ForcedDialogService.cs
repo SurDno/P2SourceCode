@@ -17,6 +17,7 @@ using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using Engine.Source.Utility;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -50,10 +51,10 @@ namespace Engine.Source.Services
     {
       ISpeakingComponent component = character.GetComponent<ISpeakingComponent>();
       if (component == null)
-        Debug.LogWarning((object) (character.Name + ": has no speaking component"));
+        Debug.LogWarning(character.Name + ": has no speaking component");
       else if (!component.SpeakAvailable)
       {
-        Debug.LogWarning((object) (character.Name + ": speak not availiable"));
+        Debug.LogWarning(character.Name + ": speak not availiable");
       }
       else
       {
@@ -98,7 +99,7 @@ namespace Engine.Source.Services
 
     private bool TryStartDialog(IEntity player, ForcedDialogCharacterInfo character)
     {
-      if (character == null || character.Character == null || !(character.Character is IEntityView) || (UnityEngine.Object) ((IEntityView) character.Character).GameObject == (UnityEngine.Object) null || !((IEntityView) character.Character).GameObject.activeSelf || character.Distance != 0.0 && (double) (((IEntityView) character.Character).Position - ((IEntityView) player).Position).magnitude >= character.Distance || !SameIndoorWithPlayer(player, character))
+      if (character == null || character.Character == null || !(character.Character is IEntityView) || ((IEntityView) character.Character).GameObject == null || !((IEntityView) character.Character).GameObject.activeSelf || character.Distance != 0.0 && (((IEntityView) character.Character).Position - ((IEntityView) player).Position).magnitude >= (double) character.Distance || !SameIndoorWithPlayer(player, character))
         return false;
       StartDialog(character.Character);
       return true;

@@ -8,6 +8,7 @@ using Engine.Source.Services.Notifications;
 using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
 {
@@ -28,7 +29,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
 
     public override void Initialize()
     {
-      RegisterLayer((IHudWindow) this);
+      RegisterLayer<IHudWindow>(this);
       base.Initialize();
     }
 
@@ -72,12 +73,12 @@ namespace Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay
     public void SetVisibility(bool visible, bool ignoreTextNotifications)
     {
       visibilityView.Visible = visible;
-      if (!this.isActiveAndEnabled)
+      if (!isActiveAndEnabled)
         visibilityView.SkipAnimation();
       if (ignoreTextNotifications)
         return;
       textNotificationsVisibility.Visible = visible;
-      if (!this.isActiveAndEnabled)
+      if (!isActiveAndEnabled)
         textNotificationsVisibility.SkipAnimation();
     }
   }

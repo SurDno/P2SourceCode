@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Common.Services;
 using Engine.Source.Services;
+using UnityEngine;
 
 public class FlockObject : MonoBehaviour
 {
@@ -23,7 +24,7 @@ public class FlockObject : MonoBehaviour
 
   private void Awake()
   {
-    if ((Object) audioSource != (Object) null)
+    if (audioSource != null)
       audioSource.SetActive(false);
     audioPositionSet = false;
   }
@@ -31,10 +32,10 @@ public class FlockObject : MonoBehaviour
   private void Start()
   {
     ServiceLocator.GetService<FlockService>()?.RegisterFlock(this);
-    if ((Object) flockController != (Object) null)
+    if (flockController != null)
       audioMoveSpeed = flockController._minSpeed;
     SetAudioSourcePosition();
-    if (!((Object) audioSource != (Object) null))
+    if (!(audioSource != null))
       return;
     audioSource.transform.position = audioPosition;
   }
@@ -44,7 +45,7 @@ public class FlockObject : MonoBehaviour
     timeFromLastPositionRecount -= Time.deltaTime;
     if (timeFromLastPositionRecount <= 0.0)
       SetAudioSourcePosition();
-    if (!audioPositionSet || !((Object) audioSource != (Object) null))
+    if (!audioPositionSet || !(audioSource != null))
       return;
     audioSource.transform.position = Vector3.MoveTowards(audioSource.transform.position, audioPosition, audioMoveSpeed * Time.deltaTime);
   }
@@ -74,9 +75,9 @@ public class FlockObject : MonoBehaviour
   private void SetAudioSourcePosition()
   {
     timeFromLastPositionRecount = positionRecountTimeout;
-    if ((Object) audioSource == (Object) null)
+    if (audioSource == null)
       return;
-    if ((Object) FlockController == (Object) null)
+    if (FlockController == null)
     {
       audioSource.SetActive(false);
     }
@@ -88,7 +89,7 @@ public class FlockObject : MonoBehaviour
       int num = 0;
       foreach (FlockChild child in FlockController.childs)
       {
-        if ((Object) child.gameObject != (Object) null && !child.landing)
+        if (child.gameObject != null && !child.landing)
         {
           zero += child.transform.position;
           ++num;
@@ -102,7 +103,7 @@ public class FlockObject : MonoBehaviour
       else
       {
         audioPositionSet = true;
-        audioPosition = zero / (float) num;
+        audioPosition = zero / num;
       }
     }
   }

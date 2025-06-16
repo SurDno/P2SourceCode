@@ -1,5 +1,6 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Graphic Settings Preset")]
 public class GraphicSettingsPreset : ScriptableObject

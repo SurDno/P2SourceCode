@@ -1,4 +1,6 @@
-﻿namespace SoundPropagation
+﻿using UnityEngine;
+
+namespace SoundPropagation
 {
   public abstract class Shape : MonoBehaviour
   {
@@ -27,13 +29,13 @@
       pointA = world2plane.MultiplyPoint3x4(pointA);
       pointB = world2plane.MultiplyPoint3x4(pointB);
       Vector3 segmentOnPlane;
-      if ((double) pointA.z == (double) pointB.z)
+      if (pointA.z == (double) pointB.z)
         segmentOnPlane = (pointA + pointB) * 0.5f;
-      else if ((double) pointA.z >= 0.0 && (double) pointB.z >= 0.0)
-        segmentOnPlane = (double) pointA.z >= (double) pointB.z ? pointB : pointA;
-      else if ((double) pointA.z <= 0.0 && (double) pointB.z <= 0.0)
+      else if (pointA.z >= 0.0 && pointB.z >= 0.0)
+        segmentOnPlane = pointA.z >= (double) pointB.z ? pointB : pointA;
+      else if (pointA.z <= 0.0 && pointB.z <= 0.0)
       {
-        segmentOnPlane = (double) pointA.z <= (double) pointB.z ? pointB : pointA;
+        segmentOnPlane = pointA.z <= (double) pointB.z ? pointB : pointA;
       }
       else
       {

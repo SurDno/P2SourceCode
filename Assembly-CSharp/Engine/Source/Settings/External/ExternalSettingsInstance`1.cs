@@ -4,6 +4,7 @@ using AssetDatabases;
 using Cofe.Meta;
 using Engine.Common.Generator;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Settings.External
 {
@@ -37,7 +38,7 @@ namespace Engine.Source.Settings.External
               }
               catch (Exception ex)
               {
-                Debug.LogError((object) ("Error load settings : " + str + " , ex : " + ex));
+                Debug.LogError("Error load settings : " + str + " , ex : " + ex);
               }
             }
             if (obj == null || obj.Version != instance.Version)
@@ -60,7 +61,7 @@ namespace Engine.Source.Settings.External
     private static T LoadFromResources(string path)
     {
       TextAsset textAsset = AssetDatabaseService.Instance.Load<TextAsset>(path);
-      if (!((UnityEngine.Object) textAsset != (UnityEngine.Object) null) || textAsset.bytes == null)
+      if (!(textAsset != null) || textAsset.bytes == null)
         return default (T);
       using (MemoryStream memoryStream = new MemoryStream(textAsset.bytes))
         return SerializeUtility.Deserialize<T>(memoryStream, path);

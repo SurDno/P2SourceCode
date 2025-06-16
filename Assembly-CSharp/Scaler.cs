@@ -1,3 +1,5 @@
-﻿public class Scaler : MonoBehaviour
+﻿using UnityEngine;
+
+public class Scaler : MonoBehaviour
 {
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Services.Utilities;
 using Engine.Source.UI;
@@ -18,11 +17,11 @@ namespace Engine.Source.Blueprints
     {
       base.RegisterPorts();
       FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () => UIServiceUtility.PushWindow(output, (Action<ISleepWindow>) (window =>
+      AddFlowInput("In", () => UIServiceUtility.PushWindow<ISleepWindow>(output, window =>
       {
         window.Actor = ServiceLocator.GetService<ISimulation>().Player;
         window.Target = targetInput.value;
-      })));
+      }));
       targetInput = AddValueInput<IEntity>("Target");
     }
   }

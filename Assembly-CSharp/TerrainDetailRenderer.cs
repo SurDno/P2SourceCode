@@ -1,4 +1,7 @@
-﻿public class TerrainDetailRenderer : MonoBehaviour
+﻿using UnityEngine;
+using UnityEngine.Rendering;
+
+public class TerrainDetailRenderer : MonoBehaviour
 {
   private static MaterialPropertyBlock materialProperties;
   private Texture2D placementMap;
@@ -10,7 +13,7 @@
     if (visible)
       return;
     visible = true;
-    this.gameObject.SetActive(true);
+    gameObject.SetActive(true);
   }
 
   public void Hide()
@@ -18,14 +21,14 @@
     if (!visible)
       return;
     visible = false;
-    this.gameObject.SetActive(false);
+    gameObject.SetActive(false);
   }
 
   private void OnDestroy()
   {
-    if ((Object) placementMap == (Object) null)
+    if (placementMap == null)
       return;
-    Object.Destroy((Object) placementMap);
+    Destroy(placementMap);
   }
 
   public static TerrainDetailRenderer Create(
@@ -39,7 +42,7 @@
     int chunkPosX = chunk.ChunkX * 104;
     int chunkPosY = chunk.ChunkY * 104;
     Vector2 detailTexelSize = chunk.Layer.DetailTexelSize;
-    TerrainDetailRenderer terrainDetailRenderer = Object.Instantiate<TerrainDetailRenderer>(prefab, chunk.transform, false);
+    TerrainDetailRenderer terrainDetailRenderer = Instantiate(prefab, chunk.transform, false);
     GameObject gameObject = terrainDetailRenderer.gameObject;
     gameObject.name = "Renderer (" + start + ", " + count + ")";
     gameObject.layer = chunk.gameObject.layer;
@@ -61,16 +64,16 @@
     Vector3 position = chunk.Layer.Terrain.transform.position;
     if (materialProperties == null)
       materialProperties = new MaterialPropertyBlock();
-    materialProperties.SetTexture("_PlacementMap", (Texture) placementMap);
-    materialProperties.SetVector("_PlacementPosition", new Vector4(position.x + (float) chunkPosX * detailTexelSize.x, position.y, position.z + (float) chunkPosY * detailTexelSize.y, count / (float) capacity));
+    materialProperties.SetTexture("_PlacementMap", placementMap);
+    materialProperties.SetVector("_PlacementPosition", new Vector4(position.x + chunkPosX * detailTexelSize.x, position.y, position.z + chunkPosY * detailTexelSize.y, count / (float) capacity));
     materialProperties.SetVector("_PlacementScale", new Vector4(detailTexelSize.x, chunk.Layer.TerrainData.size.y, detailTexelSize.y, 0.0f));
     gameObject.GetComponent<MeshFilter>().sharedMesh = mesh;
-    Renderer component = (Renderer) gameObject.GetComponent<MeshRenderer>();
+    Renderer component = gameObject.GetComponent<MeshRenderer>();
     component.sharedMaterial = chunk.Layer.Material;
     component.SetPropertyBlock(materialProperties);
     component.shadowCastingMode = chunk.Layer.CastShadows ? ShadowCastingMode.TwoSided : ShadowCastingMode.Off;
     gameObject.transform.SetParent(chunk.transform, false);
-    gameObject.transform.localPosition = new Vector3(min.x - (float) chunkPosX * detailTexelSize.x, min.y, min.z - (float) chunkPosY * detailTexelSize.y);
+    gameObject.transform.localPosition = new Vector3(min.x - chunkPosX * detailTexelSize.x, min.y, min.z - chunkPosY * detailTexelSize.y);
     gameObject.transform.localScale = max - min;
     return terrainDetailRenderer;
   }
@@ -104,26 +107,26 @@
       byte a = (byte) Random.Range(0, 256);
       colors[index] = new Color32(byte2.X, byte2.Y, b, a);
       float num1 = (b / (float) byte.MaxValue + byte2.X + chunkPosX) * detailTexelSize.x;
-      if ((double) min.x > num1)
+      if (min.x > (double) num1)
         min.x = num1;
-      if ((double) max.x < num1)
+      if (max.x < (double) num1)
         max.x = num1;
       float num2 = (a / (float) byte.MaxValue + byte2.Y + chunkPosY) * detailTexelSize.y;
-      if ((double) min.z > num2)
+      if (min.z > (double) num2)
         min.z = num2;
-      if ((double) max.z < num2)
+      if (max.z < (double) num2)
         max.z = num2;
       float x = num1 / terrainData.size.x;
       float y = num2 / terrainData.size.z;
       float interpolatedHeight = terrainData.GetInterpolatedHeight(x, y);
-      if ((double) min.y > interpolatedHeight)
+      if (min.y > (double) interpolatedHeight)
         min.y = interpolatedHeight;
-      if ((double) max.y < interpolatedHeight)
+      if (max.y < (double) interpolatedHeight)
         max.y = interpolatedHeight;
       float num3 = interpolatedHeight / terrainData.size.y;
       Vector3 interpolatedNormal = terrainData.GetInterpolatedNormal(x, y);
       ushort num4 = (ushort) Mathf.RoundToInt(num3 * ushort.MaxValue);
-      colors[index + pointCount] = new Color32((byte) (num4 / 256U), (byte) (num4 % 256U), (byte) (((double) interpolatedNormal.x + 1.0) * 128.0), (byte) (((double) interpolatedNormal.z + 1.0) * 128.0));
+      colors[index + pointCount] = new Color32((byte) (num4 / 256U), (byte) (num4 % 256U), (byte) ((interpolatedNormal.x + 1.0) * 128.0), (byte) ((interpolatedNormal.z + 1.0) * 128.0));
     }
     placementMap.SetPixels32(0, 0, pointCount, 2, colors);
     placementMap.Apply(false, true);

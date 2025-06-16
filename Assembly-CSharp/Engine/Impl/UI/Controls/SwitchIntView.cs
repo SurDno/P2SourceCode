@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -11,7 +12,7 @@ namespace Engine.Impl.UI.Controls
     {
       foreach (ValueViewPair view in views)
       {
-        if ((UnityEngine.Object) view.hideableView != (UnityEngine.Object) null)
+        if (view.hideableView != null)
           view.hideableView.Visible = IntValue == view.value;
       }
     }
@@ -20,7 +21,7 @@ namespace Engine.Impl.UI.Controls
     {
       foreach (ValueViewPair view in views)
       {
-        if ((UnityEngine.Object) view.hideableView != (UnityEngine.Object) null)
+        if (view.hideableView != null)
           view.hideableView.SkipAnimation();
       }
     }

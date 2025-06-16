@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 [ExecuteInEditMode]
 public class PathPart : MonoBehaviour
@@ -12,8 +13,8 @@ public class PathPart : MonoBehaviour
   private void UpdateList()
   {
     pointsList.Clear();
-    int childCount = this.transform.childCount;
+    int childCount = transform.childCount;
     for (int index = 0; index < childCount; ++index)
-      pointsList.Add(this.transform.GetChild(index));
+      pointsList.Add(transform.GetChild(index));
   }
 }

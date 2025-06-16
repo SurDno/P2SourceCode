@@ -1,5 +1,6 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
 
 public class FireLightAnimation : MonoBehaviour
 {
@@ -24,12 +25,12 @@ public class FireLightAnimation : MonoBehaviour
 
   private float Animate(float amplitude, float rate)
   {
-    return Mathf.Sin((float) ((double) Time.time * rate * 2.0 * 3.1415927410125732)) * amplitude;
+    return Mathf.Sin((float) (Time.time * (double) rate * 2.0 * 3.1415927410125732)) * amplitude;
   }
 
   private Vector3 Animate(Vector3 amplitude, Vector3 rate)
   {
-    return new Vector3(this.Animate(amplitude.x, rate.x), this.Animate(amplitude.y, rate.y), this.Animate(amplitude.z, rate.z));
+    return new Vector3(Animate(amplitude.x, rate.x), Animate(amplitude.y, rate.y), Animate(amplitude.z, rate.z));
   }
 
   private void OnDisable()

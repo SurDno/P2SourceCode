@@ -3,6 +3,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine.Scripting;
 
 namespace Engine.Source.Otimizations
 {

@@ -2,6 +2,8 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -32,7 +34,7 @@ namespace Engine.Source.Blueprints.Sounds
     private AudioClip Value()
     {
       int count = inputs.Count;
-      int index = (previousIndex + UnityEngine.Random.Range(0, count - 1) + 1) % count;
+      int index = (previousIndex + Random.Range(0, count - 1) + 1) % count;
       AudioClip audioClip = inputs[index].value;
       previousIndex = index;
       return audioClip;

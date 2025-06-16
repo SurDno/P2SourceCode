@@ -1,4 +1,6 @@
-﻿public class DummyAnimatorEvent : MonoBehaviour
+﻿using UnityEngine;
+
+public class DummyAnimatorEvent : MonoBehaviour
 {
   private void AnimatorEvent()
   {

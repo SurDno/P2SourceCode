@@ -1,4 +1,6 @@
-﻿[RequireComponent(typeof (Camera))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (Camera))]
 public class ProtagonistShadersSettings : MonoBehaviourInstance<ProtagonistShadersSettings>
 {
   [Range(1f, 179f)]
@@ -13,8 +15,8 @@ public class ProtagonistShadersSettings : MonoBehaviourInstance<ProtagonistShade
   {
     get
     {
-      if ((Object) camera == (Object) null)
-        camera = this.GetComponent<Camera>();
+      if (camera == null)
+        camera = GetComponent<Camera>();
       return camera;
     }
   }
@@ -34,7 +36,7 @@ public class ProtagonistShadersSettings : MonoBehaviourInstance<ProtagonistShade
     Vector4 vector4_2 = ProtagonistProjection() * vector4_1;
     vector4_2.z = Mathf.Lerp(vector4_2.z, -1f * vector4_2.w, flatness);
     Vector4 vector4_3 = Camera.cameraToWorldMatrix * (Camera.nonJitteredProjectionMatrix.inverse * vector4_2);
-    return (Vector3) (vector4_3 / vector4_3.w);
+    return vector4_3 / vector4_3.w;
   }
 
   private void UpdateShaders()

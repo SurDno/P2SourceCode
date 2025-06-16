@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 
 namespace AssetDatabases
 {
@@ -9,7 +11,7 @@ namespace AssetDatabases
     private string path;
     private Stopwatch stopwatch;
 
-    public object Asset => (object) scene;
+    public object Asset => scene;
 
     public bool IsDone { get; private set; }
 
@@ -27,7 +29,7 @@ namespace AssetDatabases
       IsDone = true;
       stopwatch.Stop();
       TimeSpan elapsed = stopwatch.Elapsed;
-      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Scene loaded, path : ").Append(path).Append(" , elapsed : ").Append(elapsed));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Loader]").Append(" Scene loaded, path : ").Append(path).Append(" , elapsed : ").Append(elapsed));
     }
   }
 }

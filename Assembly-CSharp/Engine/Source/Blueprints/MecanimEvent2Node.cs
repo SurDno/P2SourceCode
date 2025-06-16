@@ -1,6 +1,7 @@
 ﻿using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -22,7 +23,7 @@ namespace Engine.Source.Blueprints
     {
       base.OnGraphStarted();
       CutsceneMecanimEvents cutsceneMecanimEvents = mecanimEventsInput.value;
-      if (!((UnityEngine.Object) cutsceneMecanimEvents != (UnityEngine.Object) null))
+      if (!(cutsceneMecanimEvents != null))
         return;
       cutsceneMecanimEvents.OnEndAnimationEnd += MecanimEvents_OnEndAnimationEnd;
     }
@@ -31,7 +32,7 @@ namespace Engine.Source.Blueprints
     {
       base.OnGraphStoped();
       CutsceneMecanimEvents cutsceneMecanimEvents = mecanimEventsInput.value;
-      if (!((UnityEngine.Object) cutsceneMecanimEvents != (UnityEngine.Object) null))
+      if (!(cutsceneMecanimEvents != null))
         return;
       cutsceneMecanimEvents.OnEndAnimationEnd -= MecanimEvents_OnEndAnimationEnd;
     }
@@ -40,7 +41,7 @@ namespace Engine.Source.Blueprints
     {
       if (!(name == eventNameInput.value))
         return;
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (MecanimEvent2Node)).Append(" , owner : ").Append(graphAgent.name).Append(" , name : ").Append(name));
+      Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (MecanimEvent2Node)).Append(" , owner : ").Append(graphAgent.name).Append(" , name : ").Append(name));
       received.Call();
     }
   }

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using SRDebugger.Services;
 using SRF;
 using SRF.Service;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRDebugger.UI.Controls
 {
@@ -48,7 +50,7 @@ namespace SRDebugger.UI.Controls
       _profilerService = SRServiceManager.GetService<IProfilerService>();
     }
 
-    protected void Update() => this.SetVerticesDirty();
+    protected void Update() => SetVerticesDirty();
 
     [Obsolete]
     protected override void OnPopulateMesh(Mesh m)
@@ -56,8 +58,8 @@ namespace SRDebugger.UI.Controls
       _meshVertices.Clear();
       _meshVertexColors.Clear();
       _meshTriangles.Clear();
-      float width = this.rectTransform.rect.width;
-      float height = this.rectTransform.rect.height;
+      float width = rectTransform.rect.width;
+      float height = rectTransform.rect.height;
       _clipBounds = new Rect(0.0f, 0.0f, width, height);
       int num1 = TargetFps;
       if (Application.isPlaying && TargetFpsUseApplication && Application.targetFrameRate > 0)
@@ -139,9 +141,9 @@ namespace SRDebugger.UI.Controls
         float f = num2 * verticalScale;
         if (!f.ApproxZero() && f - 4.0 >= 0.0)
         {
-          float y1 = (float) (num1 + 2.0 - (double) this.rectTransform.rect.height / 2.0);
+          float y1 = (float) (num1 + 2.0 - rectTransform.rect.height / 2.0);
           if (VerticalAlignment == VerticalAlignments.Top)
-            y1 = (float) ((double) this.rectTransform.rect.height / 2.0 - num1 - 2.0);
+            y1 = (float) (rectTransform.rect.height / 2.0 - num1 - 2.0);
           float y2 = (float) (y1 + (double) f - 2.0);
           if (VerticalAlignment == VerticalAlignments.Top)
             y2 = (float) (y1 - (double) f + 2.0);
@@ -154,13 +156,13 @@ namespace SRDebugger.UI.Controls
 
     protected void DrawAxis(float frameTime, float yPosition, ProfilerGraphAxisLabel label)
     {
-      float x1 = (float) (-(double) this.rectTransform.rect.width * 0.5);
+      float x1 = (float) (-(double) rectTransform.rect.width * 0.5);
       float x2 = -x1;
-      float y1 = (float) (yPosition - (double) this.rectTransform.rect.height * 0.5 + 0.5);
-      float y2 = (float) (yPosition - (double) this.rectTransform.rect.height * 0.5 - 0.5);
+      float y1 = (float) (yPosition - rectTransform.rect.height * 0.5 + 0.5);
+      float y2 = (float) (yPosition - rectTransform.rect.height * 0.5 - 0.5);
       Color c = new Color(1f, 1f, 1f, 0.4f);
       AddRect(new Vector3(x1, y2), new Vector3(x1, y1), new Vector3(x2, y1), new Vector3(x2, y2), c);
-      if (!((UnityEngine.Object) label != (UnityEngine.Object) null))
+      if (!(label != null))
         return;
       label.SetValue(frameTime, yPosition);
     }
@@ -177,17 +179,17 @@ namespace SRDebugger.UI.Controls
       _meshTriangles.Add(_meshVertices.Count - 2);
       _meshTriangles.Add(_meshVertices.Count - 1);
       _meshTriangles.Add(_meshVertices.Count - 3);
-      _meshVertexColors.Add((Color32) c);
-      _meshVertexColors.Add((Color32) c);
-      _meshVertexColors.Add((Color32) c);
-      _meshVertexColors.Add((Color32) c);
+      _meshVertexColors.Add(c);
+      _meshVertexColors.Add(c);
+      _meshVertexColors.Add(c);
+      _meshVertexColors.Add(c);
     }
 
     protected ProfilerFrame GetFrame(int i) => _profilerService.FrameBuffer[i];
 
     protected int CalculateVisibleDataPointCount()
     {
-      return Mathf.RoundToInt(this.rectTransform.rect.width / 4f);
+      return Mathf.RoundToInt(rectTransform.rect.width / 4f);
     }
 
     protected int GetFrameBufferCurrentSize() => _profilerService.FrameBuffer.Size;
@@ -211,10 +213,10 @@ namespace SRDebugger.UI.Controls
     private ProfilerGraphAxisLabel GetAxisLabel(int index)
     {
       if (_axisLabels == null || !Application.isPlaying)
-        _axisLabels = this.GetComponentsInChildren<ProfilerGraphAxisLabel>();
+        _axisLabels = GetComponentsInChildren<ProfilerGraphAxisLabel>();
       if (_axisLabels.Length > index)
         return _axisLabels[index];
-      Debug.LogWarning((object) "[SRDebugger.Profiler] Not enough axis labels in pool");
+      Debug.LogWarning("[SRDebugger.Profiler] Not enough axis labels in pool");
       return null;
     }
 

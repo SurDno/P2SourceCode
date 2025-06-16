@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ParadoxNotion
 {
@@ -46,8 +48,8 @@ namespace ParadoxNotion
       string context;
       if (contextObject != null)
       {
-        UnityEngine.Object @object = contextObject as UnityEngine.Object;
-        context = !(@object != (UnityEngine.Object) null) ? str + "context object : " + contextObject : str + "context unity object : " + @object.GetInfo();
+        Object @object = contextObject as Object;
+        context = !(@object != null) ? str + "context object : " + contextObject : str + "context unity object : " + @object.GetInfo();
       }
       else
         context = str + "context not found";
@@ -57,7 +59,7 @@ namespace ParadoxNotion
     private static void LateLog(object logMessage, LogType logType = LogType.Log)
     {
       string message = logMessage + " , " + GetContext();
-      Debug.unityLogger.Log(logType, (object) message);
+      Debug.unityLogger.Log(logType, message);
     }
 
     private static Type GetTypeDirect(string typeFullName)
@@ -161,7 +163,7 @@ namespace ParadoxNotion
     {
       if (t == null)
         return null;
-      if (!trueSignature && t == typeof (UnityEngine.Object))
+      if (!trueSignature && t == typeof (Object))
         return "UnityObject";
       string str1 = trueSignature ? t.FullName : t.Name;
       if (!trueSignature)

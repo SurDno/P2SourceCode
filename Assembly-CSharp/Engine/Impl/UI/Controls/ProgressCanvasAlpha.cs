@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressCanvasAlpha : ProgressView
   {
@@ -11,7 +13,7 @@
 
     protected override void ApplyProgress()
     {
-      if (!((Object) canvasGroup != (Object) null))
+      if (!(canvasGroup != null))
         return;
       canvasGroup.alpha = Progress;
       bool flag = Progress > 0.0;

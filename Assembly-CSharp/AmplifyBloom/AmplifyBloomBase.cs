@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace AmplifyBloom
 {
@@ -13,9 +15,9 @@ namespace AmplifyBloom
     private const float MaxDirtIntensity = 1f;
     private const float MaxStarburstIntensity = 1f;
     [SerializeField]
-    private Texture m_maskTexture = (Texture) null;
+    private Texture m_maskTexture;
     [SerializeField]
-    private RenderTexture m_targetTexture = (RenderTexture) null;
+    private RenderTexture m_targetTexture;
     [SerializeField]
     private bool m_showDebugMessages = true;
     [SerializeField]
@@ -144,17 +146,13 @@ namespace AmplifyBloom
           AmplifyUtils.InitializeIds();
         for (int index = 0; index < 6; ++index)
           m_tempDownsamplesSizes[index] = new Vector2(0.0f, 0.0f);
-        m_cameraTransform = this.transform;
-        m_tempFilterBuffer = (RenderTexture) null;
+        m_cameraTransform = transform;
+        m_tempFilterBuffer = null;
         m_starburstMat = Matrix4x4.identity;
         if (m_temporalFilteringCurve == null)
-          m_temporalFilteringCurve = new AnimationCurve(new Keyframe[2]
-          {
-            new Keyframe(0.0f, 0.0f),
-            new Keyframe(1f, 0.999f)
-          });
+          m_temporalFilteringCurve = new AnimationCurve(new Keyframe(0.0f, 0.0f), new Keyframe(1f, 0.999f));
         m_bloomShader = Shader.Find("Hidden/AmplifyBloom");
-        if ((UnityEngine.Object) m_bloomShader != (UnityEngine.Object) null)
+        if (m_bloomShader != null)
         {
           m_bloomMaterial = new Material(m_bloomShader);
           m_bloomMaterial.hideFlags = HideFlags.DontSave;
@@ -162,10 +160,10 @@ namespace AmplifyBloom
         else
         {
           AmplifyUtils.DebugLog("Main Bloom shader not found", LogType.Error);
-          this.gameObject.SetActive(false);
+          gameObject.SetActive(false);
         }
         m_finalCompositionShader = Shader.Find("Hidden/BloomFinal");
-        if ((UnityEngine.Object) m_finalCompositionShader != (UnityEngine.Object) null)
+        if (m_finalCompositionShader != null)
         {
           m_finalCompositionMaterial = new Material(m_finalCompositionShader);
           if (!m_finalCompositionMaterial.GetTag(AmplifyUtils.ShaderModeTag, false).Equals(AmplifyUtils.ShaderModeValue))
@@ -176,17 +174,17 @@ namespace AmplifyBloom
           else
             m_softMaxdownscales = 6;
           m_finalCompositionMaterial.hideFlags = HideFlags.DontSave;
-          if ((UnityEngine.Object) m_lensDirtTexture == (UnityEngine.Object) null)
+          if (m_lensDirtTexture == null)
             m_lensDirtTexture = m_finalCompositionMaterial.GetTexture(AmplifyUtils.LensDirtRTId);
-          if ((UnityEngine.Object) m_lensStardurstTex == (UnityEngine.Object) null)
+          if (m_lensStardurstTex == null)
             m_lensStardurstTex = m_finalCompositionMaterial.GetTexture(AmplifyUtils.LensStarburstRTId);
         }
         else
         {
           AmplifyUtils.DebugLog("Bloom Composition shader not found", LogType.Error);
-          this.gameObject.SetActive(false);
+          gameObject.SetActive(false);
         }
-        m_camera = this.GetComponent<Camera>();
+        m_camera = GetComponent<Camera>();
         m_camera.depthTextureMode |= DepthTextureMode.Depth;
         m_lensFlare.CreateLUTexture();
       }
@@ -223,24 +221,24 @@ namespace AmplifyBloom
       for (int index = 0; index < amount; ++index)
       {
         tempRenderTarget.DiscardContents();
-        Graphics.Blit((Texture) renderTexture, tempRenderTarget, m_bloomMaterial, 14);
+        Graphics.Blit(renderTexture, tempRenderTarget, m_bloomMaterial, 14);
         if (m_temporalFilteringActive & applyTemporal && index == amount - 1)
         {
-          if ((UnityEngine.Object) m_tempFilterBuffer != (UnityEngine.Object) null && m_temporalFilteringActive)
+          if (m_tempFilterBuffer != null && m_temporalFilteringActive)
           {
             float num = m_temporalFilteringCurve.Evaluate(m_temporalFilteringValue);
             m_bloomMaterial.SetFloat(AmplifyUtils.TempFilterValueId, num);
-            m_bloomMaterial.SetTexture(AmplifyUtils.AnamorphicRTS[0], (Texture) m_tempFilterBuffer);
+            m_bloomMaterial.SetTexture(AmplifyUtils.AnamorphicRTS[0], m_tempFilterBuffer);
             renderTexture.DiscardContents();
-            Graphics.Blit((Texture) tempRenderTarget, renderTexture, m_bloomMaterial, 16);
+            Graphics.Blit(tempRenderTarget, renderTexture, m_bloomMaterial, 16);
           }
           else
           {
             renderTexture.DiscardContents();
-            Graphics.Blit((Texture) tempRenderTarget, renderTexture, m_bloomMaterial, 15);
+            Graphics.Blit(tempRenderTarget, renderTexture, m_bloomMaterial, 15);
           }
           bool flag = false;
-          if ((UnityEngine.Object) m_tempFilterBuffer != (UnityEngine.Object) null)
+          if (m_tempFilterBuffer != null)
           {
             if (m_tempFilterBuffer.format != renderTexture.format || m_tempFilterBuffer.width != renderTexture.width || m_tempFilterBuffer.height != renderTexture.height)
             {
@@ -253,12 +251,12 @@ namespace AmplifyBloom
           if (flag)
             CreateTempFilterRT(renderTexture);
           m_tempFilterBuffer.DiscardContents();
-          Graphics.Blit((Texture) renderTexture, m_tempFilterBuffer);
+          Graphics.Blit(renderTexture, m_tempFilterBuffer);
         }
         else
         {
           renderTexture.DiscardContents();
-          Graphics.Blit((Texture) tempRenderTarget, renderTexture, m_bloomMaterial, 15);
+          Graphics.Blit(tempRenderTarget, renderTexture, m_bloomMaterial, 15);
         }
       }
       AmplifyUtils.ReleaseTempRenderTarget(tempRenderTarget);
@@ -266,7 +264,7 @@ namespace AmplifyBloom
 
     private void CreateTempFilterRT(RenderTexture source)
     {
-      if ((UnityEngine.Object) m_tempFilterBuffer != (UnityEngine.Object) null)
+      if (m_tempFilterBuffer != null)
         CleanTempFilterRT();
       m_tempFilterBuffer = new RenderTexture(source.width, source.height, 0, source.format, AmplifyUtils.CurrentReadWriteMode);
       m_tempFilterBuffer.filterMode = AmplifyUtils.CurrentFilterMode;
@@ -276,12 +274,12 @@ namespace AmplifyBloom
 
     private void CleanTempFilterRT()
     {
-      if (!((UnityEngine.Object) m_tempFilterBuffer != (UnityEngine.Object) null))
+      if (!(m_tempFilterBuffer != null))
         return;
-      RenderTexture.active = (RenderTexture) null;
+      RenderTexture.active = null;
       m_tempFilterBuffer.Release();
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_tempFilterBuffer);
-      m_tempFilterBuffer = (RenderTexture) null;
+      DestroyImmediate(m_tempFilterBuffer);
+      m_tempFilterBuffer = null;
     }
 
     private void OnRenderImage(RenderTexture src, RenderTexture dest)
@@ -303,10 +301,10 @@ namespace AmplifyBloom
         AmplifyUtils.CurrentRTFormat = RenderTextureFormat.Default;
       }
       float num1 = Mathf.Acos(Vector3.Dot(m_cameraTransform.right, Vector3.right));
-      if ((double) Vector3.Cross(m_cameraTransform.right, Vector3.right).y > 0.0)
+      if (Vector3.Cross(m_cameraTransform.right, Vector3.right).y > 0.0)
         num1 = -num1;
-      RenderTexture renderTexture1 = (RenderTexture) null;
-      RenderTexture renderTexture2 = (RenderTexture) null;
+      RenderTexture renderTexture1 = null;
+      RenderTexture renderTexture2 = null;
       if (!m_highPrecision)
       {
         m_bloomRange.y = 1f / m_bloomRange.x;
@@ -327,16 +325,16 @@ namespace AmplifyBloom
           break;
       }
       RenderTexture tempRenderTarget = AmplifyUtils.GetTempRenderTarget(src.width / num2, src.height / num2);
-      if ((UnityEngine.Object) m_maskTexture != (UnityEngine.Object) null)
+      if (m_maskTexture != null)
       {
         m_bloomMaterial.SetTexture(AmplifyUtils.MaskTextureId, m_maskTexture);
-        Graphics.Blit((Texture) src, tempRenderTarget, m_bloomMaterial, 1);
+        Graphics.Blit(src, tempRenderTarget, m_bloomMaterial, 1);
       }
       else
-        Graphics.Blit((Texture) src, tempRenderTarget, m_bloomMaterial, 0);
+        Graphics.Blit(src, tempRenderTarget, m_bloomMaterial, 0);
       if (m_debugToScreen == DebugToScreenEnum.MainThreshold)
       {
-        Graphics.Blit((Texture) tempRenderTarget, dest, m_bloomMaterial, 33);
+        Graphics.Blit(tempRenderTarget, dest, m_bloomMaterial, 33);
         AmplifyUtils.ReleaseAllRT();
       }
       else
@@ -350,8 +348,8 @@ namespace AmplifyBloom
           int height = tempRenderTarget.height;
           for (int index = 0; index < m_bloomDownsampleCount; ++index)
           {
-            m_tempDownsamplesSizes[index].x = (float) width;
-            m_tempDownsamplesSizes[index].y = (float) height;
+            m_tempDownsamplesSizes[index].x = width;
+            m_tempDownsamplesSizes[index].y = height;
             width = width + 1 >> 1;
             height = height + 1 >> 1;
             m_tempAuxDownsampleRTs[index] = AmplifyUtils.GetTempRenderTarget(width, height);
@@ -360,28 +358,28 @@ namespace AmplifyBloom
               if (!m_temporalFilteringActive || m_gaussianSteps[index] != 0)
               {
                 if (m_upscaleQuality == UpscaleQualityEnum.Realistic)
-                  Graphics.Blit((Texture) renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 10);
+                  Graphics.Blit(renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 10);
                 else
-                  Graphics.Blit((Texture) renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 11);
+                  Graphics.Blit(renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 11);
               }
               else
               {
-                if ((UnityEngine.Object) m_tempFilterBuffer != (UnityEngine.Object) null && m_temporalFilteringActive)
+                if (m_tempFilterBuffer != null && m_temporalFilteringActive)
                 {
                   float num3 = m_temporalFilteringCurve.Evaluate(m_temporalFilteringValue);
                   m_bloomMaterial.SetFloat(AmplifyUtils.TempFilterValueId, num3);
-                  m_bloomMaterial.SetTexture(AmplifyUtils.AnamorphicRTS[0], (Texture) m_tempFilterBuffer);
+                  m_bloomMaterial.SetTexture(AmplifyUtils.AnamorphicRTS[0], m_tempFilterBuffer);
                   if (m_upscaleQuality == UpscaleQualityEnum.Realistic)
-                    Graphics.Blit((Texture) renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 12);
+                    Graphics.Blit(renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 12);
                   else
-                    Graphics.Blit((Texture) renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 13);
+                    Graphics.Blit(renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 13);
                 }
                 else if (m_upscaleQuality == UpscaleQualityEnum.Realistic)
-                  Graphics.Blit((Texture) renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 10);
+                  Graphics.Blit(renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 10);
                 else
-                  Graphics.Blit((Texture) renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 11);
+                  Graphics.Blit(renderTexture3, m_tempAuxDownsampleRTs[index], m_bloomMaterial, 11);
                 bool flag2 = false;
-                if ((UnityEngine.Object) m_tempFilterBuffer != (UnityEngine.Object) null)
+                if (m_tempFilterBuffer != null)
                 {
                   if (m_tempFilterBuffer.format != m_tempAuxDownsampleRTs[index].format || m_tempFilterBuffer.width != m_tempAuxDownsampleRTs[index].width || m_tempFilterBuffer.height != m_tempAuxDownsampleRTs[index].height)
                   {
@@ -394,23 +392,23 @@ namespace AmplifyBloom
                 if (flag2)
                   CreateTempFilterRT(m_tempAuxDownsampleRTs[index]);
                 m_tempFilterBuffer.DiscardContents();
-                Graphics.Blit((Texture) m_tempAuxDownsampleRTs[index], m_tempFilterBuffer);
+                Graphics.Blit(m_tempAuxDownsampleRTs[index], m_tempFilterBuffer);
                 if (m_debugToScreen == DebugToScreenEnum.TemporalFilter)
                 {
-                  Graphics.Blit((Texture) m_tempAuxDownsampleRTs[index], dest);
+                  Graphics.Blit(m_tempAuxDownsampleRTs[index], dest);
                   AmplifyUtils.ReleaseAllRT();
                   return;
                 }
               }
             }
             else
-              Graphics.Blit((Texture) m_tempAuxDownsampleRTs[index - 1], m_tempAuxDownsampleRTs[index], m_bloomMaterial, 9);
+              Graphics.Blit(m_tempAuxDownsampleRTs[index - 1], m_tempAuxDownsampleRTs[index], m_bloomMaterial, 9);
             if (m_gaussianSteps[index] > 0)
             {
               ApplyGaussianBlur(m_tempAuxDownsampleRTs[index], m_gaussianSteps[index], m_gaussianRadius[index], index == 0);
               if (m_temporalFilteringActive && m_debugToScreen == DebugToScreenEnum.TemporalFilter)
               {
-                Graphics.Blit((Texture) m_tempAuxDownsampleRTs[index], dest);
+                Graphics.Blit(m_tempAuxDownsampleRTs[index], dest);
                 AmplifyUtils.ReleaseAllRT();
                 return;
               }
@@ -424,7 +422,7 @@ namespace AmplifyBloom
           m_bokehFilter.ApplyBokehFilter(renderTexture3, m_bloomMaterial);
           if (m_debugToScreen == DebugToScreenEnum.BokehFilter)
           {
-            Graphics.Blit((Texture) renderTexture3, dest);
+            Graphics.Blit(renderTexture3, dest);
             AmplifyUtils.ReleaseAllRT();
             return;
           }
@@ -438,10 +436,10 @@ namespace AmplifyBloom
           m_finalCompositionMaterial.SetVector(AmplifyUtils.BloomParamsId, m_bloomParams);
           renderTexture4 = AmplifyUtils.GetTempRenderTarget(renderTexture3.width, renderTexture3.height);
           flag3 = true;
-          Graphics.Blit((Texture) renderTexture3, renderTexture4, m_bloomMaterial, 0);
+          Graphics.Blit(renderTexture3, renderTexture4, m_bloomMaterial, 0);
           if (m_debugToScreen == DebugToScreenEnum.FeaturesThreshold)
           {
-            Graphics.Blit((Texture) renderTexture4, dest);
+            Graphics.Blit(renderTexture4, dest);
             AmplifyUtils.ReleaseAllRT();
             return;
           }
@@ -454,12 +452,12 @@ namespace AmplifyBloom
           {
             flag3 = true;
             renderTexture4 = AmplifyUtils.GetTempRenderTarget(renderTexture3.width, renderTexture3.height);
-            Graphics.Blit((Texture) renderTexture3, renderTexture4);
+            Graphics.Blit(renderTexture3, renderTexture4);
           }
           m_bokehFilter.ApplyBokehFilter(renderTexture4, m_bloomMaterial);
           if (m_debugToScreen == DebugToScreenEnum.BokehFilter)
           {
-            Graphics.Blit((Texture) renderTexture4, dest);
+            Graphics.Blit(renderTexture4, dest);
             AmplifyUtils.ReleaseAllRT();
             return;
           }
@@ -470,7 +468,7 @@ namespace AmplifyBloom
           ApplyGaussianBlur(renderTexture1, m_lensFlare.LensFlareGaussianBlurAmount);
           if (m_debugToScreen == DebugToScreenEnum.LensFlare)
           {
-            Graphics.Blit((Texture) renderTexture1, dest);
+            Graphics.Blit(renderTexture1, dest);
             AmplifyUtils.ReleaseAllRT();
             return;
           }
@@ -481,7 +479,7 @@ namespace AmplifyBloom
           m_anamorphicGlare.OnRenderImage(m_bloomMaterial, renderTexture4, renderTexture2, num1);
           if (m_debugToScreen == DebugToScreenEnum.LensGlare)
           {
-            Graphics.Blit((Texture) renderTexture2, dest);
+            Graphics.Blit(renderTexture2, dest);
             AmplifyUtils.ReleaseAllRT();
             return;
           }
@@ -497,10 +495,10 @@ namespace AmplifyBloom
             if (m_upscaleQuality == UpscaleQualityEnum.Realistic)
             {
               ApplyUpscale();
-              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[0], (Texture) m_tempUpscaleRTs[0]);
+              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[0], m_tempUpscaleRTs[0]);
             }
             else
-              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[0], (Texture) m_tempAuxDownsampleRTs[0]);
+              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[0], m_tempAuxDownsampleRTs[0]);
             m_finalCompositionMaterial.SetFloat(AmplifyUtils.UpscaleWeightsStr[0], m_upscaleWeights[0]);
           }
           else if (m_upscaleQuality == UpscaleQualityEnum.Realistic)
@@ -509,7 +507,7 @@ namespace AmplifyBloom
             for (int index1 = 0; index1 < m_bloomDownsampleCount; ++index1)
             {
               int index2 = m_bloomDownsampleCount - index1 - 1;
-              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[index2], (Texture) m_tempUpscaleRTs[index1]);
+              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[index2], m_tempUpscaleRTs[index1]);
               m_finalCompositionMaterial.SetFloat(AmplifyUtils.UpscaleWeightsStr[index2], m_upscaleWeights[index1]);
             }
           }
@@ -518,14 +516,14 @@ namespace AmplifyBloom
             for (int index3 = 0; index3 < m_bloomDownsampleCount; ++index3)
             {
               int index4 = m_bloomDownsampleCount - 1 - index3;
-              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[index4], (Texture) m_tempAuxDownsampleRTs[index4]);
+              m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[index4], m_tempAuxDownsampleRTs[index4]);
               m_finalCompositionMaterial.SetFloat(AmplifyUtils.UpscaleWeightsStr[index4], m_upscaleWeights[index3]);
             }
           }
         }
         else
         {
-          m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[0], (Texture) renderTexture3);
+          m_finalCompositionMaterial.SetTexture(AmplifyUtils.MipResultsRTS[0], renderTexture3);
           m_finalCompositionMaterial.SetFloat(AmplifyUtils.UpscaleWeightsStr[0], 1f);
         }
         if (m_debugToScreen == DebugToScreenEnum.Bloom)
@@ -549,9 +547,9 @@ namespace AmplifyBloom
             m_finalCompositionMaterial.SetFloat(AmplifyUtils.LensStarburstWeightsStr[0], m_lensStarburstWeights[0]);
           }
           if (m_lensFlare.ApplyLensFlare)
-            m_finalCompositionMaterial.SetTexture(AmplifyUtils.LensFlareRTId, (Texture) renderTexture1);
+            m_finalCompositionMaterial.SetTexture(AmplifyUtils.LensFlareRTId, renderTexture1);
           if (m_anamorphicGlare.ApplyLensGlare)
-            m_finalCompositionMaterial.SetTexture(AmplifyUtils.LensGlareRTId, (Texture) renderTexture2);
+            m_finalCompositionMaterial.SetTexture(AmplifyUtils.LensGlareRTId, renderTexture2);
           if (m_applyLensDirt)
           {
             m_finalCompositionMaterial.SetTexture(AmplifyUtils.LensDirtRTId, m_lensDirtTexture);
@@ -577,11 +575,11 @@ namespace AmplifyBloom
               return;
             }
           }
-          if ((UnityEngine.Object) m_targetTexture != (UnityEngine.Object) null)
+          if (m_targetTexture != null)
           {
             m_targetTexture.DiscardContents();
             FinalComposition(0.0f, 1f, src, m_targetTexture, -1);
-            Graphics.Blit((Texture) src, dest);
+            Graphics.Blit(src, dest);
           }
           else
             FinalComposition(1f, 1f, src, dest, -1);
@@ -615,7 +613,7 @@ namespace AmplifyBloom
           num |= 1;
       }
       int pass = num + (m_bloomDownsampleCount - 1) * 16;
-      Graphics.Blit((Texture) src, dest, m_finalCompositionMaterial, pass);
+      Graphics.Blit(src, dest, m_finalCompositionMaterial, pass);
       AmplifyUtils.ReleaseAllRT();
     }
 
@@ -628,12 +626,12 @@ namespace AmplifyBloom
         m_tempUpscaleRTs[index2] = AmplifyUtils.GetTempRenderTarget((int) m_tempDownsamplesSizes[index3].x, (int) m_tempDownsamplesSizes[index3].y);
         if (index3 == index1)
         {
-          Graphics.Blit((Texture) m_tempAuxDownsampleRTs[index1], m_tempUpscaleRTs[index2], m_bloomMaterial, 17);
+          Graphics.Blit(m_tempAuxDownsampleRTs[index1], m_tempUpscaleRTs[index2], m_bloomMaterial, 17);
         }
         else
         {
-          m_bloomMaterial.SetTexture(AmplifyUtils.AnamorphicRTS[0], (Texture) m_tempUpscaleRTs[index2 - 1]);
-          Graphics.Blit((Texture) m_tempAuxDownsampleRTs[index3], m_tempUpscaleRTs[index2], m_bloomMaterial, 18);
+          m_bloomMaterial.SetTexture(AmplifyUtils.AnamorphicRTS[0], m_tempUpscaleRTs[index2 - 1]);
+          Graphics.Blit(m_tempAuxDownsampleRTs[index3], m_tempUpscaleRTs[index2], m_bloomMaterial, 18);
         }
         ++index2;
       }

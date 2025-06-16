@@ -1,4 +1,6 @@
-﻿namespace Engine.Assets.Objects
+﻿using UnityEngine;
+
+namespace Engine.Assets.Objects
 {
   public class StepsData : ScriptableObject
   {

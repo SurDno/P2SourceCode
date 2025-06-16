@@ -1,5 +1,6 @@
 ﻿using Engine.Source.Behaviours;
 using Inspectors;
+using UnityEngine;
 
 public class PlagueSpots : MonoBehaviour, IValueController
 {
@@ -26,7 +27,7 @@ public class PlagueSpots : MonoBehaviour, IValueController
       propertyID = Shader.PropertyToID("_Level");
     }
     propertyBlock.SetFloat(propertyID, value);
-    foreach (Renderer componentsInChild in this.GetComponentsInChildren<MeshRenderer>())
+    foreach (Renderer componentsInChild in GetComponentsInChildren<MeshRenderer>())
       componentsInChild.SetPropertyBlock(propertyBlock);
   }
 }

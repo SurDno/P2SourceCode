@@ -1,9 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Engine.Common;
 using Engine.Common.Services;
+using Engine.Source.Audio;
 using Engine.Source.Commons;
+using UnityEngine;
 
 [RequireComponent(typeof (AudioSource))]
 public class SoundPlayerPolyhedron : MonoBehaviour
@@ -30,11 +30,11 @@ public class SoundPlayerPolyhedron : MonoBehaviour
 
   private void Start()
   {
-    audioSource = this.GetComponent<AudioSource>();
-    clips = ((IEnumerable<AudioClip>) clips).Where((Func<AudioClip, bool>) (o => (UnityEngine.Object) o != (UnityEngine.Object) null)).ToArray();
+    audioSource = GetComponent<AudioSource>();
+    clips = clips.Where(o => o != null).ToArray();
     if (clips.Length == 0)
       return;
-    AudioClip audioClip = ((IEnumerable<AudioClip>) clips).Random();
+    AudioClip audioClip = clips.Random();
     audioSource.loop = true;
     audioSource.clip = audioClip;
     audioSource.PlayAndCheck();
@@ -62,7 +62,7 @@ public class SoundPlayerPolyhedron : MonoBehaviour
     else
     {
       IEntity player = service.Player;
-      if (player == null || (UnityEngine.Object) ((IEntityView) player).GameObject == (UnityEngine.Object) null)
+      if (player == null || ((IEntityView) player).GameObject == null)
       {
         audioSource.enabled = false;
       }
@@ -70,10 +70,10 @@ public class SoundPlayerPolyhedron : MonoBehaviour
       {
         Vector3 vector3 = (player != null ? ((IEntityView) player).Position : Vector3.zero) with
         {
-          y = this.transform.position.y
+          y = transform.position.y
         };
         float maxRadius = this.maxRadius;
-        float magnitude = (this.transform.position - vector3).magnitude;
+        float magnitude = (transform.position - vector3).magnitude;
         bool flag = magnitude < (double) maxRadius;
         if (audioSource.enabled != flag)
           audioSource.enabled = flag;
@@ -86,7 +86,7 @@ public class SoundPlayerPolyhedron : MonoBehaviour
           float num = Vector3.Angle(((IEntityView) player).GameObject.transform.forward with
           {
             y = 0.0f
-          }, (this.transform.position - vector3) with
+          }, (transform.position - vector3) with
           {
             y = 0.0f
           });

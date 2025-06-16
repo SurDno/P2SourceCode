@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI
 {
   [RequireComponent(typeof (RectTransform))]
   public class UIControl : MonoBehaviour
@@ -9,8 +11,8 @@
     {
       get
       {
-        if ((Object) transform == (Object) null)
-          transform = this.gameObject.GetComponent<RectTransform>();
+        if (transform == null)
+          transform = gameObject.GetComponent<RectTransform>();
         return transform;
       }
     }
@@ -19,18 +21,18 @@
     {
       get
       {
-        return (Vector2) Transform.position - Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, (Vector2) Transform.lossyScale));
+        return (Vector2) Transform.position - Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, Transform.lossyScale));
       }
       set
       {
-        Transform.position = (Vector3) (value + Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, (Vector2) Transform.lossyScale)));
+        Transform.position = value + Vector2.Scale(Transform.pivot, Vector2.Scale(Transform.sizeDelta, Transform.lossyScale));
       }
     }
 
     public bool IsEnabled
     {
-      get => this.gameObject.activeSelf;
-      set => this.gameObject.SetActive(value);
+      get => gameObject.activeSelf;
+      set => gameObject.SetActive(value);
     }
 
     protected virtual void Awake()

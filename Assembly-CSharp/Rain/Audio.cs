@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Rain
 {
@@ -21,7 +22,7 @@ namespace Rain
     private void Update()
     {
       RainManager instance = RainManager.Instance;
-      float num1 = !((UnityEngine.Object) instance == (UnityEngine.Object) null) ? instance.actualRainIntensity : 0.0f;
+      float num1 = !(instance == null) ? instance.actualRainIntensity : 0.0f;
       if (num1 == 0.0)
       {
         Disable();

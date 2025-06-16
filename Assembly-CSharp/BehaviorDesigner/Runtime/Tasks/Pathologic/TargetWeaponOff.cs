@@ -6,6 +6,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -21,16 +22,16 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) ikController == (UnityEngine.Object) null)
+      if (ikController == null)
       {
         ikController = gameObject.GetComponent<IKController>();
-        if ((UnityEngine.Object) ikController == (UnityEngine.Object) null)
+        if (ikController == null)
         {
-          Debug.LogError((object) (gameObject.name + ": doesn't contain " + typeof (IKController).Name + " unity component"), (UnityEngine.Object) gameObject);
+          Debug.LogError(gameObject.name + ": doesn't contain " + typeof (IKController).Name + " unity component", gameObject);
           return TaskStatus.Failure;
         }
       }
-      ikController.WeaponTarget = (Transform) null;
+      ikController.WeaponTarget = null;
       return TaskStatus.Success;
     }
 

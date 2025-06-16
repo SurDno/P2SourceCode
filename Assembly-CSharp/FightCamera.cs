@@ -1,4 +1,5 @@
 ﻿using Inspectors;
+using UnityEngine;
 using UnityEngine.PostProcessing;
 
 public class FightCamera : MonoBehaviour
@@ -77,10 +78,10 @@ public class FightCamera : MonoBehaviour
 
   private void Start()
   {
-    camera = this.GetComponent<Camera>();
+    camera = GetComponent<Camera>();
     initialFOV = camera.fieldOfView;
-    postProcessing = this.GetComponent<PostProcessingBehaviour>();
-    knifePostProcess = this.GetComponent<KnifePostProcessEffect>();
+    postProcessing = GetComponent<PostProcessingBehaviour>();
+    knifePostProcess = GetComponent<KnifePostProcessEffect>();
   }
 
   private void LateUpdate()
@@ -128,7 +129,7 @@ public class FightCamera : MonoBehaviour
     BlackAndWhiteVelocity += (float) (-(double) currentBlackAndWhiteOffset * blackAndWhiteK - BlackAndWhiteVelocity * (double) blackAndWhiteDump) * Time.fixedDeltaTime;
     currentBlackAndWhiteOffset += BlackAndWhiteVelocity * Time.fixedDeltaTime;
     ColorGradingModel.Settings settings = postProcessing.profile.colorGrading.settings;
-    settings.basic.saturation = (float) (1.0 - 0.699999988079071 * (double) Mathf.Clamp01(currentBlackAndWhiteOffset));
+    settings.basic.saturation = (float) (1.0 - 0.699999988079071 * Mathf.Clamp01(currentBlackAndWhiteOffset));
     postProcessing.profile.colorGrading.settings = settings;
   }
 

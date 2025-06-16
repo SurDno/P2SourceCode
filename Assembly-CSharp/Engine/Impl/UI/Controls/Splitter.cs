@@ -1,4 +1,9 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   [DisallowMultipleComponent]
   [RequireComponent(typeof (CanvasRenderer))]
@@ -11,15 +16,15 @@
     IPointerEnterHandler,
     IPointerExitHandler
   {
-    public static Texture2D CursorNormal = (Texture2D) null;
-    public static Texture2D CursorHorizontalResize = (Texture2D) null;
+    public static Texture2D CursorNormal = null;
+    public static Texture2D CursorHorizontalResize = null;
     [SerializeField]
     [FormerlySerializedAs("_Direction")]
     protected Direction direction = Direction.None;
     private bool isDragging;
     [SerializeField]
     [FormerlySerializedAs("Target")]
-    private RectTransform target = (RectTransform) null;
+    private RectTransform target;
 
     public Direction Direction
     {

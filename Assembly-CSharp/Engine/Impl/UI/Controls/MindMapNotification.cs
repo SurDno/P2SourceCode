@@ -8,6 +8,9 @@ using Engine.Impl.UI.Menu.Protagonist.HeadUpDisplay;
 using Engine.Source.Audio;
 using Engine.Source.Services.Notifications;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -50,7 +53,7 @@ namespace Engine.Impl.UI.Controls
       if (value == (double) position)
         return;
       position = value;
-      ((RectTransform) this.transform).anchoredPosition = position * step;
+      ((RectTransform) transform).anchoredPosition = position * step;
     }
 
     private void Update()
@@ -67,20 +70,20 @@ namespace Engine.Impl.UI.Controls
         Complete = true;
       if (progress >= (double) time && shutdown)
       {
-        UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+        Destroy(gameObject);
       }
       else
       {
         canvasGroup.alpha = SoundUtility.ComputeFade(progress, time, fadeIn, fadeOut);
-        SetPosition(Mathf.MoveTowards(position, (float) targetPosition, Time.deltaTime / fadeIn));
+        SetPosition(Mathf.MoveTowards(position, targetPosition, Time.deltaTime / fadeIn));
       }
     }
 
     private void Play()
     {
-      if ((UnityEngine.Object) clip == (UnityEngine.Object) null || (UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (clip == null || mixer == null)
         return;
-      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     }
 
     protected override void Awake()

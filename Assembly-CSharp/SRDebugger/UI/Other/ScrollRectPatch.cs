@@ -1,4 +1,7 @@
-﻿namespace SRDebugger.UI.Other
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace SRDebugger.UI.Other
 {
   [RequireComponent(typeof (ScrollRect))]
   [ExecuteInEditMode]
@@ -10,15 +13,15 @@
 
     private void Awake()
     {
-      ScrollRect component = this.GetComponent<ScrollRect>();
+      ScrollRect component = GetComponent<ScrollRect>();
       component.content = Content;
       component.viewport = Viewport;
-      if (!((Object) ReplaceMask != (Object) null))
+      if (!(ReplaceMask != null))
         return;
       GameObject gameObject = ReplaceMask.gameObject;
-      Object.Destroy((Object) gameObject.GetComponent<Graphic>());
-      Object.Destroy((Object) gameObject.GetComponent<CanvasRenderer>());
-      Object.Destroy((Object) ReplaceMask);
+      Destroy(gameObject.GetComponent<Graphic>());
+      Destroy(gameObject.GetComponent<CanvasRenderer>());
+      Destroy(ReplaceMask);
       gameObject.AddComponent<RectMask2D>();
     }
   }

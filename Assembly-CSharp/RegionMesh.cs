@@ -1,6 +1,8 @@
 ﻿using System;
 using Engine.Common.Components.Regions;
 using Inspectors;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RegionMesh : MonoBehaviour
 {
@@ -32,11 +34,11 @@ public class RegionMesh : MonoBehaviour
 
   public void Initialise()
   {
-    MeshCollider component = this.GetComponent<MeshCollider>();
-    if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+    MeshCollider component = GetComponent<MeshCollider>();
+    if (component == null)
       return;
     Mesh sharedMesh = component.sharedMesh;
-    int[] numArray = !((UnityEngine.Object) sharedMesh == (UnityEngine.Object) null) ? sharedMesh.triangles : throw new Exception();
+    int[] numArray = !(sharedMesh == null) ? sharedMesh.triangles : throw new Exception();
     int length = numArray.Length / 3;
     if (length == 0)
       throw new Exception();
@@ -62,15 +64,15 @@ public class RegionMesh : MonoBehaviour
 
   public Vector3 GetRandomPoint()
   {
-    float num1 = UnityEngine.Random.value;
+    float num1 = Random.value;
     int index = 0;
     while (num1 > (double) areaCache[index])
       ++index;
     Vector3 vector3_1 = trianglesCache[index * 3];
     Vector3 vector3_2 = trianglesCache[index * 3 + 1];
     Vector3 vector3_3 = trianglesCache[index * 3 + 2];
-    float num2 = UnityEngine.Random.value;
-    float num3 = UnityEngine.Random.value;
+    float num2 = Random.value;
+    float num3 = Random.value;
     Vector3 worldPosition;
     if (num2 + (double) num3 < 1.0)
     {

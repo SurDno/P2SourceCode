@@ -2,6 +2,7 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -17,11 +18,11 @@ namespace Engine.Source.Blueprints
       AddValueOutput("Entity", () =>
       {
         GameObject context = goInput.value;
-        if (!((Object) context != (Object) null))
+        if (!(context != null))
           return null;
         IEntity entity = EntityUtility.GetEntity(goInput.value);
         if (entity == null)
-          Debug.LogError((object) ("Entity not found : " + context.name), (Object) context);
+          Debug.LogError("Entity not found : " + context.name, context);
         return entity;
       });
     }

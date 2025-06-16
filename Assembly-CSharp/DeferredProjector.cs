@@ -1,4 +1,8 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Profiling;
+using UnityEngine.Rendering;
+using UnityEngine.Serialization;
 
 [ExecuteInEditMode]
 public class DeferredProjector : MonoBehaviour
@@ -31,9 +35,9 @@ public class DeferredProjector : MonoBehaviour
 
   public void PopulateBuffer(CommandBuffer buffer, bool inside)
   {
-    if ((UnityEngine.Object) actualMaterial == (UnityEngine.Object) null)
+    if (actualMaterial == null)
       return;
-    bool flag = (double) lossyScale.x < 0.0 ^ (double) lossyScale.y < 0.0 ^ (double) lossyScale.z < 0.0;
+    bool flag = lossyScale.x < 0.0 ^ lossyScale.y < 0.0 ^ lossyScale.z < 0.0;
     if (properties != null && properties.Length != 0)
     {
       for (int index = 0; index < properties.Length; ++index)
@@ -41,12 +45,12 @@ public class DeferredProjector : MonoBehaviour
     }
     actualMaterial.SetInt(cullId, flag ^ inside ? 1 : 2);
     actualMaterial.SetInt(zTestId, inside ? 5 : 2);
-    buffer.DrawMesh(BoxMesh, this.transform.localToWorldMatrix, actualMaterial, 0, -1);
+    buffer.DrawMesh(BoxMesh, transform.localToWorldMatrix, actualMaterial, 0, -1);
   }
 
   private void DrawGizmo(bool selected)
   {
-    Gizmos.matrix = this.transform.localToWorldMatrix;
+    Gizmos.matrix = transform.localToWorldMatrix;
     Color color = new Color(0.0f, 0.7f, 1f, 1f);
     if (selected)
     {
@@ -66,14 +70,14 @@ public class DeferredProjector : MonoBehaviour
     index = count;
     instances[index] = this;
     UpdateBoundingSphere();
-    if ((UnityEngine.Object) material != (UnityEngine.Object) null)
+    if (material != null)
       actualMaterial = new Material(material);
     ++count;
     if (count == 1)
     {
-      Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
-      Camera.onPreRender += new Camera.CameraCallback(OnPreRenderEvent);
-      Camera.onPostRender += new Camera.CameraCallback(OnPostRenderEvent);
+      Camera.onPreCull += OnPreCullEvent;
+      Camera.onPreRender += OnPreRenderEvent;
+      Camera.onPostRender += OnPostRenderEvent;
       cullingGroup = new CullingGroup();
       cullingGroup.SetBoundingSpheres(boundingSpheres);
       commandBuffer = new CommandBuffer();
@@ -87,13 +91,13 @@ public class DeferredProjector : MonoBehaviour
     if (this.index == -1)
       return;
     int index = count - 1;
-    if ((UnityEngine.Object) actualMaterial != (UnityEngine.Object) null)
+    if (actualMaterial != null)
     {
       if (Application.isPlaying)
-        UnityEngine.Object.Destroy((UnityEngine.Object) actualMaterial);
+        Destroy(actualMaterial);
       else
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) actualMaterial);
-      actualMaterial = (Material) null;
+        DestroyImmediate(actualMaterial);
+      actualMaterial = null;
     }
     if (this.index != index)
     {
@@ -106,12 +110,12 @@ public class DeferredProjector : MonoBehaviour
     --count;
     if (count == 0)
     {
-      Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
-      Camera.onPreRender -= new Camera.CameraCallback(OnPreRenderEvent);
-      Camera.onPostRender -= new Camera.CameraCallback(OnPostRenderEvent);
+      Camera.onPreCull -= OnPreCullEvent;
+      Camera.onPreRender -= OnPreRenderEvent;
+      Camera.onPostRender -= OnPostRenderEvent;
       cullingGroup.Dispose();
-      cullingGroup = (CullingGroup) null;
-      commandBuffer = (CommandBuffer) null;
+      cullingGroup = null;
+      commandBuffer = null;
     }
     else
       cullingGroup.SetBoundingSphereCount(count);
@@ -130,8 +134,8 @@ public class DeferredProjector : MonoBehaviour
   {
     if (index == -1)
       return;
-    lossyScale = this.transform.lossyScale;
-    boundingSpheres[index] = new BoundingSphere(this.transform.position, lossyScale.magnitude * 0.5f);
+    lossyScale = transform.lossyScale;
+    boundingSpheres[index] = new BoundingSphere(transform.position, lossyScale.magnitude * 0.5f);
   }
 
   private void OnValidate() => UpdateBoundingSphere();
@@ -140,7 +144,7 @@ public class DeferredProjector : MonoBehaviour
   {
     get
     {
-      if ((UnityEngine.Object) boxMesh == (UnityEngine.Object) null)
+      if (boxMesh == null)
       {
         boxMesh = new Mesh();
         boxMesh.hideFlags = HideFlags.HideAndDontSave;
@@ -211,7 +215,7 @@ public class DeferredProjector : MonoBehaviour
 
   private static void OnPreCullEvent2(Camera camera)
   {
-    if ((UnityEngine.Object) cullingGroup.targetCamera != (UnityEngine.Object) null || camera.actualRenderingPath != RenderingPath.DeferredShading)
+    if (cullingGroup.targetCamera != null || camera.actualRenderingPath != RenderingPath.DeferredShading)
       return;
     cullingGroup.targetCamera = camera;
   }
@@ -228,7 +232,7 @@ public class DeferredProjector : MonoBehaviour
 
   private static void OnPreRenderEvent2(Camera camera)
   {
-    if ((UnityEngine.Object) cullingGroup.targetCamera != (UnityEngine.Object) camera)
+    if (cullingGroup.targetCamera != camera)
       return;
     int num1 = cullingGroup.QueryIndices(true, cullingResults, 0);
     Vector3 position = camera.transform.position;
@@ -253,20 +257,20 @@ public class DeferredProjector : MonoBehaviour
       if (normalsID == 0)
         normalsID = Shader.PropertyToID("_CameraGBufferTexture2Copy");
       commandBuffer.GetTemporaryRT(normalsID, -1, -1);
-      commandBuffer.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer2, (RenderTargetIdentifier) normalsID);
+      commandBuffer.Blit(BuiltinRenderTextureType.GBuffer2, normalsID);
       if (specularID == 0)
         specularID = Shader.PropertyToID("_CameraGBufferTexture1Copy");
       commandBuffer.GetTemporaryRT(specularID, -1, -1);
-      commandBuffer.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer1, (RenderTargetIdentifier) specularID);
+      commandBuffer.Blit(BuiltinRenderTextureType.GBuffer1, specularID);
       if (mrt == null)
         mrt = new RenderTargetIdentifier[4]
         {
-          (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer0,
-          (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer1,
-          (RenderTargetIdentifier) BuiltinRenderTextureType.GBuffer2,
-          (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget
+          BuiltinRenderTextureType.GBuffer0,
+          BuiltinRenderTextureType.GBuffer1,
+          BuiltinRenderTextureType.GBuffer2,
+          BuiltinRenderTextureType.CameraTarget
         };
-      commandBuffer.SetRenderTarget(mrt, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
+      commandBuffer.SetRenderTarget(mrt, BuiltinRenderTextureType.CameraTarget);
       if (cullId == 0)
         cullId = Shader.PropertyToID("_Cull");
       if (zTestId == 0)
@@ -276,7 +280,7 @@ public class DeferredProjector : MonoBehaviour
         int cullingResult = cullingResults[index];
         BoundingSphere boundingSphere = boundingSpheres[cullingResult];
         float num4 = magnitude + boundingSphere.radius;
-        bool inside = (double) (boundingSphere.position - position).sqrMagnitude < num4 * (double) num4;
+        bool inside = (boundingSphere.position - position).sqrMagnitude < num4 * (double) num4;
         instances[cullingResult].PopulateBuffer(commandBuffer, inside);
       }
       commandBuffer.ReleaseTemporaryRT(normalsID);
@@ -298,14 +302,14 @@ public class DeferredProjector : MonoBehaviour
 
   private static void OnPostRenderEvent2(Camera camera)
   {
-    if ((UnityEngine.Object) cullingGroup.targetCamera != (UnityEngine.Object) camera)
+    if (cullingGroup.targetCamera != camera)
       return;
-    cullingGroup.targetCamera = (Camera) null;
-    if (!((UnityEngine.Object) bufferCamera == (UnityEngine.Object) camera))
+    cullingGroup.targetCamera = null;
+    if (!(bufferCamera == camera))
       return;
     camera.RemoveCommandBuffer(CameraEvent.BeforeReflections, commandBuffer);
     commandBuffer.Clear();
-    bufferCamera = (Camera) null;
+    bufferCamera = null;
   }
 
   [Serializable]

@@ -1,10 +1,12 @@
-﻿namespace AmplifyBloom
+﻿using UnityEngine.UI;
+
+namespace AmplifyBloom
 {
   public sealed class DemoUIToggle : DemoUIElement
   {
     private Toggle m_toggle;
 
-    private void Start() => m_toggle = this.GetComponent<Toggle>();
+    private void Start() => m_toggle = GetComponent<Toggle>();
 
     public override void DoAction(DemoUIElementAction action, params object[] vars)
     {

@@ -1,3 +1,5 @@
-﻿public class EditorSceneLoader : ScriptableObject
+﻿using UnityEngine;
+
+public class EditorSceneLoader : ScriptableObject
 {
 }

@@ -1,4 +1,6 @@
-﻿public class LightFlicker2 : MonoBehaviour
+﻿using UnityEngine;
+
+public class LightFlicker2 : MonoBehaviour
 {
   private static MaterialPropertyBlock propertyBlock;
   private static int propertyId;
@@ -19,14 +21,14 @@
 
   private void Awake()
   {
-    light = this.GetComponent<Light>();
-    if ((Object) light != (Object) null)
+    light = GetComponent<Light>();
+    if (light != null)
       baseIntensity = light.intensity;
-    if ((Object) additionalLight != (Object) null)
+    if (additionalLight != null)
       baseAdditionalIntensity = additionalLight.intensity;
-    if ((Object) bulbObject != (Object) null)
+    if (bulbObject != null)
       bulbRenderer = bulbObject.GetComponent<Renderer>();
-    if (!((Object) bulbRenderer != (Object) null))
+    if (!(bulbRenderer != null))
       return;
     if (propertyId == 0)
       propertyId = Shader.PropertyToID("_EmissionColor");
@@ -35,20 +37,20 @@
       baseEmissionColors = new Color[sharedMaterials.Length];
     for (int index = 0; index < sharedMaterials.Length; ++index)
     {
-      if ((Object) sharedMaterials[index] != (Object) null)
+      if (sharedMaterials[index] != null)
         baseEmissionColors[index] = sharedMaterials[index].GetColor(propertyId);
     }
   }
 
   private void Update()
   {
-    if (flickerFrequency <= 0.0 || (double) Time.time < lastChangeTime + 1f / flickerFrequency)
+    if (flickerFrequency <= 0.0 || Time.time < (double) (lastChangeTime + 1f / flickerFrequency))
       return;
     lastChangeTime = Time.time;
-    float num = (float) (1.0 - (double) Mathf.PerlinNoise(Random.Range(0.0f, 1000f), Time.time) * flickerIntensity);
-    if ((Object) light != (Object) null)
+    float num = (float) (1.0 - Mathf.PerlinNoise(Random.Range(0.0f, 1000f), Time.time) * (double) flickerIntensity);
+    if (light != null)
       light.intensity = baseIntensity * num;
-    if ((Object) additionalLight != (Object) null)
+    if (additionalLight != null)
       additionalLight.intensity = baseAdditionalIntensity * num;
     if (baseEmissionColors == null)
       return;
@@ -63,13 +65,13 @@
 
   private void OnDisable()
   {
-    if ((Object) light != (Object) null)
+    if (light != null)
       light.intensity = baseIntensity;
-    if ((Object) additionalLight != (Object) null)
+    if (additionalLight != null)
       additionalLight.intensity = baseAdditionalIntensity;
     if (baseEmissionColors == null)
       return;
     for (int materialIndex = 0; materialIndex < baseEmissionColors.Length; ++materialIndex)
-      bulbRenderer.SetPropertyBlock((MaterialPropertyBlock) null, materialIndex);
+      bulbRenderer.SetPropertyBlock(null, materialIndex);
   }
 }

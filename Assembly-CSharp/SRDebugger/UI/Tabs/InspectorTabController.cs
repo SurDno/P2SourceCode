@@ -2,6 +2,7 @@
 using SRDebugger.Internal;
 using SRDebugger.Services;
 using SRF;
+using UnityEngine;
 
 namespace SRDebugger.UI.Tabs
 {
@@ -21,12 +22,12 @@ namespace SRDebugger.UI.Tabs
 
     private void PanelOnVisibilityChanged(IDebugPanelService debugPanelService, bool visible)
     {
-      this.enabled = visible;
+      enabled = visible;
     }
 
     private void OnGUI()
     {
-      if ((UnityEngine.Object) layoutContainer == (UnityEngine.Object) null)
+      if (layoutContainer == null)
         return;
       rect = RectTransformToScreenSpace(layoutContainer);
       GUISkin skin = GUI.skin;
@@ -50,8 +51,8 @@ namespace SRDebugger.UI.Tabs
 
     public static Rect RectTransformToScreenSpace(RectTransform transform)
     {
-      Vector2 vector2 = Vector2.Scale(transform.rect.size, (Vector2) transform.lossyScale);
-      Rect screenSpace = new Rect(transform.position.x, (float) Screen.height - transform.position.y, vector2.x, vector2.y);
+      Vector2 vector2 = Vector2.Scale(transform.rect.size, transform.lossyScale);
+      Rect screenSpace = new Rect(transform.position.x, Screen.height - transform.position.y, vector2.x, vector2.y);
       screenSpace.x -= transform.pivot.x * vector2.x;
       screenSpace.y -= (1f - transform.pivot.y) * vector2.y;
       return screenSpace;

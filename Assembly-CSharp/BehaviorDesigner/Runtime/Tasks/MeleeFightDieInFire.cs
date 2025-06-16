@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -50,29 +52,29 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnAwake()
     {
       npcState = gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
+      if (!(npcState == null))
         return;
-      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
         return;
       infinite = runTime.Value == 0.0 && !randomRunTime.Value;
       npcState.InFire();
       startTime = Time.time;
       if (randomRunTime.Value)
-        waitDuration = UnityEngine.Random.Range(randomRunTimeMin.Value, randomRunTimeMax.Value);
+        waitDuration = Random.Range(randomRunTimeMin.Value, randomRunTimeMax.Value);
       else
         waitDuration = runTime.Value;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
         return TaskStatus.Failure;
-      if (infinite || startTime + (double) waitDuration >= (double) Time.time)
+      if (infinite || startTime + (double) waitDuration >= Time.time)
         return TaskStatus.Running;
       npcState.Ragdoll(true);
       return TaskStatus.Success;

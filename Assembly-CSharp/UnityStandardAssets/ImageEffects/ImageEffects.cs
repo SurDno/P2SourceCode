@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UnityStandardAssets.ImageEffects
 {
@@ -13,7 +14,7 @@ namespace UnityStandardAssets.ImageEffects
       Vector2 center,
       Vector2 radius)
     {
-      if ((double) source.texelSize.y < 0.0)
+      if (source.texelSize.y < 0.0)
       {
         center.y = 1f - center.y;
         angle = -angle;
@@ -22,13 +23,13 @@ namespace UnityStandardAssets.ImageEffects
       material.SetMatrix("_RotationMatrix", matrix4x4);
       material.SetVector("_CenterRadius", new Vector4(center.x, center.y, radius.x, radius.y));
       material.SetFloat("_Angle", angle * ((float) Math.PI / 180f));
-      Graphics.Blit((Texture) source, destination, material);
+      Graphics.Blit(source, destination, material);
     }
 
     [Obsolete("Use Graphics.Blit(source,dest) instead")]
     public static void Blit(RenderTexture source, RenderTexture dest)
     {
-      Graphics.Blit((Texture) source, dest);
+      Graphics.Blit(source, dest);
     }
 
     [Obsolete("Use Graphics.Blit(source, destination, material) instead")]
@@ -37,7 +38,7 @@ namespace UnityStandardAssets.ImageEffects
       RenderTexture source,
       RenderTexture dest)
     {
-      Graphics.Blit((Texture) source, dest, material);
+      Graphics.Blit(source, dest, material);
     }
   }
 }

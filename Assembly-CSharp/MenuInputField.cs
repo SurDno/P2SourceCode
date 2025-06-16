@@ -1,5 +1,7 @@
 ﻿using System;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuInputField : MonoBehaviour
 {
@@ -14,7 +16,7 @@ public class MenuInputField : MonoBehaviour
 
   private void Awake()
   {
-    inputField.onEndEdit.AddListener(new UnityAction<string>(OnEndEdit));
+    inputField.onEndEdit.AddListener(OnEndEdit);
   }
 
   public void ClearValue() => inputField.text = string.Empty;
@@ -37,14 +39,14 @@ public class MenuInputField : MonoBehaviour
 
   public void SetPlaceholder(string value)
   {
-    if (!((UnityEngine.Object) placeholderView != (UnityEngine.Object) null))
+    if (!(placeholderView != null))
       return;
     placeholderView.StringValue = value;
   }
 
   public void SetMessage(string value)
   {
-    if (!((UnityEngine.Object) messageView != (UnityEngine.Object) null))
+    if (!(messageView != null))
       return;
     messageView.StringValue = value;
   }

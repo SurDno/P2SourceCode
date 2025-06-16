@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -27,7 +29,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Shader == (UnityEngine.Object) null)
+        if (m_Shader == null)
           m_Shader = Shader.Find("Hidden/Subpixel Morphological Anti-aliasing");
         return m_Shader;
       }
@@ -37,7 +39,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_AreaTexture == (UnityEngine.Object) null)
+        if (m_AreaTexture == null)
           m_AreaTexture = Resources.Load<Texture2D>("AreaTex");
         return m_AreaTexture;
       }
@@ -47,7 +49,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_SearchTexture == (UnityEngine.Object) null)
+        if (m_SearchTexture == null)
           m_SearchTexture = Resources.Load<Texture2D>("SearchTex");
         return m_SearchTexture;
       }
@@ -57,7 +59,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Material == (UnityEngine.Object) null)
+        if (m_Material == null)
           m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(shader);
         return m_Material;
       }
@@ -65,19 +67,19 @@ namespace UnityStandardAssets.CinematicEffects
 
     public void OnEnable(AntiAliasing owner)
     {
-      if (ImageEffectHelper.IsSupported(shader, true, false, (MonoBehaviour) owner))
+      if (ImageEffectHelper.IsSupported(shader, true, false, owner))
         return;
       owner.enabled = false;
     }
 
     public void OnDisable()
     {
-      if ((UnityEngine.Object) m_Material != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_Material);
-      if ((UnityEngine.Object) m_Accumulation != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_Accumulation);
-      m_Material = (Material) null;
-      m_Accumulation = (RenderTexture) null;
+      if (m_Material != null)
+        Object.DestroyImmediate(m_Material);
+      if (m_Accumulation != null)
+        Object.DestroyImmediate(m_Accumulation);
+      m_Material = null;
+      m_Accumulation = null;
     }
 
     public void OnPreCull(Camera camera)
@@ -88,8 +90,8 @@ namespace UnityStandardAssets.CinematicEffects
       m_FlipFlop -= 2f * m_FlipFlop;
       Matrix4x4 identity = Matrix4x4.identity with
       {
-        m03 = 0.25f * m_FlipFlop * temporal.fuzzSize / (float) camera.pixelWidth,
-        m13 = -0.25f * m_FlipFlop * temporal.fuzzSize / (float) camera.pixelHeight
+        m03 = 0.25f * m_FlipFlop * temporal.fuzzSize / camera.pixelWidth,
+        m13 = -0.25f * m_FlipFlop * temporal.fuzzSize / camera.pixelHeight
       };
       camera.projectionMatrix = identity * camera.projectionMatrix;
     }
@@ -114,11 +116,11 @@ namespace UnityStandardAssets.CinematicEffects
       int pass2 = 5;
       int pass3 = 6;
       Matrix4x4 m = GL.GetGPUProjectionMatrix(m_ProjectionMatrix, true) * camera.worldToCameraMatrix;
-      material.SetTexture("_AreaTex", (Texture) areaTexture);
-      material.SetTexture("_SearchTex", (Texture) searchTexture);
-      material.SetVector("_Metrics", new Vector4(1f / pixelWidth, 1f / pixelHeight, (float) pixelWidth, (float) pixelHeight));
-      material.SetVector("_Params1", new Vector4(qualitySettings.threshold, qualitySettings.depthThreshold, (float) qualitySettings.maxSearchSteps, (float) qualitySettings.maxDiagonalSearchSteps));
-      material.SetVector("_Params2", (Vector4) new Vector2((float) qualitySettings.cornerRounding, qualitySettings.localContrastAdaptationFactor));
+      material.SetTexture("_AreaTex", areaTexture);
+      material.SetTexture("_SearchTex", searchTexture);
+      material.SetVector("_Metrics", new Vector4(1f / pixelWidth, 1f / pixelHeight, pixelWidth, pixelHeight));
+      material.SetVector("_Params1", new Vector4(qualitySettings.threshold, qualitySettings.depthThreshold, qualitySettings.maxSearchSteps, qualitySettings.maxDiagonalSearchSteps));
+      material.SetVector("_Params2", new Vector2(qualitySettings.cornerRounding, qualitySettings.localContrastAdaptationFactor));
       material.SetMatrix("_ReprojectionMatrix", m_PreviousViewProjectionMatrix * Matrix4x4.Inverse(m));
       float num = m_FlipFlop < 0.0 ? 2f : 1f;
       material.SetVector("_SubsampleIndices", new Vector4(num, num, num, 0.0f));
@@ -129,7 +131,7 @@ namespace UnityStandardAssets.CinematicEffects
       {
         camera.depthTextureMode |= DepthTextureMode.Depth;
         Shader.EnableKeyword("USE_PREDICATION");
-        material.SetVector("_Params3", (Vector4) new Vector3(predication.threshold, predication.scale, predication.strength));
+        material.SetVector("_Params3", new Vector3(predication.threshold, predication.scale, predication.strength));
       }
       Shader.DisableKeyword("USE_DIAG_SEARCH");
       Shader.DisableKeyword("USE_CORNER_DETECTION");
@@ -140,50 +142,50 @@ namespace UnityStandardAssets.CinematicEffects
       Shader.DisableKeyword("USE_UV_BASED_REPROJECTION");
       if (temporal.UseTemporal())
         Shader.EnableKeyword("USE_UV_BASED_REPROJECTION");
-      if ((UnityEngine.Object) m_Accumulation == (UnityEngine.Object) null || m_Accumulation.width != pixelWidth || m_Accumulation.height != pixelHeight)
+      if (m_Accumulation == null || m_Accumulation.width != pixelWidth || m_Accumulation.height != pixelHeight)
       {
-        if ((bool) (UnityEngine.Object) m_Accumulation)
+        if ((bool) (Object) m_Accumulation)
           RenderTexture.ReleaseTemporary(m_Accumulation);
         m_Accumulation = RenderTexture.GetTemporary(pixelWidth, pixelHeight, 0, source.format, RenderTextureReadWrite.Linear);
         m_Accumulation.hideFlags = HideFlags.HideAndDontSave;
         flag = true;
       }
       RenderTexture renderTexture1 = TempRT(pixelWidth, pixelHeight, source.format);
-      Graphics.Blit((Texture) null, renderTexture1, material, 0);
-      Graphics.Blit((Texture) source, renderTexture1, material, edgeDetectionMethod);
+      Graphics.Blit(null, renderTexture1, material, 0);
+      Graphics.Blit(source, renderTexture1, material, edgeDetectionMethod);
       if (settings.debugPass == DebugPass.Edges)
       {
-        Graphics.Blit((Texture) renderTexture1, destination);
+        Graphics.Blit(renderTexture1, destination);
       }
       else
       {
         RenderTexture renderTexture2 = TempRT(pixelWidth, pixelHeight, source.format);
-        Graphics.Blit((Texture) null, renderTexture2, material, 0);
-        Graphics.Blit((Texture) renderTexture1, renderTexture2, material, pass1);
+        Graphics.Blit(null, renderTexture2, material, 0);
+        Graphics.Blit(renderTexture1, renderTexture2, material, pass1);
         if (settings.debugPass == DebugPass.Weights)
         {
-          Graphics.Blit((Texture) renderTexture2, destination);
+          Graphics.Blit(renderTexture2, destination);
         }
         else
         {
-          material.SetTexture("_BlendTex", (Texture) renderTexture2);
+          material.SetTexture("_BlendTex", renderTexture2);
           if (temporal.UseTemporal())
           {
-            Graphics.Blit((Texture) source, renderTexture1, material, pass2);
+            Graphics.Blit(source, renderTexture1, material, pass2);
             if (settings.debugPass == DebugPass.Accumulation)
-              Graphics.Blit((Texture) m_Accumulation, destination);
+              Graphics.Blit(m_Accumulation, destination);
             else if (!flag)
             {
-              material.SetTexture("_AccumulationTex", (Texture) m_Accumulation);
-              Graphics.Blit((Texture) renderTexture1, destination, material, pass3);
+              material.SetTexture("_AccumulationTex", m_Accumulation);
+              Graphics.Blit(renderTexture1, destination, material, pass3);
             }
             else
-              Graphics.Blit((Texture) renderTexture1, destination);
-            Graphics.Blit((Texture) destination, m_Accumulation);
-            RenderTexture.active = (RenderTexture) null;
+              Graphics.Blit(renderTexture1, destination);
+            Graphics.Blit(destination, m_Accumulation);
+            RenderTexture.active = null;
           }
           else
-            Graphics.Blit((Texture) source, destination, material, pass2);
+            Graphics.Blit(source, destination, material, pass2);
         }
         RenderTexture.ReleaseTemporary(renderTexture2);
       }

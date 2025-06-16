@@ -1,5 +1,7 @@
 ﻿using Engine.Impl.UI.Controls;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class KeyCodeStringView : StringView
 {
@@ -33,7 +35,7 @@ public class KeyCodeStringView : StringView
   private void Apply(bool joystick)
   {
     Sprite sprite = joystick ? xboxMap?.GetValue(StringValue) : mouseMap?.GetValue(StringValue);
-    if ((Object) sprite != (Object) null)
+    if (sprite != null)
     {
       textObject.gameObject.SetActive(false);
       image.sprite = sprite;

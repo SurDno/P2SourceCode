@@ -1,4 +1,7 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace SRF.UI
 {
   [RequireComponent(typeof (Graphic))]
   [ExecuteInEditMode]
@@ -12,15 +15,15 @@
     {
       get
       {
-        if ((Object) _graphic == (Object) null)
-          _graphic = this.GetComponent<Graphic>();
+        if (_graphic == null)
+          _graphic = GetComponent<Graphic>();
         return _graphic;
       }
     }
 
     private void Refresh()
     {
-      if ((Object) From == (Object) null)
+      if (From == null)
         return;
       Graphic.color = From.canvasRenderer.GetColor();
     }

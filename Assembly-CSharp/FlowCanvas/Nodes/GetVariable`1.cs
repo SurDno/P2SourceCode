@@ -1,5 +1,6 @@
 ﻿using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -29,7 +30,7 @@ namespace FlowCanvas.Nodes
           value.value = obj;
           break;
         default:
-          Debug.LogError((object) "Set Variable Error");
+          Debug.LogError("Set Variable Error");
           break;
       }
     }

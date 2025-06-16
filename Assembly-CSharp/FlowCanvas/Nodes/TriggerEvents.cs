@@ -1,4 +1,5 @@
 ﻿using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -27,7 +28,7 @@ namespace FlowCanvas.Nodes
       enter = AddFlowOutput("Enter");
       stay = AddFlowOutput("Stay");
       exit = AddFlowOutput("Exit");
-      AddValueOutput("Other", (ValueHandler<GameObject>) (() => other));
+      AddValueOutput("Other", () => other);
     }
 
     private void OnTriggerEnter(Collider other)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -7,7 +8,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
   {
     protected override fsResult DoSerialize(Gradient model, Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + SerializeMember<GradientAlphaKey[]>(serialized, null, "alphaKeys", model.alphaKeys) + SerializeMember<GradientColorKey[]>(serialized, null, "colorKeys", model.colorKeys);
+      return fsResult.Success + SerializeMember(serialized, null, "alphaKeys", model.alphaKeys) + SerializeMember(serialized, null, "colorKeys", model.colorKeys);
     }
 
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Gradient model)
@@ -24,7 +25,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new Gradient();
+      return new Gradient();
     }
   }
 }

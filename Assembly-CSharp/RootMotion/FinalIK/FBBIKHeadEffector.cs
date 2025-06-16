@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -21,7 +22,7 @@ namespace RootMotion.FinalIK
     [LargeHeader("Rotation")]
     [Tooltip("The weight of rotating the head bone after solving")]
     [Range(0.0f, 1f)]
-    public float rotationWeight = 0.0f;
+    public float rotationWeight;
     [Tooltip("Clamping the rotation of the body")]
     [Range(0.0f, 1f)]
     public float bodyClampWeight = 0.5f;
@@ -39,7 +40,7 @@ namespace RootMotion.FinalIK
     public float CCDWeight = 1f;
     [Tooltip("The weight of rolling the bones in towards the target")]
     [Range(0.0f, 1f)]
-    public float roll = 0.0f;
+    public float roll;
     [Tooltip("Smoothing the CCD effect.")]
     [Range(0.0f, 1000f)]
     public float damper = 500f;
@@ -110,7 +111,7 @@ namespace RootMotion.FinalIK
       ccdDefaultLocalRotations = new Quaternion[CCDBones.Length];
       for (int index = 0; index < CCDBones.Length; ++index)
       {
-        if ((UnityEngine.Object) CCDBones[index] != (UnityEngine.Object) null)
+        if (CCDBones[index] != null)
           ccdDefaultLocalRotations[index] = CCDBones[index].localRotation;
       }
       headLocalPosition = ik.references.head.localPosition;
@@ -119,7 +120,7 @@ namespace RootMotion.FinalIK
       stretchLocalRotations = new Quaternion[stretchBones.Length];
       for (int index = 0; index < stretchBones.Length; ++index)
       {
-        if ((UnityEngine.Object) stretchBones[index] != (UnityEngine.Object) null)
+        if (stretchBones[index] != null)
         {
           stretchLocalPositions[index] = stretchBones[index].localPosition;
           stretchLocalRotations[index] = stretchBones[index].localRotation;
@@ -129,7 +130,7 @@ namespace RootMotion.FinalIK
       chestLocalRotations = new Quaternion[chestBones.Length];
       for (int index = 0; index < chestBones.Length; ++index)
       {
-        if ((UnityEngine.Object) chestBones[index] != (UnityEngine.Object) null)
+        if (chestBones[index] != null)
         {
           chestLocalPositions[index] = chestBones[index].localPosition;
           chestLocalRotations[index] = chestBones[index].localRotation;
@@ -143,20 +144,20 @@ namespace RootMotion.FinalIK
 
     private void OnFixTransforms()
     {
-      if (!this.enabled)
+      if (!enabled)
         return;
       foreach (BendBone bendBone in bendBones)
         bendBone?.FixTransforms();
       for (int index = 0; index < CCDBones.Length; ++index)
       {
-        if ((UnityEngine.Object) CCDBones[index] != (UnityEngine.Object) null)
+        if (CCDBones[index] != null)
           CCDBones[index].localRotation = ccdDefaultLocalRotations[index];
       }
       ik.references.head.localPosition = headLocalPosition;
       ik.references.head.localRotation = headLocalRotation;
       for (int index = 0; index < stretchBones.Length; ++index)
       {
-        if ((UnityEngine.Object) stretchBones[index] != (UnityEngine.Object) null)
+        if (stretchBones[index] != null)
         {
           stretchBones[index].localPosition = stretchLocalPositions[index];
           stretchBones[index].localRotation = stretchLocalRotations[index];
@@ -164,7 +165,7 @@ namespace RootMotion.FinalIK
       }
       for (int index = 0; index < chestBones.Length; ++index)
       {
-        if ((UnityEngine.Object) chestBones[index] != (UnityEngine.Object) null)
+        if (chestBones[index] != null)
         {
           chestBones[index].localPosition = chestLocalPositions[index];
           chestBones[index].localRotation = chestLocalRotations[index];
@@ -174,7 +175,7 @@ namespace RootMotion.FinalIK
 
     private void OnPreRead()
     {
-      if (!this.enabled || !this.gameObject.activeInHierarchy || ik.solver.iterations == 0)
+      if (!enabled || !gameObject.activeInHierarchy || ik.solver.iterations == 0)
         return;
       ik.solver.FABRIKPass = handsPullBody;
       if (bendBonesCount != bendBones.Length || ccdBonesCount != CCDBones.Length || stretchBonesCount != stretchBones.Length || chestBonesCount != chestBones.Length)
@@ -182,7 +183,7 @@ namespace RootMotion.FinalIK
       ChestDirection();
       SpineBend();
       CCDPass();
-      offset = this.transform.position - ik.references.head.position;
+      offset = transform.position - ik.references.head.position;
       shoulderDist = Vector3.Distance(ik.references.leftUpperArm.position, ik.references.rightUpperArm.position);
       leftShoulderDist = Vector3.Distance(ik.references.head.position, ik.references.leftUpperArm.position);
       rightShoulderDist = Vector3.Distance(ik.references.head.position, ik.references.rightUpperArm.position);
@@ -202,11 +203,11 @@ namespace RootMotion.FinalIK
       float num1 = bendWeight * ik.solver.IKPositionWeight;
       if (num1 <= 0.0 || bendBones.Length == 0)
         return;
-      Quaternion b = QuaTools.ClampRotation(this.transform.rotation * Quaternion.Inverse(ik.references.root.rotation * headRotationRelativeToRoot), bodyClampWeight, 2);
+      Quaternion b = QuaTools.ClampRotation(transform.rotation * Quaternion.Inverse(ik.references.root.rotation * headRotationRelativeToRoot), bodyClampWeight, 2);
       float num2 = 1f / bendBones.Length;
       for (int index = 0; index < bendBones.Length; ++index)
       {
-        if ((UnityEngine.Object) bendBones[index].transform != (UnityEngine.Object) null)
+        if (bendBones[index].transform != null)
           bendBones[index].transform.rotation = Quaternion.Lerp(Quaternion.identity, b, num2 * bendBones[index].weight * num1) * bendBones[index].transform.rotation;
       }
     }
@@ -218,8 +219,8 @@ namespace RootMotion.FinalIK
         return;
       for (int index = CCDBones.Length - 1; index > -1; --index)
       {
-        Quaternion quaternion = Quaternion.FromToRotation(ik.references.head.position - CCDBones[index].position, this.transform.position - CCDBones[index].position) * CCDBones[index].rotation;
-        float num2 = Mathf.Lerp((float) ((CCDBones.Length - index) / CCDBones.Length), 1f, roll);
+        Quaternion quaternion = Quaternion.FromToRotation(ik.references.head.position - CCDBones[index].position, transform.position - CCDBones[index].position) * CCDBones[index].rotation;
+        float num2 = Mathf.Lerp((CCDBones.Length - index) / CCDBones.Length, 1f, roll);
         float b = Quaternion.Angle(Quaternion.identity, quaternion);
         float num3 = Mathf.Lerp(0.0f, b, (damper - b) / damper);
         CCDBones[index].rotation = Quaternion.RotateTowards(CCDBones[index].rotation, quaternion, num3 * num1 * num2);
@@ -228,28 +229,28 @@ namespace RootMotion.FinalIK
 
     private void Iterate(int iteration)
     {
-      if (!this.enabled || !this.gameObject.activeInHierarchy || ik.solver.iterations == 0)
+      if (!enabled || !gameObject.activeInHierarchy || ik.solver.iterations == 0)
         return;
-      leftShoulderPos = this.transform.position + (leftShoulderPos - this.transform.position).normalized * leftShoulderDist;
-      rightShoulderPos = this.transform.position + (rightShoulderPos - this.transform.position).normalized * rightShoulderDist;
+      leftShoulderPos = transform.position + (leftShoulderPos - transform.position).normalized * leftShoulderDist;
+      rightShoulderPos = transform.position + (rightShoulderPos - transform.position).normalized * rightShoulderDist;
       Solve(ref leftShoulderPos, ref rightShoulderPos, shoulderDist);
       LerpSolverPosition(ik.solver.leftShoulderEffector, leftShoulderPos, positionWeight * ik.solver.IKPositionWeight, ik.solver.leftShoulderEffector.positionOffset);
       LerpSolverPosition(ik.solver.rightShoulderEffector, rightShoulderPos, positionWeight * ik.solver.IKPositionWeight, ik.solver.rightShoulderEffector.positionOffset);
-      Quaternion rotation = QuaTools.FromToRotation(chestRotation, Quaternion.LookRotation(this.transform.position - leftShoulderPos, rightShoulderPos - leftShoulderPos));
-      LerpSolverPosition(ik.solver.bodyEffector, this.transform.position + rotation * headToBody, positionWeight * ik.solver.IKPositionWeight, ik.solver.bodyEffector.positionOffset - ik.solver.pullBodyOffset);
+      Quaternion rotation = QuaTools.FromToRotation(chestRotation, Quaternion.LookRotation(transform.position - leftShoulderPos, rightShoulderPos - leftShoulderPos));
+      LerpSolverPosition(ik.solver.bodyEffector, transform.position + rotation * headToBody, positionWeight * ik.solver.IKPositionWeight, ik.solver.bodyEffector.positionOffset - ik.solver.pullBodyOffset);
       Quaternion quaternion = Quaternion.Lerp(Quaternion.identity, rotation, thighWeight);
       Vector3 vector3_1 = quaternion * headToLeftThigh;
       Vector3 vector3_2 = quaternion * headToRightThigh;
-      LerpSolverPosition(ik.solver.leftThighEffector, this.transform.position + vector3_1, positionWeight * ik.solver.IKPositionWeight, ik.solver.bodyEffector.positionOffset - ik.solver.pullBodyOffset + ik.solver.leftThighEffector.positionOffset);
-      LerpSolverPosition(ik.solver.rightThighEffector, this.transform.position + vector3_2, positionWeight * ik.solver.IKPositionWeight, ik.solver.bodyEffector.positionOffset - ik.solver.pullBodyOffset + ik.solver.rightThighEffector.positionOffset);
+      LerpSolverPosition(ik.solver.leftThighEffector, transform.position + vector3_1, positionWeight * ik.solver.IKPositionWeight, ik.solver.bodyEffector.positionOffset - ik.solver.pullBodyOffset + ik.solver.leftThighEffector.positionOffset);
+      LerpSolverPosition(ik.solver.rightThighEffector, transform.position + vector3_2, positionWeight * ik.solver.IKPositionWeight, ik.solver.bodyEffector.positionOffset - ik.solver.pullBodyOffset + ik.solver.rightThighEffector.positionOffset);
     }
 
     private void OnPostUpdate()
     {
-      if (!this.enabled || !this.gameObject.activeInHierarchy)
+      if (!enabled || !gameObject.activeInHierarchy)
         return;
       PostStretching();
-      ik.references.head.rotation = Quaternion.Lerp(Quaternion.identity, QuaTools.ClampRotation(QuaTools.FromToRotation(ik.references.head.rotation, this.transform.rotation), headClampWeight, 2), rotationWeight * ik.solver.IKPositionWeight) * ik.references.head.rotation;
+      ik.references.head.rotation = Quaternion.Lerp(Quaternion.identity, QuaTools.ClampRotation(QuaTools.FromToRotation(ik.references.head.rotation, transform.rotation), headClampWeight, 2), rotationWeight * ik.solver.IKPositionWeight) * ik.references.head.rotation;
     }
 
     private void ChestDirection()
@@ -271,19 +272,19 @@ namespace RootMotion.FinalIK
       float num = postStretchWeight * ik.solver.IKPositionWeight;
       if (num > 0.0)
       {
-        Vector3 vector3 = Vector3.ClampMagnitude(this.transform.position - ik.references.head.position, maxStretch) * num;
+        Vector3 vector3 = Vector3.ClampMagnitude(transform.position - ik.references.head.position, maxStretch) * num;
         stretchDamper = Mathf.Max(stretchDamper, 0.0f);
         if (stretchDamper > 0.0)
-          vector3 /= (float) ((1.0 + (double) vector3.magnitude) * (1.0 + stretchDamper));
+          vector3 /= (float) ((1.0 + vector3.magnitude) * (1.0 + stretchDamper));
         for (int index = 0; index < stretchBones.Length; ++index)
         {
-          if ((UnityEngine.Object) stretchBones[index] != (UnityEngine.Object) null)
-            stretchBones[index].position += vector3 / (float) stretchBones.Length;
+          if (stretchBones[index] != null)
+            stretchBones[index].position += vector3 / stretchBones.Length;
         }
       }
       if (!fixHead || ik.solver.IKPositionWeight <= 0.0)
         return;
-      ik.references.head.position = this.transform.position;
+      ik.references.head.position = transform.position;
     }
 
     private void LerpSolverPosition(
@@ -309,7 +310,7 @@ namespace RootMotion.FinalIK
 
     private void OnDestroy()
     {
-      if (!((UnityEngine.Object) ik != (UnityEngine.Object) null))
+      if (!(ik != null))
         return;
       IKSolverFullBodyBiped solver1 = ik.solver;
       solver1.OnPreRead = solver1.OnPreRead - OnPreRead;

@@ -1,4 +1,6 @@
-﻿namespace Engine.Behaviours.Engines.PointsOfInterest
+﻿using UnityEngine;
+
+namespace Engine.Behaviours.Engines.PointsOfInterest
 {
   public class LookAtPointOfInterest : MonoBehaviour
   {

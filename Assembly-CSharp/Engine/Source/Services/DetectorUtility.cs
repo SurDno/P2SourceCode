@@ -7,6 +7,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services.Detectablies;
 using SoundPropagation;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -17,7 +18,7 @@ namespace Engine.Source.Services
       Vector3 detectablePosition,
       float distance)
     {
-      return (double) detectorPosition.x + distance >= (double) detectablePosition.x && (double) detectorPosition.x - distance <= (double) detectablePosition.x && (double) detectorPosition.z + distance >= (double) detectablePosition.z && (double) detectorPosition.z - distance <= (double) detectablePosition.z;
+      return detectorPosition.x + (double) distance >= detectablePosition.x && detectorPosition.x - (double) distance <= detectablePosition.x && detectorPosition.z + (double) distance >= detectablePosition.z && detectorPosition.z - (double) distance <= detectablePosition.z;
     }
 
     public static bool CheckRadiusDistance(
@@ -25,7 +26,7 @@ namespace Engine.Source.Services
       Vector3 detectablePosition,
       float distance)
     {
-      return (double) detectorPosition.x + distance >= (double) detectablePosition.x && (double) detectorPosition.x - distance <= (double) detectablePosition.x && (double) detectorPosition.z + distance >= (double) detectablePosition.z && (double) detectorPosition.z - distance <= (double) detectablePosition.z && (double) (detectablePosition - detectorPosition).sqrMagnitude <= distance * (double) distance;
+      return detectorPosition.x + (double) distance >= detectablePosition.x && detectorPosition.x - (double) distance <= detectablePosition.x && detectorPosition.z + (double) distance >= detectablePosition.z && detectorPosition.z - (double) distance <= detectablePosition.z && (detectablePosition - detectorPosition).sqrMagnitude <= distance * (double) distance;
     }
 
     public static bool CanHear(
@@ -39,11 +40,11 @@ namespace Engine.Source.Services
       float roughMaxCost = hearDistance + noiseDistance;
       Vector3 vector3_1 = goPosition;
       Pivot component1 = go.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component1 != (UnityEngine.Object) null && (UnityEngine.Object) component1.Chest != (UnityEngine.Object) null)
+      if (component1 != null && component1.Chest != null)
         vector3_1 = component1.Chest.transform.position;
       Vector3 vector3_2 = candidatPosition;
       Pivot component2 = candidat.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component2 != (UnityEngine.Object) null && (UnityEngine.Object) component2.Chest != (UnityEngine.Object) null)
+      if (component2 != null && component2.Chest != null)
         vector3_2 = component2.Chest.transform.position;
       SPAudioListener instance = SPAudioListener.Instance;
       SPCell originCell = SPCell.Find(vector3_2, instance.LayerMask);
@@ -61,11 +62,11 @@ namespace Engine.Source.Services
       float roughMaxCost = hearDistance + noiseDistance;
       Vector3 position1 = go.transform.position;
       Pivot component1 = go.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component1 != (UnityEngine.Object) null && (UnityEngine.Object) component1.Chest != (UnityEngine.Object) null)
+      if (component1 != null && component1.Chest != null)
         position1 = component1.Chest.transform.position;
       Vector3 position2 = candidat.transform.position;
       Pivot component2 = candidat.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component2 != (UnityEngine.Object) null && (UnityEngine.Object) component2.Chest != (UnityEngine.Object) null)
+      if (component2 != null && component2.Chest != null)
         position2 = component2.Chest.transform.position;
       SPAudioListener instance = SPAudioListener.Instance;
       SPCell originCell = SPCell.Find(position2, instance.LayerMask);

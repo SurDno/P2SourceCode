@@ -20,10 +20,10 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       CombatService service = ServiceLocator.GetService<CombatService>();
-      if (service == null || (UnityEngine.Object) Owner == (UnityEngine.Object) null)
+      if (service == null || Owner == null)
         return;
       EnemyBase component = Owner.GetComponent<EnemyBase>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return;
       service.IndividualFinishOrder(component);
     }

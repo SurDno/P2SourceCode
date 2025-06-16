@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Inspectors
 {
@@ -18,13 +20,13 @@ namespace Inspectors
     {
       get
       {
-        if ((UnityEngine.Object) skin == (UnityEngine.Object) null)
+        if (skin == null)
         {
           skin = Resources.Load<GUISkin>("EditorSkin");
-          if ((UnityEngine.Object) skin == (UnityEngine.Object) null)
+          if (skin == null)
             skin = GUI.skin;
-          foldout = ((IEnumerable<GUIStyle>) skin.customStyles).FirstOrDefault((Func<GUIStyle, bool>) (o => o.name == "Foldout"));
-          popup = ((IEnumerable<GUIStyle>) skin.customStyles).FirstOrDefault((Func<GUIStyle, bool>) (o => o.name == "MiniPopup"));
+          foldout = skin.customStyles.FirstOrDefault(o => o.name == "Foldout");
+          popup = skin.customStyles.FirstOrDefault(o => o.name == "MiniPopup");
         }
         return skin;
       }
@@ -39,7 +41,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       GUILayout.Label(name, GUILayout.Width(300f));
       value = GUILayout.Toggle(value, "");
       GUILayout.FlexibleSpace();
@@ -53,7 +55,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       GUILayout.Label(name, GUILayout.Width(300f));
       bool flag = context.GetExpanded(context.DeepName + name);
       if (GUILayout.Button(value.ToString(), popup))
@@ -88,7 +90,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       GUILayout.Label(name, GUILayout.Width(300f));
       bool flag = context.GetExpanded(context.DeepName + name);
       if (GUILayout.Button(value, popup))
@@ -117,7 +119,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       GUILayout.Space(316f);
       GUILayout.BeginVertical(Skin.box);
       for (int index = 0; index < names.Length; ++index)
@@ -136,7 +138,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       GUILayout.Space(316f);
       GUILayout.BeginVertical(Skin.box);
       for (int index = 0; index < values.Length; ++index)
@@ -180,7 +182,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       value = GUILayout.Toggle(value, name, foldout);
       GUILayout.FlexibleSpace();
       GUILayout.EndHorizontal();
@@ -207,9 +209,9 @@ namespace Inspectors
       return value;
     }
 
-    public UnityEngine.Object ObjectField(string name, UnityEngine.Object value, Type type)
+    public Object ObjectField(string name, Object value, Type type)
     {
-      TextField(name, value != (UnityEngine.Object) null ? ((object) value).ToString() : "null");
+      TextField(name, value != null ? value.ToString() : "null");
       return value;
     }
 
@@ -232,7 +234,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       GUILayout.Label(name, GUILayout.Width(300f));
       value = GUILayout.TextField(value ?? "");
       GUILayout.EndHorizontal();
@@ -269,7 +271,7 @@ namespace Inspectors
       int indentLevel = IndentLevel;
       IndentLevel = 0;
       GUILayout.BeginHorizontal();
-      GUILayout.Space((float) (indentLevel * 16));
+      GUILayout.Space(indentLevel * 16);
       bool flag = GUILayout.Button(name);
       GUILayout.EndHorizontal();
       IndentLevel = indentLevel;

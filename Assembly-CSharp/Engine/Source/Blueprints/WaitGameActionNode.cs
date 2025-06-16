@@ -33,7 +33,7 @@ namespace Engine.Source.Blueprints
 
     private void WaitGameActionNode_OnGameAction(GameActionType type)
     {
-      if (type != gameActionInput.value || !((UnityEngine.Object) graphAgent != (UnityEngine.Object) null))
+      if (type != gameActionInput.value || !(graphAgent != null))
         return;
       output.Call();
     }

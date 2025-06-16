@@ -1,5 +1,6 @@
-﻿using Engine.Common.Components.Parameters;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Engine.Common.Components.Gate;
+using Engine.Common.Components.Parameters;
 
 namespace Engine.Common.Components
 {
@@ -15,7 +16,7 @@ namespace Engine.Common.Components
 
     IPriorityParameterValue<bool> SendEnterWithoutKnock { get; }
 
-    IPriorityParameterValue<Engine.Common.Components.Gate.LockState> LockState { get; }
+    IPriorityParameterValue<LockState> LockState { get; }
 
     IParameterValue<bool> CanBeMarked { get; }
 

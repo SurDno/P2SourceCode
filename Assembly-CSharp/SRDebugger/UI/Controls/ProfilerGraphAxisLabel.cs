@@ -1,4 +1,6 @@
 ﻿using SRF;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRDebugger.UI.Controls
 {
@@ -29,9 +31,9 @@ namespace SRDebugger.UI.Controls
     private void SetValueInternal(float frameTime)
     {
       _prevFrameTime = frameTime;
-      Text.text = "{0}ms ({1}FPS)".Fmt((object) Mathf.FloorToInt(frameTime * 1000f), (object) Mathf.RoundToInt(1f / frameTime));
+      Text.text = "{0}ms ({1}FPS)".Fmt(Mathf.FloorToInt(frameTime * 1000f), Mathf.RoundToInt(1f / frameTime));
       RectTransform cachedTransform = (RectTransform) CachedTransform;
-      cachedTransform.anchoredPosition = new Vector2((float) ((double) cachedTransform.rect.width * 0.5 + 10.0), _yPosition);
+      cachedTransform.anchoredPosition = new Vector2((float) (cachedTransform.rect.width * 0.5 + 10.0), _yPosition);
     }
   }
 }

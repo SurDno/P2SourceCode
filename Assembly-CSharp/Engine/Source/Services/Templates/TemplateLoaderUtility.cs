@@ -4,6 +4,7 @@ using System.IO;
 using AssetDatabases;
 using Engine.Common;
 using Engine.Source.Commons;
+using UnityEngine;
 
 namespace Engine.Source.Services.Templates
 {
@@ -12,19 +13,19 @@ namespace Engine.Source.Services.Templates
     public static IObject LoadObject(string path)
     {
       TextAsset context = AssetDatabaseService.Instance.Load<TextAsset>(path);
-      if ((UnityEngine.Object) context != (UnityEngine.Object) null && context.bytes != null)
+      if (context != null && context.bytes != null)
       {
         using (MemoryStream memoryStream = new MemoryStream(context.bytes))
         {
           IObject @object = SerializeUtility.Deserialize<IObject>(memoryStream, path);
           if (@object != null)
             return @object;
-          Debug.LogError((object) ("Error deserialize template, path : " + path), (UnityEngine.Object) context);
+          Debug.LogError("Error deserialize template, path : " + path, context);
           return null;
         }
       }
 
-      Debug.LogError((object) ("Error load template, path : " + path), (UnityEngine.Object) context);
+      Debug.LogError("Error load template, path : " + path, context);
       return null;
     }
 

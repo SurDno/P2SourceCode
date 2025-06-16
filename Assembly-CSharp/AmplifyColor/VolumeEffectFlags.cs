@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -14,7 +15,7 @@ namespace AmplifyColor
     public void AddComponent(Component c)
     {
       VolumeEffectComponentFlags effectComponentFlags;
-      if ((effectComponentFlags = components.Find(s => s.componentName == string.Concat(((object) c).GetType()))) != null)
+      if ((effectComponentFlags = components.Find(s => s.componentName == string.Concat(c.GetType()))) != null)
         effectComponentFlags.UpdateComponentFlags(c);
       else
         components.Add(new VolumeEffectComponentFlags(c));
@@ -55,7 +56,7 @@ namespace AmplifyColor
         if (component1.blendFlag)
         {
           Component component2 = go.GetComponent(component1.componentName);
-          if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
+          if (component2 != null)
             effectData.AddComponent(component2, component1);
         }
       }

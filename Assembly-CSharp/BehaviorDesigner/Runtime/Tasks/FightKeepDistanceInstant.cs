@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -42,12 +43,12 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
       {
         npcState = gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+        if (npcState == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component", gameObject);
           return;
         }
       }
@@ -56,7 +57,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      return (UnityEngine.Object) npcState == (UnityEngine.Object) null ? TaskStatus.Failure : TaskStatus.Success;
+      return npcState == null ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public new void DataWrite(IDataWriter writer)

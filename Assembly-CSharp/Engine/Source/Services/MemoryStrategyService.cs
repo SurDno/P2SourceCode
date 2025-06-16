@@ -6,6 +6,7 @@ using Engine.Source.Commons;
 using Engine.Source.Otimizations;
 using Engine.Source.Settings.External;
 using Engine.Source.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -17,7 +18,7 @@ namespace Engine.Source.Services
 
     public static void ResetTime()
     {
-      timeLeft = Mathf.Max((float) ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MemoryStrategyTimeEventPeriod, 10f);
+      timeLeft = Mathf.Max(ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MemoryStrategyTimeEventPeriod, 10f);
     }
 
     public void ComputeUpdate()

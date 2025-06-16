@@ -1,4 +1,7 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace SRF.UI
 {
@@ -13,7 +16,7 @@ namespace SRF.UI
     private float _delta;
     private float _startValue;
     public RectTransform.Axis Axis = RectTransform.Axis.Horizontal;
-    public bool Invert = false;
+    public bool Invert;
     public float MaxSize = -1f;
     public LayoutElement TargetLayoutElement;
     public RectTransform TargetRectTransform;
@@ -34,7 +37,7 @@ namespace SRF.UI
         return;
       float num1 = 0.0f;
       float num2 = Axis != RectTransform.Axis.Horizontal ? num1 + eventData.delta.y : num1 + eventData.delta.x;
-      if ((UnityEngine.Object) _canvasScaler != (UnityEngine.Object) null)
+      if (_canvasScaler != null)
         num2 /= _canvasScaler.scaleFactor;
       _delta += num2 * Mult;
       SetCurrentValue(Mathf.Clamp(_startValue + _delta, GetMinSize(), GetMaxSize()));
@@ -52,30 +55,30 @@ namespace SRF.UI
     private void Start()
     {
       Verify();
-      _canvasScaler = this.GetComponentInParent<CanvasScaler>();
+      _canvasScaler = GetComponentInParent<CanvasScaler>();
     }
 
     private bool Verify()
     {
-      if (!((UnityEngine.Object) TargetLayoutElement == (UnityEngine.Object) null) || !((UnityEngine.Object) TargetRectTransform == (UnityEngine.Object) null))
+      if (!(TargetLayoutElement == null) || !(TargetRectTransform == null))
         return true;
-      Debug.LogWarning((object) "DragHandle: TargetLayoutElement and TargetRectTransform are both null. Disabling behaviour.");
-      this.enabled = false;
+      Debug.LogWarning("DragHandle: TargetLayoutElement and TargetRectTransform are both null. Disabling behaviour.");
+      enabled = false;
       return false;
     }
 
     private float GetCurrentValue()
     {
-      if ((UnityEngine.Object) TargetLayoutElement != (UnityEngine.Object) null)
+      if (TargetLayoutElement != null)
         return Axis == RectTransform.Axis.Horizontal ? TargetLayoutElement.preferredWidth : TargetLayoutElement.preferredHeight;
-      if ((UnityEngine.Object) TargetRectTransform != (UnityEngine.Object) null)
+      if (TargetRectTransform != null)
         return Axis == RectTransform.Axis.Horizontal ? TargetRectTransform.sizeDelta.x : TargetRectTransform.sizeDelta.y;
       throw new InvalidOperationException();
     }
 
     private void SetCurrentValue(float value)
     {
-      if ((UnityEngine.Object) TargetLayoutElement != (UnityEngine.Object) null)
+      if (TargetLayoutElement != null)
       {
         if (Axis == RectTransform.Axis.Horizontal)
           TargetLayoutElement.preferredWidth = value;
@@ -84,7 +87,7 @@ namespace SRF.UI
       }
       else
       {
-        Vector2 vector2 = (UnityEngine.Object) TargetRectTransform != (UnityEngine.Object) null ? TargetRectTransform.sizeDelta : throw new InvalidOperationException();
+        Vector2 vector2 = TargetRectTransform != null ? TargetRectTransform.sizeDelta : throw new InvalidOperationException();
         if (Axis == RectTransform.Axis.Horizontal)
           vector2.x = value;
         else
@@ -95,7 +98,7 @@ namespace SRF.UI
 
     private void CommitCurrentValue()
     {
-      if (!((UnityEngine.Object) TargetLayoutElement != (UnityEngine.Object) null))
+      if (!(TargetLayoutElement != null))
         return;
       if (Axis == RectTransform.Axis.Horizontal)
         TargetLayoutElement.preferredWidth = ((RectTransform) TargetLayoutElement.transform).sizeDelta.x;
@@ -105,7 +108,7 @@ namespace SRF.UI
 
     private float GetMinSize()
     {
-      return (UnityEngine.Object) TargetLayoutElement == (UnityEngine.Object) null ? 0.0f : (Axis == RectTransform.Axis.Horizontal ? TargetLayoutElement.minWidth : TargetLayoutElement.minHeight);
+      return TargetLayoutElement == null ? 0.0f : (Axis == RectTransform.Axis.Horizontal ? TargetLayoutElement.minWidth : TargetLayoutElement.minHeight);
     }
 
     private float GetMaxSize() => MaxSize > 0.0 ? MaxSize : float.MaxValue;

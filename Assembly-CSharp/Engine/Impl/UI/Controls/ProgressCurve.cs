@@ -1,22 +1,24 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressCurve : ProgressView
   {
     [SerializeField]
-    private FloatView view = null;
+    private FloatView view;
     [SerializeField]
     private AnimationCurve curve = new AnimationCurve();
 
     public override void SkipAnimation()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.SkipAnimation();
     }
 
     protected override void ApplyProgress()
     {
-      if (!((Object) view != (Object) null))
+      if (!(view != null))
         return;
       view.FloatValue = curve.Evaluate(FloatValue);
     }

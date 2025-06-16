@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public static class RendererUtility
 {
@@ -6,13 +7,13 @@ public static class RendererUtility
 
   public static Renderer GetBiggestRenderer(GameObject gameObject)
   {
-    if ((Object) gameObject == (Object) null)
-      return (Renderer) null;
+    if (gameObject == null)
+      return null;
     if (searchBuffer == null)
       searchBuffer = new List<Renderer>();
-    gameObject.GetComponentsInChildren<Renderer>(searchBuffer);
+    gameObject.GetComponentsInChildren(searchBuffer);
     float num1 = 0.0f;
-    Renderer biggestRenderer = (Renderer) null;
+    Renderer biggestRenderer = null;
     for (int index = 0; index < searchBuffer.Count; ++index)
     {
       Renderer renderer = searchBuffer[index];

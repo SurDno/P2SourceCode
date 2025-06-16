@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -8,26 +9,26 @@ namespace Engine.Impl.UI.Controls
     private EventView trueEvent;
     [SerializeField]
     private EventView falseEvent;
-    private Coroutine coroutine = (Coroutine) null;
+    private Coroutine coroutine;
 
     protected override void ApplyVisibility()
     {
       Cancel();
-      if (!this.gameObject.activeInHierarchy)
+      if (!gameObject.activeInHierarchy)
         return;
-      coroutine = this.StartCoroutine(InvokeEvent(Visible));
+      coroutine = StartCoroutine(InvokeEvent(Visible));
     }
 
     private void Cancel()
     {
       if (coroutine == null)
         return;
-      this.StopCoroutine(coroutine);
+      StopCoroutine(coroutine);
     }
 
     private IEnumerator InvokeEvent(bool value)
     {
-      yield return (object) new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
       if (value)
         trueEvent?.Invoke();
       else

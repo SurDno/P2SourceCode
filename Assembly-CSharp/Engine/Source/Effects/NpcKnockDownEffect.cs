@@ -8,6 +8,7 @@ using Engine.Source.Commons.Abilities.Controllers;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -56,7 +57,7 @@ namespace Engine.Source.Effects
       EnemyBase component2 = ((IEntityView) Target).GameObject.GetComponent<EnemyBase>();
       if (!(AbilityItem.AbilityController is CloseCombatAbilityController))
       {
-        Debug.LogError((object) (typeof (NpcKnockDownEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name));
+        Debug.LogError(typeof (NpcKnockDownEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name);
         return false;
       }
       component2?.KnockDown(component1);

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UnityStandardAssets.ImageEffects
 {
@@ -8,7 +9,7 @@ namespace UnityStandardAssets.ImageEffects
   {
     private void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
-      Debug.Log((object) "OnRenderImage in Helper called ...");
+      Debug.Log("OnRenderImage in Helper called ...");
     }
 
     private static void DrawLowLevelPlaneAlignedWithCamera(
@@ -19,12 +20,12 @@ namespace UnityStandardAssets.ImageEffects
       Camera cameraForProjectionMatrix)
     {
       RenderTexture.active = dest;
-      material.SetTexture("_MainTex", (Texture) source);
+      material.SetTexture("_MainTex", source);
       bool flag = true;
       GL.PushMatrix();
       GL.LoadIdentity();
       GL.LoadProjectionMatrix(cameraForProjectionMatrix.projectionMatrix);
-      float f = (float) ((double) cameraForProjectionMatrix.fieldOfView * 0.5 * (Math.PI / 180.0));
+      float f = (float) (cameraForProjectionMatrix.fieldOfView * 0.5 * (Math.PI / 180.0));
       float num1 = Mathf.Cos(f) / Mathf.Sin(f);
       float aspect = cameraForProjectionMatrix.aspect;
       float num2 = aspect / -num1;
@@ -88,7 +89,7 @@ namespace UnityStandardAssets.ImageEffects
           y2 = 1f;
         }
         float x1 = 0.0f;
-        float x2 = (float) (0.0 + 1.0 / ((double) dest.width * 1.0));
+        float x2 = (float) (0.0 + 1.0 / (dest.width * 1.0));
         float y3 = 0.0f;
         float y4 = 1f;
         GL.Begin(7);
@@ -100,7 +101,7 @@ namespace UnityStandardAssets.ImageEffects
         GL.Vertex3(x2, y4, 0.1f);
         GL.TexCoord2(0.0f, y2);
         GL.Vertex3(x1, y4, 0.1f);
-        float x3 = (float) (1.0 - 1.0 / ((double) dest.width * 1.0));
+        float x3 = (float) (1.0 - 1.0 / (dest.width * 1.0));
         float x4 = 1f;
         float y5 = 0.0f;
         float y6 = 1f;
@@ -115,7 +116,7 @@ namespace UnityStandardAssets.ImageEffects
         float x5 = 0.0f;
         float x6 = 1f;
         float y7 = 0.0f;
-        float y8 = (float) (0.0 + 1.0 / ((double) dest.height * 1.0));
+        float y8 = (float) (0.0 + 1.0 / (dest.height * 1.0));
         GL.TexCoord2(0.0f, y1);
         GL.Vertex3(x5, y7, 0.1f);
         GL.TexCoord2(1f, y1);
@@ -126,7 +127,7 @@ namespace UnityStandardAssets.ImageEffects
         GL.Vertex3(x5, y8, 0.1f);
         float x7 = 0.0f;
         float x8 = 1f;
-        float y9 = (float) (1.0 - 1.0 / ((double) dest.height * 1.0));
+        float y9 = (float) (1.0 - 1.0 / (dest.height * 1.0));
         float y10 = 1f;
         GL.TexCoord2(0.0f, y1);
         GL.Vertex3(x7, y9, 0.1f);
@@ -151,7 +152,7 @@ namespace UnityStandardAssets.ImageEffects
       Material material)
     {
       RenderTexture.active = dest;
-      material.SetTexture("_MainTex", (Texture) source);
+      material.SetTexture("_MainTex", source);
       bool flag = true;
       GL.PushMatrix();
       GL.LoadOrtho();

@@ -11,7 +11,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      RegisterLayer((IStartDifficultySettingsWindow) this);
+      RegisterLayer<IStartDifficultySettingsWindow>(this);
     }
   }
 }

@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.ImageEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -6,13 +8,13 @@
   public class Antialiasing : PostEffectsBase
   {
     public AAMode mode = AAMode.FXAA3Console;
-    public bool showGeneratedNormals = false;
+    public bool showGeneratedNormals;
     public float offsetScale = 0.2f;
     public float blurRadius = 18f;
     public float edgeThresholdMin = 0.05f;
     public float edgeThreshold = 0.2f;
     public float edgeSharpness = 4f;
-    public bool dlaaSharp = false;
+    public bool dlaaSharp;
     public Shader ssaaShader;
     private Material ssaa;
     public Shader dlaaShader;
@@ -55,7 +57,7 @@
           material = dlaa;
           break;
         default:
-          material = (Material) null;
+          material = null;
           break;
       }
       return material;
@@ -82,43 +84,43 @@
     public void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
       if (!CheckResources())
-        Graphics.Blit((Texture) source, destination);
-      else if (mode == AAMode.FXAA3Console && (Object) materialFXAAIII != (Object) null)
+        Graphics.Blit(source, destination);
+      else if (mode == AAMode.FXAA3Console && materialFXAAIII != null)
       {
         materialFXAAIII.SetFloat("_EdgeThresholdMin", edgeThresholdMin);
         materialFXAAIII.SetFloat("_EdgeThreshold", edgeThreshold);
         materialFXAAIII.SetFloat("_EdgeSharpness", edgeSharpness);
-        Graphics.Blit((Texture) source, destination, materialFXAAIII);
+        Graphics.Blit(source, destination, materialFXAAIII);
       }
-      else if (mode == AAMode.FXAA1PresetB && (Object) materialFXAAPreset3 != (Object) null)
-        Graphics.Blit((Texture) source, destination, materialFXAAPreset3);
-      else if (mode == AAMode.FXAA1PresetA && (Object) materialFXAAPreset2 != (Object) null)
+      else if (mode == AAMode.FXAA1PresetB && materialFXAAPreset3 != null)
+        Graphics.Blit(source, destination, materialFXAAPreset3);
+      else if (mode == AAMode.FXAA1PresetA && materialFXAAPreset2 != null)
       {
         source.anisoLevel = 4;
-        Graphics.Blit((Texture) source, destination, materialFXAAPreset2);
+        Graphics.Blit(source, destination, materialFXAAPreset2);
         source.anisoLevel = 0;
       }
-      else if (mode == AAMode.FXAA2 && (Object) materialFXAAII != (Object) null)
-        Graphics.Blit((Texture) source, destination, materialFXAAII);
-      else if (mode == AAMode.SSAA && (Object) ssaa != (Object) null)
-        Graphics.Blit((Texture) source, destination, ssaa);
-      else if (mode == AAMode.DLAA && (Object) dlaa != (Object) null)
+      else if (mode == AAMode.FXAA2 && materialFXAAII != null)
+        Graphics.Blit(source, destination, materialFXAAII);
+      else if (mode == AAMode.SSAA && ssaa != null)
+        Graphics.Blit(source, destination, ssaa);
+      else if (mode == AAMode.DLAA && dlaa != null)
       {
         source.anisoLevel = 0;
         RenderTexture temporary = RenderTexture.GetTemporary(source.width, source.height);
-        Graphics.Blit((Texture) source, temporary, dlaa, 0);
-        Graphics.Blit((Texture) temporary, destination, dlaa, dlaaSharp ? 2 : 1);
+        Graphics.Blit(source, temporary, dlaa, 0);
+        Graphics.Blit(temporary, destination, dlaa, dlaaSharp ? 2 : 1);
         RenderTexture.ReleaseTemporary(temporary);
       }
-      else if (mode == AAMode.NFAA && (Object) nfaa != (Object) null)
+      else if (mode == AAMode.NFAA && nfaa != null)
       {
         source.anisoLevel = 0;
         nfaa.SetFloat("_OffsetScale", offsetScale);
         nfaa.SetFloat("_BlurRadius", blurRadius);
-        Graphics.Blit((Texture) source, destination, nfaa, showGeneratedNormals ? 1 : 0);
+        Graphics.Blit(source, destination, nfaa, showGeneratedNormals ? 1 : 0);
       }
       else
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
     }
   }
 }

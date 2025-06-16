@@ -1,4 +1,6 @@
-﻿namespace SoundPropagation
+﻿using UnityEngine;
+
+namespace SoundPropagation
 {
   public class SPEllipseShape : Shape
   {
@@ -8,7 +10,7 @@
 
     protected override void Initialize()
     {
-      plane2world = this.transform.localToWorldMatrix;
+      plane2world = transform.localToWorldMatrix;
       Vector2 vector2 = Size * 0.5f;
       plane2world.m00 *= vector2.x;
       plane2world.m10 *= vector2.x;
@@ -25,7 +27,7 @@
       out Vector3 output)
     {
       Vector3 segmentOnPlane = ClosestToSegmentOnPlane(world2plane, pointA, pointB);
-      float f = (float) ((double) segmentOnPlane.x * (double) segmentOnPlane.x + (double) segmentOnPlane.y * (double) segmentOnPlane.y);
+      float f = (float) (segmentOnPlane.x * (double) segmentOnPlane.x + segmentOnPlane.y * (double) segmentOnPlane.y);
       if (f > 1.0)
       {
         float num = Mathf.Sqrt(f);
@@ -38,7 +40,7 @@
 
     private void OnDrawGizmosSelected()
     {
-      plane2world = this.transform.localToWorldMatrix;
+      plane2world = transform.localToWorldMatrix;
       Vector2 vector2 = Size * 0.5f;
       plane2world.m00 *= vector2.x;
       plane2world.m10 *= vector2.x;

@@ -1,5 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace JerboaAnimationInstancing
 {
@@ -16,7 +17,7 @@ namespace JerboaAnimationInstancing
         Matrix4x4[] bindposes = meshRender[index1].sharedMesh.bindposes;
         for (int j = 0; j != bones.Length; ++j)
         {
-          int index2 = transformList.FindIndex((Predicate<Transform>) (q => (UnityEngine.Object) q == (UnityEngine.Object) bones[j]));
+          int index2 = transformList.FindIndex(q => q == bones[j]);
           if (index2 < 0)
           {
             transformList.Add(bones[j]);

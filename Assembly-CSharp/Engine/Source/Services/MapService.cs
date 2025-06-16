@@ -37,12 +37,12 @@ namespace Engine.Source.Services
     }
 
     [StateSaveProxy]
-    [StateLoadProxy]
+    [StateLoadProxy()]
     [Inspected(Mutable = true)]
     public bool BullModeAvailable { get; set; }
 
     [StateSaveProxy]
-    [StateLoadProxy]
+    [StateLoadProxy()]
     [Inspected(Mutable = true)]
     public bool BullModeForced { get; set; }
 

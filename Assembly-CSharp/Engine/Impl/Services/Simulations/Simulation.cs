@@ -20,6 +20,7 @@ using Engine.Source.Saves;
 using Engine.Source.Services;
 using Engine.Source.Services.Saves;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Impl.Services.Simulations
 {
@@ -144,7 +145,7 @@ namespace Engine.Impl.Services.Simulations
       hierarchy = null;
       if (entities.Count != 0)
       {
-        Debug.LogError((object) ("Simulation is not empty, count : " + entities.Count));
+        Debug.LogError("Simulation is not empty, count : " + entities.Count);
         entities.Clear();
       }
       initialise = false;
@@ -166,7 +167,7 @@ namespace Engine.Impl.Services.Simulations
       if (!initialise)
         throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
       if (entity.IsTemplate)
-        Debug.LogError((object) ("Add template to simulation : " + entity.GetInfo()));
+        Debug.LogError("Add template to simulation : " + entity.GetInfo());
       ServiceCache.OptimizationService.FrameHasSpike = true;
       entities.Add(entity.Id, entity);
       ((IEntityHierarchy) parent).Add(entity);
@@ -218,14 +219,14 @@ namespace Engine.Impl.Services.Simulations
           XmlElement item = childNode;
           if (item.Name != "Entity")
           {
-            Debug.LogError((object) (item.Name + " is not Entity , context : " + context));
+            Debug.LogError(item.Name + " is not Entity , context : " + context);
           }
           else
           {
             XmlElement idNode = item["Id"];
             if (idNode == null)
             {
-              Debug.LogError((object) ("Id node not found , context : " + context));
+              Debug.LogError("Id node not found , context : " + context);
             }
             else
             {
@@ -234,7 +235,7 @@ namespace Engine.Impl.Services.Simulations
               if (!entities.TryGetValue(id, out entity))
               {
                 XmlElement pathNode = item["HierarchyPath"];
-                Debug.LogError((object) ("Entity " + id + " not found , path : " + (pathNode != null ? pathNode.InnerText : (object) "null") + " , count : " + entities.Count + " , context : " + context));
+                Debug.LogError("Entity " + id + " not found , path : " + (pathNode != null ? pathNode.InnerText : (object) "null") + " , count : " + entities.Count + " , context : " + context);
               }
               else
               {
@@ -272,7 +273,7 @@ namespace Engine.Impl.Services.Simulations
         KeyValuePair<Guid, IEntity> keyValuePair = list[index];
         if (!Ids.IsRoot(keyValuePair.Value.Id))
         {
-          Debug.LogError((object) ("Wrong clenup simulation, entity not unloaded : " + keyValuePair.Value.GetInfo()));
+          Debug.LogError("Wrong clenup simulation, entity not unloaded : " + keyValuePair.Value.GetInfo());
           Remove(keyValuePair.Value);
           keyValuePair.Value.Dispose();
         }

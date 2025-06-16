@@ -10,7 +10,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      RegisterLayer((IGameLanguageSettingsWindow) this);
+      RegisterLayer<IGameLanguageSettingsWindow>(this);
     }
   }
 }

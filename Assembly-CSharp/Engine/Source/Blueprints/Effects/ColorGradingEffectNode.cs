@@ -2,6 +2,7 @@
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -35,11 +36,11 @@ namespace Engine.Source.Blueprints.Effects
     private Color prevRedColor;
     private Color prevGreenColor;
     private Color prevBlueColor;
-    private PostProcessingStackOverride postProcessingOverride = null;
+    private PostProcessingStackOverride postProcessingOverride;
 
     public void Update()
     {
-      if ((Object) postProcessingOverride == (Object) null)
+      if (postProcessingOverride == null)
       {
         GetOverrideColorGrading();
       }
@@ -104,7 +105,7 @@ namespace Engine.Source.Blueprints.Effects
     private void GetOverrideColorGrading()
     {
       postProcessingOverride = GameCamera.Instance.GamePostProcessingOverride;
-      if (!((Object) postProcessingOverride != (Object) null))
+      if (!(postProcessingOverride != null))
         return;
       postProcessingOverride.ColorGrading.Override = true;
       postProcessingOverride.ColorGrading.Enabled = true;
@@ -113,7 +114,7 @@ namespace Engine.Source.Blueprints.Effects
     public override void OnDestroy()
     {
       base.OnDestroy();
-      if (!((Object) postProcessingOverride != (Object) null))
+      if (!(postProcessingOverride != null))
         return;
       postProcessingOverride.ColorGrading.Override = false;
     }

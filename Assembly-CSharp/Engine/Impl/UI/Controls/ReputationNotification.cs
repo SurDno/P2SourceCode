@@ -11,6 +11,8 @@ using Engine.Source.Audio;
 using Engine.Source.Components;
 using Engine.Source.Services.Notifications;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -56,7 +58,7 @@ namespace Engine.Impl.UI.Controls
     {
       float progress1 = targetReputationView.Progress;
       float progress2 = oldReputationView.Progress;
-      if ((double) Mathf.Sign(newTarget - progress2) != (double) Mathf.Sign(progress1 - progress2))
+      if (Mathf.Sign(newTarget - progress2) != (double) Mathf.Sign(progress1 - progress2))
         StartChange(progress1, newTarget);
       else
         StartChange(progress2, newTarget);
@@ -84,9 +86,9 @@ namespace Engine.Impl.UI.Controls
 
     private void Play()
     {
-      if ((UnityEngine.Object) clip == (UnityEngine.Object) null || (UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (clip == null || mixer == null)
         return;
-      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     }
 
     protected override void Awake()
@@ -105,14 +107,14 @@ namespace Engine.Impl.UI.Controls
       ApplyValue(ref result2, values, 1);
       if (result1 == null)
       {
-        Debug.LogError((object) "Notifications : Reputation : No region parameter");
+        Debug.LogError("Notifications : Reputation : No region parameter");
       }
       else
       {
         textRegion.Signature = GetRegionName(result1);
         foreach (IRegionComponent nearRegion in ServiceLocator.GetService<ISimulation>().Player.GetComponent<PlayerControllerComponent>().GetNearRegions(result1))
         {
-          Localizer localizer = UnityEngine.Object.Instantiate<Localizer>(nearRegionText, nearRegionText.transform.parent, false);
+          Localizer localizer = Instantiate(nearRegionText, nearRegionText.transform.parent, false);
           localizer.Signature = GetRegionName(nearRegion);
           localizer.gameObject.SetActive(true);
         }
@@ -150,7 +152,7 @@ namespace Engine.Impl.UI.Controls
       return regionName;
     }
 
-    public void Shutdown() => UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+    public void Shutdown() => Destroy(gameObject);
 
     private void SetAlpha(float value)
     {

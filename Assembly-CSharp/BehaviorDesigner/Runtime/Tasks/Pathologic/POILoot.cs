@@ -11,6 +11,7 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Inventory;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -42,14 +43,14 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnAwake()
     {
       npcState = gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
+      if (!(npcState == null))
         return;
-      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
         return;
       npcState.Loot(InPOITime.Value, Target.Value.gameObject);
       TakeItems();

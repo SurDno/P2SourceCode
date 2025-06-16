@@ -1,6 +1,10 @@
 ﻿using System;
 using Engine.Behaviours.Localization;
 using Engine.Common.Components.Parameters;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -8,7 +12,7 @@ namespace Engine.Impl.UI.Controls
   {
     [SerializeField]
     [FormerlySerializedAs("_Image")]
-    private Image image = (Image) null;
+    private Image image;
     [SerializeField]
     private Image baseImage;
     [SerializeField]
@@ -16,7 +20,7 @@ namespace Engine.Impl.UI.Controls
     private Localizer localizer;
     [SerializeField]
     [FormerlySerializedAs("_Threshold_IsEnabled")]
-    private bool thresholdIsEnabled = false;
+    private bool thresholdIsEnabled;
     [Range(0.0f, 1f)]
     [SerializeField]
     [FormerlySerializedAs("_Threshold_Max")]
@@ -24,7 +28,7 @@ namespace Engine.Impl.UI.Controls
     [Range(0.0f, 1f)]
     [SerializeField]
     [FormerlySerializedAs("_Threshold_Min")]
-    private float thresholdMin = 0.0f;
+    private float thresholdMin;
     [SerializeField]
     private ParameterNameEnum parameterName;
     [SerializeField]
@@ -44,17 +48,17 @@ namespace Engine.Impl.UI.Controls
 
     private void ApplyProgress()
     {
-      if ((UnityEngine.Object) image != (UnityEngine.Object) null)
+      if (image != null)
       {
         image.fillAmount = progress;
         image.color = Color.Lerp(minFillColor, maxFillColor, progress);
       }
-      if ((UnityEngine.Object) baseImage != (UnityEngine.Object) null)
+      if (baseImage != null)
       {
         baseImage.fillAmount = 1f - progress;
         baseImage.color = Color.Lerp(minBaseColor, maxBaseColor, progress);
       }
-      Threshold = thresholdMin <= (double) image.fillAmount && (double) image.fillAmount <= thresholdMax;
+      Threshold = thresholdMin <= (double) image.fillAmount && image.fillAmount <= (double) thresholdMax;
     }
 
     public float Progress
@@ -99,7 +103,7 @@ namespace Engine.Impl.UI.Controls
 
     public static Nerv Instantiate(GameObject prefab)
     {
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Object.Instantiate(prefab);
       gameObject.name = "[UI.Control] " + prefab.name;
       return gameObject.GetComponent<Nerv>();
     }

@@ -8,6 +8,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -37,7 +38,7 @@ namespace Engine.BehaviourNodes.Conditionals
     public override TaskStatus OnUpdate()
     {
       int num;
-      if (Target == null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target == null || Target.Value == null)
       {
         if (TargetPosition != null)
         {
@@ -51,10 +52,10 @@ namespace Engine.BehaviourNodes.Conditionals
         num = 0;
       if (num != 0)
       {
-        Debug.LogWarningFormat("{0}: target is null", (object) gameObject.name);
+        Debug.LogWarningFormat("{0}: target is null", gameObject.name);
         return TaskStatus.Failure;
       }
-      return Target != null && (UnityEngine.Object) Target.Value != (UnityEngine.Object) null ? ((double) (Target.Value.transform.position - gameObject.transform.position).magnitude < Distance ? TaskStatus.Success : TaskStatus.Failure) : ((double) (TargetPosition.Value - gameObject.transform.position).magnitude < Distance ? TaskStatus.Success : TaskStatus.Failure);
+      return Target != null && Target.Value != null ? ((Target.Value.transform.position - gameObject.transform.position).magnitude < (double) Distance ? TaskStatus.Success : TaskStatus.Failure) : ((TargetPosition.Value - gameObject.transform.position).magnitude < (double) Distance ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)

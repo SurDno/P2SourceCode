@@ -1,4 +1,7 @@
-﻿namespace SRDebugger.UI.Other
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace SRDebugger.UI.Other
 {
   [RequireComponent(typeof (ScrollRect))]
   public class ScrollSettingsBehaviour : MonoBehaviour
@@ -7,7 +10,7 @@
 
     private void Awake()
     {
-      ScrollRect component = this.GetComponent<ScrollRect>();
+      ScrollRect component = GetComponent<ScrollRect>();
       component.scrollSensitivity = 40f;
       component.movementType = ScrollRect.MovementType.Clamped;
       component.inertia = false;

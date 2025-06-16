@@ -14,6 +14,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services.Templates
 {
@@ -104,16 +105,16 @@ namespace Engine.Source.Services.Templates
         TemplateLoaderUtility.AddTemplateImpl(template2, nameof (ExtractTemplate), items, names);
       }
       else if (id1 != Guid.Empty)
-        Debug.LogError((object) ("Origin template not found : " + id1 + " , scene context : " + path));
+        Debug.LogError("Origin template not found : " + id1 + " , scene context : " + path);
       Entity entity = (Entity) sceneObjectItem.Template.Value;
       Guid id3 = sceneObjectItem.Template.Id;
       if (entity != null)
         entity.Name = sceneObjectItem.PreserveName;
       else if (id3 != Guid.Empty)
-        Debug.LogError((object) ("Template not found : " + id3 + " , scene context : " + path));
+        Debug.LogError("Template not found : " + id3 + " , scene context : " + path);
       if (!(id1 != Guid.Empty) || !(id3 != Guid.Empty))
         return;
-      Debug.LogError((object) ("Template and Origin at the same time, origin : " + id1 + " , template : " + id3 + " , scene context : " + path));
+      Debug.LogError("Template and Origin at the same time, origin : " + id1 + " , template : " + id3 + " , scene context : " + path);
     }
 
     public IObject GetTemplate(Type type, Guid id)

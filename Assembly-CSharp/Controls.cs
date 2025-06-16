@@ -1,4 +1,6 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+
+[ExecuteInEditMode]
 public class Controls : MonoBehaviour
 {
   public AmplifyOcclusionEffect occlusion;
@@ -8,7 +10,7 @@ public class Controls : MonoBehaviour
 
   private void OnGUI()
   {
-    GUILayout.BeginArea(new Rect(0.0f, 0.0f, (float) Screen.width, (float) Screen.height));
+    GUILayout.BeginArea(new Rect(0.0f, 0.0f, Screen.width, Screen.height));
     GUILayout.BeginHorizontal();
     GUILayout.Space(5f);
     GUILayout.BeginVertical();

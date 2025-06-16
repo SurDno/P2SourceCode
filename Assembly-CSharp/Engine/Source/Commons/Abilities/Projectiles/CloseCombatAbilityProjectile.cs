@@ -5,6 +5,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Projectiles
 {
@@ -37,26 +38,26 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     {
       targets.Targets = new List<EffectsComponent>();
       GameObject gameObject = ((IEntityView) self).GameObject;
-      if ((Object) gameObject == (Object) null)
+      if (gameObject == null)
         return;
       EnemyBase component1 = gameObject.GetComponent<EnemyBase>();
-      if ((Object) component1 == (Object) null)
+      if (component1 == null)
         return;
       EnemyBase enemy = component1.Enemy;
-      if ((Object) enemy == (Object) null)
+      if (enemy == null)
         return;
       EngineGameObject component2 = enemy.gameObject.GetComponent<EngineGameObject>();
-      if ((Object) component2 == (Object) null)
+      if (component2 == null)
         return;
       IEntity owner = component2.Owner;
       if (owner == null || !CheckBlocked(owner) || !CheckHitOrientation(gameObject, enemy.gameObject))
         return;
       EffectsComponent component3 = owner.GetComponent<EffectsComponent>();
-      if (component3 == null || (double) (enemy.transform.position - component1.transform.position).magnitude > radius)
+      if (component3 == null || (enemy.transform.position - component1.transform.position).magnitude > (double) radius)
         return;
       Vector3 direction = enemy.transform.position - component1.transform.position;
       Vector3 vector3 = component1.transform.InverseTransformDirection(direction);
-      if ((double) vector3.z > radius || (double) vector3.z < 0.0 || (double) Mathf.Abs(vector3.x) > 0.40000000596046448)
+      if (vector3.z > (double) radius || vector3.z < 0.0 || Mathf.Abs(vector3.x) > 0.40000000596046448)
         return;
       targets.Targets.Add(component3);
     }
@@ -79,9 +80,9 @@ namespace Engine.Source.Commons.Abilities.Projectiles
     {
       if (orientation == HitOrientationTypeEnum.None)
         return true;
-      if ((Object) gameObject == (Object) null || (Object) target == (Object) null)
+      if (gameObject == null || target == null)
         return false;
-      bool flag = (double) Vector3.Dot((gameObject.transform.position - target.transform.position).normalized, -target.transform.forward) > 0.0;
+      bool flag = Vector3.Dot((gameObject.transform.position - target.transform.position).normalized, -target.transform.forward) > 0.0;
       if (orientation == HitOrientationTypeEnum.Back)
         return flag;
       return orientation != HitOrientationTypeEnum.Front || !flag;

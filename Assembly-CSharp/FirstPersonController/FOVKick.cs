@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using UnityEngine;
 
 namespace FirstPersonController
 {
@@ -23,7 +24,7 @@ namespace FirstPersonController
 
     private void CheckStatus(Camera camera)
     {
-      if ((UnityEngine.Object) camera == (UnityEngine.Object) null)
+      if (camera == null)
         throw new Exception("FOVKick camera is null, please supply the camera to the constructor");
       if (IncreaseCurve == null)
         throw new Exception("FOVKick Increase curve is null, please define the curve for the field of view kicks");
@@ -38,7 +39,7 @@ namespace FirstPersonController
       {
         Camera.fieldOfView = originalFov + IncreaseCurve.Evaluate(t / TimeToIncrease) * FOVIncrease;
         t += Time.deltaTime;
-        yield return (object) new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
       }
     }
 
@@ -49,7 +50,7 @@ namespace FirstPersonController
       {
         Camera.fieldOfView = originalFov + IncreaseCurve.Evaluate(t / TimeToDecrease) * FOVIncrease;
         t -= Time.deltaTime;
-        yield return (object) new WaitForEndOfFrame();
+        yield return new WaitForEndOfFrame();
       }
       Camera.fieldOfView = originalFov;
     }

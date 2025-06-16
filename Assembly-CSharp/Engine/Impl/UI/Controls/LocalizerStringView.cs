@@ -1,4 +1,5 @@
 ﻿using Engine.Behaviours.Localization;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -13,7 +14,7 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyStringValue()
     {
-      if (!((Object) localizer != (Object) null))
+      if (!(localizer != null))
         return;
       localizer.Signature = StringValue;
     }

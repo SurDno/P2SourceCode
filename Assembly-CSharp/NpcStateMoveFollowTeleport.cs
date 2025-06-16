@@ -4,6 +4,8 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateMoveFollowTeleport : NpcStateMoveBase
 {
@@ -36,12 +38,12 @@ public class NpcStateMoveFollowTeleport : NpcStateMoveBase
   {
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player == null)
-      return (GameObject) null;
+      return null;
     LocationItemComponent component1 = player.GetComponent<LocationItemComponent>();
     if (component1 == null || component1.IsIndoor)
-      return (GameObject) null;
+      return null;
     PlayerControllerComponent component2 = player.GetComponent<PlayerControllerComponent>();
-    return component2 != null && !component2.CanReceiveMail.Value ? (GameObject) null : ((IEntityView) player).GameObject;
+    return component2 != null && !component2.CanReceiveMail.Value ? null : ((IEntityView) player).GameObject;
   }
 
   public override bool MovementPaused => false;
@@ -49,13 +51,13 @@ public class NpcStateMoveFollowTeleport : NpcStateMoveBase
   public override void DoUpdate()
   {
     GameObject player = GetPlayer();
-    if ((Object) player == (Object) null || Status != 0)
+    if (player == null || Status != 0)
       return;
     PostmanTeleportService service = ServiceLocator.GetService<PostmanTeleportService>();
     Vector3 vector3 = player.transform.position - GameObject.transform.position;
     float magnitude1 = vector3.magnitude;
     vector3 = player.transform.position - GameObject.transform.position;
-    if ((double) vector3.magnitude < followDistance && TargetIsVisible(player))
+    if (vector3.magnitude < (double) followDistance && TargetIsVisible(player))
     {
       if (!waitForTargetSeesMe || TargetSeesMe(player))
         Status = NpcStateStatusEnum.Success;
@@ -88,7 +90,7 @@ public class NpcStateMoveFollowTeleport : NpcStateMoveBase
           RestartMovement(lastDestination);
         }
       }
-      if (agent.hasPath && (double) agent.remainingDistance < followDistance && magnitude3 < (double) followDistance)
+      if (agent.hasPath && agent.remainingDistance < (double) followDistance && magnitude3 < (double) followDistance)
       {
         if (!waitForTargetSeesMe || TargetSeesMe(player))
           Status = NpcStateStatusEnum.Success;
@@ -106,7 +108,7 @@ public class NpcStateMoveFollowTeleport : NpcStateMoveBase
 
   private bool TargetSeesMe(GameObject target)
   {
-    return (double) Vector3.Angle((GameObject.transform.position - target.transform.position).normalized, target.transform.forward) < 30.0;
+    return Vector3.Angle((GameObject.transform.position - target.transform.position).normalized, target.transform.forward) < 30.0;
   }
 
   private bool TargetIsVisible(GameObject target)

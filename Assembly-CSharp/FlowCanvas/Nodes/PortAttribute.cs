@@ -2,6 +2,7 @@
 using System.Reflection;
 using Cofe.Meta;
 using ParadoxNotion;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -37,7 +38,7 @@ namespace FlowCanvas.Nodes
         if (method != null)
           ComputeMethod(container, method);
         else
-          Debug.LogError((object) ("Error compute type : " + member.DeclaringType));
+          Debug.LogError("Error compute type : " + member.DeclaringType);
       }
     }
 
@@ -64,7 +65,7 @@ namespace FlowCanvas.Nodes
           instance.AddFlowInput(name, pointer);
         });
       else
-        Debug.LogError((object) ("Error compute method : " + method.MemberType + " , type " + method.DeclaringType));
+        Debug.LogError("Error compute method : " + method.MemberType + " , type " + method.DeclaringType);
     }
 
     private void ComputeField(Container container, FieldInfo field)
@@ -86,7 +87,7 @@ namespace FlowCanvas.Nodes
           field.SetValue(flowNode, flowOutput);
         });
       else
-        Debug.LogError((object) ("Error compute field : " + field.MemberType + " , type " + field.DeclaringType));
+        Debug.LogError("Error compute field : " + field.MemberType + " , type " + field.DeclaringType);
     }
 
     private void SetDefaultValue(ValueInput input, object[] value)

@@ -85,7 +85,7 @@ namespace PLVirtualMachine.Common.VMDebug
       }
       catch (Exception ex)
       {
-        lastError = string.Format("Ipc message serialize error: {0}", ex.ToString());
+        lastError = string.Format("Ipc message serialize error: {0}", ex);
         return null;
       }
     }

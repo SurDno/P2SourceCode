@@ -2,6 +2,7 @@
 using Engine.Common.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
+using UnityEngine;
 
 public class HUDQuestCompass : MonoBehaviour
 {
@@ -22,7 +23,7 @@ public class HUDQuestCompass : MonoBehaviour
       if (markers[index].MapItem == mapItem)
         return;
     }
-    HUDQuestMarker hudQuestMarker = UnityEngine.Object.Instantiate<HUDQuestMarker>(markerPrototype, (Transform) anchor, false);
+    HUDQuestMarker hudQuestMarker = Instantiate(markerPrototype, anchor, false);
     hudQuestMarker.MapItem = mapItem;
     markers.Add(hudQuestMarker);
     hudQuestMarker.gameObject.SetActive(true);
@@ -48,7 +49,7 @@ public class HUDQuestCompass : MonoBehaviour
     ServiceLocator.GetService<QuestCompassService>().OnEnableChanged -= OnFocusEnableChanged;
     ServiceLocator.GetService<InterfaceBlockingService>().OnBlockChanged -= UpdateVisibility;
     for (int index = 0; index < markers.Count; ++index)
-      UnityEngine.Object.Destroy((UnityEngine.Object) markers[index].gameObject);
+      Destroy(markers[index].gameObject);
     markers.Clear();
     visible.Visible = false;
   }
@@ -64,7 +65,7 @@ public class HUDQuestCompass : MonoBehaviour
       HUDQuestMarker marker = markers[index];
       if (marker.MapItem == mapItem)
       {
-        UnityEngine.Object.Destroy((UnityEngine.Object) marker.gameObject);
+        Destroy(marker.gameObject);
         markers.RemoveAt(index);
         break;
       }

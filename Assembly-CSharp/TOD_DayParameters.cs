@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 [Serializable]
 public class TOD_DayParameters
@@ -31,9 +32,9 @@ public class TOD_DayParameters
     },
     colorKeys = new GradientColorKey[3]
     {
-      new GradientColorKey((Color) new Color32((byte) 253, (byte) 171, (byte) 50, byte.MaxValue), 0.0f),
-      new GradientColorKey((Color) new Color32((byte) 253, (byte) 171, (byte) 50, byte.MaxValue), 0.5f),
-      new GradientColorKey((Color) new Color32((byte) 253, (byte) 171, (byte) 50, byte.MaxValue), 1f)
+      new GradientColorKey(new Color32(253, 171, 50, byte.MaxValue), 0.0f),
+      new GradientColorKey(new Color32(253, 171, 50, byte.MaxValue), 0.5f),
+      new GradientColorKey(new Color32(253, 171, 50, byte.MaxValue), 1f)
     }
   };
   [Tooltip("Color of the light that hits the ground.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
@@ -46,9 +47,9 @@ public class TOD_DayParameters
     },
     colorKeys = new GradientColorKey[3]
     {
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 243, (byte) 234, byte.MaxValue), 0.0f),
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 243, (byte) 234, byte.MaxValue), 0.5f),
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 154, (byte) 0, byte.MaxValue), 1f)
+      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
+      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
+      new GradientColorKey(new Color32(byte.MaxValue, 154, 0, byte.MaxValue), 1f)
     }
   };
   [Tooltip("Color of the god rays.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
@@ -61,9 +62,9 @@ public class TOD_DayParameters
     },
     colorKeys = new GradientColorKey[3]
     {
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 243, (byte) 234, byte.MaxValue), 0.0f),
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 243, (byte) 234, byte.MaxValue), 0.5f),
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 154, (byte) 0, byte.MaxValue), 1f)
+      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
+      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
+      new GradientColorKey(new Color32(byte.MaxValue, 154, 0, byte.MaxValue), 1f)
     }
   };
   [Tooltip("Color of the light that hits the atmosphere.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
@@ -76,9 +77,9 @@ public class TOD_DayParameters
     },
     colorKeys = new GradientColorKey[3]
     {
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 243, (byte) 234, byte.MaxValue), 0.0f),
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 243, (byte) 234, byte.MaxValue), 0.5f),
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 243, (byte) 234, byte.MaxValue), 1f)
+      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.0f),
+      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 0.5f),
+      new GradientColorKey(new Color32(byte.MaxValue, 243, 234, byte.MaxValue), 1f)
     }
   };
   [Tooltip("Color of the clouds.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
@@ -91,9 +92,9 @@ public class TOD_DayParameters
     },
     colorKeys = new GradientColorKey[3]
     {
-      new GradientColorKey((Color) new Color32((byte) 224, (byte) 235, byte.MaxValue, byte.MaxValue), 0.0f),
-      new GradientColorKey((Color) new Color32((byte) 224, (byte) 235, byte.MaxValue, byte.MaxValue), 0.5f),
-      new GradientColorKey((Color) new Color32(byte.MaxValue, (byte) 195, (byte) 145, byte.MaxValue), 1f)
+      new GradientColorKey(new Color32(224, 235, byte.MaxValue, byte.MaxValue), 0.0f),
+      new GradientColorKey(new Color32(224, 235, byte.MaxValue, byte.MaxValue), 0.5f),
+      new GradientColorKey(new Color32(byte.MaxValue, 195, 145, byte.MaxValue), 1f)
     }
   };
   [Tooltip("Color of the atmosphere fog.\nLeft value: Sun at horizon.\nRight value: Sun opposite to zenith.")]
@@ -106,9 +107,9 @@ public class TOD_DayParameters
     },
     colorKeys = new GradientColorKey[3]
     {
-      new GradientColorKey((Color) new Color32((byte) 191, (byte) 191, (byte) 191, byte.MaxValue), 0.0f),
-      new GradientColorKey((Color) new Color32((byte) 191, (byte) 191, (byte) 191, byte.MaxValue), 0.5f),
-      new GradientColorKey((Color) new Color32((byte) 127, (byte) 127, (byte) 127, byte.MaxValue), 1f)
+      new GradientColorKey(new Color32(191, 191, 191, byte.MaxValue), 0.0f),
+      new GradientColorKey(new Color32(191, 191, 191, byte.MaxValue), 0.5f),
+      new GradientColorKey(new Color32(127, 127, 127, byte.MaxValue), 1f)
     }
   };
   [Tooltip("Color of the ambient light.\nLeft value: Sun at zenith.\nRight value: Sun at horizon.")]
@@ -121,9 +122,9 @@ public class TOD_DayParameters
     },
     colorKeys = new GradientColorKey[3]
     {
-      new GradientColorKey((Color) new Color32((byte) 94, (byte) 89, (byte) 87, byte.MaxValue), 0.0f),
-      new GradientColorKey((Color) new Color32((byte) 94, (byte) 89, (byte) 87, byte.MaxValue), 0.5f),
-      new GradientColorKey((Color) new Color32((byte) 94, (byte) 89, (byte) 87, byte.MaxValue), 1f)
+      new GradientColorKey(new Color32(94, 89, 87, byte.MaxValue), 0.0f),
+      new GradientColorKey(new Color32(94, 89, 87, byte.MaxValue), 0.5f),
+      new GradientColorKey(new Color32(94, 89, 87, byte.MaxValue), 1f)
     }
   };
   [Tooltip("Intensity of the light source.")]

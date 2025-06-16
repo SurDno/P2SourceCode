@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class BoolSettingsValueView : SettingsValueView<bool>
 {
@@ -15,8 +17,8 @@ public class BoolSettingsValueView : SettingsValueView<bool>
 
   private void Awake()
   {
-    button.onClick.AddListener(new UnityAction(OnClick));
-    slider.onValueChanged.AddListener(new UnityAction<float>(OnValueChanged));
+    button.onClick.AddListener(OnClick);
+    slider.onValueChanged.AddListener(OnValueChanged);
   }
 
   public override void ApplyVisibleValue() => SettingsValue.Value = visibleValue;

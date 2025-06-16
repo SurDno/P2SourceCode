@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Cofe.Serializations.Converters;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Settings
 {
@@ -24,7 +25,7 @@ namespace Engine.Source.Settings
       for (int index = 0; index < strArray.Length; index += 2)
       {
         KeyCode result;
-        DefaultConverter.TryParseEnum<KeyCode>(strArray[index + 1], out result);
+        DefaultConverter.TryParseEnum(strArray[index + 1], out result);
         value.Add(new KeyValuePair<string, KeyCode>(strArray[index], result));
       }
     }

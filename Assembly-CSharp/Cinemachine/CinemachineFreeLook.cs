@@ -1,5 +1,7 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -11,10 +13,10 @@ namespace Cinemachine
   {
     [Tooltip("Object for the camera children to look at (the aim target).")]
     [NoSaveDuringPlay]
-    public Transform m_LookAt = (Transform) null;
+    public Transform m_LookAt;
     [Tooltip("Object for the camera children wants to move with (the body target).")]
     [NoSaveDuringPlay]
-    public Transform m_Follow = (Transform) null;
+    public Transform m_Follow;
     [Tooltip("If enabled, this lens setting will apply to all three child rigs, otherwise the child rig lens settings will be used")]
     [FormerlySerializedAs("m_UseCommonLensSetting")]
     public bool m_CommonLens = true;
@@ -116,7 +118,7 @@ namespace Cinemachine
       {
         foreach (CinemachineVirtualCamera rig in m_Rigs)
         {
-          if ((UnityEngine.Object) rig != (UnityEngine.Object) null && (UnityEngine.Object) rig.gameObject != (UnityEngine.Object) null)
+          if (rig != null && rig.gameObject != null)
             rig.gameObject.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
         }
       }
@@ -172,7 +174,7 @@ namespace Cinemachine
         return;
       foreach (CinemachineVirtualCamera rig in m_Rigs)
       {
-        if ((UnityEngine.Object) rig != (UnityEngine.Object) null)
+        if (rig != null)
           rig.RemovePostPipelineStageHook(d);
       }
     }
@@ -185,10 +187,10 @@ namespace Cinemachine
       if (deltaTime < 0.0)
         m_State = PullStateFromVirtualCamera(worldUp);
       m_State = CalculateNewState(worldUp, deltaTime);
-      if ((UnityEngine.Object) Follow != (UnityEngine.Object) null)
+      if (Follow != null)
       {
-        Vector3 vector3 = State.RawPosition - this.transform.position;
-        this.transform.position = State.RawPosition;
+        Vector3 vector3 = State.RawPosition - transform.position;
+        transform.position = State.RawPosition;
         m_Rigs[0].transform.position -= vector3;
         m_Rigs[1].transform.position -= vector3;
         m_Rigs[2].transform.position -= vector3;
@@ -208,7 +210,7 @@ namespace Cinemachine
       if (fromCam == null || !(fromCam is CinemachineFreeLook))
         return;
       CinemachineFreeLook cinemachineFreeLook = fromCam as CinemachineFreeLook;
-      if ((UnityEngine.Object) cinemachineFreeLook.Follow == (UnityEngine.Object) Follow)
+      if (cinemachineFreeLook.Follow == Follow)
       {
         m_XAxis.Value = cinemachineFreeLook.m_XAxis.Value;
         m_YAxis.Value = cinemachineFreeLook.m_YAxis.Value;
@@ -231,12 +233,12 @@ namespace Cinemachine
       }
       for (int index = 0; index < cinemachineVirtualCameraArray.Length; ++index)
       {
-        if ((UnityEngine.Object) cinemachineVirtualCameraArray[index] != (UnityEngine.Object) null)
+        if (cinemachineVirtualCameraArray[index] != null)
         {
           if (DestroyRigOverride != null)
             DestroyRigOverride(cinemachineVirtualCameraArray[index].gameObject);
           else
-            UnityEngine.Object.Destroy((UnityEngine.Object) cinemachineVirtualCameraArray[index].gameObject);
+            Destroy(cinemachineVirtualCameraArray[index].gameObject);
         }
       }
       m_Rigs = null;
@@ -262,10 +264,10 @@ namespace Cinemachine
           rigs[index] = new GameObject(RigNames[index])
           {
             transform = {
-              parent = this.transform
+              parent = transform
             }
           }.AddComponent<CinemachineVirtualCamera>();
-          if ((UnityEngine.Object) cinemachineVirtualCamera != (UnityEngine.Object) null)
+          if (cinemachineVirtualCamera != null)
           {
             ReflectionHelpers.CopyFields(cinemachineVirtualCamera, rigs[index]);
           }
@@ -278,13 +280,13 @@ namespace Cinemachine
         }
         rigs[index].InvalidateComponentPipeline();
         CinemachineOrbitalTransposer orbitalTransposer = rigs[index].GetCinemachineComponent<CinemachineOrbitalTransposer>();
-        if ((UnityEngine.Object) orbitalTransposer == (UnityEngine.Object) null)
+        if (orbitalTransposer == null)
           orbitalTransposer = rigs[index].AddCinemachineComponent<CinemachineOrbitalTransposer>();
-        if ((UnityEngine.Object) cinemachineVirtualCamera == (UnityEngine.Object) null)
+        if (cinemachineVirtualCamera == null)
         {
           orbitalTransposer.m_YawDamping = 0.0f;
           CinemachineComposer cinemachineComponent = rigs[index].GetCinemachineComponent<CinemachineComposer>();
-          if ((UnityEngine.Object) cinemachineComponent != (UnityEngine.Object) null)
+          if (cinemachineComponent != null)
           {
             cinemachineComponent.m_HorizontalDamping = cinemachineComponent.m_VerticalDamping = 0.0f;
             cinemachineComponent.m_ScreenX = 0.5f;
@@ -302,7 +304,7 @@ namespace Cinemachine
     {
       if (mIsDestroyed)
         return;
-      if (m_Rigs != null && m_Rigs.Length == 3 && (UnityEngine.Object) m_Rigs[0] != (UnityEngine.Object) null && (UnityEngine.Object) m_Rigs[0].transform.parent != (UnityEngine.Object) this.transform)
+      if (m_Rigs != null && m_Rigs.Length == 3 && m_Rigs[0] != null && m_Rigs[0].transform.parent != transform)
       {
         DestroyRigs();
         m_Rigs = CreateRigs(m_Rigs);
@@ -355,17 +357,17 @@ namespace Cinemachine
       foreach (Transform transform in this.transform)
       {
         CinemachineVirtualCamera component = transform.GetComponent<CinemachineVirtualCamera>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
         {
           GameObject gameObject = transform.gameObject;
           for (int index = 0; index < rigNames.Length; ++index)
           {
-            if ((UnityEngine.Object) mOrbitals[index] == (UnityEngine.Object) null && gameObject.name == rigNames[index])
+            if (mOrbitals[index] == null && gameObject.name == rigNames[index])
             {
               mOrbitals[index] = component.GetCinemachineComponent<CinemachineOrbitalTransposer>();
-              if ((UnityEngine.Object) mOrbitals[index] == (UnityEngine.Object) null & forceOrbital)
+              if (mOrbitals[index] == null & forceOrbital)
                 mOrbitals[index] = component.AddCinemachineComponent<CinemachineOrbitalTransposer>();
-              if ((UnityEngine.Object) mOrbitals[index] != (UnityEngine.Object) null)
+              if (mOrbitals[index] != null)
               {
                 mOrbitals[index].m_HeadingIsSlave = true;
                 if (index == 0)
@@ -385,7 +387,7 @@ namespace Cinemachine
       UpdateRigCache();
       for (int index = 0; index < m_Rigs.Length; ++index)
       {
-        if (!((UnityEngine.Object) m_Rigs[index] == (UnityEngine.Object) null))
+        if (!(m_Rigs[index] == null))
         {
           if (m_CommonLens)
             m_Rigs[index].m_Lens = m_Lens;
@@ -394,10 +396,10 @@ namespace Cinemachine
             mUseLegacyRigDefinitions = false;
             m_Orbits[index].m_Height = mOrbitals[index].m_FollowOffset.y;
             m_Orbits[index].m_Radius = -mOrbitals[index].m_FollowOffset.z;
-            if ((UnityEngine.Object) m_Rigs[index].Follow != (UnityEngine.Object) null)
+            if (m_Rigs[index].Follow != null)
               Follow = m_Rigs[index].Follow;
           }
-          m_Rigs[index].Follow = (Transform) null;
+          m_Rigs[index].Follow = null;
           if (CinemachineCore.sShowHiddenObjects)
             m_Rigs[index].gameObject.hideFlags &= ~(HideFlags.HideInHierarchy | HideFlags.HideInInspector);
           else
@@ -441,13 +443,13 @@ namespace Cinemachine
     {
       CameraState cameraState = CameraState.Default with
       {
-        RawPosition = this.transform.position,
-        RawOrientation = this.transform.rotation,
+        RawPosition = transform.position,
+        RawOrientation = transform.rotation,
         ReferenceUp = worldUp
       };
       CinemachineBrain potentialTargetBrain = CinemachineCore.Instance.FindPotentialTargetBrain(this);
-      m_Lens.Aspect = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null ? potentialTargetBrain.OutputCamera.aspect : 1f;
-      m_Lens.Orthographic = (UnityEngine.Object) potentialTargetBrain != (UnityEngine.Object) null && potentialTargetBrain.OutputCamera.orthographic;
+      m_Lens.Aspect = potentialTargetBrain != null ? potentialTargetBrain.OutputCamera.aspect : 1f;
+      m_Lens.Orthographic = potentialTargetBrain != null && potentialTargetBrain.OutputCamera.orthographic;
       cameraState.Lens = m_Lens;
       return cameraState;
     }
@@ -463,7 +465,7 @@ namespace Cinemachine
         t -= 0.5f;
         index = 2;
       }
-      return SplineHelpers.Bezier3(t * 2f, (Vector3) m_CachedKnots[index], (Vector3) m_CachedCtrl1[index], (Vector3) m_CachedCtrl2[index], (Vector3) m_CachedKnots[index + 1]);
+      return SplineHelpers.Bezier3(t * 2f, m_CachedKnots[index], m_CachedCtrl1[index], m_CachedCtrl2[index], m_CachedKnots[index + 1]);
     }
 
     private void UpdateCachedSpline()

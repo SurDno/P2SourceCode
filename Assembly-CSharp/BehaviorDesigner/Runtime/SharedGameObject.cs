@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -23,14 +24,14 @@ namespace BehaviorDesigner.Runtime
     {
       DefaultDataWriteUtility.Write(writer, "IsShared", mIsShared);
       DefaultDataWriteUtility.Write(writer, "Name", mName);
-      BehaviorTreeDataWriteUtility.WriteUnity<GameObject>(writer, "Value", mValue);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Value", mValue);
     }
 
     public void DataRead(IDataReader reader, Type type)
     {
       mIsShared = DefaultDataReadUtility.Read(reader, "IsShared", mIsShared);
       mName = DefaultDataReadUtility.Read(reader, "Name", mName);
-      mValue = BehaviorTreeDataReadUtility.ReadUnity<GameObject>(reader, "Value", mValue);
+      mValue = BehaviorTreeDataReadUtility.ReadUnity(reader, "Value", mValue);
     }
 
     public static implicit operator SharedGameObject(GameObject value)

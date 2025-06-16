@@ -2,6 +2,7 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -21,9 +22,9 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         GameObject gameObject = inputValue.value;
-        if ((Object) gameObject == (Object) null)
+        if (gameObject == null)
           falseOut.Call();
-        else if ((Object) gameObject.GetComponent<PivotPlayer>() == (Object) null)
+        else if (gameObject.GetComponent<PivotPlayer>() == null)
           falseOut.Call();
         else
           trueOut.Call();

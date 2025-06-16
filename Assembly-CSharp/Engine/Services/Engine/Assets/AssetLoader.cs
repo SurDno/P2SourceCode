@@ -12,6 +12,8 @@ using Engine.Source.Services;
 using Engine.Source.Services.Assets;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Engine.Services.Engine.Assets
 {

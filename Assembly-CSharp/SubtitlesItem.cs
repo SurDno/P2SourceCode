@@ -3,6 +3,8 @@ using System.Globalization;
 using Engine.Common;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Audio;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 [Serializable]
 public class SubtitlesItem
@@ -33,10 +35,10 @@ public class SubtitlesItem
 
   private void ReleaseView()
   {
-    if (!((UnityEngine.Object) view != (UnityEngine.Object) null))
+    if (!(view != null))
       return;
     subtitlesView.ReleaseLineView(view);
-    view = (GameObject) null;
+    view = null;
     fadeView = null;
   }
 
@@ -80,7 +82,7 @@ public class SubtitlesItem
     partEndTime = num2;
   }
 
-  public void Start(IEntity actor, string text, AudioState audioState, UnityEngine.Object context)
+  public void Start(IEntity actor, string text, AudioState audioState, Object context)
   {
     this.audioState = audioState;
     this.text = text;
@@ -116,9 +118,9 @@ public class SubtitlesItem
       {
         while (progress >= (double) partEndTime)
           ShowPart();
-        if ((UnityEngine.Object) view != (UnityEngine.Object) null && view.activeSelf == audioState.Pause)
+        if (view != null && view.activeSelf == audioState.Pause)
           view.SetActive(!audioState.Pause);
-        if (!((UnityEngine.Object) fadeView != (UnityEngine.Object) null))
+        if (!(fadeView != null))
           return;
         fadeView.Progress = subtitlesView.FadeTime > 0.0 ? Mathf.Clamp01(Mathf.Min(progress - partStartTime, partEndTime - progress) / subtitlesView.FadeTime) : 1f;
       }

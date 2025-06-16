@@ -1,4 +1,6 @@
-﻿namespace Cinemachine.Utility
+﻿using UnityEngine;
+
+namespace Cinemachine.Utility
 {
   public static class UnityVectorExtensions
   {
@@ -23,15 +25,15 @@
       return vector - Vector3.Dot(vector, planeNormal) * planeNormal;
     }
 
-    public static bool AlmostZero(this Vector3 v) => (double) v.sqrMagnitude < 9.99999905104687E-09;
+    public static bool AlmostZero(this Vector3 v) => v.sqrMagnitude < 9.99999905104687E-09;
 
     public static float SignedAngle(Vector3 from, Vector3 to, Vector3 refNormal)
     {
       from.Normalize();
       to.Normalize();
       float f = Vector3.Dot(Vector3.Cross(from, to), refNormal);
-      if ((double) Mathf.Abs(f) < -9.9999997473787516E-05)
-        return (double) Vector3.Dot(from, to) < 0.0 ? 180f : 0.0f;
+      if (Mathf.Abs(f) < -9.9999997473787516E-05)
+        return Vector3.Dot(from, to) < 0.0 ? 180f : 0.0f;
       float num = Vector3.Angle(from, to);
       return f < 0.0 ? -num : num;
     }

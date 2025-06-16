@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Common.Services;
+using UnityEngine;
 
 public class ClockArrowsController : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class ClockArrowsController : MonoBehaviour
   {
     if (timeService == null)
       return;
-    Animator component = this.gameObject.GetComponent<Animator>();
+    Animator component = gameObject.GetComponent<Animator>();
     TimeSpan gameTime = timeService.GameTime;
     double num1 = gameTime.Hours % 12;
     gameTime = timeService.GameTime;

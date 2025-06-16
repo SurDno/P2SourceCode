@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Impl.UI.Controls;
 using Inspectors;
+using UnityEngine;
 
 public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
 {
@@ -14,7 +15,7 @@ public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
     for (int index = 0; index < effects.Length; ++index)
     {
       Info effect = effects[index];
-      if (!((UnityEngine.Object) effect.Progress == (UnityEngine.Object) null) && effect.Progress.gameObject.activeSelf)
+      if (!(effect.Progress == null) && effect.Progress.gameObject.activeSelf)
       {
         effect.Visible = true;
         effect.Value = 1f;
@@ -41,7 +42,7 @@ public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
         return;
       }
     }
-    Debug.LogError((object) (type + " not found"));
+    Debug.LogError(type + " not found");
   }
 
   private void Update()
@@ -49,7 +50,7 @@ public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
     for (int index = 0; index < effects.Length; ++index)
     {
       Info effect = effects[index];
-      if (!((UnityEngine.Object) effect.Progress == (UnityEngine.Object) null))
+      if (!(effect.Progress == null))
       {
         bool flag1 = false;
         bool activeSelf = effect.Progress.gameObject.activeSelf;
@@ -101,7 +102,7 @@ public class UiEffectsController : MonoBehaviourInstance<UiEffectsController>
     effect.Progress.Progress = effect.Value;
   }
 
-  public void AddEffect(GameObject effect) => effect.transform.SetParent(this.transform, false);
+  public void AddEffect(GameObject effect) => effect.transform.SetParent(transform, false);
 
   public void RemoveEffect(GameObject effect)
   {

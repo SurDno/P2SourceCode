@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(fileName = "FightDescription", menuName = "Pathologic2/Fight Description", order = 101)]
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "FightDescription", menuName = "Pathologic2/Fight Description", order = 101)]
 public class FightDescription : ScriptableObject
 {
   [Tooltip("Через это время игрок может ударить повторно.")]

@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(fileName = "Retreat", menuName = "Pathologic2/States/Retreat", order = 101)]
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "Retreat", menuName = "Pathologic2/States/Retreat", order = 101)]
 public class RetreatDescription : ScriptableObject
 {
   [Header("Передвижение")]

@@ -1,5 +1,6 @@
 ﻿using Cinemachine;
 using Engine.Common;
+using UnityEngine;
 
 namespace Engine.Source.Services.CameraServices
 {
@@ -21,24 +22,24 @@ namespace Engine.Source.Services.CameraServices
 
     private void SetGameObjectTarget(GameObject gameObjectTarget)
     {
-      if ((UnityEngine.Object) gameObjectTarget == (UnityEngine.Object) prevGameObjectTarget)
+      if (gameObjectTarget == prevGameObjectTarget)
         return;
       prevGameObjectTarget = gameObjectTarget;
       GameCamera.Instance.SettingsPostProcessingOverride.NestedOverride = gameObjectTarget?.GetComponent<PostProcessingStackOverride>();
-      if ((UnityEngine.Object) brain != (UnityEngine.Object) null)
+      if (brain != null)
         brain.CameraProcessedEvent -= OnBrainCameraProcessed;
       brain = gameObjectTarget?.GetComponent<CinemachineBrain>();
-      if ((UnityEngine.Object) brain != (UnityEngine.Object) null)
+      if (brain != null)
         brain.CameraProcessedEvent += OnBrainCameraProcessed;
       cinemachineCamera = gameObjectTarget?.GetComponent<UnityEngine.Camera>();
-      if (!((UnityEngine.Object) cinemachineCamera != (UnityEngine.Object) null))
+      if (!(cinemachineCamera != null))
         return;
       cinemachineCamera.enabled = false;
     }
 
     public void Shutdown()
     {
-      SetGameObjectTarget((GameObject) null);
+      SetGameObjectTarget(null);
       GameCamera.Instance.ResetCutsceneFov();
       GameCamera.Instance.Camera.nearClipPlane = initialNearPlane;
       GameCamera.Instance.Camera.farClipPlane = initialFarPlane;
@@ -49,7 +50,7 @@ namespace Engine.Source.Services.CameraServices
     {
       GameCamera.Instance.CameraTransform.position = brain.transform.position;
       GameCamera.Instance.CameraTransform.rotation = brain.transform.rotation;
-      if (!((UnityEngine.Object) cinemachineCamera != (UnityEngine.Object) null))
+      if (!(cinemachineCamera != null))
         return;
       GameCamera.Instance.SetCutsceneFov(cinemachineCamera.fieldOfView);
       GameCamera.Instance.Camera.nearClipPlane = cinemachineCamera.nearClipPlane;

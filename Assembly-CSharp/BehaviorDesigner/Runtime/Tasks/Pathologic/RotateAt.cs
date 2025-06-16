@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -27,24 +28,24 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnAwake()
     {
       npcState = gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
+      if (!(npcState == null))
         return;
-      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
         return;
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
-        Debug.LogWarningFormat("{0}: RotateAtOn with null target", (object) gameObject.name);
+      if (Target.Value == null)
+        Debug.LogWarningFormat("{0}: RotateAtOn with null target", gameObject.name);
       else
         npcState.Rotate(Target.Value);
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null || (UnityEngine.Object) npcState == (UnityEngine.Object) null || npcState.CurrentNpcState != NpcStateEnum.Rotate)
+      if (Target.Value == null || npcState == null || npcState.CurrentNpcState != NpcStateEnum.Rotate)
         return TaskStatus.Failure;
       switch (npcState.Status)
       {

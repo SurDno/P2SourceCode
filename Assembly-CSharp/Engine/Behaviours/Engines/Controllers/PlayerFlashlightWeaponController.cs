@@ -14,6 +14,8 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Behaviours.Engines.Controllers
 {
@@ -110,9 +112,9 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       this.entity = entity;
       pivot = gameObject.GetComponent<PivotPlayer>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        Debug.LogErrorFormat("{0} has no {1} unity component", (object) gameObject.name, (object) typeof (PivotPlayer).Name);
+        Debug.LogErrorFormat("{0} has no {1} unity component", gameObject.name, typeof (PivotPlayer).Name);
       }
       else
       {
@@ -123,7 +125,7 @@ namespace Engine.Behaviours.Engines.Controllers
         animatorState = PlayerAnimatorState.GetAnimatorState(animator);
         if (entity == null)
         {
-          Debug.LogWarningFormat("{0} can't map entity", (object) gameObject.name);
+          Debug.LogWarningFormat("{0} can't map entity", gameObject.name);
         }
         else
         {
@@ -267,7 +269,7 @@ namespace Engine.Behaviours.Engines.Controllers
       animatorState.BlockStance = SmoothUtility.Smooth12(realBlockStance);
       realStamina = Mathf.MoveTowards(realStamina, lowStamina.Value ? 0.0f : 1f, Time.fixedDeltaTime / ScriptableObjectInstance<FightSettingsData>.Instance.Description.PlayerBlockStanceTime);
       animatorState.Stamina = realStamina;
-      if ((UnityEngine.Object) playerEnemy != (UnityEngine.Object) null)
+      if (playerEnemy != null)
         playerEnemy.BlockStance = realBlockStance >= 0.5;
       bool isOn = WorkEndTime.Value > timeService.GameTime;
       if (isOn || !IsOn)
@@ -302,7 +304,7 @@ namespace Engine.Behaviours.Engines.Controllers
       double totalSeconds1 = timeSpan.TotalSeconds;
       timeSpan = WorkTime.MaxValue;
       double totalSeconds2 = timeSpan.TotalSeconds;
-      WorkEndTime.Value = timeService.GameTime + TimeSpan.FromSeconds((double) UnityEngine.Random.Range((float) totalSeconds1, (float) totalSeconds2));
+      WorkEndTime.Value = timeService.GameTime + TimeSpan.FromSeconds(Random.Range((float) totalSeconds1, (float) totalSeconds2));
       SwitchLight(true);
       RemoveAmmo();
       Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> weaponShootEvent = WeaponShootEvent;
@@ -314,7 +316,7 @@ namespace Engine.Behaviours.Engines.Controllers
     {
       IsOn = isOn;
       ParticleSystem componentInChildren = pivot.FlashlightEffect.GetComponentInChildren<ParticleSystem>();
-      if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
+      if (componentInChildren != null)
       {
         if (isOn)
           componentInChildren.Play();

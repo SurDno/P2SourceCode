@@ -2,6 +2,8 @@
 using SRDebugger.Internal;
 using SRF;
 using SRF.Service;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SRDebugger.Services.Implementation
 {
@@ -19,7 +21,7 @@ namespace SRDebugger.Services.Implementation
       _debugPanelService.VisibilityChanged += DebugPanelServiceOnVisibilityChanged;
       if (Settings.EnableKeyboardShortcuts)
         SRServiceManager.GetService<KeyboardShortcutListenerService>();
-      UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object) Hierarchy.Get("SRDebugger").gameObject);
+      Object.DontDestroyOnLoad(Hierarchy.Get("SRDebugger").gameObject);
     }
 
     public Settings Settings => Settings.Instance;
@@ -75,7 +77,7 @@ namespace SRDebugger.Services.Implementation
       }
       catch (Exception ex)
       {
-        Debug.LogError((object) "[SRDebugger] Event target threw exception (IDebugService.PanelVisiblityChanged)");
+        Debug.LogError("[SRDebugger] Event target threw exception (IDebugService.PanelVisiblityChanged)");
         Debug.LogException(ex);
       }
     }

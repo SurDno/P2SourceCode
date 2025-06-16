@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -17,7 +18,7 @@ namespace RootMotion.FinalIK
       ref string message,
       Warning.Logger logger = null)
     {
-      if ((UnityEngine.Object) bone == (UnityEngine.Object) null)
+      if (bone == null)
       {
         message = "IKMappingLimb contains a null reference.";
         if (logger != null)

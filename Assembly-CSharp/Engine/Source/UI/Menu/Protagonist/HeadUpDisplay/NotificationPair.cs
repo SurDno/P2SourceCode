@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Common.Commons;
+using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.HeadUpDisplay
 {

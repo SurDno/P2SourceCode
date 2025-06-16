@@ -1,6 +1,8 @@
 ﻿using Engine.Common.Services;
+using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 public class TumbaLightTrigger : MonoBehaviour
 {
@@ -24,13 +26,13 @@ public class TumbaLightTrigger : MonoBehaviour
   {
     if (enabledLights)
       return;
-    AudioSource component = this.GetComponent<AudioSource>();
-    if ((Object) component != (Object) null)
+    AudioSource component = GetComponent<AudioSource>();
+    if (component != null)
       component.PlayAndCheck();
     else
-      Debug.LogWarning((object) "No audio source", (Object) this.gameObject);
+      Debug.LogWarning("No audio source", gameObject);
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((Object) playerGameObject == (Object) null || !((Object) other.gameObject == (Object) playerGameObject))
+    if (playerGameObject == null || !(other.gameObject == playerGameObject))
       return;
     enabledLights = true;
     EnabledLights(true);
@@ -38,7 +40,7 @@ public class TumbaLightTrigger : MonoBehaviour
 
   private void EnabledLights(bool enable)
   {
-    foreach (Behaviour componentsInChild in this.gameObject.GetComponentsInChildren<Light>())
+    foreach (Behaviour componentsInChild in gameObject.GetComponentsInChildren<Light>())
       componentsInChild.enabled = enable;
   }
 }

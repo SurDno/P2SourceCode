@@ -1,4 +1,6 @@
-﻿namespace RootMotion
+﻿using UnityEngine;
+
+namespace RootMotion
 {
   public class DemoGUIMessage : MonoBehaviour
   {

@@ -12,7 +12,7 @@
 
   private void Awake()
   {
-    slider.onValueChanged.AddListener(new UnityAction<float>(OnValueChanged));
+    slider.onValueChanged.AddListener(OnValueChanged);
   }
 
   public override void ApplyVisibleValue() => SettingsValue.Value = (int) slider.value;
@@ -41,7 +41,7 @@
   {
     changeEventDisabled = true;
     visibleValue = value;
-    slider.value = (float) visibleValue;
+    slider.value = visibleValue;
     UpdateName();
     changeEventDisabled = false;
   }

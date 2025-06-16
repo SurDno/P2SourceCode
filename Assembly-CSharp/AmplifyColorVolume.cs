@@ -1,11 +1,13 @@
-﻿[RequireComponent(typeof (BoxCollider))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (BoxCollider))]
 [AddComponentMenu("Image Effects/Amplify Color Volume")]
 public class AmplifyColorVolume : AmplifyColorVolumeBase
 {
   private void OnTriggerEnter(Collider other)
   {
     AmplifyColorTriggerProxy component = other.GetComponent<AmplifyColorTriggerProxy>();
-    if (!((Object) component != (Object) null) || !component.OwnerEffect.UseVolumes || ((int) component.OwnerEffect.VolumeCollisionMask & 1 << this.gameObject.layer) == 0)
+    if (!(component != null) || !component.OwnerEffect.UseVolumes || (component.OwnerEffect.VolumeCollisionMask & 1 << gameObject.layer) == 0)
       return;
     component.OwnerEffect.EnterVolume(this);
   }
@@ -13,7 +15,7 @@ public class AmplifyColorVolume : AmplifyColorVolumeBase
   private void OnTriggerExit(Collider other)
   {
     AmplifyColorTriggerProxy component = other.GetComponent<AmplifyColorTriggerProxy>();
-    if (!((Object) component != (Object) null) || !component.OwnerEffect.UseVolumes || ((int) component.OwnerEffect.VolumeCollisionMask & 1 << this.gameObject.layer) == 0)
+    if (!(component != null) || !component.OwnerEffect.UseVolumes || (component.OwnerEffect.VolumeCollisionMask & 1 << gameObject.layer) == 0)
       return;
     component.OwnerEffect.ExitVolume(this);
   }

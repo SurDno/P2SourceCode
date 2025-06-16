@@ -5,6 +5,7 @@ using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Rain;
+using UnityEngine;
 
 namespace Engine.Services.Engine
 {
@@ -34,7 +35,7 @@ namespace Engine.Services.Engine
     {
       fallingLeaves = null;
       tod = null;
-      cameraTransform = (Transform) null;
+      cameraTransform = null;
       rain = null;
       InstanceByRequest<UpdateService>.Instance.EnvironmentUpdater.RemoveUpdatable(this);
     }
@@ -42,35 +43,35 @@ namespace Engine.Services.Engine
     public void ComputeUpdate()
     {
       bool flag = false;
-      if ((UnityEngine.Object) cameraTransform == (UnityEngine.Object) null)
+      if (cameraTransform == null)
       {
         cameraTransform = GameCamera.Instance.CameraTransform;
-        if ((UnityEngine.Object) cameraTransform != (UnityEngine.Object) null)
+        if (cameraTransform != null)
           flag = true;
       }
-      if ((UnityEngine.Object) rain == (UnityEngine.Object) null)
+      if (rain == null)
       {
         rain = RainManager.Instance;
-        if ((UnityEngine.Object) rain != (UnityEngine.Object) null)
+        if (rain != null)
           flag = true;
       }
-      if ((UnityEngine.Object) fallingLeaves == (UnityEngine.Object) null)
+      if (fallingLeaves == null)
       {
         fallingLeaves = MonoBehaviourInstance<LeafManager>.Instance;
-        if ((UnityEngine.Object) fallingLeaves != (UnityEngine.Object) null)
+        if (fallingLeaves != null)
           flag = true;
       }
-      if ((UnityEngine.Object) tod == (UnityEngine.Object) null)
+      if (tod == null)
       {
         tod = TOD_Sky.Instance;
-        if ((UnityEngine.Object) tod != (UnityEngine.Object) null)
+        if (tod != null)
           flag = true;
       }
-      if ((UnityEngine.Object) rain != (UnityEngine.Object) null && (UnityEngine.Object) cameraTransform != (UnityEngine.Object) null)
+      if (rain != null && cameraTransform != null)
         rain.playerPosition = cameraTransform.position;
-      if ((UnityEngine.Object) fallingLeaves != (UnityEngine.Object) null && (UnityEngine.Object) cameraTransform != (UnityEngine.Object) null)
+      if (fallingLeaves != null && cameraTransform != null)
         fallingLeaves.playerPosition = cameraTransform.position;
-      if ((UnityEngine.Object) tod != (UnityEngine.Object) null)
+      if (tod != null)
         tod.Cycle.DateTime = ScriptableObjectInstance<GameSettingsData>.Instance.OffsetTime.Value + timeService.SolarTime;
       if (!flag)
         return;

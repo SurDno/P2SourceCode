@@ -2,6 +2,7 @@
 using System.Reflection;
 using ParadoxNotion;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -27,14 +28,14 @@ namespace FlowCanvas.Nodes
     {
       if (string.IsNullOrEmpty(eventName))
       {
-        Debug.LogError((object) "No Event Selected for 'Static Code Event'");
+        Debug.LogError("No Event Selected for 'Static Code Event'");
       }
       else
       {
         EventInfo eventInfo = targetType.RTGetEvent(eventName);
         if (eventInfo == null)
         {
-          Debug.LogError((object) string.Format("Event {0} is not found", eventName));
+          Debug.LogError(string.Format("Event {0} is not found", eventName));
         }
         else
         {

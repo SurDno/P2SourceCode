@@ -2,6 +2,7 @@
 using Engine.Common.Components.Storable;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class GroupCheckItemView : ItemView
 {
@@ -19,7 +20,7 @@ public class GroupCheckItemView : ItemView
       if (storable == value)
         return;
       storable = value;
-      if ((Object) hideableView == (Object) null)
+      if (hideableView == null)
         return;
       if (storable != null)
       {

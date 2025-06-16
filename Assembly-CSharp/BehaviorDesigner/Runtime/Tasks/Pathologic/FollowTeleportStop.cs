@@ -8,6 +8,7 @@ using Engine.Common.Components;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -24,13 +25,13 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       IEntity owner = Owner.GetComponent<EngineGameObject>().Owner;
       if (owner == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " has no entity"));
+        Debug.LogWarning(gameObject.name + " has no entity");
         return TaskStatus.Failure;
       }
       MessangerComponent component = (MessangerComponent) owner.GetComponent<IMessangerComponent>();
       if (component == null)
       {
-        Debug.LogWarning((object) (gameObject.name + " has no " + typeof (IMessangerComponent).Name));
+        Debug.LogWarning(gameObject.name + " has no " + typeof (IMessangerComponent).Name);
         return TaskStatus.Failure;
       }
       component.StopTeleporting();

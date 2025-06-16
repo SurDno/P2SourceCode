@@ -13,7 +13,7 @@ public class CraftHelper
     List<IStorableComponent> ingredients,
     out CraftRecipe recipe)
   {
-    foreach (CraftRecipe recipe1 in ScriptableObjectInstance<CraftRecipesData>.Instance.Data.Where(o => (UnityEngine.Object) o != (UnityEngine.Object) null && o.Recipes != null).SelectMany(o => o.Recipes))
+    foreach (CraftRecipe recipe1 in ScriptableObjectInstance<CraftRecipesData>.Instance.Data.Where(o => o != null && o.Recipes != null).SelectMany(o => o.Recipes))
     {
       IStorableComponent craftResult = CheckRecipe(recipe1, ingredients);
       if (craftResult != null)

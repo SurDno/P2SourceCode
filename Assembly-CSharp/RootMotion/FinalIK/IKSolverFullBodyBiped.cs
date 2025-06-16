@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RootMotion.FinalIK
 {
@@ -223,7 +225,7 @@ namespace RootMotion.FinalIK
     {
       if (!base.IsValid(ref message))
         return false;
-      if ((UnityEngine.Object) rootNode == (UnityEngine.Object) null)
+      if (rootNode == null)
       {
         message = "Root Node bone is null. FBBIK will not initiate.";
         return false;
@@ -237,7 +239,7 @@ namespace RootMotion.FinalIK
     public void SetToReferences(BipedReferences references, Transform rootNode = null)
     {
       root = references.root;
-      if ((UnityEngine.Object) rootNode == (UnityEngine.Object) null)
+      if (rootNode == null)
         rootNode = DetectRootNodeBone(references);
       this.rootNode = rootNode;
       if (chain == null || chain.Length != 5)
@@ -310,7 +312,7 @@ namespace RootMotion.FinalIK
         spineMapping.iterations = 3;
       }
       spineMapping.SetBones(spineBones, references.leftUpperArm, references.rightUpperArm, references.leftThigh, references.rightThigh);
-      int length = (UnityEngine.Object) references.head != (UnityEngine.Object) null ? 1 : 0;
+      int length = references.head != null ? 1 : 0;
       if (boneMappings.Length != length)
       {
         boneMappings = new IKMappingBone[length];
@@ -345,7 +347,7 @@ namespace RootMotion.FinalIK
     public static Transform DetectRootNodeBone(BipedReferences references)
     {
       if (!references.isFilled || references.spine.Length < 1)
-        return (Transform) null;
+        return null;
       int length = references.spine.Length;
       if (length == 1)
         return references.spine[0];
@@ -358,7 +360,7 @@ namespace RootMotion.FinalIK
       for (int index2 = 1; index2 < length; ++index2)
       {
         Vector3 vector3_2 = Vector3.Project(references.spine[index2].position - vector3_1, onNormal);
-        if ((double) Vector3.Dot(vector3_2.normalized, onNormal.normalized) > 0.0 && vector3_2.magnitude / magnitude < 0.5)
+        if (Vector3.Dot(vector3_2.normalized, onNormal.normalized) > 0.0 && vector3_2.magnitude / magnitude < 0.5)
           index1 = index2;
       }
       return references.spine[index1];
@@ -392,19 +394,19 @@ namespace RootMotion.FinalIK
 
     private static Transform GetLeftClavicle(BipedReferences references)
     {
-      return (UnityEngine.Object) references.leftUpperArm == (UnityEngine.Object) null || Contains(references.spine, references.leftUpperArm.parent) ? (Transform) null : references.leftUpperArm.parent;
+      return references.leftUpperArm == null || Contains(references.spine, references.leftUpperArm.parent) ? null : references.leftUpperArm.parent;
     }
 
     private static Transform GetRightClavicle(BipedReferences references)
     {
-      return (UnityEngine.Object) references.rightUpperArm == (UnityEngine.Object) null || Contains(references.spine, references.rightUpperArm.parent) ? (Transform) null : references.rightUpperArm.parent;
+      return references.rightUpperArm == null || Contains(references.spine, references.rightUpperArm.parent) ? null : references.rightUpperArm.parent;
     }
 
     private static bool Contains(Transform[] array, Transform transform)
     {
-      foreach (UnityEngine.Object @object in array)
+      foreach (Object @object in array)
       {
-        if (@object == (UnityEngine.Object) transform)
+        if (@object == transform)
           return true;
       }
       return false;

@@ -1,5 +1,7 @@
 ﻿using System;
 using Engine.Behaviours.Components;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Engine.Behaviours.Engines.Controllers
 {

@@ -5,6 +5,9 @@ using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using NodeCanvas.Framework;
 using ParadoxNotion;
+using UnityEngine;
+using UnityEngine.Profiling;
+using Object = UnityEngine.Object;
 
 namespace FlowCanvas
 {
@@ -16,7 +19,7 @@ namespace FlowCanvas
     [SerializeField]
     private string boundGraphSerialization = "";
     [SerializeField]
-    private List<UnityEngine.Object> boundGraphObjectReferences = new List<UnityEngine.Object>();
+    private List<Object> boundGraphObjectReferences = new List<Object>();
     [HideInInspector]
     public EnableAction enableAction = EnableAction.EnableBehaviour;
     [HideInInspector]
@@ -31,9 +34,9 @@ namespace FlowCanvas
 
     private void Awake()
     {
-      if (!((UnityEngine.Object) _blackboard == (UnityEngine.Object) null))
+      if (!(_blackboard == null))
         return;
-      _blackboard = this.GetComponent<Blackboard>();
+      _blackboard = GetComponent<Blackboard>();
     }
 
     void ISerializationCallbackReceiver.OnBeforeSerialize()
@@ -91,7 +94,7 @@ namespace FlowCanvas
         }
         else if (command.Type == CommandEnum.Event)
           graph.SendEvent(command.EventData);
-        else if (command.Type == CommandEnum.SetValue && !((UnityEngine.Object) _blackboard == (UnityEngine.Object) null))
+        else if (command.Type == CommandEnum.SetValue && !(_blackboard == null))
           _blackboard.SetValue(command.ValueName, command.ValueObject);
       }
       commands.Clear();

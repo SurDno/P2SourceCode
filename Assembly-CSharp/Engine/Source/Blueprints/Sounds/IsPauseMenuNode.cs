@@ -17,7 +17,7 @@ namespace Engine.Source.Blueprints.Sounds
       if (service == null || !service.IsInitialize)
         return false;
       UIWindow active = service.Active;
-      return !((Object) active == (Object) null) && active is IPauseMenu;
+      return !(active == null) && active is IPauseMenu;
     }
   }
 }

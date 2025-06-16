@@ -2,6 +2,7 @@
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 public class NpcStateRagdollRessurect : INpcState
 {
@@ -32,14 +33,14 @@ public class NpcStateRagdollRessurect : INpcState
   {
     if (inited)
       return true;
-    behavior = (Behaviour) pivot.GetBehavior();
+    behavior = pivot.GetBehavior();
     rigidbody = pivot.GetRigidbody();
     collider = GameObject.GetComponent<CapsuleCollider>();
     animator = pivot.GetAnimator();
-    if ((Object) animator == (Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -64,7 +65,7 @@ public class NpcStateRagdollRessurect : INpcState
       return;
     if (pivot.HierarhyStructure != Pivot.HierarhyStructureEnum.PuppetMaster)
     {
-      Debug.LogWarning((object) "Only PupperMaster ragdoll can be ressurected");
+      Debug.LogWarning("Only PupperMaster ragdoll can be ressurected");
     }
     else
     {
@@ -77,12 +78,12 @@ public class NpcStateRagdollRessurect : INpcState
       bool flag;
       if ((bool) (Object) pivot.RootBone)
       {
-        flag = (double) Vector3.Dot(Vector3.up, pivot.RootBone.up) > 0.0;
+        flag = Vector3.Dot(Vector3.up, pivot.RootBone.up) > 0.0;
       }
       else
       {
         flag = true;
-        Debug.LogError((object) "To use Ressurect you need to specify RootBone");
+        Debug.LogError("To use Ressurect you need to specify RootBone");
       }
       if (flag)
       {

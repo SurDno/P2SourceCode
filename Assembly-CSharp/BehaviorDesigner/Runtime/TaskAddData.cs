@@ -6,11 +6,11 @@ namespace BehaviorDesigner.Runtime
   public class TaskAddData
   {
     public bool fromExternalTask;
-    public ParentTask parentTask = null;
+    public ParentTask parentTask;
     public int parentIndex = -1;
     public int depth;
     public int compositeParentIndex = -1;
-    public Dictionary<string, OverrideFieldValue> overrideFields = null;
+    public Dictionary<string, OverrideFieldValue> overrideFields;
     public HashSet<object> overiddenFields = new HashSet<object>();
     public int errorTask = -1;
     public string errorTaskName = "";

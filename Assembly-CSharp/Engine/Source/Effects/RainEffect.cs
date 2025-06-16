@@ -40,7 +40,7 @@ namespace Engine.Source.Effects
     public bool Compute(float currentRealTime, float currentGameTime)
     {
       RainManager instance = RainManager.Instance;
-      if ((Object) instance == (Object) null || rainParameter == null)
+      if (instance == null || rainParameter == null)
         return false;
       if (rainParameter.Value != (double) instance.rainIntensity)
       {

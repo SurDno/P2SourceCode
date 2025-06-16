@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -28,7 +29,7 @@ namespace RootMotion.FinalIK
       switch (boneMap)
       {
         case BoneMapType.Parent:
-          if ((UnityEngine.Object) parentBone == (UnityEngine.Object) null)
+          if (parentBone == null)
             Warning.Log("This limb does not have a parent (shoulder) bone", bone1);
           return boneMapParent;
         case BoneMapType.Bone1:
@@ -65,7 +66,7 @@ namespace RootMotion.FinalIK
 
     public void StoreDefaultLocalState()
     {
-      if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+      if (parentBone != null)
         boneMapParent.StoreDefaultLocalState();
       boneMap1.StoreDefaultLocalState();
       boneMap2.StoreDefaultLocalState();
@@ -74,7 +75,7 @@ namespace RootMotion.FinalIK
 
     public void FixTransforms()
     {
-      if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+      if (parentBone != null)
         boneMapParent.FixTransform(false);
       boneMap1.FixTransform(true);
       boneMap2.FixTransform(false);
@@ -91,14 +92,14 @@ namespace RootMotion.FinalIK
         boneMap2 = new BoneMap();
       if (boneMap3 == null)
         boneMap3 = new BoneMap();
-      if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+      if (parentBone != null)
         boneMapParent.Initiate(parentBone, solver);
       boneMap1.Initiate(bone1, solver);
       boneMap2.Initiate(bone2, solver);
       boneMap3.Initiate(bone3, solver);
       boneMap1.SetPlane(solver, boneMap1.transform, boneMap2.transform, boneMap3.transform);
       boneMap2.SetPlane(solver, boneMap2.transform, boneMap3.transform, boneMap1.transform);
-      if (!((UnityEngine.Object) parentBone != (UnityEngine.Object) null))
+      if (!(parentBone != null))
         return;
       boneMapParent.SetLocalSwingAxis(boneMap1);
     }
@@ -117,7 +118,7 @@ namespace RootMotion.FinalIK
         return;
       if (fullBody)
       {
-        if ((UnityEngine.Object) parentBone != (UnityEngine.Object) null)
+        if (parentBone != null)
           boneMapParent.Swing(solver.GetNode(boneMap1.chainIndex, boneMap1.nodeIndex).solverPosition, weight);
         boneMap1.FixToNode(solver, weight);
       }

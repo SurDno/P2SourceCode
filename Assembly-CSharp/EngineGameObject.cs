@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 [DisallowMultipleComponent]
 public class EngineGameObject : MonoBehaviour, IEntityAttachable

@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -13,7 +14,7 @@ namespace AmplifyBloom
     [SerializeField]
     private float m_chromaticAberration;
     [SerializeField]
-    private StarDefData m_customStarData = null;
+    private StarDefData m_customStarData;
 
     public GlareDefData() => m_customStarData = new StarDefData();
 

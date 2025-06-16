@@ -2,6 +2,8 @@
 using Engine.Common.Components.Attacker;
 using Engine.Common.Components.AttackerDiseased;
 using Engine.Source.Commons;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Impl.Tasks.Local.Attacker
 {
@@ -9,17 +11,17 @@ namespace Engine.Impl.Tasks.Local.Attacker
   {
     public static int GetRandomAttackSubkind(AttackKind attackKind)
     {
-      return attackKind == AttackKind.FrontPunch ? UnityEngine.Random.Range(0, 2) + 1 : 1;
+      return attackKind == AttackKind.FrontPunch ? Random.Range(0, 2) + 1 : 1;
     }
 
     public static int GetRandomPlayerAttackSubkind(PlayerAttackKind attackKind)
     {
-      return attackKind == PlayerAttackKind.FrontPush ? UnityEngine.Random.Range(0, 2) + 1 : 1;
+      return attackKind == PlayerAttackKind.FrontPush ? Random.Range(0, 2) + 1 : 1;
     }
 
     public static int GetRandomNPCAttackSubkind(NPCAttackKind attackKind)
     {
-      return attackKind == NPCAttackKind.FrontPunch ? UnityEngine.Random.Range(0, 2) + 1 : 1;
+      return attackKind == NPCAttackKind.FrontPunch ? Random.Range(0, 2) + 1 : 1;
     }
 
     public static float GetAttackImportantPhaseTime(PlayerAttackKind attackKind)

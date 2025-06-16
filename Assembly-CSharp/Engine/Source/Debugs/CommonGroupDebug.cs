@@ -8,6 +8,7 @@ using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
 using InputServices;
 using SRF;
+using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -33,7 +34,7 @@ namespace Engine.Source.Debugs
         bool flag = !ServiceLocator.GetService<UIService>().Visible;
         ServiceLocator.GetService<UIService>().Visible = flag;
         Transform transform = Hierarchy.Get("SRDebugger/UI");
-        if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
+        if (transform != null)
           transform.gameObject.SetActive(flag);
         ServiceLocator.GetService<GizmoService>().Visible = flag;
       }

@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic.PlagueCloud
 {
@@ -51,25 +52,25 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.PlagueCloud
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
       {
         npcState = gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+        if (npcState == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component", gameObject);
           return;
         }
       }
-      if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+      if (Target.Value == null)
       {
-        Debug.LogWarningFormat("{0} : null target", (object) gameObject.name);
+        Debug.LogWarningFormat("{0} : null target", gameObject.name);
       }
       else
       {
         targetPos = Target.Value.transform.position;
         if (RocketMode.Value)
           targetPos += (targetPos - transform.position).normalized * RocketOvershoot.Value;
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+        if (npcState == null || Target.Value == null)
           return;
         npcState.MoveFollow(Target.Value, 0.0f);
       }
@@ -77,7 +78,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic.PlagueCloud
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null || (UnityEngine.Object) Target.Value == (UnityEngine.Object) null || npcState.CurrentNpcState != NpcStateEnum.MoveFollow)
+      if (npcState == null || Target.Value == null || npcState.CurrentNpcState != NpcStateEnum.MoveFollow)
         return TaskStatus.Failure;
       switch (npcState.Status)
       {

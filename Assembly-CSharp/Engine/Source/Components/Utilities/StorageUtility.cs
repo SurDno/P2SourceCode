@@ -7,6 +7,7 @@ using Engine.Common.Components;
 using Engine.Common.Components.Storable;
 using Engine.Common.Types;
 using Engine.Source.Inventory;
+using UnityEngine;
 
 namespace Engine.Source.Components.Utilities
 {
@@ -35,12 +36,12 @@ namespace Engine.Source.Components.Utilities
       Intersect intersectAndCheck = new Intersect();
       if (container == null)
       {
-        Debug.LogError((object) ("stored.Container == null , owner : " + storage.Owner.GetInfo()));
+        Debug.LogError("stored.Container == null , owner : " + storage.Owner.GetInfo());
         return intersectAndCheck;
       }
       if (storage == null || storage.IsDisposed)
       {
-        Debug.LogError((object) ("stored.Storage == null || stored.Storage.IsDisposed() , owner : " + storage.Owner.GetInfo()));
+        Debug.LogError("stored.Storage == null || stored.Storage.IsDisposed() , owner : " + storage.Owner.GetInfo());
         return intersectAndCheck;
       }
       intersectAndCheck.Storage = storage;
@@ -56,12 +57,12 @@ namespace Engine.Source.Components.Utilities
       {
         if (storable == null)
         {
-          Debug.LogError((object) ("stored.Storable == null , storage owner : " + storage.Owner.GetInfo()));
+          Debug.LogError("stored.Storable == null , storage owner : " + storage.Owner.GetInfo());
           return new Intersect();
         }
         if (storable.Placeholder == null)
         {
-          Debug.LogError((object) ("stored.Storable.Placeholder == null , owner : " + storable.Owner.GetInfo() + " , storage owner : " + storage.Owner.GetInfo()));
+          Debug.LogError("stored.Storable.Placeholder == null , owner : " + storable.Owner.GetInfo() + " , storage owner : " + storage.Owner.GetInfo());
           return new Intersect();
         }
         cellList = new List<Cell> {
@@ -72,18 +73,18 @@ namespace Engine.Source.Components.Utilities
       {
         if (storable == null)
         {
-          Debug.LogError((object) ("stored.Storable == null , storage owner : " + storage.Owner.GetInfo()));
+          Debug.LogError("stored.Storable == null , storage owner : " + storage.Owner.GetInfo());
           return new Intersect();
         }
         if (storable.Placeholder == null)
         {
-          Debug.LogError((object) ("stored.Storable.Placeholder == null , owner : " + storable.Owner.GetInfo() + " , storage owner : " + storage.Owner.GetInfo()));
+          Debug.LogError("stored.Storable.Placeholder == null , owner : " + storable.Owner.GetInfo() + " , storage owner : " + storage.Owner.GetInfo());
           return new Intersect();
         }
         InventoryPlaceholder placeholder = storable.Placeholder;
         InventoryGridLimited grid = (InventoryGridLimited) placeholder.Grid;
         if (grid == null)
-          Debug.LogError((object) ("grid == null, placeholder : " + placeholder.GetInfo()));
+          Debug.LogError("grid == null, placeholder : " + placeholder.GetInfo());
         cellList = grid.Cells;
       }
       intersectAndCheck.IsAllowed = true;
@@ -96,10 +97,10 @@ namespace Engine.Source.Components.Utilities
         }
         else
         {
-          Vector2 vector2 = new Vector2((float) cell1.Column, (float) cell1.Row) + new Vector2((float) cell.Column, (float) cell.Row);
+          Vector2 vector2 = new Vector2(cell1.Column, cell1.Row) + new Vector2(cell.Column, cell.Row);
           pair = new Pair<int, int> {
-            Item1 = (int) Math.Round((double) vector2.x),
-            Item2 = (int) Math.Round((double) vector2.y)
+            Item1 = (int) Math.Round(vector2.x),
+            Item2 = (int) Math.Round(vector2.y)
           };
         }
         Cell cell2 = null;
@@ -154,7 +155,7 @@ namespace Engine.Source.Components.Utilities
               {
                 foreach (Cell cell3 in ((InventoryGridLimited) ((StorableComponent) storableComponent2).Placeholder.Grid).Cells)
                 {
-                  Vector2 vector2 = new Vector2((float) cell3.Column, (float) cell3.Row) + new Vector2((float) ((StorableComponent) storableComponent2).Cell.Column, (float) ((StorableComponent) storableComponent2).Cell.Row);
+                  Vector2 vector2 = new Vector2(cell3.Column, cell3.Row) + new Vector2(((StorableComponent) storableComponent2).Cell.Column, ((StorableComponent) storableComponent2).Cell.Row);
                   if (cell2.Column == Mathf.RoundToInt(vector2.x) && cell2.Row == Mathf.RoundToInt(vector2.y))
                   {
                     storableComponent1 = storableComponent2;
@@ -296,16 +297,16 @@ namespace Engine.Source.Components.Utilities
     {
       if (container.GetGrid() == null || !storage.Containers.Contains(container))
         return Vector2.zero;
-      Vector2 size = new Vector2((float) container.GetGrid().Columns, (float) container.GetGrid().Rows);
+      Vector2 size = new Vector2(container.GetGrid().Columns, container.GetGrid().Rows);
       if (container.GetGrid() is IInventoryGridInfinited)
       {
         foreach (IStorableComponent storableComponent in storage.Items)
         {
           if (storableComponent.Container == container)
           {
-            Vector3 vector3 = (Vector3) new Vector2((float) ((StorableComponent) storableComponent).Cell.Column, (float) ((StorableComponent) storableComponent).Cell.Row) + new Vector3((float) ((StorableComponent) storableComponent).Placeholder.Grid.Columns, (float) ((StorableComponent) storableComponent).Placeholder.Grid.Rows);
-            size.x = Mathf.Max(size.x, (float) Mathf.RoundToInt(vector3.x));
-            size.y = Mathf.Max(size.y, (float) Mathf.RoundToInt(vector3.y));
+            Vector3 vector3 = (Vector3) new Vector2(((StorableComponent) storableComponent).Cell.Column, ((StorableComponent) storableComponent).Cell.Row) + new Vector3(((StorableComponent) storableComponent).Placeholder.Grid.Columns, ((StorableComponent) storableComponent).Placeholder.Grid.Rows);
+            size.x = Mathf.Max(size.x, Mathf.RoundToInt(vector3.x));
+            size.y = Mathf.Max(size.y, Mathf.RoundToInt(vector3.y));
           }
         }
       }

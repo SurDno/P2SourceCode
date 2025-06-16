@@ -17,6 +17,8 @@ using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using FlowCanvas;
 using Inspectors;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Services
 {
@@ -59,7 +61,7 @@ namespace Engine.Source.Services
 
     private void SetState(SuokCircleTutorialStateEnum state)
     {
-      Debug.Log((object) string.Format("SetState {0}", state));
+      Debug.Log(string.Format("SetState {0}", state));
       playerParameters.GetByName<float>(ParameterNameEnum.Stamina);
       IParameter<float> byName1 = playerParameters.GetByName<float>(ParameterNameEnum.Health);
       playerParameters.GetByName<float>(ParameterNameEnum.Thirst);
@@ -224,33 +226,33 @@ namespace Engine.Source.Services
 
     private void EnemyHealth_ChangeValueEvent_Ragdoll(EnemyBase enemy)
     {
-      Debug.Log((object) nameof (EnemyHealth_ChangeValueEvent_Ragdoll));
+      Debug.Log(nameof (EnemyHealth_ChangeValueEvent_Ragdoll));
       ++punchCount;
       if (punchCount != 4)
         return;
-      Debug.Log((object) "EnemyHealth_ChangeValueEvent_Ragdoll 4");
+      Debug.Log("EnemyHealth_ChangeValueEvent_Ragdoll 4");
       SetState(SuokCircleTutorialStateEnum.Ragdoll);
     }
 
     private void EnemyNpc_WasAttacked(EnemyBase enemy)
     {
-      Debug.Log((object) nameof (EnemyNpc_WasAttacked));
+      Debug.Log(nameof (EnemyNpc_WasAttacked));
       SetState(SuokCircleTutorialStateEnum.FreeFight);
     }
 
     private void EnemyNpc_WasStaggeredEvent(EnemyBase enemy)
     {
-      Debug.Log((object) nameof (EnemyNpc_WasStaggeredEvent));
+      Debug.Log(nameof (EnemyNpc_WasStaggeredEvent));
       SetState(SuokCircleTutorialStateEnum.WaitForLowStamina);
     }
 
     private void EnemyNpc_WasPrepunch(EnemyBase enemy)
     {
-      Debug.Log((object) nameof (EnemyNpc_WasPrepunch));
+      Debug.Log(nameof (EnemyNpc_WasPrepunch));
       ++punchCount;
       if (4 != punchCount)
         return;
-      Debug.Log((object) string.Format("EnemyNpc_WasPrepunch {0}", punchCount));
+      Debug.Log(string.Format("EnemyNpc_WasPrepunch {0}", punchCount));
       SetState(SuokCircleTutorialStateEnum.WaitForUppercut);
     }
 
@@ -261,15 +263,15 @@ namespace Engine.Source.Services
       WeaponEnum weaponEnum,
       ShotSubtypeEnum shotSubtypeEnum)
     {
-      Debug.Log((object) nameof (PlayerNpc_PunchFired));
+      Debug.Log(nameof (PlayerNpc_PunchFired));
       if (shotType == ShotType.LowStamina)
       {
-        Debug.Log((object) "PlayerNpc_PunchFired low stamina");
+        Debug.Log("PlayerNpc_PunchFired low stamina");
         SetState(SuokCircleTutorialStateEnum.YourDamageIsLow);
       }
       else
       {
-        Debug.Log((object) "PlayerNpc_PunchFired other");
+        Debug.Log("PlayerNpc_PunchFired other");
         ++punchCount;
         currentStamina -= 0.2f;
       }
@@ -277,7 +279,7 @@ namespace Engine.Source.Services
 
     private void EnemyNpc_WasPuncheDone(EnemyBase enemy)
     {
-      Debug.Log((object) nameof (EnemyNpc_WasPuncheDone));
+      Debug.Log(nameof (EnemyNpc_WasPuncheDone));
       ++punchCount;
     }
 
@@ -288,46 +290,46 @@ namespace Engine.Source.Services
       ReactionType arg4,
       ShotSubtypeEnum arg5)
     {
-      Debug.Log((object) nameof (PlayerWeaponService_WeaponShootEvent));
+      Debug.Log(nameof (PlayerWeaponService_WeaponShootEvent));
       ++punchCount;
       if (punchCount != 1)
         return;
-      Debug.Log((object) "PlayerWeaponService_WeaponShootEvent 1");
+      Debug.Log("PlayerWeaponService_WeaponShootEvent 1");
       SetState(SuokCircleTutorialStateEnum.BlockExample);
     }
 
     private void PlayerNpc_WasPuncheToBlockDone(EnemyBase enemy)
     {
-      Debug.Log((object) nameof (PlayerNpc_WasPuncheToBlockDone));
+      Debug.Log(nameof (PlayerNpc_WasPuncheToBlockDone));
       ++punchCount;
       if (punchCount != 2)
         return;
-      Debug.Log((object) "PlayerNpc_WasPuncheToBlockDone 2");
+      Debug.Log("PlayerNpc_WasPuncheToBlockDone 2");
       SetState(SuokCircleTutorialStateEnum.RuinBlockExample);
     }
 
     private void PlayerNpc_WasStaggered(EnemyBase enemy)
     {
-      Debug.Log((object) string.Format("PlayerNpc_WasStaggered {0}", punchCount));
+      Debug.Log(string.Format("PlayerNpc_WasStaggered {0}", punchCount));
       ++punchCount;
       timeLeft = 5f;
       if (punchCount == 1)
       {
-        Debug.Log((object) string.Format("PlayerNpc_WasStaggered 1 {0}", punchCount));
+        Debug.Log(string.Format("PlayerNpc_WasStaggered 1 {0}", punchCount));
         currentTooltipBlueprint?.SendEvent("RuinBlockExample");
       }
       else
       {
         if (punchCount != 2)
           return;
-        Debug.Log((object) string.Format("PlayerNpc_WasStaggered 2 {0}", punchCount));
+        Debug.Log(string.Format("PlayerNpc_WasStaggered 2 {0}", punchCount));
         BehaviorSubtreeUtility.SetCharacterSubtree(BehaviorSubtreeUtility.GetCharacterSubtree(enemyView), ScriptableObjectInstance<IntroData>.Instance.SuokSubAI_WaitForStaminaGrows);
       }
     }
 
     private void Attacker_WeaponUnholsterEndEvent(WeaponKind weaponKind)
     {
-      Debug.Log((object) nameof (Attacker_WeaponUnholsterEndEvent));
+      Debug.Log(nameof (Attacker_WeaponUnholsterEndEvent));
       SetState(SuokCircleTutorialStateEnum.WaitForPunch);
     }
 
@@ -344,7 +346,7 @@ namespace Engine.Source.Services
     public void RegisterCombatant(GameObject character)
     {
       if (suokCombatants.Contains(character))
-        Debug.LogError((object) (typeof (SuokCircleService).Name + " - registering combatant already in list"));
+        Debug.LogError(typeof (SuokCircleService).Name + " - registering combatant already in list");
       else
         suokCombatants.Add(character);
     }
@@ -352,14 +354,14 @@ namespace Engine.Source.Services
     public void UnregisterCombatant(GameObject character)
     {
       if (!suokCombatants.Remove(character))
-        Debug.LogError((object) (typeof (SuokCircleService).Name + " - unregistering combatant not in list"));
+        Debug.LogError(typeof (SuokCircleService).Name + " - unregistering combatant not in list");
       BehaviorSubtreeUtility.SetCharacterSubtree(BehaviorSubtreeUtility.GetCharacterSubtree(character), null);
     }
 
     public void RegisterSpectator(GameObject character)
     {
       if (suokSpectators.Contains(character))
-        Debug.LogError((object) (typeof (SuokCircleService).Name + " - registering spectator already in list"));
+        Debug.LogError(typeof (SuokCircleService).Name + " - registering spectator already in list");
       else
         suokSpectators.Add(character);
     }
@@ -367,7 +369,7 @@ namespace Engine.Source.Services
     public void UnregisterSpectator(GameObject character)
     {
       if (!suokSpectators.Remove(character))
-        Debug.LogError((object) (typeof (SuokCircleService).Name + " - unregistering spectator not in list"));
+        Debug.LogError(typeof (SuokCircleService).Name + " - unregistering spectator not in list");
       BehaviorSubtreeUtility.SetCharacterSubtree(BehaviorSubtreeUtility.GetCharacterSubtree(character), null);
     }
 
@@ -381,7 +383,7 @@ namespace Engine.Source.Services
           playerEntity = ServiceLocator.GetService<ISimulation>().Player;
           playerView = ((IEntityView) playerEntity).GameObject;
           playerNpc = playerView.GetComponent<PlayerEnemy>();
-          if (playerEntity != null && (UnityEngine.Object) playerView != (UnityEngine.Object) null)
+          if (playerEntity != null && playerView != null)
           {
             playerParameters = playerEntity.GetComponent<ParametersComponent>();
             enemyView = suokCombatants[0];
@@ -403,7 +405,7 @@ namespace Engine.Source.Services
           timeLeft -= Time.deltaTime;
           if (timeLeft >= 0.0)
             break;
-          Debug.Log((object) "From update: SetState(SuokCircleTutorialStateEnum.YourDamageIsLow)");
+          Debug.Log("From update: SetState(SuokCircleTutorialStateEnum.YourDamageIsLow)");
           SetState(SuokCircleTutorialStateEnum.BlockExample);
           break;
         case SuokCircleTutorialStateEnum.RuinBlockExample:
@@ -414,14 +416,14 @@ namespace Engine.Source.Services
           timeLeft -= Time.deltaTime;
           if (timeLeft < 0.0)
           {
-            Debug.Log((object) "From update: SetState(SuokCircleTutorialStateEnum.StaminaGrowsFasterInBlock)");
+            Debug.Log("From update: SetState(SuokCircleTutorialStateEnum.StaminaGrowsFasterInBlock)");
             SetState(SuokCircleTutorialStateEnum.StaminaGrowsFasterInBlock);
           }
           break;
         case SuokCircleTutorialStateEnum.StaminaGrowsFasterInBlock:
           if (playerParameters.GetByName<float>(ParameterNameEnum.Stamina).Value <= 0.89999997615814209)
             break;
-          Debug.Log((object) "From update: SetState(SuokCircleTutorialStateEnum.WaitForFreeFight)");
+          Debug.Log("From update: SetState(SuokCircleTutorialStateEnum.WaitForFreeFight)");
           SetState(SuokCircleTutorialStateEnum.WaitForFreeFight);
           break;
       }
@@ -456,22 +458,22 @@ namespace Engine.Source.Services
       IParameter<float> byName2 = enemyParameters.GetByName<float>(ParameterNameEnum.Health);
       if (byName1 == parameter)
       {
-        Debug.Log((object) "Health_ChangeValueEvent");
+        Debug.Log("Health_ChangeValueEvent");
         if (((IParameter<float>) parameter).Value >= 0.10000000149011612)
           return;
-        Debug.Log((object) "Health_ChangeValueEvent < 0.1");
+        Debug.Log("Health_ChangeValueEvent < 0.1");
         SetState(SuokCircleTutorialStateEnum.YouLoose);
       }
       else if (byName2 == parameter)
       {
-        Debug.Log((object) "EnemyHealth_ChangeValueEvent");
+        Debug.Log("EnemyHealth_ChangeValueEvent");
         if (((IParameter<float>) parameter).Value >= 0.10000000149011612)
           return;
-        Debug.Log((object) "EnemyHealth_ChangeValueEvent < 0.1");
+        Debug.Log("EnemyHealth_ChangeValueEvent < 0.1");
         SetState(SuokCircleTutorialStateEnum.YouWin);
       }
       else
-        Debug.LogError((object) "!!! Такого быть не должно");
+        Debug.LogError("!!! Такого быть не должно");
     }
 
     public void OnEntityEvent(IEntity sender, EntityEvents kind)
@@ -479,10 +481,10 @@ namespace Engine.Source.Services
       if (kind != EntityEvents.DisposeEvent)
         return;
       ServiceLocator.GetService<NotificationService>().RemoveNotify(NotificationEnum.Tooltip);
-      if ((UnityEngine.Object) currentTooltipBlueprint != (UnityEngine.Object) null)
-        UnityEngine.Object.Destroy((UnityEngine.Object) currentTooltipBlueprint.gameObject);
-      if ((UnityEngine.Object) voicesBlueprint != (UnityEngine.Object) null)
-        UnityEngine.Object.Destroy((UnityEngine.Object) voicesBlueprint.gameObject);
+      if (currentTooltipBlueprint != null)
+        Object.Destroy(currentTooltipBlueprint.gameObject);
+      if (voicesBlueprint != null)
+        Object.Destroy(voicesBlueprint.gameObject);
       ((Entity) sender).RemoveListener(this);
     }
   }

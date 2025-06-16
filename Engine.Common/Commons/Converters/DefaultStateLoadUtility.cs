@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Cofe.Utility;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Common.Commons.Converters
 {
@@ -18,7 +18,7 @@ namespace Engine.Common.Commons.Converters
       T obj = (T) ProxyFactory.Create(realType);
       if (!(obj is ISerializeStateLoad serializeStateLoad))
       {
-        Logger.AddError("Type : " + TypeUtility.GetTypeName(obj.GetType()) + " is not " + (object) typeof (ISerializeStateLoad));
+        Logger.AddError("Type : " + TypeUtility.GetTypeName(obj.GetType()) + " is not " + typeof (ISerializeStateLoad));
         return default (T);
       }
       serializeStateLoad.StateLoad(child, realType);
@@ -34,7 +34,7 @@ namespace Engine.Common.Commons.Converters
         T obj = (T) ProxyFactory.Create(realType);
         if (!(obj is ISerializeStateLoad serializeStateLoad))
         {
-          Logger.AddError("Type : " + TypeUtility.GetTypeName(obj.GetType()) + " is not " + (object) typeof (ISerializeStateLoad));
+          Logger.AddError("Type : " + TypeUtility.GetTypeName(obj.GetType()) + " is not " + typeof (ISerializeStateLoad));
         }
         else
         {

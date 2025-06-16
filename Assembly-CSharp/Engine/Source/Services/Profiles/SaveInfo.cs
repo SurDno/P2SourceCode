@@ -3,6 +3,7 @@ using System.Globalization;
 using System.IO;
 using Cofe.Serializations.Converters;
 using Engine.Common.Components.Regions;
+using UnityEngine;
 
 namespace Engine.Source.Services.Profiles
 {
@@ -43,7 +44,7 @@ namespace Engine.Source.Services.Profiles
       {
         string s = strArray[5];
         if (!DateTime.TryParseExact(s, "yyyy_MM_dd_HH_mm_ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out saveInfo.SaveDateTime))
-          Debug.LogError((object) ("Error parse date : " + s));
+          Debug.LogError("Error parse date : " + s);
       }
       return saveInfo;
     }

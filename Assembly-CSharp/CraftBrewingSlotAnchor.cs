@@ -3,6 +3,7 @@ using Engine.Common;
 using Engine.Common.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
+using UnityEngine;
 
 public class CraftBrewingSlotAnchor : MonoBehaviour
 {
@@ -36,7 +37,7 @@ public class CraftBrewingSlotAnchor : MonoBehaviour
 
   public void Initialize(CraftBrewingSlot slotPrefab)
   {
-    slot = UnityEngine.Object.Instantiate<CraftBrewingSlot>(slotPrefab, this.transform, false);
+    slot = Instantiate(slotPrefab, transform, false);
     slot.Initialize(durabilityThreshold);
     slot.CraftEvent += FireCraftEvent;
     slot.TakeEvent += FireTakeEvent;

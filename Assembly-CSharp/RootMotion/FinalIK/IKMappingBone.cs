@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -14,7 +15,7 @@ namespace RootMotion.FinalIK
     {
       if (!base.IsValid(solver, ref message))
         return false;
-      if (!((UnityEngine.Object) bone == (UnityEngine.Object) null))
+      if (!(bone == null))
         return true;
       message = "IKMappingBone's bone is null.";
       return false;

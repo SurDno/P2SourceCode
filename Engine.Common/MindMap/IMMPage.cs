@@ -1,5 +1,5 @@
-﻿using Engine.Common.Types;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using Engine.Common.Types;
 
 namespace Engine.Common.MindMap
 {

@@ -1,6 +1,8 @@
 ﻿using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class SwitchingItemView : ItemView
 {
@@ -45,7 +47,7 @@ public class SwitchingItemView : ItemView
     if (phase >= 1.0)
     {
       phase = 1f;
-      SetSprite(backImage, (Sprite) null);
+      SetSprite(backImage, null);
     }
     float num1 = 1f - phase;
     SetAlpha(frontImage, phase);
@@ -56,9 +58,9 @@ public class SwitchingItemView : ItemView
     float num3 = Mathf.Pow(backScale, phase);
     backImage.rectTransform.localScale = new Vector3(num3, num3, num3);
     backImage.rectTransform.anchoredPosition = backShift * phase;
-    if (!((Object) nullImage != (Object) null))
+    if (!(nullImage != null))
       return;
-    SetAlpha(nullImage, (float) (((Object) frontImage.sprite == (Object) null ? phase : 0.0) + ((Object) backImage.sprite == (Object) null ? num1 : 0.0)));
+    SetAlpha(nullImage, (float) ((frontImage.sprite == null ? phase : 0.0) + (backImage.sprite == null ? num1 : 0.0)));
   }
 
   private void OnDisable() => SkipAnimation();
@@ -67,7 +69,7 @@ public class SwitchingItemView : ItemView
 
   private void SetAlpha(Image image, float alpha)
   {
-    image.gameObject.SetActive((Object) image.sprite != (Object) null && alpha > 0.0);
+    image.gameObject.SetActive(image.sprite != null && alpha > 0.0);
     Color color = image.color with { a = alpha };
     image.color = color;
   }
@@ -76,7 +78,7 @@ public class SwitchingItemView : ItemView
   {
     InventoryPlaceholder placeholder = storable?.Placeholder;
     if (placeholder == null)
-      SetSprite(frontImage, (Sprite) null);
+      SetSprite(frontImage, null);
     else
       SetSprite(frontImage, InventoryUtility.GetSpriteByStyle(placeholder, imageStyle));
     needToSwap = false;

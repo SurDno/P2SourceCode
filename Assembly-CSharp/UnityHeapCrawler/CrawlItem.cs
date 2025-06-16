@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Cofe.Utility;
+using JetBrains.Annotations;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace UnityHeapCrawler
 {
@@ -82,7 +85,7 @@ namespace UnityHeapCrawler
         Children = null;
       if (crawlSettings.MaxDepth > 0 && depth >= crawlSettings.MaxDepth)
         Children = null;
-      UnityEngine.Object @object = Object as UnityEngine.Object;
+      Object @object = Object as Object;
       if ((object) @object != null && !(bool) @object)
       {
         Name = !string.IsNullOrWhiteSpace(Name) ? Name + " (destroyed Unity Object)" : "(destroyed Unity Object)";
@@ -115,8 +118,8 @@ namespace UnityHeapCrawler
         w.Write(" ");
       }
       w.Write("[");
-      UnityEngine.Object @object = Object as UnityEngine.Object;
-      if (@object != (UnityEngine.Object) null)
+      Object @object = Object as Object;
+      if (@object != null)
       {
         w.Write(@object.name);
         w.Write(": ");

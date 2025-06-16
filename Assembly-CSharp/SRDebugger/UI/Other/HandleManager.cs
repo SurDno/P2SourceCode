@@ -1,4 +1,5 @@
 ﻿using SRF;
+using UnityEngine;
 
 namespace SRDebugger.UI.Other
 {
@@ -82,7 +83,7 @@ namespace SRDebugger.UI.Other
 
     private void SetActive(GameObject obj, bool active)
     {
-      if ((Object) obj == (Object) null)
+      if (obj == null)
         return;
       obj.SetActive(active);
     }

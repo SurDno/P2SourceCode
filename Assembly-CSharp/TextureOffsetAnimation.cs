@@ -1,4 +1,6 @@
-﻿[RequireComponent(typeof (Renderer))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (Renderer))]
 public class TextureOffsetAnimation : MonoBehaviour
 {
   [SerializeField]
@@ -12,10 +14,10 @@ public class TextureOffsetAnimation : MonoBehaviour
 
   private void Start()
   {
-    renderer = this.GetComponent<Renderer>();
+    renderer = GetComponent<Renderer>();
     propertyId = Shader.PropertyToID(propertyName + "_ST");
     Material sharedMaterial = renderer.sharedMaterial;
-    if ((Object) sharedMaterial != (Object) null)
+    if (sharedMaterial != null)
       tilingOffset = sharedMaterial.GetVector(propertyId);
     propertyBlock = new MaterialPropertyBlock();
   }

@@ -1,4 +1,5 @@
 ﻿using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -27,9 +28,9 @@ namespace FlowCanvas.Nodes
       enter = AddFlowOutput("Enter");
       stay = AddFlowOutput("Stay");
       exit = AddFlowOutput("Exit");
-      AddValueOutput("Other", (ValueHandler<GameObject>) (() => collision.gameObject));
-      AddValueOutput("Contact Point", (ValueHandler<ContactPoint>) (() => collision.contacts[0]));
-      AddValueOutput("Collision Info", (ValueHandler<Collision>) (() => collision));
+      AddValueOutput("Other", () => collision.gameObject);
+      AddValueOutput("Contact Point", () => collision.contacts[0]);
+      AddValueOutput("Collision Info", () => collision);
     }
 
     private void OnCollisionEnter(Collision collision)

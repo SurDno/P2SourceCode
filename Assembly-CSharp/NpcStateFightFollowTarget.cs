@@ -5,6 +5,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateFightFollowTarget : INpcState
 {
@@ -72,7 +74,7 @@ public class NpcStateFightFollowTarget : INpcState
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
       Status = NpcStateStatusEnum.Failed;
     }
     else
@@ -93,7 +95,7 @@ public class NpcStateFightFollowTarget : INpcState
           return;
         }
       }
-      if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null & aim))
+      if (!(ikController != null & aim))
         return;
       ikController.WeaponTarget = target;
     }
@@ -108,9 +110,9 @@ public class NpcStateFightFollowTarget : INpcState
     npcState.WeaponChangeEvent -= State_WeaponChangeEvent;
     agent.areaMask = prevAreaMask;
     agent.enabled = agentWasEnabled;
-    if (!((UnityEngine.Object) ikController != (UnityEngine.Object) null))
+    if (!(ikController != null))
       return;
-    ikController.WeaponTarget = (Transform) null;
+    ikController.WeaponTarget = null;
   }
 
   public void OnAnimatorMove()
@@ -137,7 +139,7 @@ public class NpcStateFightFollowTarget : INpcState
     else
     {
       UpdatePath();
-      enemy.RotationTarget = (Transform) null;
+      enemy.RotationTarget = null;
       enemy.RotateByPath = false;
       enemy.RetreatAngle = new float?();
       Vector3 vector3 = target.position - enemy.transform.position;
@@ -158,9 +160,9 @@ public class NpcStateFightFollowTarget : INpcState
             Status = NpcStateStatusEnum.Running;
             return;
           }
-          if ((double) agent.remainingDistance > stopDistance)
+          if (agent.remainingDistance > (double) stopDistance)
           {
-            num = (double) agent.remainingDistance > runDistance ? 2f : 1f;
+            num = agent.remainingDistance > (double) runDistance ? 2f : 1f;
             enemy.RotateByPath = true;
           }
           else if (magnitude < (double) retreatDistance)
@@ -168,7 +170,7 @@ public class NpcStateFightFollowTarget : INpcState
           enemy.RotationTarget = target;
         }
         else
-          num = magnitude <= (double) stopDistance ? (magnitude >= (double) retreatDistance ? 0.0f : -1f) : ((double) agent.remainingDistance > runDistance ? 2f : 1f);
+          num = magnitude <= (double) stopDistance ? (magnitude >= (double) retreatDistance ? 0.0f : -1f) : (agent.remainingDistance > (double) runDistance ? 2f : 1f);
         enemy.RotationTarget = target;
         enemy.DesiredWalkSpeed = num;
         agent.nextPosition = animator.rootPosition;
@@ -179,16 +181,16 @@ public class NpcStateFightFollowTarget : INpcState
 
   private void UpdatePath()
   {
-    if ((double) UnityEngine.Random.value < (double) Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
+    if (Random.value < Time.deltaTime / 0.5 && NavMeshUtility.IsBrokenPath(agent))
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), (UnityEngine.Object) GameObject);
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  broken path detected, trying to reset: ").GetInfo(npcState.Owner), GameObject);
       Vector3 destination = agent.destination;
       agent.ResetPath();
       agent.SetDestination(destination);
     }
     else
     {
-      if ((double) (lastPlayerPosition - target.position).magnitude <= 0.33000001311302185)
+      if ((lastPlayerPosition - target.position).magnitude <= 0.33000001311302185)
         return;
       if (!agent.isOnNavMesh)
         agent.Warp(enemy.transform.position);

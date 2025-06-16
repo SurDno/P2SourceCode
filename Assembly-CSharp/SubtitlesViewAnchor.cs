@@ -1,14 +1,16 @@
-﻿public class SubtitlesViewAnchor : MonoBehaviour
+﻿using UnityEngine;
+
+public class SubtitlesViewAnchor : MonoBehaviour
 {
-  private static SubtitlesView viewInstance = null;
+  private static SubtitlesView viewInstance;
   [SerializeField]
   private SubtitlesView prefab;
 
   private void OnEnable()
   {
-    if ((Object) viewInstance == (Object) null)
-      viewInstance = Object.Instantiate<SubtitlesView>(prefab, this.transform, false);
+    if (viewInstance == null)
+      viewInstance = Instantiate(prefab, transform, false);
     else
-      viewInstance.transform.SetParent(this.transform, false);
+      viewInstance.transform.SetParent(transform, false);
   }
 }

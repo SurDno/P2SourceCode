@@ -1,4 +1,6 @@
-﻿public static class BomberHelper
+﻿using UnityEngine;
+
+public static class BomberHelper
 {
   public static bool CalcThrowAngles(
     float v,
@@ -14,8 +16,8 @@
       angle1 = angle2 = 0.0f;
       return false;
     }
-    angle1 = Mathf.Atan((float) ((v * (double) v - (double) Mathf.Sqrt(f)) / (num * (double) x)));
-    angle2 = Mathf.Atan((float) ((v * (double) v + (double) Mathf.Sqrt(f)) / (num * (double) x)));
+    angle1 = Mathf.Atan((float) ((v * (double) v - Mathf.Sqrt(f)) / (num * (double) x)));
+    angle2 = Mathf.Atan((float) ((v * (double) v + Mathf.Sqrt(f)) / (num * (double) x)));
     return true;
   }
 

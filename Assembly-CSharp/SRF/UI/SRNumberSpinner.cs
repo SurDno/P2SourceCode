@@ -1,4 +1,7 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace SRF.UI
 {
@@ -15,25 +18,25 @@ namespace SRF.UI
     protected override void Awake()
     {
       base.Awake();
-      if (this.contentType == InputField.ContentType.IntegerNumber || this.contentType == InputField.ContentType.DecimalNumber)
+      if (contentType == ContentType.IntegerNumber || contentType == ContentType.DecimalNumber)
         return;
-      Debug.LogError((object) "[SRNumberSpinner] contentType must be integer or decimal. Defaulting to integer");
-      this.contentType = InputField.ContentType.DecimalNumber;
+      Debug.LogError("[SRNumberSpinner] contentType must be integer or decimal. Defaulting to integer");
+      contentType = ContentType.DecimalNumber;
     }
 
     public override void OnPointerClick(PointerEventData eventData)
     {
-      if (!this.interactable || eventData.dragging)
+      if (!interactable || eventData.dragging)
         return;
-      EventSystem.current.SetSelectedGameObject(this.gameObject, (BaseEventData) eventData);
+      EventSystem.current.SetSelectedGameObject(gameObject, eventData);
       base.OnPointerClick(eventData);
-      if (this.m_Keyboard == null || !this.m_Keyboard.active)
+      if (m_Keyboard == null || !m_Keyboard.active)
       {
-        this.OnSelect((BaseEventData) eventData);
+        OnSelect(eventData);
       }
       else
       {
-        this.UpdateLabel();
+        UpdateLabel();
         eventData.Use();
       }
     }
@@ -48,35 +51,35 @@ namespace SRF.UI
 
     public override void OnBeginDrag(PointerEventData eventData)
     {
-      if (!this.interactable)
+      if (!interactable)
         return;
-      if ((double) Mathf.Abs(eventData.delta.y) > (double) Mathf.Abs(eventData.delta.x))
+      if (Mathf.Abs(eventData.delta.y) > (double) Mathf.Abs(eventData.delta.x))
       {
-        Transform parent = this.transform.parent;
-        if (!((UnityEngine.Object) parent != (UnityEngine.Object) null))
+        Transform parent = transform.parent;
+        if (!(parent != null))
           return;
         eventData.pointerDrag = ExecuteEvents.GetEventHandler<IBeginDragHandler>(parent.gameObject);
-        if ((UnityEngine.Object) eventData.pointerDrag != (UnityEngine.Object) null)
-          ExecuteEvents.Execute<IBeginDragHandler>(eventData.pointerDrag, (BaseEventData) eventData, ExecuteEvents.beginDragHandler);
+        if (eventData.pointerDrag != null)
+          ExecuteEvents.Execute(eventData.pointerDrag, eventData, ExecuteEvents.beginDragHandler);
       }
       else
       {
         eventData.Use();
-        _dragStartAmount = double.Parse(this.text);
+        _dragStartAmount = double.Parse(text);
         _currentValue = _dragStartAmount;
         float val1 = 1f;
-        if (this.contentType == InputField.ContentType.IntegerNumber)
+        if (contentType == ContentType.IntegerNumber)
           val1 *= 10f;
         _dragStep = Math.Max(val1, _dragStartAmount * 0.05000000074505806);
-        if (!this.isFocused)
+        if (!isFocused)
           return;
-        this.DeactivateInputField();
+        DeactivateInputField();
       }
     }
 
     public override void OnDrag(PointerEventData eventData)
     {
-      if (!this.interactable)
+      if (!interactable)
         return;
       float x = eventData.delta.x;
       _currentValue += Math.Abs(_dragStep) * x * DragSensitivity;
@@ -85,21 +88,21 @@ namespace SRF.UI
         _currentValue = MaxValue;
       if (_currentValue < MinValue)
         _currentValue = MinValue;
-      if (this.contentType == InputField.ContentType.IntegerNumber)
-        this.text = ((int) Math.Round(_currentValue)).ToString();
+      if (contentType == ContentType.IntegerNumber)
+        text = ((int) Math.Round(_currentValue)).ToString();
       else
-        this.text = _currentValue.ToString();
+        text = _currentValue.ToString();
     }
 
     public override void OnEndDrag(PointerEventData eventData)
     {
-      if (!this.interactable)
+      if (!interactable)
         return;
       eventData.Use();
       if (_dragStartAmount == _currentValue)
         return;
-      this.DeactivateInputField();
-      this.SendOnSubmit();
+      DeactivateInputField();
+      SendOnSubmit();
     }
   }
 }

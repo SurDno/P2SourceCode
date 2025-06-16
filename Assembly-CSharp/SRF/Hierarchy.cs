@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace SRF
 {
@@ -21,7 +23,7 @@ namespace SRF
       if (Cache.TryGetValue(key, out transform1))
         return transform1;
       GameObject gameObject = GameObject.Find(key);
-      if ((bool) (UnityEngine.Object) gameObject)
+      if ((bool) (Object) gameObject)
       {
         Transform transform2 = gameObject.transform;
         Cache.Add(key, transform2);

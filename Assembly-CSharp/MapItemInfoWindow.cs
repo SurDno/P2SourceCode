@@ -5,13 +5,15 @@ using Engine.Common.Types;
 using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class MapItemInfoWindow : MonoBehaviour
 {
   [SerializeField]
-  private Localizer title = null;
+  private Localizer title;
   [SerializeField]
-  private Text text = (Text) null;
+  private Text text;
   [Space]
   [SerializeField]
   private GameObject icons;
@@ -27,13 +29,13 @@ public class MapItemInfoWindow : MonoBehaviour
   private GameObject tradeIcon;
   [Space]
   [SerializeField]
-  private GameObject portrait = (GameObject) null;
+  private GameObject portrait;
   [SerializeField]
-  private Image portraitImage = (Image) null;
+  private Image portraitImage;
   [SerializeField]
-  private StringView portraitText = null;
+  private StringView portraitText;
   [SerializeField]
-  private Sprite fallbackPortraitSprite = (Sprite) null;
+  private Sprite fallbackPortraitSprite;
   [SerializeField]
   private Color dangerColor;
   [SerializeField]
@@ -46,10 +48,10 @@ public class MapItemInfoWindow : MonoBehaviour
 
   public void Show(MapItemView itemView)
   {
-    if ((Object) itemView == (Object) targetView)
+    if (itemView == targetView)
       return;
-    if ((Object) targetView == (Object) null)
-      this.gameObject.SetActive(true);
+    if (targetView == null)
+      gameObject.SetActive(true);
     else
       targetView.SetHightlight(false);
     targetView = itemView;
@@ -57,7 +59,7 @@ public class MapItemInfoWindow : MonoBehaviour
     IMapItem mapItem = targetView.Item;
     if (mapItem.Resource == null)
       return;
-    this.GetComponent<LayoutElement>();
+    GetComponent<LayoutElement>();
     LocalizationService service = ServiceLocator.GetService<LocalizationService>();
     if (mapItem.Title != LocalizedText.Empty)
     {
@@ -114,27 +116,27 @@ public class MapItemInfoWindow : MonoBehaviour
 
   public void Hide(MapItemView mapItemView)
   {
-    if ((Object) targetView != (Object) mapItemView)
+    if (targetView != mapItemView)
       return;
-    this.gameObject.SetActive(false);
+    gameObject.SetActive(false);
     targetView.SetHightlight(false);
     targetView = null;
-    portraitImage.sprite = (Sprite) null;
+    portraitImage.sprite = null;
   }
 
   private void UpdatePosition()
   {
-    if ((Object) targetView == (Object) null)
+    if (targetView == null)
       return;
-    RectTransform transform1 = (RectTransform) this.transform;
-    RectTransform transform2 = (RectTransform) this.GetComponentInParent<Canvas>().transform;
+    RectTransform transform1 = (RectTransform) transform;
+    RectTransform transform2 = (RectTransform) GetComponentInParent<Canvas>().transform;
     Vector2 vector2 = new Vector2(transform2.sizeDelta.x, transform2.sizeDelta.y);
     Vector2 worldPosition = targetView.WorldPosition;
     worldPosition.x = Mathf.Round(worldPosition.x);
     worldPosition.y = Mathf.Round(worldPosition.y);
     worldPosition.x /= transform2.localScale.x;
     worldPosition.y /= transform2.localScale.y;
-    transform1.pivot = new Vector2((double) worldPosition.x > (double) vector2.x * 0.699999988079071 ? 1f : 0.0f, (double) worldPosition.y > (double) vector2.y * 0.30000001192092896 ? 1f : 0.0f);
+    transform1.pivot = new Vector2(worldPosition.x > vector2.x * 0.699999988079071 ? 1f : 0.0f, worldPosition.y > vector2.y * 0.30000001192092896 ? 1f : 0.0f);
     transform1.anchoredPosition = worldPosition;
   }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Xml;
+using UnityEngine;
 
 [Serializable]
 public class VisemeBoneDefine
@@ -38,7 +39,7 @@ public class VisemeBoneDefine
     {
       foreach (BonePose basePose in basePoses)
       {
-        if ((UnityEngine.Object) basePose.m_bone == (UnityEngine.Object) bonePose.m_bone)
+        if (basePose.m_bone == bonePose.m_bone)
           bonePose.ResetToThisPose(basePose);
       }
     }
@@ -100,7 +101,7 @@ public class VisemeBoneDefine
       if (bonePose2 != null)
         bonePose1.ConvertToOffsets(bonePose2);
       else
-        Debug.Log((object) ("VisemeBoneDefine::ConvertPosesToOffsetsFromBase - can't find bone in base pose " + bonePose1.boneName));
+        Debug.Log("VisemeBoneDefine::ConvertPosesToOffsetsFromBase - can't find bone in base pose " + bonePose1.boneName);
     }
   }
 

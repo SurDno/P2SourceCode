@@ -1,6 +1,6 @@
-﻿using Engine.Common.Components.Interactable;
+﻿using System;
+using Engine.Common.Components.Interactable;
 using Engine.Common.Types;
-using System;
 
 namespace Engine.Common.Components
 {

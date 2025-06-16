@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Engine.Common.Components.Regions;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Fast Travel Graph")]
 public class FastTravelGraph : ScriptableObject

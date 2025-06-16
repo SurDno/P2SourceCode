@@ -1,5 +1,6 @@
 ﻿using Engine.Behaviours.Engines.Controllers;
 using Engine.Behaviours.Unity.Mecanim;
+using UnityEngine;
 
 namespace Engine.Behaviours.Components
 {
@@ -16,10 +17,10 @@ namespace Engine.Behaviours.Components
 
     private void Awake()
     {
-      animator = this.GetComponent<Animator>();
-      if ((Object) animator == (Object) null)
+      animator = GetComponent<Animator>();
+      if (animator == null)
       {
-        Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", (object) this.gameObject.name, (object) typeof (Animator).Name);
+        Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", gameObject.name, typeof (Animator).Name);
       }
       else
       {
@@ -32,7 +33,7 @@ namespace Engine.Behaviours.Components
     {
       DiseasedAnimatorState animatorState = DiseasedAnimatorState.GetAnimatorState(animator);
       animatorState.TriggerPlayerPush();
-      Vector3 vector3 = this.transform.InverseTransformDirection(-whoPushes.transform.forward);
+      Vector3 vector3 = transform.InverseTransformDirection(-whoPushes.transform.forward);
       float num = Mathf.Atan2(vector3.x, vector3.z) * 57.29578f;
       animatorState.PlayerPushAngle = num;
     }

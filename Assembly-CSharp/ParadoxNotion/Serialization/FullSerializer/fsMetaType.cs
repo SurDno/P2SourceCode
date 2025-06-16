@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.Serialization;
 using ParadoxNotion.Serialization.FullSerializer.Internal;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer
 {
@@ -184,7 +185,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       if (ReflectedType.Resolve().IsInterface || ReflectedType.Resolve().IsAbstract)
         throw new Exception("Cannot create an instance of an interface or abstract type for " + ReflectedType);
       if (typeof (ScriptableObject).IsAssignableFrom(ReflectedType))
-        return (object) ScriptableObject.CreateInstance(ReflectedType);
+        return ScriptableObject.CreateInstance(ReflectedType);
       if (typeof (string) == ReflectedType)
         return string.Empty;
       if (!HasDefaultConstructor)

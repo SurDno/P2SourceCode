@@ -1,16 +1,17 @@
 ﻿using System.Collections;
+using UnityEngine;
 
 public class FlockCutsceneScareController : MonoBehaviour
 {
   public LandingSpotController landingSpotController;
 
-  private void OnEnable() => this.StartCoroutine(Scare());
+  private void OnEnable() => StartCoroutine(Scare());
 
   private IEnumerator Scare()
   {
-    if ((Object) landingSpotController != (Object) null)
+    if (landingSpotController != null)
     {
-      yield return (object) new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
       landingSpotController.ScareAll();
     }
   }

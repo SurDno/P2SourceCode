@@ -6,6 +6,9 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI.Controls;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class BodyPartSelectable : MonoBehaviour
 {
@@ -21,14 +24,14 @@ public class BodyPartSelectable : MonoBehaviour
   private ItemSelector toolSelector;
   private bool _OrganTaken;
   private PointerEventData pointerData;
-  private GraphicRaycaster raycaster = (GraphicRaycaster) null;
+  private GraphicRaycaster raycaster;
 
   public bool OrganRemoved
   {
     get
     {
-      if ((UnityEngine.Object) hideableClosed == (UnityEngine.Object) null)
-        hideableClosed = this.GetComponentInChildren<HideableProgressFading>();
+      if (hideableClosed == null)
+        hideableClosed = GetComponentInChildren<HideableProgressFading>();
       OrganRemoved = !hideableClosed.Visible && !OrganTaken;
       return _OrganRemoved;
     }
@@ -39,9 +42,9 @@ public class BodyPartSelectable : MonoBehaviour
   {
     get
     {
-      if ((UnityEngine.Object) itemView == (UnityEngine.Object) null)
-        itemView = this.GetComponentInChildren<SwitchingItemView>();
-      if ((UnityEngine.Object) itemView != (UnityEngine.Object) null)
+      if (itemView == null)
+        itemView = GetComponentInChildren<SwitchingItemView>();
+      if (itemView != null)
         OrganTaken = itemView.Storable == null && itemView.IsEmptySlotActive();
       return _OrganTaken;
     }
@@ -65,7 +68,7 @@ public class BodyPartSelectable : MonoBehaviour
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, AutopsyOrgan);
       else if (OrganRemoved && !OrganTaken)
         ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, TakeOrgan);
-      _buttonExtractHint.transform.parent.position = new Vector3(this.transform.position.x, this.transform.position.y - 100f);
+      _buttonExtractHint.transform.parent.position = new Vector3(transform.position.x, transform.position.y - 100f);
     }
     else
     {
@@ -92,7 +95,7 @@ public class BodyPartSelectable : MonoBehaviour
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AutopsyOrgan);
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Submit, TakeOrgan);
     }
-    else if (toolSelector.Item == null && ((IEnumerable<BodyPartSelectable>) this.transform.parent.GetComponentsInChildren<BodyPartSelectable>()).Count(organ => organ.OrganRemoved) == 0)
+    else if (toolSelector.Item == null && transform.parent.GetComponentsInChildren<BodyPartSelectable>().Count(organ => organ.OrganRemoved) == 0)
       SetSelected(false);
     OnJoystick(InputService.Instance.JoystickUsed);
     return true;
@@ -109,18 +112,18 @@ public class BodyPartSelectable : MonoBehaviour
     if (source.Count != 0)
     {
       GameObject gameObject = source.First().gameObject;
-      if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+      if (gameObject != null)
       {
         pointerData = new PointerEventData(EventSystem.current)
         {
-          position = (Vector2) this.transform.position
+          position = transform.position
         };
         EmulateClickOnConsole(source.First(), gameObject);
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, AutopsyOrgan);
         ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, TakeOrgan);
         CoroutineService.Instance.WaitFrame(1, (Action) (() =>
         {
-          if (toolSelector.Item == null && !OrganRemoved && ((IEnumerable<BodyPartSelectable>) this.transform.parent.GetComponentsInChildren<BodyPartSelectable>()).Count(organ => organ.OrganRemoved) == 0)
+          if (toolSelector.Item == null && !OrganRemoved && transform.parent.GetComponentsInChildren<BodyPartSelectable>().Count(organ => organ.OrganRemoved) == 0)
             SetSelected(false);
           OnJoystick(InputService.Instance.JoystickUsed);
         }));
@@ -139,34 +142,34 @@ public class BodyPartSelectable : MonoBehaviour
     pointerData.pressPosition = pointerData.position;
     pointerData.pointerCurrentRaycast = raycastResult;
     pointerData.pointerPressRaycast = pointerData.pointerCurrentRaycast;
-    GameObject gameObject = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(currentOverGo, (BaseEventData) pointerData, ExecuteEvents.pointerDownHandler);
-    if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+    GameObject gameObject = ExecuteEvents.ExecuteHierarchy(currentOverGo, pointerData, ExecuteEvents.pointerDownHandler);
+    if (gameObject == null)
       gameObject = ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo);
     pointerData.clickCount = 1;
     pointerData.pointerPress = gameObject;
     pointerData.rawPointerPress = currentOverGo;
-    ExecuteEvents.Execute<IPointerUpHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerUpHandler);
-    if (!((UnityEngine.Object) pointerData.pointerPress == (UnityEngine.Object) ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !pointerData.eligibleForClick)
+    ExecuteEvents.Execute(pointerData.pointerPress, pointerData, ExecuteEvents.pointerUpHandler);
+    if (!(pointerData.pointerPress == ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !pointerData.eligibleForClick)
       return;
-    ExecuteEvents.Execute<IPointerClickHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerClickHandler);
+    ExecuteEvents.Execute(pointerData.pointerPress, pointerData, ExecuteEvents.pointerClickHandler);
   }
 
-  private void Start() => uiButton = this.GetComponentInChildren<HoldableButton2>();
+  private void Start() => uiButton = GetComponentInChildren<HoldableButton2>();
 
   private void OnEnable()
   {
     InputService.Instance.onJoystickUsedChanged += OnJoystick;
-    itemView = this.GetComponentInChildren<SwitchingItemView>();
-    hideableClosed = this.GetComponentInChildren<HideableProgressFading>();
-    if ((UnityEngine.Object) raycaster == (UnityEngine.Object) null)
+    itemView = GetComponentInChildren<SwitchingItemView>();
+    hideableClosed = GetComponentInChildren<HideableProgressFading>();
+    if (raycaster == null)
     {
-      raycaster = this.GetComponentInParent<GraphicRaycaster>();
+      raycaster = GetComponentInParent<GraphicRaycaster>();
       pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) this.transform.position
+        position = transform.position
       };
     }
-    toolSelector = this.transform.parent.GetComponentInChildren<ItemSelector>();
+    toolSelector = transform.parent.GetComponentInChildren<ItemSelector>();
     SetSelected(false);
   }
 

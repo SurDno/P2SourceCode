@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Common.Components;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class SplittedItemView : ItemView
 {
@@ -20,7 +21,7 @@ public class SplittedItemView : ItemView
         return;
       foreach (ItemView nestedView in nestedViews)
       {
-        if ((UnityEngine.Object) nestedView != (UnityEngine.Object) null)
+        if (nestedView != null)
           nestedView.Storable = storable;
       }
     }
@@ -36,7 +37,7 @@ public class SplittedItemView : ItemView
   {
     foreach (ItemView nestedView in nestedViews)
     {
-      if (!((UnityEngine.Object) nestedView == (UnityEngine.Object) null))
+      if (!(nestedView == null))
       {
         nestedView.DeselectEvent += new Action<IStorableComponent>(((ItemView) this).FireDeselectEvent);
         nestedView.SelectEvent += new Action<IStorableComponent>(((ItemView) this).FireSelectEvent);

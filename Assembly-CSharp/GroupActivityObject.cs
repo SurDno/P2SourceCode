@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class GroupActivityObject : MonoBehaviour
 {
@@ -16,8 +17,8 @@ public class GroupActivityObject : MonoBehaviour
   public void Awake()
   {
     IsBusy = false;
-    POIBase component = this.GetComponent<POIBase>();
-    if ((Object) component != (Object) null && !childPOIs.Contains(component))
+    POIBase component = GetComponent<POIBase>();
+    if (component != null && !childPOIs.Contains(component))
       childPOIs.Add(component);
     foreach (POIBase childPoI in childPOIs)
       childPoI.IsChildPOI = true;

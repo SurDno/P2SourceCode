@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace AmplifyBloom
 {
@@ -12,12 +13,12 @@ namespace AmplifyBloom
 
     public void Destroy()
     {
-      if ((UnityEngine.Object) BokehRenderTexture != (UnityEngine.Object) null)
+      if (BokehRenderTexture != null)
       {
         AmplifyUtils.ReleaseTempRenderTarget(BokehRenderTexture);
-        BokehRenderTexture = (RenderTexture) null;
+        BokehRenderTexture = null;
       }
-      Offsets = (Vector4[]) null;
+      Offsets = null;
     }
   }
 }

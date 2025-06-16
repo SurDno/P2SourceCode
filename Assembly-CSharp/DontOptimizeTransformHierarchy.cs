@@ -1,3 +1,5 @@
-﻿public class DontOptimizeTransformHierarchy : MonoBehaviour
+﻿using UnityEngine;
+
+public class DontOptimizeTransformHierarchy : MonoBehaviour
 {
 }

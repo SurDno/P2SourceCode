@@ -14,6 +14,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [TaskDescription("Can hear NPC (with Behaviour and Info engine components)")]
 [TaskCategory("Pathologic")]
@@ -51,14 +52,14 @@ public class CanHear : Conditional, IStub, ISerializeDataWrite, ISerializeDataRe
     entity = EntityUtility.GetEntity(gameObject);
     if (entity == null)
     {
-      Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+      Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
     }
     else
     {
       detector = (DetectorComponent) entity.GetComponent<IDetectorComponent>();
       if (detector != null)
         return;
-      Debug.LogWarningFormat("{0}: doesn't contain " + typeof (IDetectorComponent).Name + " engine component", (object) gameObject.name);
+      Debug.LogWarningFormat("{0}: doesn't contain " + typeof (IDetectorComponent).Name + " engine component", gameObject.name);
     }
   }
 
@@ -76,7 +77,7 @@ public class CanHear : Conditional, IStub, ISerializeDataWrite, ISerializeDataRe
         if (Filter(detectable))
         {
           GameObject gameObject = ((IEntityView) detectable.Owner).GameObject;
-          if (!((UnityEngine.Object) gameObject == (UnityEngine.Object) null))
+          if (!(gameObject == null))
           {
             if (ResultList.Value == null)
             {

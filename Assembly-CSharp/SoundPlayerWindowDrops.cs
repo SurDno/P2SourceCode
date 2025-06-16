@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections;
 using System.Linq;
+using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using Rain;
+using UnityEngine;
 
 public class SoundPlayerWindowDrops : MonoBehaviour
 {
@@ -19,30 +19,30 @@ public class SoundPlayerWindowDrops : MonoBehaviour
   private IEnumerator Start()
   {
     wait = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.SoundUpdateDelay;
-    clips = ((IEnumerable<AudioClip>) clips).Where((Func<AudioClip, bool>) (o => (UnityEngine.Object) o != (UnityEngine.Object) null)).ToArray();
+    clips = clips.Where(o => o != null).ToArray();
     if (clips.Length != 0)
     {
       while (true)
       {
         do
         {
-          yield return (object) new WaitForSeconds(wait);
+          yield return new WaitForSeconds(wait);
           UpdateEnable();
         }
-        while (!audioSource.enabled || (UnityEngine.Object) audioSource.clip != (UnityEngine.Object) null && audioSource.isPlaying);
-        AudioClip clip = ((IEnumerable<AudioClip>) clips).Random();
+        while (!audioSource.enabled || audioSource.clip != null && audioSource.isPlaying);
+        AudioClip clip = clips.Random();
         audioSource.clip = clip;
         audioSource.PlayAndCheck();
         float delay2 = playInstantly ? 0.0f : audioSource.clip.length;
-        yield return (object) new WaitForSeconds(delay2);
-        clip = (AudioClip) null;
+        yield return new WaitForSeconds(delay2);
+        clip = null;
       }
     }
   }
 
   private void UpdateEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
+    bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance);
     if (flag)
       flag = RainManager.Instance.rainIntensity >= (double) rainMinimum;
     if (audioSource.gameObject.activeSelf == flag)

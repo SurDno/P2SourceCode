@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace UnityStandardAssets.CinematicEffects
 {
@@ -22,7 +23,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Shader == (UnityEngine.Object) null)
+        if (m_Shader == null)
           m_Shader = Shader.Find("Hidden/LensAberrations");
         return m_Shader;
       }
@@ -32,7 +33,7 @@ namespace UnityStandardAssets.CinematicEffects
     {
       get
       {
-        if ((UnityEngine.Object) m_Material == (UnityEngine.Object) null)
+        if (m_Material == null)
           m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(shader);
         return m_Material;
       }
@@ -40,16 +41,16 @@ namespace UnityStandardAssets.CinematicEffects
 
     private void OnEnable()
     {
-      if (!ImageEffectHelper.IsSupported(shader, false, false, (MonoBehaviour) this))
-        this.enabled = false;
+      if (!ImageEffectHelper.IsSupported(shader, false, false, this))
+        enabled = false;
       m_RTU = new RenderTextureUtility();
     }
 
     private void OnDisable()
     {
-      if ((UnityEngine.Object) m_Material != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) m_Material);
-      m_Material = (Material) null;
+      if (m_Material != null)
+        DestroyImmediate(m_Material);
+      m_Material = null;
       m_RTU.ReleaseAllTemporaryRenderTextures();
     }
 
@@ -57,11 +58,11 @@ namespace UnityStandardAssets.CinematicEffects
     {
       if (!vignette.enabled && !chromaticAberration.enabled && !distortion.enabled)
       {
-        Graphics.Blit((Texture) source, destination);
+        Graphics.Blit(source, destination);
       }
       else
       {
-        material.shaderKeywords = (string[]) null;
+        material.shaderKeywords = null;
         if (distortion.enabled)
         {
           float num = (float) Math.PI / 180f * Math.Min(160f, 1.6f * Math.Max(Mathf.Abs(distortion.amount), 1f));
@@ -70,7 +71,7 @@ namespace UnityStandardAssets.CinematicEffects
           Vector3 vector3 = new Vector3(distortion.amount >= 0.0 ? num : 1f / num, y, 1f / distortion.scale);
           material.EnableKeyword(distortion.amount >= 0.0 ? "DISTORT" : "UNDISTORT");
           material.SetVector("_DistCenterScale", vector4);
-          material.SetVector("_DistAmount", (Vector4) vector3);
+          material.SetVector("_DistAmount", vector3);
         }
         if (chromaticAberration.enabled)
         {
@@ -86,20 +87,20 @@ namespace UnityStandardAssets.CinematicEffects
             int height = source.height / 2;
             RenderTexture temporaryRenderTexture1 = m_RTU.GetTemporaryRenderTexture(width, height, format: source.format);
             RenderTexture temporaryRenderTexture2 = m_RTU.GetTemporaryRenderTexture(width, height, format: source.format);
-            material.SetVector("_BlurPass", (Vector4) new Vector2(1f / width, 0.0f));
-            Graphics.Blit((Texture) source, temporaryRenderTexture1, material, 0);
+            material.SetVector("_BlurPass", new Vector2(1f / width, 0.0f));
+            Graphics.Blit(source, temporaryRenderTexture1, material, 0);
             if (distortion.enabled)
             {
               material.DisableKeyword("DISTORT");
               material.DisableKeyword("UNDISTORT");
             }
-            material.SetVector("_BlurPass", (Vector4) new Vector2(0.0f, 1f / height));
-            Graphics.Blit((Texture) temporaryRenderTexture1, temporaryRenderTexture2, material, 0);
-            material.SetVector("_BlurPass", (Vector4) new Vector2(1f / width, 0.0f));
-            Graphics.Blit((Texture) temporaryRenderTexture2, temporaryRenderTexture1, material, 0);
-            material.SetVector("_BlurPass", (Vector4) new Vector2(0.0f, 1f / height));
-            Graphics.Blit((Texture) temporaryRenderTexture1, temporaryRenderTexture2, material, 0);
-            material.SetTexture("_BlurTex", (Texture) temporaryRenderTexture2);
+            material.SetVector("_BlurPass", new Vector2(0.0f, 1f / height));
+            Graphics.Blit(temporaryRenderTexture1, temporaryRenderTexture2, material, 0);
+            material.SetVector("_BlurPass", new Vector2(1f / width, 0.0f));
+            Graphics.Blit(temporaryRenderTexture2, temporaryRenderTexture1, material, 0);
+            material.SetVector("_BlurPass", new Vector2(0.0f, 1f / height));
+            Graphics.Blit(temporaryRenderTexture1, temporaryRenderTexture2, material, 0);
+            material.SetTexture("_BlurTex", temporaryRenderTexture2);
             material.SetFloat("_VignetteBlur", vignette.blur * 3f);
             material.EnableKeyword("VIGNETTE_BLUR");
             if (distortion.enabled)
@@ -110,16 +111,16 @@ namespace UnityStandardAssets.CinematicEffects
             material.EnableKeyword("VIGNETTE_DESAT");
             material.SetFloat("_VignetteDesat", 1f - vignette.desaturate);
           }
-          material.SetVector("_VignetteCenter", (Vector4) vignette.center);
+          material.SetVector("_VignetteCenter", vignette.center);
           if (Mathf.Approximately(vignette.roundness, 1f))
           {
             material.EnableKeyword("VIGNETTE_CLASSIC");
-            material.SetVector("_VignetteSettings", (Vector4) new Vector2(vignette.intensity, vignette.smoothness));
+            material.SetVector("_VignetteSettings", new Vector2(vignette.intensity, vignette.smoothness));
           }
           else
           {
             material.EnableKeyword("VIGNETTE_FILMIC");
-            material.SetVector("_VignetteSettings", (Vector4) new Vector3(vignette.intensity, vignette.smoothness, (float) ((1.0 - vignette.roundness) * 6.0) + vignette.roundness));
+            material.SetVector("_VignetteSettings", new Vector3(vignette.intensity, vignette.smoothness, (float) ((1.0 - vignette.roundness) * 6.0) + vignette.roundness));
           }
         }
         int pass = 0;
@@ -137,7 +138,7 @@ namespace UnityStandardAssets.CinematicEffects
           pass = 1;
         else if (distortion.enabled)
           pass = 2;
-        Graphics.Blit((Texture) source, destination, material, pass);
+        Graphics.Blit(source, destination, material, pass);
         m_RTU.ReleaseAllTemporaryRenderTextures();
       }
     }

@@ -6,6 +6,7 @@ using Engine.Common.Components.Parameters;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -48,7 +49,7 @@ namespace Engine.Source.Services
       get => state;
       set
       {
-        if ((UnityEngine.Object) Character != (UnityEngine.Object) null)
+        if (Character != null)
         {
           bool flag = false;
           if (value == CombatServiceCharacterStateEnum.Fight)
@@ -87,7 +88,7 @@ namespace Engine.Source.Services
         if (currentEnemy != null)
           return;
         Character.RetreatAngle = new float?();
-        Character.RotationTarget = (Transform) null;
+        Character.RotationTarget = null;
         Character.RotateByPath = false;
       }
     }
@@ -100,7 +101,7 @@ namespace Engine.Source.Services
     {
       get
       {
-        if (entity == null && (UnityEngine.Object) Character != (UnityEngine.Object) null)
+        if (entity == null && Character != null)
           Entity = Character.Owner;
         return entity;
       }
@@ -227,7 +228,7 @@ namespace Engine.Source.Services
 
     public bool CanLoot
     {
-      get => CombatSettings != null && (UnityEngine.Object) CombatSettings.LootAI != (UnityEngine.Object) null;
+      get => CombatSettings != null && CombatSettings.LootAI != null;
     }
 
     public NpcControllerComponent NpcController

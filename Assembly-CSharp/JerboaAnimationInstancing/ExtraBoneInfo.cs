@@ -1,4 +1,6 @@
-﻿namespace JerboaAnimationInstancing
+﻿using UnityEngine;
+
+namespace JerboaAnimationInstancing
 {
   public class ExtraBoneInfo
   {

@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace RootMotion
 {
@@ -27,16 +29,16 @@ namespace RootMotion
     {
       get
       {
-        if ((UnityEngine.Object) root == (UnityEngine.Object) null || (UnityEngine.Object) pelvis == (UnityEngine.Object) null || (UnityEngine.Object) leftThigh == (UnityEngine.Object) null || (UnityEngine.Object) leftCalf == (UnityEngine.Object) null || (UnityEngine.Object) leftFoot == (UnityEngine.Object) null || (UnityEngine.Object) rightThigh == (UnityEngine.Object) null || (UnityEngine.Object) rightCalf == (UnityEngine.Object) null || (UnityEngine.Object) rightFoot == (UnityEngine.Object) null || (UnityEngine.Object) leftUpperArm == (UnityEngine.Object) null || (UnityEngine.Object) leftForearm == (UnityEngine.Object) null || (UnityEngine.Object) leftHand == (UnityEngine.Object) null || (UnityEngine.Object) rightUpperArm == (UnityEngine.Object) null || (UnityEngine.Object) rightForearm == (UnityEngine.Object) null || (UnityEngine.Object) rightHand == (UnityEngine.Object) null)
+        if (root == null || pelvis == null || leftThigh == null || leftCalf == null || leftFoot == null || rightThigh == null || rightCalf == null || rightFoot == null || leftUpperArm == null || leftForearm == null || leftHand == null || rightUpperArm == null || rightForearm == null || rightHand == null)
           return false;
-        foreach (UnityEngine.Object @object in spine)
+        foreach (Object @object in spine)
         {
-          if (@object == (UnityEngine.Object) null)
+          if (@object == null)
             return false;
         }
-        foreach (UnityEngine.Object eye in eyes)
+        foreach (Object eye in eyes)
         {
-          if (eye == (UnityEngine.Object) null)
+          if (eye == null)
             return false;
         }
         return true;
@@ -47,16 +49,16 @@ namespace RootMotion
 
     public virtual bool IsEmpty(bool includeRoot)
     {
-      if (includeRoot && (UnityEngine.Object) root != (UnityEngine.Object) null || (UnityEngine.Object) pelvis != (UnityEngine.Object) null || (UnityEngine.Object) head != (UnityEngine.Object) null || (UnityEngine.Object) leftThigh != (UnityEngine.Object) null || (UnityEngine.Object) leftCalf != (UnityEngine.Object) null || (UnityEngine.Object) leftFoot != (UnityEngine.Object) null || (UnityEngine.Object) rightThigh != (UnityEngine.Object) null || (UnityEngine.Object) rightCalf != (UnityEngine.Object) null || (UnityEngine.Object) rightFoot != (UnityEngine.Object) null || (UnityEngine.Object) leftUpperArm != (UnityEngine.Object) null || (UnityEngine.Object) leftForearm != (UnityEngine.Object) null || (UnityEngine.Object) leftHand != (UnityEngine.Object) null || (UnityEngine.Object) rightUpperArm != (UnityEngine.Object) null || (UnityEngine.Object) rightForearm != (UnityEngine.Object) null || (UnityEngine.Object) rightHand != (UnityEngine.Object) null)
+      if (includeRoot && root != null || pelvis != null || head != null || leftThigh != null || leftCalf != null || leftFoot != null || rightThigh != null || rightCalf != null || rightFoot != null || leftUpperArm != null || leftForearm != null || leftHand != null || rightUpperArm != null || rightForearm != null || rightHand != null)
         return false;
-      foreach (UnityEngine.Object @object in spine)
+      foreach (Object @object in spine)
       {
-        if (@object != (UnityEngine.Object) null)
+        if (@object != null)
           return false;
       }
-      foreach (UnityEngine.Object eye in eyes)
+      foreach (Object eye in eyes)
       {
-        if (eye != (UnityEngine.Object) null)
+        if (eye != null)
           return false;
       }
       return true;
@@ -64,16 +66,16 @@ namespace RootMotion
 
     public virtual bool Contains(Transform t, bool ignoreRoot = false)
     {
-      if (!ignoreRoot && (UnityEngine.Object) root == (UnityEngine.Object) t || (UnityEngine.Object) pelvis == (UnityEngine.Object) t || (UnityEngine.Object) leftThigh == (UnityEngine.Object) t || (UnityEngine.Object) leftCalf == (UnityEngine.Object) t || (UnityEngine.Object) leftFoot == (UnityEngine.Object) t || (UnityEngine.Object) rightThigh == (UnityEngine.Object) t || (UnityEngine.Object) rightCalf == (UnityEngine.Object) t || (UnityEngine.Object) rightFoot == (UnityEngine.Object) t || (UnityEngine.Object) leftUpperArm == (UnityEngine.Object) t || (UnityEngine.Object) leftForearm == (UnityEngine.Object) t || (UnityEngine.Object) leftHand == (UnityEngine.Object) t || (UnityEngine.Object) rightUpperArm == (UnityEngine.Object) t || (UnityEngine.Object) rightForearm == (UnityEngine.Object) t || (UnityEngine.Object) rightHand == (UnityEngine.Object) t || (UnityEngine.Object) head == (UnityEngine.Object) t)
+      if (!ignoreRoot && root == t || pelvis == t || leftThigh == t || leftCalf == t || leftFoot == t || rightThigh == t || rightCalf == t || rightFoot == t || leftUpperArm == t || leftForearm == t || leftHand == t || rightUpperArm == t || rightForearm == t || rightHand == t || head == t)
         return true;
-      foreach (UnityEngine.Object @object in spine)
+      foreach (Object @object in spine)
       {
-        if (@object == (UnityEngine.Object) t)
+        if (@object == t)
           return true;
       }
-      foreach (UnityEngine.Object eye in eyes)
+      foreach (Object eye in eyes)
       {
-        if (eye == (UnityEngine.Object) t)
+        if (eye == t)
           return true;
       }
       return false;
@@ -88,7 +90,7 @@ namespace RootMotion
         references = new BipedReferences();
       references.root = root;
       Animator component = root.GetComponent<Animator>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null && component.isHuman)
+      if (component != null && component.isHuman)
       {
         AssignHumanoidReferences(ref references, component, autoDetectParams);
         return true;
@@ -125,12 +127,12 @@ namespace RootMotion
       DetectLimb(BipedNaming.BoneType.Leg, BipedNaming.BoneSide.Right, ref references.rightThigh, ref references.rightCalf, ref references.rightFoot, componentsInChildren);
       references.head = BipedNaming.GetBone(componentsInChildren, BipedNaming.BoneType.Head);
       references.pelvis = BipedNaming.GetNamingMatch(componentsInChildren, BipedNaming.pelvis);
-      if (((UnityEngine.Object) references.pelvis == (UnityEngine.Object) null || !Hierarchy.IsAncestor(references.leftThigh, references.pelvis)) && (UnityEngine.Object) references.leftThigh != (UnityEngine.Object) null)
+      if ((references.pelvis == null || !Hierarchy.IsAncestor(references.leftThigh, references.pelvis)) && references.leftThigh != null)
         references.pelvis = references.leftThigh.parent;
-      if ((UnityEngine.Object) references.leftUpperArm != (UnityEngine.Object) null && (UnityEngine.Object) references.rightUpperArm != (UnityEngine.Object) null && (UnityEngine.Object) references.pelvis != (UnityEngine.Object) null && (UnityEngine.Object) references.leftThigh != (UnityEngine.Object) null)
+      if (references.leftUpperArm != null && references.rightUpperArm != null && references.pelvis != null && references.leftThigh != null)
       {
         Transform firstCommonAncestor = Hierarchy.GetFirstCommonAncestor(references.leftUpperArm, references.rightUpperArm);
-        if ((UnityEngine.Object) firstCommonAncestor != (UnityEngine.Object) null)
+        if (firstCommonAncestor != null)
         {
           Transform[] array = new Transform[1]
           {
@@ -146,7 +148,7 @@ namespace RootMotion
               references.spine[references.spine.Length - 1] = array[index];
             }
           }
-          if ((UnityEngine.Object) references.head == (UnityEngine.Object) null)
+          if (references.head == null)
           {
             for (int index = 0; index < firstCommonAncestor.childCount; ++index)
             {
@@ -181,7 +183,7 @@ namespace RootMotion
     {
       if (references == null)
         references = new BipedReferences();
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null || !animator.isHuman)
+      if (animator == null || !animator.isHuman)
         return;
       references.spine = new Transform[0];
       references.eyes = new Transform[0];
@@ -201,7 +203,7 @@ namespace RootMotion
       references.pelvis = animator.GetBoneTransform(HumanBodyBones.Hips);
       AddBoneToHierarchy(ref references.spine, animator.GetBoneTransform(HumanBodyBones.Spine));
       AddBoneToHierarchy(ref references.spine, animator.GetBoneTransform(HumanBodyBones.Chest));
-      if ((UnityEngine.Object) references.leftUpperArm != (UnityEngine.Object) null && !IsNeckBone(animator.GetBoneTransform(HumanBodyBones.Neck), references.leftUpperArm))
+      if (references.leftUpperArm != null && !IsNeckBone(animator.GetBoneTransform(HumanBodyBones.Neck), references.leftUpperArm))
         AddBoneToHierarchy(ref references.spine, animator.GetBoneTransform(HumanBodyBones.Neck));
       if (!autoDetectParams.includeEyes)
         return;
@@ -226,7 +228,7 @@ namespace RootMotion
 
     private static bool IsNeckBone(Transform bone, Transform leftUpperArm)
     {
-      return (!((UnityEngine.Object) leftUpperArm.parent != (UnityEngine.Object) null) || !((UnityEngine.Object) leftUpperArm.parent == (UnityEngine.Object) bone)) && !Hierarchy.IsAncestor(leftUpperArm, bone);
+      return (!(leftUpperArm.parent != null) || !(leftUpperArm.parent == bone)) && !Hierarchy.IsAncestor(leftUpperArm, bone);
     }
 
     private static bool AddBoneToEyes(
@@ -234,7 +236,7 @@ namespace RootMotion
       ref BipedReferences references,
       AutoDetectParams autoDetectParams)
     {
-      return (!((UnityEngine.Object) references.head != (UnityEngine.Object) null) || Hierarchy.IsAncestor(bone, references.head)) && !((UnityEngine.Object) bone.GetComponent<SkinnedMeshRenderer>() != (UnityEngine.Object) null);
+      return (!(references.head != null) || Hierarchy.IsAncestor(bone, references.head)) && !(bone.GetComponent<SkinnedMeshRenderer>() != null);
     }
 
     private static bool AddBoneToSpine(
@@ -242,7 +244,7 @@ namespace RootMotion
       ref BipedReferences references,
       AutoDetectParams autoDetectParams)
     {
-      return !((UnityEngine.Object) bone == (UnityEngine.Object) references.root) && (!((UnityEngine.Object) bone == (UnityEngine.Object) references.leftThigh.parent) || autoDetectParams.legsParentInSpine) && (!((UnityEngine.Object) references.pelvis != (UnityEngine.Object) null) || !((UnityEngine.Object) bone == (UnityEngine.Object) references.pelvis) && !Hierarchy.IsAncestor(references.pelvis, bone));
+      return !(bone == references.root) && (!(bone == references.leftThigh.parent) || autoDetectParams.legsParentInSpine) && (!(references.pelvis != null) || !(bone == references.pelvis) && !Hierarchy.IsAncestor(references.pelvis, bone));
     }
 
     private static void DetectLimb(
@@ -271,7 +273,7 @@ namespace RootMotion
 
     private static void AddBoneToHierarchy(ref Transform[] bones, Transform transform)
     {
-      if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
+      if (transform == null)
         return;
       Array.Resize(ref bones, bones.Length + 1);
       bones[bones.Length - 1] = transform;
@@ -283,28 +285,28 @@ namespace RootMotion
       Transform bone3,
       ref string errorMessage)
     {
-      if ((UnityEngine.Object) bone1 == (UnityEngine.Object) null)
+      if (bone1 == null)
       {
         errorMessage = "Bone 1 of a BipedReferences limb is null.";
         return true;
       }
-      if ((UnityEngine.Object) bone2 == (UnityEngine.Object) null)
+      if (bone2 == null)
       {
         errorMessage = "Bone 2 of a BipedReferences limb is null.";
         return true;
       }
-      if ((UnityEngine.Object) bone3 == (UnityEngine.Object) null)
+      if (bone3 == null)
       {
         errorMessage = "Bone 3 of a BipedReferences limb is null.";
         return true;
       }
-      Transform transform = (Transform) Hierarchy.ContainsDuplicate((UnityEngine.Object[]) new Transform[3]
+      Transform transform = (Transform) Hierarchy.ContainsDuplicate(new Transform[3]
       {
         bone1,
         bone2,
         bone3
       });
-      if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
+      if (transform != null)
       {
         errorMessage = transform.name + " is represented multiple times in the same BipedReferences limb.";
         return true;
@@ -348,14 +350,14 @@ namespace RootMotion
         return false;
       for (int index = 0; index < references.spine.Length; ++index)
       {
-        if ((UnityEngine.Object) references.spine[index] == (UnityEngine.Object) null)
+        if (references.spine[index] == null)
         {
           errorMessage = "BipedReferences spine bone at index " + index + " is null.";
           return true;
         }
       }
-      Transform transform = (Transform) Hierarchy.ContainsDuplicate((UnityEngine.Object[]) references.spine);
-      if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
+      Transform transform = (Transform) Hierarchy.ContainsDuplicate(references.spine);
+      if (transform != null)
       {
         errorMessage = transform.name + " is represented multiple times in BipedReferences spine.";
         return true;
@@ -392,14 +394,14 @@ namespace RootMotion
         return false;
       for (int index = 0; index < references.eyes.Length; ++index)
       {
-        if ((UnityEngine.Object) references.eyes[index] == (UnityEngine.Object) null)
+        if (references.eyes[index] == null)
         {
           errorMessage = "BipedReferences eye bone at index " + index + " is null.";
           return true;
         }
       }
-      Transform transform = (Transform) Hierarchy.ContainsDuplicate((UnityEngine.Object[]) references.eyes);
-      if (!((UnityEngine.Object) transform != (UnityEngine.Object) null))
+      Transform transform = (Transform) Hierarchy.ContainsDuplicate(references.eyes);
+      if (!(transform != null))
         return false;
       errorMessage = transform.name + " is represented multiple times in BipedReferences eyes.";
       return true;
@@ -409,7 +411,7 @@ namespace RootMotion
 
     private static bool RootHeightWarning(BipedReferences references, ref string warningMessage)
     {
-      if ((UnityEngine.Object) references.head == (UnityEngine.Object) null)
+      if (references.head == null)
         return false;
       float verticalOffset = GetVerticalOffset(references.head.position, references.leftFoot.position, references.root.rotation);
       if (GetVerticalOffset(references.root.position, references.leftFoot.position, references.root.rotation) / (double) verticalOffset <= 0.20000000298023224)

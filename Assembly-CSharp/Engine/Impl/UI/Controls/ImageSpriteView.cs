@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ImageSpriteView : SpriteViewBase
   {
@@ -7,7 +10,7 @@
 
     protected override void ApplyValue(bool instant)
     {
-      if (!((Object) image != (Object) null))
+      if (!(image != null))
         return;
       Sprite sprite = GetValue();
       image.sprite = sprite;

@@ -1,4 +1,5 @@
 ﻿using System.Collections;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -55,8 +56,8 @@ namespace RootMotion.Dynamics
     protected override void OnActivate()
     {
       forceActive = true;
-      this.StopAllCoroutines();
-      this.StartCoroutine(SmoothActivate());
+      StopAllCoroutines();
+      StartCoroutine(SmoothActivate());
     }
 
     protected override void OnDeactivate() => forceActive = false;
@@ -101,12 +102,12 @@ namespace RootMotion.Dynamics
 
     protected override void OnFixedUpdate()
     {
-      if ((int) raycastLayers == -1)
-        Debug.LogWarning((object) "BehaviourFall has no layers to raycast to.", (Object) this.transform);
+      if (raycastLayers == -1)
+        Debug.LogWarning("BehaviourFall has no layers to raycast to.", transform);
       float blendTarget = GetBlendTarget(GetGroundHeight());
       puppetMaster.targetAnimator.SetFloat(blendParameter, Mathf.MoveTowards(puppetMaster.targetAnimator.GetFloat(blendParameter), blendTarget, Time.deltaTime * blendSpeed));
       timer += Time.deltaTime;
-      if (endTriggered || !canEnd || timer < (double) minTime || puppetMaster.isBlending || (double) puppetMaster.muscles[0].rigidbody.velocity.magnitude >= maxEndVelocity)
+      if (endTriggered || !canEnd || timer < (double) minTime || puppetMaster.isBlending || puppetMaster.muscles[0].rigidbody.velocity.magnitude >= (double) maxEndVelocity)
         return;
       endTriggered = true;
       onEnd.Trigger(puppetMaster);
@@ -130,7 +131,7 @@ namespace RootMotion.Dynamics
         return 1f;
       Vector3 vertical = V3Tools.ExtractVertical(puppetMaster.muscles[0].rigidbody.velocity, puppetMaster.targetRoot.up, 1f);
       float num = vertical.magnitude;
-      if ((double) Vector3.Dot(vertical, puppetMaster.targetRoot.up) < 0.0)
+      if (Vector3.Dot(vertical, puppetMaster.targetRoot.up) < 0.0)
         num = -num;
       return num > (double) writheYVelocity ? 1f : 0.0f;
     }
@@ -138,7 +139,7 @@ namespace RootMotion.Dynamics
     private float GetGroundHeight()
     {
       RaycastHit hitInfo = new RaycastHit();
-      return Physics.Raycast(puppetMaster.muscles[0].rigidbody.position, -puppetMaster.targetRoot.up, out hitInfo, 100f, (int) raycastLayers) ? hitInfo.distance : float.PositiveInfinity;
+      return Physics.Raycast(puppetMaster.muscles[0].rigidbody.position, -puppetMaster.targetRoot.up, out hitInfo, 100f, raycastLayers) ? hitInfo.distance : float.PositiveInfinity;
     }
   }
 }

@@ -6,6 +6,7 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Abilities.Controllers;
 using Engine.Source.Commons.Effects;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -43,7 +44,7 @@ namespace Engine.Source.Effects
     {
       if (!(AbilityItem.AbilityController is CloseCombatAbilityController))
       {
-        Debug.LogError((object) (typeof (NpcPunchEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name));
+        Debug.LogError(typeof (NpcPunchEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name);
         return false;
       }
       ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>()?.FirePunchHitEvent(weapon);

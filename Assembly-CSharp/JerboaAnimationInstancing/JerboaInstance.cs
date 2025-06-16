@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace JerboaAnimationInstancing
 {
@@ -25,7 +27,7 @@ namespace JerboaAnimationInstancing
 
     private void Awake()
     {
-      layer = this.gameObject.layer;
+      layer = gameObject.layer;
       switch (QualitySettings.blendWeights)
       {
         case BlendWeights.OneBone:
@@ -35,8 +37,8 @@ namespace JerboaAnimationInstancing
           bonePerVertex = bonePerVertex > 2 ? 2 : bonePerVertex;
           break;
       }
-      LODGroup component = this.GetComponent<LODGroup>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+      LODGroup component = GetComponent<LODGroup>();
+      if (component != null)
       {
         this.lodInfo = new LodInfo[component.lodCount];
         LOD[] loDs = component.GetLODs();
@@ -60,7 +62,7 @@ namespace JerboaAnimationInstancing
             }
             lodInfo.skinnedMeshRenderer = skinnedMeshRendererList.ToArray();
             lodInfo.meshRenderer = meshRendererList.ToArray();
-            lodInfo.meshFilter = (MeshFilter[]) null;
+            lodInfo.meshFilter = null;
             for (int index2 = 0; index2 != loDs[index1].renderers.Length; ++index2)
               loDs[index1].renderers[index2].enabled = false;
             this.lodInfo[index1] = lodInfo;
@@ -72,9 +74,9 @@ namespace JerboaAnimationInstancing
         this.lodInfo = new LodInfo[1];
         LodInfo lodInfo = new LodInfo {
           lodLevel = 0,
-          skinnedMeshRenderer = this.GetComponentsInChildren<SkinnedMeshRenderer>(),
-          meshRenderer = this.GetComponentsInChildren<MeshRenderer>(),
-          meshFilter = this.GetComponentsInChildren<MeshFilter>()
+          skinnedMeshRenderer = GetComponentsInChildren<SkinnedMeshRenderer>(),
+          meshRenderer = GetComponentsInChildren<MeshRenderer>(),
+          meshFilter = GetComponentsInChildren<MeshFilter>()
         };
         lodInfo.vertexCacheList = new JerboaInstancingManager.VertexCache[lodInfo.skinnedMeshRenderer.Length + lodInfo.meshRenderer.Length];
         lodInfo.materialBlockList = new JerboaInstancingManager.MaterialBlock[lodInfo.vertexCacheList.Length];
@@ -99,9 +101,9 @@ namespace JerboaAnimationInstancing
       JerboaAnimationManager jerboaAnimationManager,
       TextAsset textAsset)
     {
-      if ((UnityEngine.Object) this.prototype == (UnityEngine.Object) null)
-        Debug.LogError((object) "The prototype is NULL. Please select the prototype first.");
-      Debug.Assert((UnityEngine.Object) this.prototype != (UnityEngine.Object) null);
+      if (this.prototype == null)
+        Debug.LogError("The prototype is NULL. Please select the prototype first.");
+      Debug.Assert(this.prototype != null);
       GameObject prototype = this.prototype;
       JerboaAnimationManager.InstanceAnimationInfo animationInfo = jerboaAnimationManager.FindAnimationInfo(jerboaInstancingManager, textAsset, this.prototype, this);
       if (animationInfo != null)
@@ -126,8 +128,8 @@ namespace JerboaAnimationInstancing
       if (extraBoneInfo != null)
       {
         List<Transform> transformList = new List<Transform>();
-        transformList.AddRange((IEnumerable<Transform>) collection);
-        Transform[] componentsInChildren = this.gameObject.GetComponentsInChildren<Transform>();
+        transformList.AddRange(collection);
+        Transform[] componentsInChildren = gameObject.GetComponentsInChildren<Transform>();
         for (int index1 = 0; index1 != extraBoneInfo.extraBone.Length; ++index1)
         {
           for (int index2 = 0; index2 != componentsInChildren.Length; ++index2)
@@ -149,7 +151,7 @@ namespace JerboaAnimationInstancing
           vertexCache.layer = layer;
         }
       }
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.GetComponent<Animator>());
+      Destroy(GetComponent<Animator>());
     }
 
     public int FindAnimationInfo(int hash)

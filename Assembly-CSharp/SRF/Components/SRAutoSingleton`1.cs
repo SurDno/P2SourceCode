@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace SRF.Components
 {
@@ -10,18 +12,18 @@ namespace SRF.Components
     {
       [DebuggerStepThrough] get
       {
-        if ((Object) _instance == (Object) null && Application.isPlaying)
+        if (_instance == null && Application.isPlaying)
           new GameObject("_" + typeof (T).Name).AddComponent<T>();
         return _instance;
       }
     }
 
-    public static bool HasInstance => (Object) _instance != (Object) null;
+    public static bool HasInstance => _instance != null;
 
     protected virtual void Awake()
     {
-      if ((Object) _instance != (Object) null)
-        UnityEngine.Debug.LogWarning((object) "More than one singleton object of type {0} exists.".Fmt(typeof (T).Name));
+      if (_instance != null)
+        Debug.LogWarning("More than one singleton object of type {0} exists.".Fmt(typeof (T).Name));
       else
         _instance = (T) this;
     }

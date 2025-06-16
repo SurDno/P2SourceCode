@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using UnityEngine;
 
 namespace Engine.Assets.Internal
 {
@@ -105,7 +106,7 @@ namespace Engine.Assets.Internal
       PropertyInfo propertyInfo = member as PropertyInfo;
       if (propertyInfo != null)
         return propertyInfo.PropertyType;
-      Debug.LogError((object) ("Error get value type from : " + member.GetType()));
+      Debug.LogError("Error get value type from : " + member.GetType());
       return null;
     }
 
@@ -121,7 +122,7 @@ namespace Engine.Assets.Internal
         if (getMethod != null)
           return getMethod.Invoke(target, null);
       }
-      Debug.LogError((object) ("Error get value from : " + member.GetType() + " : " + (target != null ? target : "null")));
+      Debug.LogError("Error get value from : " + member.GetType() + " : " + (target != null ? target : "null"));
       return null;
     }
 
@@ -144,7 +145,7 @@ namespace Engine.Assets.Internal
             return;
           }
         }
-        Debug.LogError((object) ("Error Set value from : " + member.GetType() + " : " + (target != null ? target : "null")));
+        Debug.LogError("Error Set value from : " + member.GetType() + " : " + (target != null ? target : "null"));
       }
     }
   }

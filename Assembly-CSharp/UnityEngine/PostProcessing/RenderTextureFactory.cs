@@ -34,17 +34,17 @@ namespace UnityEngine.PostProcessing
 
     public void Release(RenderTexture rt)
     {
-      if ((UnityEngine.Object) rt == (UnityEngine.Object) null)
+      if (rt == null)
         return;
       if (!m_TemporaryRTs.Contains(rt))
-        throw new ArgumentException(string.Format("Attempting to remove a RenderTexture that was not allocated: {0}", (object) rt));
+        throw new ArgumentException(string.Format("Attempting to remove a RenderTexture that was not allocated: {0}", rt));
       m_TemporaryRTs.Remove(rt);
       RenderTexture.ReleaseTemporary(rt);
     }
 
     public void ReleaseAll()
     {
-      HashSet<A>.Enumerator enumerator = m_TemporaryRTs.GetEnumerator();
+      HashSet<RenderTexture>.Enumerator enumerator = m_TemporaryRTs.GetEnumerator();
       while (enumerator.MoveNext())
         RenderTexture.ReleaseTemporary(enumerator.Current);
       m_TemporaryRTs.Clear();

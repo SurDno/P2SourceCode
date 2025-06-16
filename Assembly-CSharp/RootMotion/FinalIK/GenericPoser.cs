@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -9,19 +10,19 @@ namespace RootMotion.FinalIK
     [ContextMenu("Auto-Mapping")]
     public override void AutoMapping()
     {
-      if ((UnityEngine.Object) poseRoot == (UnityEngine.Object) null)
+      if (poseRoot == null)
       {
         maps = new Map[0];
       }
       else
       {
         maps = new Map[0];
-        Transform[] componentsInChildren1 = this.transform.GetComponentsInChildren<Transform>();
+        Transform[] componentsInChildren1 = transform.GetComponentsInChildren<Transform>();
         Transform[] componentsInChildren2 = poseRoot.GetComponentsInChildren<Transform>();
         for (int index = 1; index < componentsInChildren1.Length; ++index)
         {
           Transform targetNamed = GetTargetNamed(componentsInChildren1[index].name, componentsInChildren2);
-          if ((UnityEngine.Object) targetNamed != (UnityEngine.Object) null)
+          if (targetNamed != null)
           {
             Array.Resize(ref maps, maps.Length + 1);
             maps[maps.Length - 1] = new Map(componentsInChildren1[index], targetNamed);
@@ -35,7 +36,7 @@ namespace RootMotion.FinalIK
 
     protected override void UpdatePoser()
     {
-      if (weight <= 0.0 || this.localPositionWeight <= 0.0 && this.localRotationWeight <= 0.0 || (UnityEngine.Object) poseRoot == (UnityEngine.Object) null)
+      if (weight <= 0.0 || this.localPositionWeight <= 0.0 && this.localRotationWeight <= 0.0 || poseRoot == null)
         return;
       float localRotationWeight = this.localRotationWeight * weight;
       float localPositionWeight = this.localPositionWeight * weight;
@@ -62,7 +63,7 @@ namespace RootMotion.FinalIK
         if (array[index].name == tName)
           return array[index];
       }
-      return (Transform) null;
+      return null;
     }
 
     [Serializable]

@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -30,7 +32,7 @@ namespace Engine.Impl.UI.Menu.Main
     protected virtual void Awake()
     {
       SettingsMenuHelper.Instatnce.OnStateSelected += OnStateSelected;
-      buttonReset?.onClick.AddListener(new UnityAction(OnButtonReset));
+      buttonReset?.onClick.AddListener(OnButtonReset);
     }
 
     protected virtual void OnEnable()
@@ -54,18 +56,18 @@ namespace Engine.Impl.UI.Menu.Main
     private bool OnValueChange(GameActionType type, bool down)
     {
       if (changingCoroutine != null)
-        this.StopCoroutine(changingCoroutine);
+        StopCoroutine(changingCoroutine);
       if (down)
       {
         switch (type)
         {
           case GameActionType.LStickLeft:
             currentEntity?.DecrementValue();
-            changingCoroutine = this.StartCoroutine(ChangingCoroutine(true));
+            changingCoroutine = StartCoroutine(ChangingCoroutine(true));
             break;
           case GameActionType.LStickRight:
             currentEntity?.IncrementValue();
-            changingCoroutine = this.StartCoroutine(ChangingCoroutine(false));
+            changingCoroutine = StartCoroutine(ChangingCoroutine(false));
             break;
         }
       }
@@ -75,18 +77,18 @@ namespace Engine.Impl.UI.Menu.Main
     private bool OnNavigate(GameActionType type, bool down)
     {
       if (scrollCoroutine != null)
-        this.StopCoroutine(scrollCoroutine);
+        StopCoroutine(scrollCoroutine);
       if (down)
       {
         switch (type)
         {
           case GameActionType.LStickUp:
             SelectItem(currentIndex - 1);
-            scrollCoroutine = this.StartCoroutine(ScrollCoroutine(true));
+            scrollCoroutine = StartCoroutine(ScrollCoroutine(true));
             break;
           case GameActionType.LStickDown:
             SelectItem(currentIndex + 1);
-            scrollCoroutine = this.StartCoroutine(ScrollCoroutine(false));
+            scrollCoroutine = StartCoroutine(ScrollCoroutine(false));
             break;
         }
       }
@@ -124,7 +126,7 @@ namespace Engine.Impl.UI.Menu.Main
     private void OnStateSelected(bool isSelected)
     {
       isSelected = isSelected || !InputService.Instance.JoystickUsed;
-      this.gameObject.SetActive(isSelected);
+      gameObject.SetActive(isSelected);
       SelectItem(0);
       if (currentEntity == null)
         return;
@@ -133,7 +135,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected bool SelectItem(int index)
     {
-      List<ISettingEntity> all = new List<ISettingEntity>((IEnumerable<ISettingEntity>) layout.transform.GetComponentsInChildren<ISettingEntity>()).FindAll(e => e.IsActive() && e.Interactable);
+      List<ISettingEntity> all = new List<ISettingEntity>(layout.transform.GetComponentsInChildren<ISettingEntity>()).FindAll(e => e.IsActive() && e.Interactable);
       if (all.Count == 0)
         return false;
       currentIndex = index >= all.Count ? 0 : (index < 0 ? all.Count - 1 : index);
@@ -160,7 +162,7 @@ namespace Engine.Impl.UI.Menu.Main
       Vector2 anchoredPosition = component.anchoredPosition;
       if (num2 - (double) anchoredPosition.y > height)
         anchoredPosition.y = num2 + (double) anchoredPosition.y > height ? num2 - height : 0.0f;
-      else if (num2 - num1 * 2.0 - (double) anchoredPosition.y < 0.0)
+      else if (num2 - num1 * 2.0 - anchoredPosition.y < 0.0)
         anchoredPosition.y = num2 - num1 * 2f;
       component.anchoredPosition = anchoredPosition;
     }
@@ -171,25 +173,25 @@ namespace Engine.Impl.UI.Menu.Main
 
     private IEnumerator ScrollCoroutine(bool isUp)
     {
-      yield return (object) new WaitForSeconds(0.5f);
+      yield return new WaitForSeconds(0.5f);
       while (true)
       {
         int sellected = !isUp ? currentIndex + 1 : currentIndex - 1;
         SelectItem(sellected);
-        yield return (object) new WaitForSeconds(0.05f);
+        yield return new WaitForSeconds(0.05f);
       }
     }
 
     private IEnumerator ChangingCoroutine(bool isDecrement)
     {
-      yield return (object) new WaitForSeconds(0.5f);
+      yield return new WaitForSeconds(0.5f);
       while (true)
       {
         if (isDecrement)
           currentEntity?.DecrementValue();
         else
           currentEntity?.IncrementValue();
-        yield return (object) new WaitForSeconds(0.05f);
+        yield return new WaitForSeconds(0.05f);
       }
     }
   }

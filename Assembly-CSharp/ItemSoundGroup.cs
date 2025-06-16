@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 [CreateAssetMenu(menuName = "Data/Item Sound Group")]
 public class ItemSoundGroup : ScriptableObject
@@ -30,9 +31,9 @@ public class ItemSoundGroup : ScriptableObject
 
     public AudioClip GetClip()
     {
-      if ((UnityEngine.Object) clip != (UnityEngine.Object) null)
+      if (clip != null)
         return clip;
-      return (UnityEngine.Object) collection != (UnityEngine.Object) null ? collection.GetClip() : (AudioClip) null;
+      return collection != null ? collection.GetClip() : null;
     }
   }
 }

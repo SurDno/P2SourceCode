@@ -9,6 +9,7 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Connections;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.MindMap
 {
@@ -42,7 +43,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.MindMap
       origin = null;
       path.Clear();
       routeView.SetRoute(null);
-      this.gameObject.SetActive(false);
+      gameObject.SetActive(false);
     }
 
     private void LateUpdate() => UpdatePosition();
@@ -77,7 +78,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.MindMap
       costView.StringValue = num + " (" + itemAmount + ")";
       enoughResourcesView.Visible = enoughResource;
       routeView.SetRoute(path);
-      this.gameObject.SetActive(true);
+      gameObject.SetActive(true);
       UpdatePosition();
     }
 
@@ -91,15 +92,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.MindMap
 
     private void UpdatePosition()
     {
-      RectTransform transform1 = (RectTransform) this.transform;
-      RectTransform transform2 = (RectTransform) this.GetComponentInParent<Canvas>().transform;
+      RectTransform transform1 = (RectTransform) transform;
+      RectTransform transform2 = (RectTransform) GetComponentInParent<Canvas>().transform;
       Vector2 vector2 = new Vector2(transform2.sizeDelta.x, transform2.sizeDelta.y);
-      Vector2 position = (Vector2) targetView.transform.position;
+      Vector2 position = targetView.transform.position;
       position.x = Mathf.Round(position.x);
       position.y = Mathf.Round(position.y);
       position.x /= transform2.localScale.x;
       position.y /= transform2.localScale.y;
-      transform1.pivot = new Vector2((double) position.x > (double) vector2.x * 0.699999988079071 ? 1f : 0.0f, (double) position.y > (double) vector2.y * 0.30000001192092896 ? 1f : 0.0f);
+      transform1.pivot = new Vector2(position.x > vector2.x * 0.699999988079071 ? 1f : 0.0f, position.y > vector2.y * 0.30000001192092896 ? 1f : 0.0f);
       transform1.anchoredPosition = position;
     }
   }

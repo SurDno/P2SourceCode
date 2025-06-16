@@ -1,5 +1,7 @@
 ﻿using System;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class RollAnimation : MonoBehaviour
 {
@@ -44,7 +46,7 @@ public class RollAnimation : MonoBehaviour
   {
     this.success = success;
     this.targetValue = NormalizedArcsine(targetValue);
-    rate = UnityEngine.Random.Range(rateRange.x, rateRange.y);
+    rate = Random.Range(rateRange.x, rateRange.y);
     ShowPosition(targetValue - rate);
     visible.Visible = true;
     time = 1f;
@@ -52,7 +54,7 @@ public class RollAnimation : MonoBehaviour
 
   public void Skip()
   {
-    this.GetComponent<AudioSource>().Stop();
+    GetComponent<AudioSource>().Stop();
     Finish();
   }
 
@@ -72,7 +74,7 @@ public class RollAnimation : MonoBehaviour
 
   private float NormalizedSine(float value)
   {
-    return (float) (0.5 - (double) Mathf.Cos(value * 3.14159274f) * 0.5);
+    return (float) (0.5 - Mathf.Cos(value * 3.14159274f) * 0.5);
   }
 
   private float NormalizedArcsine(float value)

@@ -6,6 +6,9 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Services;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -43,7 +46,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
 
     private void OnJoystick(bool joystick)
     {
-      EventSystem.current.SetSelectedGameObject((GameObject) null);
+      EventSystem.current.SetSelectedGameObject(null);
       if (!joystick)
         return;
       EventSystem.current.SetSelectedGameObject(pageButtons[currentIndex]);
@@ -74,7 +77,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       if (currentIndex < 0)
         currentIndex = pageCount - 1;
       EventSystem.current.SetSelectedGameObject(currentIndex < mindMap.PageCount ? pageButtons[currentIndex] : globalButton);
-      ExecuteEvents.Execute<ISubmitHandler>(currentIndex < mindMap.PageCount ? pageButtons[currentIndex] : globalButton, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute(currentIndex < mindMap.PageCount ? pageButtons[currentIndex] : globalButton, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
     }
 
     public void UpdateButtons()
@@ -100,10 +103,10 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       while (pageButtons.Count < pageCount)
       {
         int index = pageButtons.Count;
-        GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(pageButtonPrototype);
-        gameObject.transform.SetParent((Transform) pageButtonsAnchor, false);
+        GameObject gameObject = Instantiate(pageButtonPrototype);
+        gameObject.transform.SetParent(pageButtonsAnchor, false);
         pageButtons.Add(gameObject);
-        gameObject.GetComponent<Button>().onClick.AddListener((UnityAction) (() => OpenPage(index)));
+        gameObject.GetComponent<Button>().onClick.AddListener(() => OpenPage(index));
       }
       for (int index = 0; index < pageButtons.Count; ++index)
       {

@@ -1,4 +1,6 @@
-﻿namespace FlowCanvas.Nodes
+﻿using UnityEngine;
+
+namespace FlowCanvas.Nodes
 {
   public class ExtractContactPoint : 
     ExtractorNode<ContactPoint, Vector3, Vector3, Collider, Collider>

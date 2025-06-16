@@ -7,6 +7,7 @@ using Engine.Common;
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Scripts.Tools.Serializations.Customs;
+using UnityEngine;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -40,7 +41,7 @@ namespace Scripts.Tools.Serializations.Converters
         {
           if (!(parameter is ISerializeStateSave serializeStateSave))
           {
-            Debug.LogError((object) ("Type : " + TypeUtility.GetTypeName(parameter.GetType()) + " is not " + typeof (ISerializeStateSave)));
+            Debug.LogError("Type : " + TypeUtility.GetTypeName(parameter.GetType()) + " is not " + typeof (ISerializeStateSave));
           }
           else
           {
@@ -64,7 +65,7 @@ namespace Scripts.Tools.Serializations.Converters
         {
           if (!(component is ISerializeStateSave serializeStateSave))
           {
-            Debug.LogError((object) ("Type : " + TypeUtility.GetTypeName(component.GetType()) + " is not " + typeof (ISerializeStateSave)));
+            Debug.LogError("Type : " + TypeUtility.GetTypeName(component.GetType()) + " is not " + typeof (ISerializeStateSave));
           }
           else
           {

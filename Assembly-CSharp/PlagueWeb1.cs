@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PlagueWeb1 : PlagueWeb
 {
@@ -23,8 +24,8 @@ public class PlagueWeb1 : PlagueWeb
 
   public override bool IsActive
   {
-    get => this.enabled;
-    set => this.enabled = value;
+    get => enabled;
+    set => enabled = value;
   }
 
   public override IPlagueWebPoint AddPoint(
@@ -85,8 +86,8 @@ public class PlagueWeb1 : PlagueWeb
     }
     else
     {
-      component = Object.Instantiate<GameObject>(linkPrototype.gameObject).GetComponent<PlagueWebLink>();
-      component.transform.SetParent(this.transform, false);
+      component = Instantiate(linkPrototype.gameObject).GetComponent<PlagueWebLink>();
+      component.transform.SetParent(transform, false);
       stringBuffer.Add(component);
     }
     component.BeginAnimation(this, pointA, pointB);
@@ -100,7 +101,7 @@ public class PlagueWeb1 : PlagueWeb
     Vector3 vector3 = pointB.Position + pointB.Directionality - origin;
     float magnitude = vector3.magnitude;
     Vector3 direction = vector3 / magnitude;
-    return Physics.Raycast(origin, direction, magnitude, (int) CollisionMask, QueryTriggerInteraction.Ignore);
+    return Physics.Raycast(origin, direction, magnitude, CollisionMask, QueryTriggerInteraction.Ignore);
   }
 
   public void RemoveCell(PlagueWebCell cell)
@@ -125,7 +126,7 @@ public class PlagueWeb1 : PlagueWeb
   {
     for (int index = 0; index < activeStringsCount; ++index)
     {
-      if ((Object) stringBuffer[index] == (Object) plagueString)
+      if (stringBuffer[index] == plagueString)
       {
         stringBuffer[index] = stringBuffer[activeStringsCount - 1];
         stringBuffer[activeStringsCount - 1] = plagueString;
@@ -151,7 +152,7 @@ public class PlagueWeb1 : PlagueWeb
           for (int index = 0; index < plagueWebCell.Points.Count; ++index)
           {
             PlagueWebPoint point = plagueWebCell.Points[index];
-            if (point.Strength > 0.0 && (double) Vector3.Distance(position, point.Position) <= radius)
+            if (point.Strength > 0.0 && Vector3.Distance(position, point.Position) <= (double) radius)
               targetList.Add(point);
           }
         }
@@ -161,7 +162,7 @@ public class PlagueWeb1 : PlagueWeb
 
   private void Update()
   {
-    phase += Time.deltaTime * (float) visiblePointsCount * StringsPerPointsPerSecond;
+    phase += Time.deltaTime * visiblePointsCount * StringsPerPointsPerSecond;
     if (phase < 1.0)
       return;
     phase = 0.0f;

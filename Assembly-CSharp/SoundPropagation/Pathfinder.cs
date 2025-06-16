@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -62,7 +63,7 @@ namespace SoundPropagation
       if (distance > (double) maxDistance)
         return;
       int index;
-      if ((Object) portal == (Object) null)
+      if (portal == null)
         index = destinationIndex;
       else if (!dictionary.TryGetValue(portal, out index))
         index = -1;
@@ -77,7 +78,7 @@ namespace SoundPropagation
       {
         int poolUsage = this.poolUsage;
         freeNode = GetFreeNode();
-        if ((Object) portal == (Object) null)
+        if (portal == null)
           destinationIndex = poolUsage;
         else
           dictionary.Add(portal, poolUsage);
@@ -114,7 +115,7 @@ namespace SoundPropagation
       SPPortal portal)
     {
       Vector3 output;
-      if ((Object) portal == (Object) null)
+      if (portal == null)
         output = destPosition;
       else if (!portal.ClosestPointToSegment(prevPosition, destPosition, out output))
         return;
@@ -124,9 +125,9 @@ namespace SoundPropagation
         prevDirection = Math.DirectionalityToDirection(prevDirection, vector1);
       vector1 = Vector3.MoveTowards(prevDirection, vector1, MaxTurnPerDistance * num1);
       float num2 = Vector3.Distance(prevDirection, vector1) * LossPerTurn;
-      if ((Object) cell != (Object) null && (Object) cell.Profile != (Object) null)
+      if (cell != null && cell.Profile != null)
         num2 += cell.LossPerMeter * num1;
-      if ((Object) portal != (Object) null)
+      if (portal != null)
         num2 += portal.Loss;
       float loss = num2 + prevLoss;
       float distance = num1 + prevDistance;
@@ -213,14 +214,14 @@ namespace SoundPropagation
         else
           logBuilder.Remove(0, logBuilder.Length);
       }
-      if ((Object) originCell == (Object) destCell)
+      if (originCell == destCell)
         Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, null);
-      if ((Object) originCell != (Object) null)
+      if (originCell != null)
       {
         foreach (SPPortal portal in originCell.Portals)
           Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, portal);
       }
-      else if ((Object) destCell != (Object) null && (Object) destCell.Group != (Object) null)
+      else if (destCell != null && destCell.Group != null)
       {
         foreach (SPPortal outerPortal in destCell.Group.OuterPortals)
           Enqueue(-1, originPosition, originDirectionality, 0.0f, 0.0f, originCell, outerPortal);
@@ -229,30 +230,30 @@ namespace SoundPropagation
       {
         int indexInPool;
         Node node = Dequeue(out indexInPool);
-        if ((Object) node.Portal == (Object) null)
+        if (node.Portal == null)
         {
           FillPath(originCell, originPosition, originDirectionality, node, output);
           Reset();
           return true;
         }
         SPCell nextCell = GetNextCell(node.Cell, node.Portal);
-        if ((Object) nextCell == (Object) destCell)
+        if (nextCell == destCell)
           Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, null);
-        if ((Object) nextCell != (Object) null)
+        if (nextCell != null)
         {
           SPPortal[] portals = nextCell.Portals;
           for (int index = 0; index < portals.Length; ++index)
           {
-            if ((Object) portals[index] != (Object) node.Portal)
+            if (portals[index] != node.Portal)
               Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, portals[index]);
           }
         }
-        else if ((Object) destCell != (Object) null && (Object) destCell.Group != (Object) null)
+        else if (destCell != null && destCell.Group != null)
         {
           SPPortal[] outerPortals = destCell.Group.OuterPortals;
           for (int index = 0; index < outerPortals.Length; ++index)
           {
-            if ((Object) outerPortals[index] != (Object) node.Portal)
+            if (outerPortals[index] != node.Portal)
               Enqueue(indexInPool, node.Position, node.Direction, node.Distance, node.Loss, nextCell, outerPortals[index]);
           }
         }
@@ -263,7 +264,7 @@ namespace SoundPropagation
 
     private SPCell GetNextCell(SPCell cell, SPPortal portal)
     {
-      return (Object) portal.CellA == (Object) cell ? portal.CellB : portal.CellA;
+      return portal.CellA == cell ? portal.CellB : portal.CellA;
     }
 
     private Node GetFreeNode()

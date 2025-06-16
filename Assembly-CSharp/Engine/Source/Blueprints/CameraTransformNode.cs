@@ -1,5 +1,4 @@
-﻿using FlowCanvas;
-using FlowCanvas.Nodes;
+﻿using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
 namespace Engine.Source.Blueprints
@@ -10,7 +9,7 @@ namespace Engine.Source.Blueprints
     protected override void RegisterPorts()
     {
       base.RegisterPorts();
-      AddValueOutput("Transform", (ValueHandler<Transform>) (() => GameCamera.Instance.CameraTransform));
+      AddValueOutput("Transform", () => GameCamera.Instance.CameraTransform);
     }
   }
 }

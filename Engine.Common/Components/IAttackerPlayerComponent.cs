@@ -1,5 +1,5 @@
-﻿using Engine.Common.Components.AttackerPlayer;
-using System;
+﻿using System;
+using Engine.Common.Components.AttackerPlayer;
 
 namespace Engine.Common.Components
 {

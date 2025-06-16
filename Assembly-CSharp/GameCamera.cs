@@ -1,5 +1,6 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
+using UnityEngine;
 
 public class GameCamera : EngineDependent
 {
@@ -47,12 +48,12 @@ public class GameCamera : EngineDependent
   private void Awake()
   {
     Instance = this;
-    animator = this.GetComponent<Animator>();
+    animator = GetComponent<Animator>();
   }
 
   private void OnPauseEvent()
   {
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
       return;
     if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
       animator.SetFloat("Mecanim.Speed", 0.0f);

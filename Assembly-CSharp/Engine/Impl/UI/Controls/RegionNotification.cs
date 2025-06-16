@@ -9,6 +9,8 @@ using Engine.Source.Components.Regions;
 using Engine.Source.Services.Notifications;
 using Inspectors;
 using RegionReputation;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -59,9 +61,9 @@ namespace Engine.Impl.UI.Controls
 
     private void Play()
     {
-      if ((Object) clip == (Object) null || (Object) mixer == (Object) null)
+      if (clip == null || mixer == null)
         return;
-      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: this.gameObject.GetFullName());
+      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
     }
 
     protected override void Awake()
@@ -78,7 +80,7 @@ namespace Engine.Impl.UI.Controls
       ApplyValue(ref result, values, 0);
       if (result == null)
       {
-        Debug.LogError((object) "Notifications : Region : No region parameter");
+        Debug.LogError("Notifications : Region : No region parameter");
       }
       else
       {
@@ -88,7 +90,7 @@ namespace Engine.Impl.UI.Controls
       }
     }
 
-    public void Shutdown() => Object.Destroy((Object) this.gameObject);
+    public void Shutdown() => Destroy(gameObject);
 
     private void SetAlpha(float value)
     {

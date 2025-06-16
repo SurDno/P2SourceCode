@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Engine.Common.Services;
 using Engine.Source.Commons;
+using UnityEngine;
 
 namespace Scripts.Utility
 {
@@ -25,7 +26,7 @@ namespace Scripts.Utility
       string message = "ServiceLocatorUtility , attribute : " + typeof (T2).Name;
       foreach (T service in services)
         message = message + "\n   --- service : " + service.GetType().Name;
-      Debug.Log((object) message);
+      Debug.Log(message);
       return services;
     }
   }

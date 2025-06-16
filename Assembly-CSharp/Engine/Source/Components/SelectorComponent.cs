@@ -7,6 +7,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components.Selectors;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -47,11 +48,11 @@ namespace Engine.Source.Components
       IEntity sceneEntity = ((IEntityHierarchy) Owner).SceneEntity;
       if (sceneEntity == null)
       {
-        Debug.LogError((object) ("SceneEntity not found : " + Owner.GetInfo()));
+        Debug.LogError("SceneEntity not found : " + Owner.GetInfo());
       }
       else
       {
-        int num = UnityEngine.Random.Range(0, presets.Count);
+        int num = Random.Range(0, presets.Count);
         for (int index = 0; index < presets.Count; ++index)
         {
           foreach (SceneGameObject sceneGameObject in presets[index].Objects)
@@ -60,7 +61,7 @@ namespace Engine.Source.Components
             if (entityByTemplate != null)
               entityByTemplate.IsEnabled = num == index;
             else
-              Debug.LogError((object) ("SelectorComponent - EntityByTemplate not found , id : " + sceneGameObject.Id + " , owner : " + Owner.GetInfo()));
+              Debug.LogError("SelectorComponent - EntityByTemplate not found , id : " + sceneGameObject.Id + " , owner : " + Owner.GetInfo());
           }
         }
       }

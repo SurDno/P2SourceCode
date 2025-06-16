@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using Cofe.Meta;
+using UnityEngine;
+using UnityEngine.Audio;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -13,7 +16,7 @@ namespace Engine.Source.Services.Consoles.Binds
     {
       EnumConsoleCommand.AddBind("-mixers", (Func<string>) (() =>
       {
-        IEnumerable<AudioMixer> audioMixers = ((IEnumerable<AudioSource>) UnityEngine.Object.FindObjectsOfType<AudioSource>()).Select((Func<AudioSource, AudioMixerGroup>) (o => o.outputAudioMixerGroup)).Where((Func<AudioMixerGroup, bool>) (o => (UnityEngine.Object) o != (UnityEngine.Object) null)).Select((Func<AudioMixerGroup, AudioMixer>) (o => o.audioMixer)).Where((Func<AudioMixer, bool>) (o => (UnityEngine.Object) o != (UnityEngine.Object) null)).Distinct();
+        IEnumerable<AudioMixer> audioMixers = Object.FindObjectsOfType<AudioSource>().Select(o => o.outputAudioMixerGroup).Where(o => o != null).Select(o => o.audioMixer).Where(o => o != null).Distinct();
         string str = "\nMixers :\n";
         foreach (AudioMixer audioMixer in audioMixers)
           str = str + audioMixer.name + "\n";

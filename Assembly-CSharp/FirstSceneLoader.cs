@@ -5,6 +5,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services.HierarchyServices;
 using Engine.Source.Commons;
+using UnityEngine;
 
 public class FirstSceneLoader : MonoBehaviour
 {
@@ -20,17 +21,17 @@ public class FirstSceneLoader : MonoBehaviour
 
   private void OnViewEnabledEvent(bool enabled)
   {
-    SceneObjectContainer container = SceneObjectContainer.GetContainer(this.gameObject.scene);
-    if ((UnityEngine.Object) container == (UnityEngine.Object) null)
+    SceneObjectContainer container = SceneObjectContainer.GetContainer(gameObject.scene);
+    if (container == null)
     {
-      Debug.LogWarning((object) (typeof (SceneObjectContainer).Name + " not found, path : " + this.gameObject.scene.path + " , root count : " + (object) this.gameObject.scene.GetRootGameObjects().Length), (UnityEngine.Object) this);
+      Debug.LogWarning(typeof (SceneObjectContainer).Name + " not found, path : " + gameObject.scene.path + " , root count : " + gameObject.scene.GetRootGameObjects().Length, this);
     }
     else
     {
-      Guid id = container.GetId(this.gameObject);
+      Guid id = container.GetId(gameObject);
       if (id == Guid.Empty)
       {
-        Debug.LogWarning((object) "GameObject not found", (UnityEngine.Object) this);
+        Debug.LogWarning("GameObject not found", this);
       }
       else
       {
@@ -45,7 +46,7 @@ public class FirstSceneLoader : MonoBehaviour
         }
         if (entity1 == null)
         {
-          Debug.LogWarning((object) "Template not found", (UnityEngine.Object) this);
+          Debug.LogWarning("Template not found", this);
         }
         else
         {
@@ -63,9 +64,9 @@ public class FirstSceneLoader : MonoBehaviour
             }
           }
           if (entity2 == null)
-            Debug.LogWarning((object) "Entity not found", (UnityEngine.Object) this);
+            Debug.LogWarning("Entity not found", this);
           else
-            ((IEntityViewSetter) entity2).GameObject = enabled ? this.gameObject : (GameObject) null;
+            ((IEntityViewSetter) entity2).GameObject = enabled ? gameObject : null;
         }
       }
     }

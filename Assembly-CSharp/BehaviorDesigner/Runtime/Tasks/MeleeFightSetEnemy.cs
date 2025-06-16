@@ -7,6 +7,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -34,32 +35,32 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
         pivot = gameObject.GetComponentNonAlloc<Pivot>();
-        if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+        if (pivot == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component", gameObject);
           return TaskStatus.Failure;
         }
         owner = pivot.GetNpcEnemy();
-        if ((UnityEngine.Object) owner == (UnityEngine.Object) null)
+        if (owner == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (EnemyBase).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (EnemyBase).Name + " engine component", gameObject);
           return TaskStatus.Failure;
         }
         animator = pivot.GetAnimator();
-        if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+        if (animator == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (Animator).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (Animator).Name + " engine component", gameObject);
           return TaskStatus.Failure;
         }
       }
-      if (EnemyTransform == null || (UnityEngine.Object) EnemyTransform.Value == (UnityEngine.Object) null || (UnityEngine.Object) EnemyTransform.Value.GetComponentNonAlloc<EnemyBase>() == (UnityEngine.Object) null)
+      if (EnemyTransform == null || EnemyTransform.Value == null || EnemyTransform.Value.GetComponentNonAlloc<EnemyBase>() == null)
       {
         if (!UseCombatService.Value)
           owner.Enemy = null;
-        owner.RotationTarget = (Transform) null;
+        owner.RotationTarget = null;
         owner.RetreatAngle = new float?();
         owner.DesiredWalkSpeed = 0.0f;
         animator?.SetTrigger("Fight.Triggers/CancelWalk");

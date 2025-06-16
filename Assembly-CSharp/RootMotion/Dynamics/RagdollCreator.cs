@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -6,39 +7,39 @@ namespace RootMotion.Dynamics
   {
     public static void ClearAll(Transform root)
     {
-      if ((UnityEngine.Object) root == (UnityEngine.Object) null)
+      if (root == null)
         return;
       Transform transform = root;
       Animator componentInChildren = root.GetComponentInChildren<Animator>();
-      if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null && componentInChildren.isHuman)
+      if (componentInChildren != null && componentInChildren.isHuman)
       {
         Transform boneTransform = componentInChildren.GetBoneTransform(HumanBodyBones.Hips);
-        if ((UnityEngine.Object) boneTransform != (UnityEngine.Object) null && boneTransform.GetComponentsInChildren<Transform>().Length > 2)
+        if (boneTransform != null && boneTransform.GetComponentsInChildren<Transform>().Length > 2)
           transform = boneTransform;
       }
       Transform[] componentsInChildren = transform.GetComponentsInChildren<Transform>();
       if (componentsInChildren.Length < 2)
         return;
-      for (int index = !((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null) || !componentInChildren.isHuman ? 1 : 0; index < componentsInChildren.Length; ++index)
+      for (int index = !(componentInChildren != null) || !componentInChildren.isHuman ? 1 : 0; index < componentsInChildren.Length; ++index)
         ClearTransform(componentsInChildren[index]);
     }
 
     protected static void ClearTransform(Transform transform)
     {
-      if ((UnityEngine.Object) transform == (UnityEngine.Object) null)
+      if (transform == null)
         return;
       foreach (Collider component in transform.GetComponents<Collider>())
       {
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null && !component.isTrigger)
-          UnityEngine.Object.DestroyImmediate((UnityEngine.Object) component);
+        if (component != null && !component.isTrigger)
+          DestroyImmediate(component);
       }
       Joint component1 = transform.GetComponent<Joint>();
-      if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) component1);
+      if (component1 != null)
+        DestroyImmediate(component1);
       Rigidbody component2 = transform.GetComponent<Rigidbody>();
-      if (!((UnityEngine.Object) component2 != (UnityEngine.Object) null))
+      if (!(component2 != null))
         return;
-      UnityEngine.Object.DestroyImmediate((UnityEngine.Object) component2);
+      DestroyImmediate(component2);
     }
 
     protected static void CreateCollider(
@@ -58,11 +59,11 @@ namespace RootMotion.Dynamics
       {
         case ColliderType.Box:
           Vector3 vector3 = Vector3.Scale(vectorToDirection, new Vector3(num, num, num));
-          if ((double) vector3.x == 0.0)
+          if (vector3.x == 0.0)
             vector3.x = width;
-          if ((double) vector3.y == 0.0)
+          if (vector3.y == 0.0)
             vector3.y = width;
-          if ((double) vector3.z == 0.0)
+          if (vector3.z == 0.0)
             vector3.z = width;
           BoxCollider boxCollider = t.gameObject.AddComponent<BoxCollider>();
           boxCollider.size = vector3 / scaleF;
@@ -101,16 +102,16 @@ namespace RootMotion.Dynamics
         Vector3 a = AxisTools.GetAxisVectorToDirection(t, widthDirection);
         if (a == vectorToDirection)
         {
-          Debug.LogWarning((object) ("Width axis = height axis on " + t.name), (UnityEngine.Object) t);
+          Debug.LogWarning("Width axis = height axis on " + t.name, t);
           a = new Vector3(vectorToDirection.y, vectorToDirection.z, vectorToDirection.x);
         }
         t.gameObject.AddComponent<Rigidbody>();
         Vector3 vector3 = Vector3.Scale(vectorToDirection, new Vector3(num, num, num)) + Vector3.Scale(a, new Vector3(width, width, width));
-        if ((double) vector3.x == 0.0)
+        if (vector3.x == 0.0)
           vector3.x = width * proportionAspect;
-        if ((double) vector3.y == 0.0)
+        if (vector3.y == 0.0)
           vector3.y = width * proportionAspect;
-        if ((double) vector3.z == 0.0)
+        if (vector3.z == 0.0)
           vector3.z = width * proportionAspect;
         BoxCollider boxCollider = t.gameObject.AddComponent<BoxCollider>();
         boxCollider.size = vector3 / GetScaleF(t);
@@ -121,7 +122,7 @@ namespace RootMotion.Dynamics
     protected static float GetScaleF(Transform t)
     {
       Vector3 lossyScale = t.lossyScale;
-      return (float) (((double) lossyScale.x + (double) lossyScale.y + (double) lossyScale.z) / 3.0);
+      return (float) ((lossyScale.x + (double) lossyScale.y + lossyScale.z) / 3.0);
     }
 
     protected static Vector3 Abs(Vector3 v)
@@ -181,18 +182,18 @@ namespace RootMotion.Dynamics
         localOrthoDirection = Vector3.up;
       if (num3 > (double) num1 && num3 > (double) num2)
         localOrthoDirection = Vector3.forward;
-      if ((double) Vector3.Dot(worldDir, transform.rotation * localOrthoDirection) < 0.0)
+      if (Vector3.Dot(worldDir, transform.rotation * localOrthoDirection) < 0.0)
         localOrthoDirection = -localOrthoDirection;
       return localOrthoDirection;
     }
 
     protected static Rigidbody GetConnectedBody(Transform bone, ref Transform[] bones)
     {
-      if ((UnityEngine.Object) bone.parent == (UnityEngine.Object) null)
-        return (Rigidbody) null;
+      if (bone.parent == null)
+        return null;
       foreach (Transform transform in bones)
       {
-        if ((UnityEngine.Object) bone.parent == (UnityEngine.Object) transform && (UnityEngine.Object) transform.GetComponent<Rigidbody>() != (UnityEngine.Object) null)
+        if (bone.parent == transform && transform.GetComponent<Rigidbody>() != null)
           return transform.GetComponent<Rigidbody>();
       }
       return GetConnectedBody(bone.parent, ref bones);
@@ -202,24 +203,24 @@ namespace RootMotion.Dynamics
     {
       Vector3 localOrthoDirection = GetLocalOrthoDirection(p.rigidbody.transform, p.worldSwingAxis);
       Vector3 rhs = Vector3.forward;
-      if ((UnityEngine.Object) p.child != (UnityEngine.Object) null)
+      if (p.child != null)
         rhs = GetLocalOrthoDirection(p.rigidbody.transform, p.child.position - p.rigidbody.transform.position);
-      else if ((UnityEngine.Object) p.connectedBody != (UnityEngine.Object) null)
+      else if (p.connectedBody != null)
         rhs = GetLocalOrthoDirection(p.rigidbody.transform, p.rigidbody.transform.position - p.connectedBody.transform.position);
       Vector3 vector3 = Vector3.Cross(localOrthoDirection, rhs);
       if (p.type == JointType.Configurable)
       {
         ConfigurableJoint configurableJoint = p.rigidbody.gameObject.AddComponent<ConfigurableJoint>();
         configurableJoint.connectedBody = p.connectedBody;
-        ConfigurableJointMotion configurableJointMotion1 = (UnityEngine.Object) p.connectedBody != (UnityEngine.Object) null ? ConfigurableJointMotion.Locked : ConfigurableJointMotion.Free;
-        ConfigurableJointMotion configurableJointMotion2 = (UnityEngine.Object) p.connectedBody != (UnityEngine.Object) null ? ConfigurableJointMotion.Limited : ConfigurableJointMotion.Free;
+        ConfigurableJointMotion configurableJointMotion1 = p.connectedBody != null ? ConfigurableJointMotion.Locked : ConfigurableJointMotion.Free;
+        ConfigurableJointMotion configurableJointMotion2 = p.connectedBody != null ? ConfigurableJointMotion.Limited : ConfigurableJointMotion.Free;
         configurableJoint.xMotion = configurableJointMotion1;
         configurableJoint.yMotion = configurableJointMotion1;
         configurableJoint.zMotion = configurableJointMotion1;
         configurableJoint.angularXMotion = configurableJointMotion2;
         configurableJoint.angularYMotion = configurableJointMotion2;
         configurableJoint.angularZMotion = configurableJointMotion2;
-        if ((UnityEngine.Object) p.connectedBody != (UnityEngine.Object) null)
+        if (p.connectedBody != null)
         {
           configurableJoint.axis = localOrthoDirection;
           configurableJoint.secondaryAxis = vector3;
@@ -232,7 +233,7 @@ namespace RootMotion.Dynamics
       }
       else
       {
-        if ((UnityEngine.Object) p.connectedBody == (UnityEngine.Object) null)
+        if (p.connectedBody == null)
           return;
         CharacterJoint characterJoint = p.rigidbody.gameObject.AddComponent<CharacterJoint>();
         characterJoint.connectedBody = p.connectedBody;

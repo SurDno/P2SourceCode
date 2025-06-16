@@ -8,7 +8,7 @@ namespace BehaviorDesigner.Runtime
   public static class TaskUtility
   {
     private static Dictionary<string, Type> typeLookup = new Dictionary<string, Type>();
-    private static List<string> loadedAssemblies = null;
+    private static List<string> loadedAssemblies;
     private static Dictionary<Type, FieldInfo[]> allFieldsLookup = new Dictionary<Type, FieldInfo[]>();
     private static Dictionary<Type, FieldInfo[]> publicFieldsLookup = new Dictionary<Type, FieldInfo[]>();
     private static Dictionary<FieldInfo, Dictionary<Type, bool>> hasFieldLookup = new Dictionary<FieldInfo, Dictionary<Type, bool>>();

@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -35,15 +36,15 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) description == (UnityEngine.Object) null)
+      if (description == null)
       {
-        Debug.LogWarning((object) (typeof (MeleeFightFollow).Name + " has no " + typeof (FollowDescription).Name + " attached"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning(typeof (MeleeFightFollow).Name + " has no " + typeof (FollowDescription).Name + " attached", gameObject);
         return TaskStatus.Failure;
       }
-      if ((UnityEngine.Object) this.owner == (UnityEngine.Object) null)
+      if (this.owner == null)
       {
         this.owner = gameObject.GetComponentNonAlloc<NPCEnemy>();
-        if ((UnityEngine.Object) this.owner == (UnityEngine.Object) null)
+        if (this.owner == null)
           return TaskStatus.Failure;
       }
       NPCEnemy owner = this.owner;
@@ -60,7 +61,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       DefaultDataWriteUtility.Write(writer, "Instant", instant);
       DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
       BehaviorTreeDataWriteUtility.WriteShared(writer, "FollowTime", followTime);
-      BehaviorTreeDataWriteUtility.WriteUnity<QuickBlockDescription>(writer, "Description", description);
+      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Description", description);
     }
 
     public void DataRead(IDataReader reader, Type type)
@@ -71,7 +72,7 @@ namespace BehaviorDesigner.Runtime.Tasks
       instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
       disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
       followTime = BehaviorTreeDataReadUtility.ReadShared(reader, "FollowTime", followTime);
-      description = BehaviorTreeDataReadUtility.ReadUnity<QuickBlockDescription>(reader, "Description", description);
+      description = BehaviorTreeDataReadUtility.ReadUnity(reader, "Description", description);
     }
   }
 }

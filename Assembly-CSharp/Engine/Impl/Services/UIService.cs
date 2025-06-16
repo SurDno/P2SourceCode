@@ -15,6 +15,8 @@ using Engine.Source.Services.Saves;
 using Engine.Source.UI;
 using Engine.Source.UI.Menu.Main;
 using Inspectors;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Engine.Impl.Services
 {
@@ -94,12 +96,12 @@ namespace Engine.Impl.Services
 
     public UIWindow Swap(Type type)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try swap window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Try swap window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       if (!IsInitialize)
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       if (windows.Count == 0)
       {
-        Debug.LogError((object) ("Windows not found , info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        Debug.LogError("Windows not found , info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name);
         return null;
       }
       UIWindow openWindow;
@@ -107,12 +109,12 @@ namespace Engine.Impl.Services
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       if (windows.Contains(openWindow))
       {
-        Debug.LogError((object) ("Already pushed window : " + openWindow.GetType().Name));
+        Debug.LogError("Already pushed window : " + openWindow.GetType().Name);
         return null;
       }
       if (IsTransition)
       {
-        Debug.LogError((object) ("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        Debug.LogError("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name);
         return null;
       }
       UIWindow active = Active;
@@ -126,7 +128,7 @@ namespace Engine.Impl.Services
 
     public UIWindow Push(Type type)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try push window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Try push window : ").Append(TypeUtility.GetTypeName(type)).Append(" , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       if (!IsInitialize)
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       UIWindow openWindow;
@@ -134,12 +136,12 @@ namespace Engine.Impl.Services
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       if (windows.Contains(openWindow))
       {
-        Debug.LogError((object) ("Already pushed window : " + openWindow.GetType().Name));
+        Debug.LogError("Already pushed window : " + openWindow.GetType().Name);
         return null;
       }
       if (IsTransition)
       {
-        Debug.LogError((object) ("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        Debug.LogError("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name);
         return null;
       }
       UIWindow active = Active;
@@ -152,14 +154,14 @@ namespace Engine.Impl.Services
 
     public void Pop()
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Try pop window , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Try pop window , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
       if (!IsInitialize)
         throw new Exception(TypeUtility.GetTypeName(GetType()) + "." + MethodBase.GetCurrentMethod().Name);
       if (windows.Count == 0)
-        Debug.LogError((object) ("Windows not found , info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        Debug.LogError("Windows not found , info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name);
       else if (IsTransition)
       {
-        Debug.LogError((object) ("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name));
+        Debug.LogError("Transition already, info : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name);
       }
       else
       {
@@ -180,7 +182,7 @@ namespace Engine.Impl.Services
     public void Initialise()
     {
       IsInitialize = true;
-      uiRoot = UnityEngine.Object.FindObjectOfType<UIRoot>();
+      uiRoot = Object.FindObjectOfType<UIRoot>();
       uiRoot.Initialize();
       uiBehaviour = uiRoot.Root.GetComponent<UIControl>();
       uiBehaviour.Transform.pivot = Vector2.zero;
@@ -191,7 +193,7 @@ namespace Engine.Impl.Services
       for (int index = 0; index < childCount; ++index)
       {
         UIWindow component = uiBehaviour.transform.GetChild(index).GetComponent<UIWindow>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
           component.Initialize();
       }
       UnityEngine.Camera component1 = uiRoot.GetComponent<UnityEngine.Camera>();
@@ -223,7 +225,7 @@ namespace Engine.Impl.Services
       while (iterator.MoveNext())
         yield return iterator.Current;
       IsTransition = false;
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("End translate window , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+      Debug.Log(ObjectInfoUtility.GetStream().Append("End translate window , info : ").Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
     }
 
     public IEnumerator Load(IErrorLoadingHandler errorHandler)

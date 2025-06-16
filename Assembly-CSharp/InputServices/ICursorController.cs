@@ -1,4 +1,6 @@
-﻿namespace InputServices
+﻿using UnityEngine;
+
+namespace InputServices
 {
   public interface ICursorController
   {

@@ -1,4 +1,6 @@
-﻿namespace ParadoxNotion
+﻿using UnityEngine;
+
+namespace ParadoxNotion
 {
   public static class RectUtils
   {
@@ -36,7 +38,7 @@
 
     public static bool Encapsulates(this Rect a, Rect b)
     {
-      return (double) a.x < (double) b.x && (double) a.xMax > (double) b.xMax && (double) a.y < (double) b.y && (double) a.yMax > (double) b.yMax;
+      return a.x < (double) b.x && a.xMax > (double) b.xMax && a.y < (double) b.y && a.yMax > (double) b.yMax;
     }
   }
 }

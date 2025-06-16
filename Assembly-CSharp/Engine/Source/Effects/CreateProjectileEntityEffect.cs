@@ -8,6 +8,7 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Connections;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -54,11 +55,11 @@ namespace Engine.Source.Effects
         component1.Location = Target?.GetComponent<LocationItemComponent>()?.Location;
       Transform transform = ((IEntityView) Target).GameObject.transform;
       NPCWeaponService component2 = ((IEntityView) Target).GameObject.GetComponent<NPCWeaponService>();
-      if ((Object) component2 != (Object) null && spawnPlace == ProjectileSpawnPlaceEnum.Bomb && (Object) component2.BombParent != (Object) null)
+      if (component2 != null && spawnPlace == ProjectileSpawnPlaceEnum.Bomb && component2.BombParent != null)
         transform = component2.BombParent.transform;
-      if ((Object) component2 != (Object) null && spawnPlace == ProjectileSpawnPlaceEnum.Samopal && (Object) component2.SamopalParent != (Object) null)
+      if (component2 != null && spawnPlace == ProjectileSpawnPlaceEnum.Samopal && component2.SamopalParent != null)
         transform = component2.SamopalParent.transform;
-      if ((Object) transform != (Object) null)
+      if (transform != null)
       {
         ((IEntityView) entity).Position = transform.position;
         ((IEntityView) entity).Rotation = transform.rotation;

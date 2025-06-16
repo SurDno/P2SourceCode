@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections;
 using Engine.Source.Commons;
+using UnityEngine;
+using UnityEngine.Audio;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Audio
 {
@@ -8,15 +11,15 @@ namespace Engine.Source.Audio
   {
     public static void PlayAndCheck(this AudioSource source)
     {
-      if ((UnityEngine.Object) source.clip == (UnityEngine.Object) null)
-        Debug.LogError((object) ("Clip not found, gameobject : " + source.gameObject.name), (UnityEngine.Object) source.gameObject);
+      if (source.clip == null)
+        Debug.LogError("Clip not found, gameobject : " + source.gameObject.name, source.gameObject);
       source.Play();
     }
 
     public static void SetTime(AudioSource source, float time)
     {
       int samples = source.clip.samples;
-      int num = Mathf.Clamp((int) (time * (double) samples / (double) source.clip.length), 0, samples - 1);
+      int num = Mathf.Clamp((int) (time * (double) samples / source.clip.length), 0, samples - 1);
       source.timeSamples = num;
     }
 
@@ -60,7 +63,7 @@ namespace Engine.Source.Audio
       string context = "",
       Action complete = null)
     {
-      return PlayAudioClip((Transform) null, clip, mixer, volume, 0.0f, 0.0f, 0.0f, false, fadeTime, usePause, context, complete);
+      return PlayAudioClip(null, clip, mixer, volume, 0.0f, 0.0f, 0.0f, false, fadeTime, usePause, context, complete);
     }
 
     public static float ComputeFade(float progress, float length, float fade)
@@ -87,9 +90,9 @@ namespace Engine.Source.Audio
     {
       AudioState audioState = new AudioState();
       GameObject group = UnityFactory.GetOrCreateGroup("[Sounds]");
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(prefab, group.transform, false);
+      GameObject gameObject = Object.Instantiate(prefab, group.transform, false);
       gameObject.name = clip.name;
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
       {
         gameObject.transform.position = target.position;
         gameObject.transform.rotation = target.rotation;
@@ -103,7 +106,7 @@ namespace Engine.Source.Audio
       component.outputAudioMixerGroup = mixer;
       component.loop = false;
       component.PlayAndCheck();
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append((UnityEngine.Object) target != (UnityEngine.Object) null ? target.name : "null").Append(" , context : ").Append(context));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append(target != null ? target.name : "null").Append(" , context : ").Append(context));
       CoroutineService.Instance.Route(ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
       return audioState;
     }
@@ -124,7 +127,7 @@ namespace Engine.Source.Audio
     {
       AudioState audioState = new AudioState();
       GameObject gameObject = UnityFactory.Create("[Sounds]", clip.name);
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
       {
         gameObject.transform.position = target.position;
         gameObject.transform.rotation = target.rotation;
@@ -144,7 +147,7 @@ namespace Engine.Source.Audio
       source.loop = false;
       source.spatialize = spatialize;
       source.PlayAndCheck();
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append((UnityEngine.Object) target != (UnityEngine.Object) null ? target.name : "null").Append(" , context : ").Append(context));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append(target != null ? target.name : "null").Append(" , context : ").Append(context));
       CoroutineService.Instance.Route(ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
       return audioState;
     }
@@ -163,8 +166,8 @@ namespace Engine.Source.Audio
       Action complete = null)
     {
       AudioState audioState = new AudioState();
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(customSource);
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      GameObject gameObject = Object.Instantiate(customSource);
+      if (target != null)
       {
         gameObject.transform.position = target.position;
         gameObject.transform.rotation = target.rotation;
@@ -181,7 +184,7 @@ namespace Engine.Source.Audio
       component.loop = false;
       component.spatialize = spatialize;
       component.PlayAndCheck();
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append((UnityEngine.Object) target != (UnityEngine.Object) null ? target.name : "null").Append(" , mixer : ").Append(mixer.name).Append(" , context : ").Append(context));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , volume : ").Append(volume).Append(" , target : ").Append(target != null ? target.name : "null").Append(" , mixer : ").Append(mixer.name).Append(" , context : ").Append(context));
       CoroutineService.Instance.Route(ComputeVolume(target, audioState, volume, fadeTime, length, usePause, complete));
       return audioState;
     }
@@ -223,7 +226,7 @@ namespace Engine.Source.Audio
         while (audioState.Pause);
         if (audioState.AudioSource.isPlaying && !audioState.Complete && InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
         {
-          if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+          if (target != null)
           {
             audioState.AudioSource.transform.position = target.position;
             audioState.AudioSource.transform.rotation = target.rotation;
@@ -240,8 +243,8 @@ label_10:
 label_11:
       GameObject go = audioState.AudioSource.gameObject;
       audioState.Complete = true;
-      audioState.AudioSource = (AudioSource) null;
-      UnityEngine.Object.Destroy((UnityEngine.Object) go);
+      audioState.AudioSource = null;
+      Object.Destroy(go);
       Action action = complete;
       if (action != null)
         action();

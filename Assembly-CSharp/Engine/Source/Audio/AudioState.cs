@@ -1,4 +1,6 @@
-﻿namespace Engine.Source.Audio
+﻿using UnityEngine;
+
+namespace Engine.Source.Audio
 {
   public class AudioState
   {

@@ -1,11 +1,13 @@
 ﻿using System.Text.RegularExpressions;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class Title : MonoBehaviour
 {
   [SerializeField]
-  private UnityEngine.UI.Text holdText;
+  private Text holdText;
   [SerializeField]
-  private UnityEngine.UI.Text text;
+  private Text text;
   [SerializeField]
   private Image iconImage;
 
@@ -18,6 +20,6 @@ public class Title : MonoBehaviour
     if (!isHold)
       return;
     holdText.text = new Regex("(<color(.*?)>)").Match(text).Groups[0] + holdText.text + "</color>";
-    LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
+    LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
   }
 }

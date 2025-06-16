@@ -7,6 +7,7 @@ using Engine.Common.Components.MessangerStationary;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -33,12 +34,12 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
       {
         npcState = gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+        if (npcState == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component", gameObject);
           return;
         }
       }
@@ -47,7 +48,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null || npcState.CurrentNpcState != NpcStateEnum.MoveFollowTeleportStationary)
+      if (npcState == null || npcState.CurrentNpcState != NpcStateEnum.MoveFollowTeleportStationary)
         return TaskStatus.Failure;
       switch (npcState.Status)
       {

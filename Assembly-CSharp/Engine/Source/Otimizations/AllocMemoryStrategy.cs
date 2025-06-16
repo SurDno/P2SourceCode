@@ -3,6 +3,8 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Profiling;
 
 namespace Engine.Source.Otimizations
 {
@@ -27,15 +29,15 @@ namespace Engine.Source.Otimizations
       long max = Profiler.GetMonoHeapSizeLong();
       if (max == 0L || used == 0L)
       {
-        Debug.Log((object) "Wrong memory info");
+        Debug.Log("Wrong memory info");
       }
       else
       {
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Memory info , used : ").GetMemoryText(used).Append(" , max : ").GetMemoryText(max).Append(" , min : ").GetMemoryText(minMemory));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("Memory info , used : ").GetMemoryText(used).Append(" , max : ").GetMemoryText(max).Append(" , min : ").GetMemoryText(minMemory));
         long has = max - used;
         if (has >= minMemory)
         {
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Memory enough , has : ").GetMemoryText(has).Append(" , need : ").GetMemoryText(minMemory));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("Memory enough , has : ").GetMemoryText(has).Append(" , need : ").GetMemoryText(minMemory));
         }
         else
         {

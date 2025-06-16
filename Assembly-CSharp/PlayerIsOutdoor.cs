@@ -11,6 +11,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [TaskDescription("Player is outdoor")]
 [TaskCategory("Pathologic")]

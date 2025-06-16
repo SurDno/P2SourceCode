@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -20,18 +21,18 @@ namespace FlowCanvas.Nodes
     protected override void RegisterPorts()
     {
       collisionOut = AddFlowOutput("On Particle Collision");
-      AddValueOutput("Particle System", (ValueHandler<ParticleSystem>) (() => particle));
-      AddValueOutput("Collision Point", (ValueHandler<Vector3>) (() => collisionEvents[0].intersection));
-      AddValueOutput("Collision Normal", (ValueHandler<Vector3>) (() => collisionEvents[0].normal));
-      AddValueOutput("Collision Velocity", (ValueHandler<Vector3>) (() => collisionEvents[0].velocity));
+      AddValueOutput("Particle System", () => particle);
+      AddValueOutput("Collision Point", () => collisionEvents[0].intersection);
+      AddValueOutput("Collision Normal", () => collisionEvents[0].normal);
+      AddValueOutput("Collision Velocity", () => collisionEvents[0].velocity);
     }
 
     private void OnParticleCollision(GameObject other)
     {
       particle = other.GetComponent<ParticleSystem>();
       collisionEvents = new List<ParticleCollisionEvent>();
-      if ((Object) particle != (Object) null)
-        ParticlePhysicsExtensions.GetCollisionEvents(particle, target.value.gameObject, collisionEvents);
+      if (particle != null)
+        particle.GetCollisionEvents(target.value.gameObject, collisionEvents);
       collisionOut.Call();
     }
   }

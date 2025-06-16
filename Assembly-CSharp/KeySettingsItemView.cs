@@ -3,6 +3,8 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof (SelectableSettingsItemView))]
 public class KeySettingsItemView : MonoBehaviour, ISettingEntity, ISelectable
@@ -46,7 +48,7 @@ public class KeySettingsItemView : MonoBehaviour, ISettingEntity, ISelectable
   {
   }
 
-  public bool IsActive() => this.gameObject.activeInHierarchy;
+  public bool IsActive() => gameObject.activeInHierarchy;
 
   public void OnSelect()
   {
@@ -62,18 +64,18 @@ public class KeySettingsItemView : MonoBehaviour, ISettingEntity, ISelectable
     {
       Selectable.SetValue(null);
       string hotKeyNameByGroup = InputUtility.GetHotKeyNameByGroup(gameActionGroup, true);
-      Sprite iconSprite = hotKeyNameByGroup.IsNullOrEmpty() ? (Sprite) null : ControlIconsManager.Instance.GetIconSprite(hotKeyNameByGroup);
+      Sprite iconSprite = hotKeyNameByGroup.IsNullOrEmpty() ? null : ControlIconsManager.Instance.GetIconSprite(hotKeyNameByGroup);
       keyIcon.sprite = iconSprite;
       keyIcon.gameObject.SetActive(true);
-      this.gameObject.SetActive((Object) iconSprite != (Object) null);
+      gameObject.SetActive(iconSprite != null);
       Interactable = true;
     }
     else
     {
       Selectable.SetValue(InputUtility.GetHotKeyNameByGroup(gameActionGroup, false));
-      keyIcon.sprite = (Sprite) null;
+      keyIcon.sprite = null;
       keyIcon.gameObject.SetActive(false);
-      this.gameObject.SetActive(true);
+      gameObject.SetActive(true);
       Interactable = gameActionGroup.IsChangeble;
     }
   }

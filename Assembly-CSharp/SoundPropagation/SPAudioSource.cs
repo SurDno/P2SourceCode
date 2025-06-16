@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -23,20 +24,20 @@ namespace SoundPropagation
 
     private void LateUpdate()
     {
-      if ((Object) Origin == (Object) null)
-        Origin = this.transform.parent;
-      if ((Object) Origin == (Object) null)
+      if (Origin == null)
+        Origin = transform.parent;
+      if (Origin == null)
       {
-        Debug.LogError((object) ("SPAudioSource : " + this.name + " : Needs parent transform or custom Origin to work. Disabled for now."));
-        this.enabled = false;
+        Debug.LogError("SPAudioSource : " + name + " : Needs parent transform or custom Origin to work. Disabled for now.");
+        enabled = false;
       }
       else
       {
         SPAudioListener instance = SPAudioListener.Instance;
-        if ((Object) instance == (Object) null)
+        if (instance == null)
         {
-          Debug.LogError((object) ("SPAudioSource : " + this.name + " : Needs active SPAudioListener. Disabled for now."));
-          this.enabled = false;
+          Debug.LogError("SPAudioSource : " + name + " : Needs active SPAudioListener. Disabled for now.");
+          enabled = false;
         }
         else
         {
@@ -46,18 +47,18 @@ namespace SoundPropagation
           Vector3 position2 = instance.Position;
           Vector3 direction = instance.Direction;
           SPCell cell = instance.Cell;
-          Location location = Locator.Main.GetLocation(originCell, position1, Vector3.zero, cell, position2, direction, this.GetComponent<AudioSource>().maxDistance, logPathfinding);
+          Location location = Locator.Main.GetLocation(originCell, position1, Vector3.zero, cell, position2, direction, GetComponent<AudioSource>().maxDistance, logPathfinding);
           if (logPathfinding)
-            Debug.Log((object) Locator.Main.ActivePathfinder.Log);
+            Debug.Log(Locator.Main.ActivePathfinder.Log);
           if (location.PathFound)
           {
             Vector3 vector3_1 = location.NearestCorner - position2;
             vector3_1.Normalize();
             Vector3 vector3_2 = vector3_1 * location.PathLength;
-            this.transform.position = position2 + vector3_2;
-            AudioLowPassFilter audioLowPassFilter = this.GetComponent<AudioLowPassFilter>();
-            if ((Object) audioLowPassFilter == (Object) null)
-              audioLowPassFilter = this.gameObject.AddComponent<AudioLowPassFilter>();
+            transform.position = position2 + vector3_2;
+            AudioLowPassFilter audioLowPassFilter = GetComponent<AudioLowPassFilter>();
+            if (audioLowPassFilter == null)
+              audioLowPassFilter = gameObject.AddComponent<AudioLowPassFilter>();
             if (location.Filtering.Occlusion > 0.0)
             {
               audioLowPassFilter.enabled = true;
@@ -65,13 +66,13 @@ namespace SoundPropagation
             }
             else
               audioLowPassFilter.enabled = false;
-            this.GetComponent<AudioSource>().volume = 1f / Mathf.Pow(volumeSupression, location.Filtering.Occlusion);
-            this.GetComponent<AudioSource>().mute = false;
+            GetComponent<AudioSource>().volume = 1f / Mathf.Pow(volumeSupression, location.Filtering.Occlusion);
+            GetComponent<AudioSource>().mute = false;
           }
           else
           {
-            this.transform.position = position1;
-            this.GetComponent<AudioSource>().mute = true;
+            transform.position = position1;
+            GetComponent<AudioSource>().mute = true;
           }
         }
       }

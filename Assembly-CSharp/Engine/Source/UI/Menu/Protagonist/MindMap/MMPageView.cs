@@ -1,6 +1,7 @@
-﻿using System;
-using Engine.Common.MindMap;
+﻿using Engine.Common.MindMap;
 using Engine.Impl.MindMap;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Source.UI.Menu.Protagonist.MindMap
 {
@@ -13,16 +14,13 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     private RectTransform linkRoot;
     private RectTransform[] nodeObjects;
     private RectTransform[] linkObjects;
-    private MMNode startingNode = null;
+    private MMNode startingNode;
     private Rect bounds;
 
     public static RectTransform AddChildRect(RectTransform parent)
     {
-      RectTransform transform = (RectTransform) new GameObject(string.Empty, new Type[1]
-      {
-        typeof (RectTransform)
-      }).transform;
-      transform.SetParent((Transform) parent, false);
+      RectTransform transform = (RectTransform) new GameObject(string.Empty, typeof (RectTransform)).transform;
+      transform.SetParent(parent, false);
       return transform;
     }
 
@@ -45,16 +43,16 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
     {
       Vector2 vector2_1 = new Vector2(float.MaxValue, float.MaxValue);
       Vector2 vector2_2 = new Vector2(float.MinValue, float.MinValue);
-      linkRoot = AddChildRect(this.transform as RectTransform);
+      linkRoot = AddChildRect(transform as RectTransform);
       linkRoot.name = "Links";
-      nodeRoot = AddChildRect(this.transform as RectTransform);
+      nodeRoot = AddChildRect(transform as RectTransform);
       nodeRoot.name = "Nodes";
       nodeObjects = new RectTransform[page.NodesCount];
       linkObjects = new RectTransform[page.LinksCount];
       bool[] flagArray1 = new bool[nodeObjects.Length];
       bool[] flagArray2 = new bool[nodeObjects.Length];
       bool[] flagArray3 = new bool[nodeObjects.Length];
-      RectTransform node1 = (RectTransform) null;
+      RectTransform node1 = null;
       for (int index1 = 0; index1 < linkObjects.Length; ++index1)
       {
         MMLink link = page.GetLink(index1);
@@ -104,7 +102,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
           image.sprite = mindMap.LinkImage;
           image.color = mindMap.ColorByKind(MMContentKind.Normal) * mindMap.InactiveTint;
           float z = Mathf.Atan2(b.y - a.y, b.x - a.x) * 57.29578f;
-          rectTransform.anchoredPosition = new Vector2((float) (((double) a.x + (double) b.x) * 0.5), (float) (((double) a.y + (double) b.y) * 0.5));
+          rectTransform.anchoredPosition = new Vector2((float) ((a.x + (double) b.x) * 0.5), (float) ((a.y + (double) b.y) * 0.5));
           rectTransform.localRotation = Quaternion.Euler(0.0f, 0.0f, z);
         }
       }
@@ -123,13 +121,13 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
           parent.anchoredPosition = vector2_5;
           Vector2 vector2_6 = new Vector2(vector2_5.x - num1, vector2_5.y - num1);
           Vector2 vector2_7 = new Vector2(vector2_5.x + num1, vector2_5.y + num1);
-          if ((double) vector2_1.x > (double) vector2_6.x)
+          if (vector2_1.x > (double) vector2_6.x)
             vector2_1.x = vector2_6.x;
-          if ((double) vector2_1.y > (double) vector2_6.y)
+          if (vector2_1.y > (double) vector2_6.y)
             vector2_1.y = vector2_6.y;
-          if ((double) vector2_2.x < (double) vector2_7.x)
+          if (vector2_2.x < (double) vector2_7.x)
             vector2_2.x = vector2_7.x;
-          if ((double) vector2_2.y < (double) vector2_7.y)
+          if (vector2_2.y < (double) vector2_7.y)
             vector2_2.y = vector2_7.y;
           if (startingNode == node2)
             node1 = parent;
@@ -148,7 +146,7 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
               parent.sizeDelta = new Vector2(num2, num2);
             }
             RawImage rawImage1 = parent.gameObject.AddComponent<RawImage>();
-            rawImage1.texture = !(content.Placeholder is MMPlaceholder placeholder) ? (Texture) null : placeholder.Image.Value;
+            rawImage1.texture = !(content.Placeholder is MMPlaceholder placeholder) ? null : placeholder.Image.Value;
             rawImage1.material = mindMap.Material;
             bool flag2 = flag1 || node2.Undiscovered || content.Kind != MMContentKind.Normal && content.Kind != MMContentKind.Success || node2.NodeKind != MMNodeKind.Normal || flagArray2[index] || !flagArray1[index];
             rawImage1.color = mindMap.ColorByKind(content.Kind);
@@ -162,8 +160,8 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
             mmNodeView.HasMapItem = flag1;
             if (node2.Undiscovered)
             {
-              GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(mindMap.NewNodeIndicatorPrefab);
-              gameObject.transform.SetParent((Transform) parent, false);
+              GameObject gameObject = Instantiate(mindMap.NewNodeIndicatorPrefab);
+              gameObject.transform.SetParent(parent, false);
               mmNodeView.NewIndicator = gameObject;
             }
           }
@@ -178,8 +176,8 @@ namespace Engine.Source.UI.Menu.Protagonist.MindMap
       }
       bounds = Rect.MinMaxRect(vector2_1.x, vector2_1.y, vector2_2.x, vector2_2.y);
       mindMap.SetContentSize(bounds.size);
-      ((RectTransform) this.transform).anchoredPosition = -bounds.center;
-      if (!((UnityEngine.Object) node1 != (UnityEngine.Object) null))
+      ((RectTransform) transform).anchoredPosition = -bounds.center;
+      if (!(node1 != null))
         return;
       mindMap.FocusOnNode(node1);
     }

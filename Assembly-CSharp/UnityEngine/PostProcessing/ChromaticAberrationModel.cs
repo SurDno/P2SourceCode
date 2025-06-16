@@ -33,7 +33,7 @@ namespace UnityEngine.PostProcessing
         get
         {
           return new Settings {
-            spectralTexture = (Texture2D) null,
+            spectralTexture = null,
             intensity = 0.1f
           };
         }

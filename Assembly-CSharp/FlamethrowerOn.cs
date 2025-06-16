@@ -9,6 +9,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 using Action = BehaviorDesigner.Runtime.Tasks.Action;
 
 [TaskDescription("Enable sanitar flamethrower.")]
@@ -28,12 +29,12 @@ public class FlamethrowerOn : Action, IStub, ISerializeDataWrite, ISerializeData
 
   public override TaskStatus OnUpdate()
   {
-    if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+    if (pivot == null)
     {
       pivot = gameObject.GetComponent<PivotSanitar>();
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        Debug.LogWarning((object) ("Doesn't contain " + typeof (PivotSanitar).Name + " component"), (UnityEngine.Object) gameObject);
+        Debug.LogWarning("Doesn't contain " + typeof (PivotSanitar).Name + " component", gameObject);
         return TaskStatus.Failure;
       }
     }

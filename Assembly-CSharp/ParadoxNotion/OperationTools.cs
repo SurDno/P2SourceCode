@@ -1,4 +1,6 @@
-﻿namespace ParadoxNotion
+﻿using UnityEngine;
+
+namespace ParadoxNotion
 {
   public static class OperationTools
   {
@@ -102,7 +104,7 @@
       switch (cm)
       {
         case CompareMethod.EqualTo:
-          return (double) Mathf.Abs(a - b) <= floatingPoint;
+          return Mathf.Abs(a - b) <= (double) floatingPoint;
         case CompareMethod.GreaterThan:
           return a > (double) b;
         case CompareMethod.LessThan:

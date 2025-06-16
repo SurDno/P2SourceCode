@@ -1,9 +1,9 @@
-﻿using System;
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using FlowCanvas;
 using Inspectors;
+using UnityEngine;
 
 public class AttachBlueprint : MonoBehaviour, IEntityAttachable
 {
@@ -14,14 +14,14 @@ public class AttachBlueprint : MonoBehaviour, IEntityAttachable
 
   public void Attach(IEntity owner)
   {
-    controller = BlueprintServiceUtility.Start(prefab?.gameObject, owner, (Action) null, owner.GetInfo());
+    controller = BlueprintServiceUtility.Start(prefab?.gameObject, owner, null, owner.GetInfo());
   }
 
   public void Detach()
   {
-    if (!((UnityEngine.Object) controller != (UnityEngine.Object) null))
+    if (!(controller != null))
       return;
-    UnityEngine.Object.Destroy((UnityEngine.Object) controller.gameObject);
+    Destroy(controller.gameObject);
     controller = null;
   }
 }

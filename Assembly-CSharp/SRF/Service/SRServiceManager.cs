@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using SRF.Components;
 using SRF.Helpers;
+using UnityEngine;
 
 namespace SRF.Service
 {
@@ -21,7 +22,7 @@ namespace SRF.Service
     public static T GetService<T>() where T : class
     {
       if (!(GetServiceInternal(typeof (T)) is T serviceInternal) && !_hasQuit)
-        Debug.LogWarning((object) "Service {0} not found. (HasQuit: {1})".Fmt(typeof (T).Name, _hasQuit));
+        Debug.LogWarning("Service {0} not found. (HasQuit: {1})".Fmt(typeof (T).Name, _hasQuit));
       return serviceInternal;
     }
 
@@ -29,7 +30,7 @@ namespace SRF.Service
     {
       object serviceInternal = GetServiceInternal(t);
       if (serviceInternal == null && !_hasQuit)
-        Debug.LogWarning((object) "Service {0} not found. (HasQuit: {1})".Fmt(t.Name, _hasQuit));
+        Debug.LogWarning("Service {0} not found. (HasQuit: {1})".Fmt(t.Name, _hasQuit));
       return serviceInternal;
     }
 
@@ -115,7 +116,7 @@ namespace SRF.Service
     {
       _hasQuit = false;
       base.Awake();
-      UnityEngine.Object.DontDestroyOnLoad((UnityEngine.Object) CachedGameObject);
+      DontDestroyOnLoad(CachedGameObject);
       CachedGameObject.hideFlags = HideFlags.NotEditable;
     }
 
@@ -148,7 +149,7 @@ namespace SRF.Service
             }
             catch (Exception ex)
             {
-              Debug.LogError((object) "[SRServiceManager] Error loading assembly {0}".Fmt(assembly.FullName), (UnityEngine.Object) this);
+              Debug.LogError("[SRServiceManager] Error loading assembly {0}".Fmt(assembly.FullName), this);
               Debug.LogException(ex);
             }
           }
@@ -191,8 +192,8 @@ namespace SRF.Service
     private static object DefaultServiceConstructor(Type serviceIntType, Type implType)
     {
       if (typeof (MonoBehaviour).IsAssignableFrom(implType))
-        return (object) new GameObject("_S_" + serviceIntType.Name).AddComponent(implType);
-      return typeof (ScriptableObject).IsAssignableFrom(implType) ? (object) ScriptableObject.CreateInstance(implType) : Activator.CreateInstance(implType);
+        return new GameObject("_S_" + serviceIntType.Name).AddComponent(implType);
+      return typeof (ScriptableObject).IsAssignableFrom(implType) ? ScriptableObject.CreateInstance(implType) : Activator.CreateInstance(implType);
     }
 
     private void ScanType(Type type)
@@ -215,10 +216,10 @@ namespace SRF.Service
         if (attrib != null)
         {
           if (staticMethod.ReturnType != typeof (Type))
-            Debug.LogError((object) "ServiceSelector must have return type of Type ({0}.{1}())".Fmt(t.Name, staticMethod.Name));
+            Debug.LogError("ServiceSelector must have return type of Type ({0}.{1}())".Fmt(t.Name, staticMethod.Name));
           else if (staticMethod.GetParameters().Length != 0)
           {
-            Debug.LogError((object) "ServiceSelector must have no parameters ({0}.{1}())".Fmt(t.Name, staticMethod.Name));
+            Debug.LogError("ServiceSelector must have no parameters ({0}.{1}())".Fmt(t.Name, staticMethod.Name));
           }
           else
           {
@@ -245,10 +246,10 @@ namespace SRF.Service
         if (attrib != null)
         {
           if (method.ReturnType != attrib.ServiceType)
-            Debug.LogError((object) "ServiceConstructor must have return type of {2} ({0}.{1}())".Fmt(t.Name, method.Name, attrib.ServiceType));
+            Debug.LogError("ServiceConstructor must have return type of {2} ({0}.{1}())".Fmt(t.Name, method.Name, attrib.ServiceType));
           else if (method.GetParameters().Length != 0)
           {
-            Debug.LogError((object) "ServiceConstructor must have no parameters ({0}.{1}())".Fmt(t.Name, method.Name));
+            Debug.LogError("ServiceConstructor must have no parameters ({0}.{1}())".Fmt(t.Name, method.Name));
           }
           else
           {

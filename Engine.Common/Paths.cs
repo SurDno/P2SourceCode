@@ -21,14 +21,12 @@ namespace Engine.Common
     public const string Blueprint = "_Blueprint.prefab";
     public const string LipSync = ".anno";
     public const string ItemSoundGroup = "_ItemSoundGroup.asset";
-    public static readonly List<string> ComplexExts = new List<string>()
-    {
+    public static readonly List<string> ComplexExts = new List<string> {
       "_AI.asset",
       "_Blueprint.prefab",
       "_ItemSoundGroup.asset"
     };
-    public static readonly HashSet<string> AudioExts = new HashSet<string>()
-    {
+    public static readonly HashSet<string> AudioExts = new HashSet<string> {
       ".aif",
       ".wav",
       ".mp3",
@@ -38,8 +36,7 @@ namespace Engine.Common
       ".it",
       ".s3m"
     };
-    public static readonly HashSet<string> TextureExts = new HashSet<string>()
-    {
+    public static readonly HashSet<string> TextureExts = new HashSet<string> {
       ".bmp",
       ".tif",
       ".tga",
@@ -47,8 +44,7 @@ namespace Engine.Common
       ".psd",
       ".png"
     };
-    public static readonly HashSet<string> ReferenceExts = new HashSet<string>()
-    {
+    public static readonly HashSet<string> ReferenceExts = new HashSet<string> {
       ".unity",
       ".prefab",
       ".fbx",
@@ -87,8 +83,7 @@ namespace Engine.Common
     public const string DefaultLocalization = "Data/Settings/DefaultLocalization.txt";
     public const string SubTitlesPrefix = "SubTitles";
     public const string VmDataVersion = "Version.xml";
-    public static readonly List<string> ContentFolders = new List<string>()
-    {
+    public static readonly List<string> ContentFolders = new List<string> {
       "Assets/Data/Generated/Scenes/Resources/",
       "Assets/Data/Generated/Entities/Resources/",
       "Assets/Game/Resources/",

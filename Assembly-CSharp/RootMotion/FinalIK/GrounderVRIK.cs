@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Grounder/Grounder VRIK")]
   public class GrounderVRIK : Grounder
@@ -26,7 +28,7 @@
 
     private bool IsReadyToInitiate()
     {
-      return !((Object) ik == (Object) null) && ik.solver.initiated;
+      return !(ik == null) && ik.solver.initiated;
     }
 
     private void Update()
@@ -52,7 +54,7 @@
 
     private void OnSolverUpdate()
     {
-      if (!this.enabled || weight <= 0.0)
+      if (!enabled || weight <= 0.0)
         return;
       if (OnPreGrounder != null)
         OnPreGrounder();
@@ -81,18 +83,18 @@
 
     private void OnDrawGizmosSelected()
     {
-      if ((Object) ik == (Object) null)
-        ik = this.GetComponent<VRIK>();
-      if ((Object) ik == (Object) null)
-        ik = this.GetComponentInParent<VRIK>();
-      if (!((Object) ik == (Object) null))
+      if (ik == null)
+        ik = GetComponent<VRIK>();
+      if (ik == null)
+        ik = GetComponentInParent<VRIK>();
+      if (!(ik == null))
         return;
-      ik = this.GetComponentInChildren<VRIK>();
+      ik = GetComponentInChildren<VRIK>();
     }
 
     private void OnDestroy()
     {
-      if (!initiated || !((Object) ik != (Object) null))
+      if (!initiated || !(ik != null))
         return;
       IKSolverVR solver1 = ik.solver;
       solver1.OnPreUpdate = solver1.OnPreUpdate - OnSolverUpdate;

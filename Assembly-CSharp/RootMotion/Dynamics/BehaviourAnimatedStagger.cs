@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using UnityEngine;
 
 namespace RootMotion.Dynamics
 {
@@ -36,7 +37,7 @@ namespace RootMotion.Dynamics
       centerOfMass.Initiate(this, groundLayers);
     }
 
-    protected override void OnActivate() => this.StartCoroutine(LoseBalance());
+    protected override void OnActivate() => StartCoroutine(LoseBalance());
 
     public override void OnReactivate()
     {
@@ -85,7 +86,7 @@ namespace RootMotion.Dynamics
           m = null;
         }
         muscleArray3 = null;
-        if ((double) puppetMaster.muscles[0].rigidbody.position.y - (double) puppetMaster.targetRoot.position.y < minHipHeight)
+        if (puppetMaster.muscles[0].rigidbody.position.y - (double) puppetMaster.targetRoot.position.y < minHipHeight)
           done = true;
         yield return null;
         vel = new Vector3();
@@ -122,8 +123,8 @@ namespace RootMotion.Dynamics
       onFallOver.Trigger(puppetMaster);
       if (!onFallOver.switchBehaviour)
       {
-        yield return (object) new WaitForSeconds(1f);
-        while ((double) puppetMaster.muscles[0].rigidbody.velocity.magnitude > maxGetUpVelocity || !isGrounded)
+        yield return new WaitForSeconds(1f);
+        while (puppetMaster.muscles[0].rigidbody.velocity.magnitude > (double) maxGetUpVelocity || !isGrounded)
           yield return null;
         onRest.Trigger(puppetMaster);
         if (!onRest.switchBehaviour)

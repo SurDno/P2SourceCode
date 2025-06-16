@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page2.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Biped IK")]
@@ -149,11 +151,11 @@
       {
         solvers.AssignReferences(references);
         if (solvers.spine.bones.Length > 1)
-          solvers.spine.Initiate(this.transform);
-        solvers.lookAt.Initiate(this.transform);
-        solvers.aim.Initiate(this.transform);
+          solvers.spine.Initiate(transform);
+        solvers.lookAt.Initiate(transform);
+        solvers.aim.Initiate(transform);
         foreach (IKSolver limb in solvers.limbs)
-          limb.Initiate(this.transform);
+          limb.Initiate(transform);
         solvers.pelvis.Initiate(references.pelvis);
       }
     }
@@ -174,6 +176,6 @@
         solvers.limbs[index].Update();
     }
 
-    public void LogWarning(string message) => Warning.Log(message, this.transform);
+    public void LogWarning(string message) => Warning.Log(message, transform);
   }
 }

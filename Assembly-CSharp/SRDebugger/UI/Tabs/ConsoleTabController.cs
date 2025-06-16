@@ -12,6 +12,8 @@ using SRDebugger.Internal;
 using SRDebugger.Services;
 using SRDebugger.UI.Controls;
 using SRF;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SRDebugger.UI.Tabs
 {
@@ -34,7 +36,7 @@ namespace SRDebugger.UI.Tabs
 
     protected void Start()
     {
-      _consoleCanvas = this.GetComponent<Canvas>();
+      _consoleCanvas = GetComponent<Canvas>();
       Service.Panel.VisibilityChanged += PanelOnVisibilityChanged;
       ServiceLocator.GetService<ConsoleService>().OnAddedLine += OnAddedLine;
       instance = this;
@@ -43,7 +45,7 @@ namespace SRDebugger.UI.Tabs
     private void OnEnable()
     {
       LoadCommands();
-      this.StartCoroutine(SetFocusCoroutine());
+      StartCoroutine(SetFocusCoroutine());
       StackTraceInputField.enabled = !Application.isConsolePlatform;
     }
 
@@ -74,31 +76,31 @@ namespace SRDebugger.UI.Tabs
     private void OnAddedLine(string value)
     {
       CreateItem(value);
-      this.StartCoroutine(ScrollToBottom());
+      StartCoroutine(ScrollToBottom());
     }
 
     private IEnumerator ScrollToBottom()
     {
-      yield return (object) new WaitForEndOfFrame();
-      yield return (object) new WaitForEndOfFrame();
-      yield return (object) new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
       ScrollRect.verticalNormalizedPosition = 0.0f;
     }
 
     public IEnumerator ClearCoroutine()
     {
-      yield return (object) new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
       List<GameObject> list = new List<GameObject>();
-      foreach (Transform item in (Transform) LayoutContainer)
+      foreach (Transform item in LayoutContainer)
         list.Add(item.gameObject);
       foreach (GameObject item in list)
-        UnityEngine.Object.Destroy((UnityEngine.Object) item);
+        Destroy(item);
     }
 
     public IEnumerator SetFocusCoroutine()
     {
-      yield return (object) new WaitForEndOfFrame();
-      yield return (object) new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
+      yield return new WaitForEndOfFrame();
       StackTraceInputField.ActivateInputField();
     }
 
@@ -232,7 +234,6 @@ namespace SRDebugger.UI.Tabs
                 if (!flag)
                 {
                   str = str.ToLowerInvariant();
-                  break;
                 }
                 break;
             }
@@ -279,19 +280,19 @@ namespace SRDebugger.UI.Tabs
 
     private void PanelOnVisibilityChanged(IDebugPanelService debugPanelService, bool visible)
     {
-      if (!((UnityEngine.Object) _consoleCanvas != (UnityEngine.Object) null))
+      if (!(_consoleCanvas != null))
         return;
       _consoleCanvas.enabled = visible;
     }
 
     private void CreateItem(string data)
     {
-      ConsoleEntryView consoleEntryView = SRInstantiate.Instantiate<ConsoleEntryView>(ItemPrefab);
+      ConsoleEntryView consoleEntryView = SRInstantiate.Instantiate(ItemPrefab);
       consoleEntryView.SetData(data);
-      consoleEntryView.CachedTransform.SetParent((Transform) LayoutContainer, false);
+      consoleEntryView.CachedTransform.SetParent(LayoutContainer, false);
     }
 
-    private void Clear() => this.StartCoroutine(ClearCoroutine());
+    private void Clear() => StartCoroutine(ClearCoroutine());
 
     [ConsoleCommand("history")]
     private static string HistoryCommand(string command, ConsoleParameter[] parameters)
@@ -305,7 +306,7 @@ namespace SRDebugger.UI.Tabs
     [ConsoleCommand("clear")]
     private static string ClearCommand(string command, ConsoleParameter[] parameters)
     {
-      if ((UnityEngine.Object) instance != (UnityEngine.Object) null)
+      if (instance != null)
         instance.Clear();
       return "";
     }

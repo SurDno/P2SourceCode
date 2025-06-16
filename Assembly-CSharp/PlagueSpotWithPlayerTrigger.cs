@@ -1,8 +1,11 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
+using Engine.Source.Audio;
 using Engine.Source.Commons;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlagueSpotWithPlayerTrigger : MonoBehaviour
 {
@@ -58,9 +61,9 @@ public class PlagueSpotWithPlayerTrigger : MonoBehaviour
 
   private void Start()
   {
-    plagueSpotMaterial = this.gameObject.GetComponent<MeshRenderer>().material;
+    plagueSpotMaterial = gameObject.GetComponent<MeshRenderer>().material;
     IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
-    audioSource = this.GetComponent<AudioSource>();
+    audioSource = GetComponent<AudioSource>();
     SetState(State.Waiting);
   }
 
@@ -69,7 +72,7 @@ public class PlagueSpotWithPlayerTrigger : MonoBehaviour
   private void OnTriggerEnter(Collider other)
   {
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((Object) playerGameObject == (Object) null || !((Object) playerGameObject == (Object) other.gameObject) || state != State.Waiting)
+    if (playerGameObject == null || !(playerGameObject == other.gameObject) || state != State.Waiting)
       return;
     SetState(State.Growing);
   }
@@ -80,7 +83,7 @@ public class PlagueSpotWithPlayerTrigger : MonoBehaviour
       return GameObject.Find("FPSController");
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player == null)
-      return (GameObject) null;
+      return null;
     return ((IEntityView) player)?.GameObject;
   }
 

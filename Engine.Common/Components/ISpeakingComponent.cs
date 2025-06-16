@@ -1,8 +1,8 @@
-﻿using Engine.Common.Commons;
+﻿using System;
+using System.Collections.Generic;
+using Engine.Common.Commons;
 using Engine.Common.Components.Speaking;
 using Engine.Common.Types;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Common.Components
 {

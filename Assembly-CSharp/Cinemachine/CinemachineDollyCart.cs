@@ -1,4 +1,7 @@
-﻿namespace Cinemachine
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+
+namespace Cinemachine
 {
   [DocumentationSorting(21f, DocumentationSortingAttribute.Level.UserRef)]
   [ExecuteInEditMode]
@@ -40,11 +43,11 @@
 
     private void SetCartPosition(float distanceAlongPath)
     {
-      if (!((Object) m_Path != (Object) null))
+      if (!(m_Path != null))
         return;
       m_Position = m_Path.NormalizeUnit(distanceAlongPath, m_PositionUnits);
-      this.transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
-      this.transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
+      transform.position = m_Path.EvaluatePositionAtUnit(m_Position, m_PositionUnits);
+      transform.rotation = m_Path.EvaluateOrientationAtUnit(m_Position, m_PositionUnits);
     }
 
     public enum UpdateMethod

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -458,16 +459,16 @@ label_6:
           switch (value)
           {
             case Vector2 vector2:
-              builder.Append("\"(" + vector2.x.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + vector2.y.ToString((IFormatProvider) CultureInfo.InvariantCulture) + ")\"");
+              builder.Append("\"(" + vector2.x.ToString(CultureInfo.InvariantCulture) + "," + vector2.y.ToString(CultureInfo.InvariantCulture) + ")\"");
               break;
             case Vector3 vector3:
-              builder.Append("\"(" + vector3.x.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + vector3.y.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + vector3.z.ToString((IFormatProvider) CultureInfo.InvariantCulture) + ")\"");
+              builder.Append("\"(" + vector3.x.ToString(CultureInfo.InvariantCulture) + "," + vector3.y.ToString(CultureInfo.InvariantCulture) + "," + vector3.z.ToString(CultureInfo.InvariantCulture) + ")\"");
               break;
             case Vector4 vector4:
-              builder.Append("\"(" + vector4.x.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + vector4.y.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + vector4.z.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + vector4.w.ToString((IFormatProvider) CultureInfo.InvariantCulture) + ")\"");
+              builder.Append("\"(" + vector4.x.ToString(CultureInfo.InvariantCulture) + "," + vector4.y.ToString(CultureInfo.InvariantCulture) + "," + vector4.z.ToString(CultureInfo.InvariantCulture) + "," + vector4.w.ToString(CultureInfo.InvariantCulture) + ")\"");
               break;
             case Quaternion quaternion:
-              builder.Append("\"(" + quaternion.x.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + quaternion.y.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + quaternion.z.ToString((IFormatProvider) CultureInfo.InvariantCulture) + "," + quaternion.w.ToString((IFormatProvider) CultureInfo.InvariantCulture) + ")\"");
+              builder.Append("\"(" + quaternion.x.ToString(CultureInfo.InvariantCulture) + "," + quaternion.y.ToString(CultureInfo.InvariantCulture) + "," + quaternion.z.ToString(CultureInfo.InvariantCulture) + "," + quaternion.w.ToString(CultureInfo.InvariantCulture) + ")\"");
               break;
             default:
               SerializeString(value.ToString());

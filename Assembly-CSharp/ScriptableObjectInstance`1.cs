@@ -1,4 +1,5 @@
 ﻿using AssetDatabases;
+using UnityEngine;
 
 public class ScriptableObjectInstance<T> : ScriptableObject where T : ScriptableObject
 {
@@ -8,7 +9,7 @@ public class ScriptableObjectInstance<T> : ScriptableObject where T : Scriptable
   {
     get
     {
-      if ((Object) instance == (Object) null)
+      if (instance == null)
       {
         string path = "Assets/Data/Settings/Resources/" + typeof (T).Name + ".asset";
         ScriptableObjectInstanceAttribute[] customAttributes = (ScriptableObjectInstanceAttribute[]) typeof (T).GetCustomAttributes(typeof (ScriptableObjectInstanceAttribute), false);

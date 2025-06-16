@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Reflection;
+using UnityEngine;
 
 namespace AmplifyColor
 {
@@ -24,7 +25,7 @@ namespace AmplifyColor
     public VolumeEffectField(FieldInfo pi, Component c)
       : this(pi.Name, pi.FieldType.FullName)
     {
-      UpdateValue(pi.GetValue((object) c));
+      UpdateValue(pi.GetValue(c));
     }
 
     public static bool IsValidType(string type)

@@ -11,6 +11,11 @@ using Engine.Source.Components;
 using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.Audio;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 {
@@ -127,11 +132,11 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
         return;
       toolSelector.Storage = Actor;
       settings = defaultSettings.Settings;
-      UnityEngine.Random.State state = UnityEngine.Random.state;
-      UnityEngine.Random.InitState(Target.Owner.Id.GetHashCode());
+      Random.State state = Random.state;
+      Random.InitState(Target.Owner.Id.GetHashCode());
       leftPin.Build(settings);
       rightPin.Build(settings);
-      UnityEngine.Random.state = state;
+      Random.state = state;
       SetState(State.Idle);
     }
 
@@ -173,7 +178,7 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     {
       if (!down)
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(toolSelector.previousButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute(toolSelector.previousButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       return true;
     }
 
@@ -181,7 +186,7 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
     {
       if (!down)
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(toolSelector.nextButton.gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute(toolSelector.nextButton.gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       return true;
     }
 
@@ -200,8 +205,8 @@ namespace Engine.Source.UI.Menu.Protagonist.LockPicking
 
     public override void Initialize()
     {
-      RegisterLayer((ILockPickingWindow) this);
-      closeButton.onClick.AddListener(new UnityAction(CloseWindow));
+      RegisterLayer<ILockPickingWindow>(this);
+      closeButton.onClick.AddListener(CloseWindow);
       toolSelector.ChangeItemEvent += OnItemChange;
       base.Initialize();
     }

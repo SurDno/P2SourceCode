@@ -9,6 +9,7 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -77,7 +78,7 @@ namespace Engine.Source.Effects
       startTime = num;
       Renderer biggestRenderer = RendererUtility.GetBiggestRenderer(((IEntityView) Target).GameObject);
       GameObject rendererBurn = ScriptableObjectInstance<ResourceFromCodeData>.Instance.RendererBurn;
-      if ((UnityEngine.Object) rendererBurn != (UnityEngine.Object) null)
+      if (rendererBurn != null)
       {
         effect = UnityFactory.Instantiate<RendererBurn>(rendererBurn, "[Effects]");
         effect.BurningRenderer = biggestRenderer;
@@ -107,9 +108,9 @@ namespace Engine.Source.Effects
 
     public void Cleanup()
     {
-      if (!((UnityEngine.Object) effect != (UnityEngine.Object) null))
+      if (!(effect != null))
         return;
-      UnityFactory.Destroy((MonoBehaviour) effect);
+      UnityFactory.Destroy(effect);
       effect = null;
     }
   }

@@ -5,6 +5,7 @@ using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
 using Scripts.Behaviours.LoadControllers;
+using UnityEngine;
 
 public class LoadByDistance : BaseLoadByDistance, IEntityAttachable
 {
@@ -29,24 +30,24 @@ public class LoadByDistance : BaseLoadByDistance, IEntityAttachable
 
   private bool IsLoadCondition(Vector3 position)
   {
-    return (double) (position - this.transform.position).magnitude < (insideIndoor ? loadIndoorDistance : (double) loadDistance);
+    return (position - transform.position).magnitude < (insideIndoor ? loadIndoorDistance : (double) loadDistance);
   }
 
   private bool IsUnloadCondition(Vector3 position)
   {
-    return (double) (position - this.transform.position).magnitude > unloadDistance;
+    return (position - transform.position).magnitude > (double) unloadDistance;
   }
 
   private void CheckAndFix()
   {
     if (loadIndoorDistance > (double) loadDistance)
     {
-      Debug.LogError((object) "loadIndoorDistance > loadDistance", (UnityEngine.Object) this.gameObject);
+      Debug.LogError("loadIndoorDistance > loadDistance", gameObject);
       loadIndoorDistance = loadDistance;
     }
     if (loadDistance <= (double) unloadDistance)
       return;
-    Debug.LogError((object) "loadDistance > unloadDistance", (UnityEngine.Object) this.gameObject);
+    Debug.LogError("loadDistance > unloadDistance", gameObject);
     unloadDistance = loadDistance + 5f;
   }
 
@@ -70,7 +71,7 @@ public class LoadByDistance : BaseLoadByDistance, IEntityAttachable
     if (component != null)
       insideIndoor = component.IsIndoor;
     else
-      Debug.LogError((object) ("LocationItemComponent not found, owner : " + player.GetInfo()));
+      Debug.LogError("LocationItemComponent not found, owner : " + player.GetInfo());
   }
 
   public void Detach()

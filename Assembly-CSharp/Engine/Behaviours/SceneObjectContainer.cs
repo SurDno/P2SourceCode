@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using Cofe.Serializations.Converters;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Engine.Behaviours
 {
@@ -19,19 +21,19 @@ namespace Engine.Behaviours
       string str = DefaultConverter.ToString(id);
       foreach (Element element in elements)
       {
-        if ((UnityEngine.Object) element.Item != (UnityEngine.Object) null && element.Id == str)
+        if (element.Item != null && element.Id == str)
           return element.Item.gameObject;
       }
-      return (GameObject) null;
+      return null;
     }
 
     public Guid GetId(GameObject go)
     {
-      if ((UnityEngine.Object) go != (UnityEngine.Object) null)
+      if (go != null)
       {
         foreach (Element element in elements)
         {
-          if ((UnityEngine.Object) element.Item != (UnityEngine.Object) null && (UnityEngine.Object) element.Item.gameObject == (UnityEngine.Object) go)
+          if (element.Item != null && element.Item.gameObject == go)
             return DefaultConverter.ParseGuid(element.Id);
         }
       }
@@ -43,7 +45,7 @@ namespace Engine.Behaviours
       foreach (GameObject rootGameObject in scene.GetRootGameObjects())
       {
         SceneObjectContainer component = rootGameObject.GetComponent<SceneObjectContainer>();
-        if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+        if (component != null)
           return component;
       }
       return null;

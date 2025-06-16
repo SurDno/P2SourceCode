@@ -4,6 +4,9 @@ using System.Reflection;
 using Cofe.Utility;
 using Engine.Common.Comparers;
 using Scripts.AssetDatabaseService;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 namespace AssetDatabases
 {
@@ -43,7 +46,7 @@ namespace AssetDatabases
       return paths.TryGetValue(id, out str) ? str : "";
     }
 
-    public T Load<T>(string path) where T : UnityEngine.Object
+    public T Load<T>(string path) where T : Object
     {
       if (!path.IsNullOrEmpty())
       {
@@ -54,7 +57,7 @@ namespace AssetDatabases
       return default (T);
     }
 
-    public UnityEngine.Object[] LoadAll(string path)
+    public Object[] LoadAll(string path)
     {
       if (!path.IsNullOrEmpty())
       {
@@ -62,10 +65,10 @@ namespace AssetDatabases
         if (!resourcePath.IsNullOrEmpty())
           return Resources.LoadAll(resourcePath);
       }
-      return (UnityEngine.Object[]) null;
+      return null;
     }
 
-    public IAsyncLoad LoadAsync<T>(string path) where T : UnityEngine.Object
+    public IAsyncLoad LoadAsync<T>(string path) where T : Object
     {
       if (!path.IsNullOrEmpty())
       {
@@ -77,7 +80,7 @@ namespace AssetDatabases
             return new AsyncLoadFromResources(operation);
         }
       }
-      Debug.LogError((object) (MethodBase.GetCurrentMethod().Name + " wrong async operator : " + path));
+      Debug.LogError(MethodBase.GetCurrentMethod().Name + " wrong async operator : " + path);
       return null;
     }
 
@@ -87,12 +90,12 @@ namespace AssetDatabases
       return new AsyncLoadScene(path);
     }
 
-    public void Unload(UnityEngine.Object obj)
+    public void Unload(Object obj)
     {
-      if (!(obj != (UnityEngine.Object) null))
+      if (!(obj != null))
         return;
       Resources.UnloadAsset(obj);
-      obj = (UnityEngine.Object) null;
+      obj = null;
     }
   }
 }

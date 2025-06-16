@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 {
@@ -7,7 +8,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
   {
     protected override fsResult DoSerialize(Keyframe model, Dictionary<string, fsData> serialized)
     {
-      return fsResult.Success + SerializeMember<float>(serialized, null, "time", model.time) + SerializeMember<float>(serialized, null, "value", model.value) + SerializeMember<int>(serialized, null, "tangentMode", model.tangentMode) + SerializeMember<float>(serialized, null, "inTangent", model.inTangent) + SerializeMember<float>(serialized, null, "outTangent", model.outTangent);
+      return fsResult.Success + SerializeMember(serialized, null, "time", model.time) + SerializeMember(serialized, null, "value", model.value) + SerializeMember(serialized, null, "tangentMode", model.tangentMode) + SerializeMember(serialized, null, "inTangent", model.inTangent) + SerializeMember(serialized, null, "outTangent", model.outTangent);
     }
 
     protected override fsResult DoDeserialize(Dictionary<string, fsData> data, ref Keyframe model)
@@ -33,7 +34,7 @@ namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
 
     public override object CreateInstance(fsData data, Type storageType)
     {
-      return (object) new Keyframe();
+      return new Keyframe();
     }
   }
 }

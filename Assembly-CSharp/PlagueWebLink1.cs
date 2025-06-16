@@ -1,4 +1,6 @@
-﻿public class PlagueWebLink1 : PlagueWebLink
+﻿using UnityEngine;
+
+public class PlagueWebLink1 : PlagueWebLink
 {
   public float FlightTime = 1f;
   public float CancelFadeTime = 0.5f;
@@ -25,8 +27,8 @@
 
   private void ApplyAlphaKeys(GradientAlphaKey[] keys, LineRenderer lineRenderer = null)
   {
-    if ((Object) lineRenderer == (Object) null)
-      lineRenderer = this.GetComponent<LineRenderer>();
+    if (lineRenderer == null)
+      lineRenderer = GetComponent<LineRenderer>();
     Gradient colorGradient = lineRenderer.colorGradient;
     colorGradient.alphaKeys = keys;
     lineRenderer.colorGradient = colorGradient;
@@ -46,7 +48,7 @@
     if (baseAlphaKeys != null)
       ApplyAlphaKeys(baseAlphaKeys);
     Rebuild();
-    this.gameObject.SetActive(true);
+    gameObject.SetActive(true);
   }
 
   private void CancelLink()
@@ -59,7 +61,7 @@
 
   public void RemoveLink()
   {
-    this.gameObject.SetActive(false);
+    gameObject.SetActive(false);
     manager.RemoveLink(this);
   }
 
@@ -92,7 +94,7 @@
     }
     for (int index = 0; index < linePositions.Length; ++index)
       linePositions[index] = CalculatePosition(Mathf.Clamp01((time - TailLifeTime / (linePositions.Length - 1) * index) / FlightTime));
-    LineRenderer component = this.GetComponent<LineRenderer>();
+    LineRenderer component = GetComponent<LineRenderer>();
     component.positionCount = linePositions.Length;
     component.SetPositions(linePositions);
     if (isCanceled)
@@ -111,7 +113,7 @@
     }
     else if (baseAlphaKeys != null)
       ApplyAlphaKeys(baseAlphaKeys, component);
-    this.transform.localPosition = CalculatePosition(Mathf.Clamp01((time - TailLifeTime * 0.5f) / FlightTime));
+    transform.localPosition = CalculatePosition(Mathf.Clamp01((time - TailLifeTime * 0.5f) / FlightTime));
   }
 
   private void Update()
@@ -147,7 +149,7 @@
     time = Mathf.Abs(time - 0.5f) * 2f;
     time = (float) (1.0 - time * (double) time);
     Vector3 vector3_2 = new Vector3((vector3_1.x + noiseSalt.x) * NoiseFrequency, (vector3_1.y + noiseSalt.y) * NoiseFrequency, (vector3_1.z + noiseSalt.z) * NoiseFrequency);
-    vector3_2 = new Vector3((float) ((double) Mathf.PerlinNoise(vector3_2.z, vector3_2.y) * 2.0 - 1.0), (float) ((double) Mathf.PerlinNoise(vector3_2.x, vector3_2.z) * 2.0 - 1.0), (float) ((double) Mathf.PerlinNoise(vector3_2.y, vector3_2.x) * 2.0 - 1.0));
+    vector3_2 = new Vector3((float) (Mathf.PerlinNoise(vector3_2.z, vector3_2.y) * 2.0 - 1.0), (float) (Mathf.PerlinNoise(vector3_2.x, vector3_2.z) * 2.0 - 1.0), (float) (Mathf.PerlinNoise(vector3_2.y, vector3_2.x) * 2.0 - 1.0));
     Vector3 vector3_3 = vector3_2 * (time * NoiseAmplitude);
     return new Vector3(vector3_1.x + vector3_3.x, vector3_1.y + vector3_3.y, vector3_1.z + vector3_3.z);
   }

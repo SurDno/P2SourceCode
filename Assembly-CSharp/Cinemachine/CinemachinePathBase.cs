@@ -1,4 +1,6 @@
 ﻿using System;
+using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -50,7 +52,7 @@ namespace Cinemachine
       float a = MaxPos;
       if (searchRadius >= 0)
       {
-        int num2 = Mathf.FloorToInt(Mathf.Min((float) searchRadius, (float) ((a - (double) num1) / 2.0)));
+        int num2 = Mathf.FloorToInt(Mathf.Min(searchRadius, (float) ((a - (double) num1) / 2.0)));
         num1 = startSegment - num2;
         a = startSegment + num2 + 1;
         if (!Looped)
@@ -59,7 +61,7 @@ namespace Cinemachine
           a = Mathf.Max(a, MaxPos);
         }
       }
-      stepsPerSegment = Mathf.RoundToInt(Mathf.Clamp((float) stepsPerSegment, 1f, 100f));
+      stepsPerSegment = Mathf.RoundToInt(Mathf.Clamp(stepsPerSegment, 1f, 100f));
       float num3 = 1f / stepsPerSegment;
       float closestPoint = startSegment;
       float num4 = float.MaxValue;
@@ -194,7 +196,7 @@ namespace Cinemachine
       InvalidateDistanceCache();
       float minPos = MinPos;
       float maxPos = MaxPos;
-      float num1 = 1f / (float) Mathf.Max(1, stepsPerSegment);
+      float num1 = 1f / Mathf.Max(1, stepsPerSegment);
       int length = Mathf.RoundToInt((maxPos - minPos) / num1) + 1;
       m_PosToDistance = new float[length];
       m_CachedSampleSteps = stepsPerSegment;

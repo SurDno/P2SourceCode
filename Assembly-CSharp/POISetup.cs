@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 public class POISetup : MonoBehaviour
 {

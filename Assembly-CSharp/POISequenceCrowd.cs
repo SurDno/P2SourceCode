@@ -12,6 +12,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [Factory]
 [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
@@ -44,7 +45,7 @@ public class POISequenceCrowd : POISequence, IStub, ISerializeDataWrite, ISerial
         else
         {
           GameObject gameObject1 = component.Point?.GameObject;
-          if ((UnityEngine.Object) gameObject1 == (UnityEngine.Object) null || !gameObject1.activeInHierarchy)
+          if (gameObject1 == null || !gameObject1.activeInHierarchy)
             return;
           IEntity firstEngineObject = LocationItemUtility.GetFirstEngineObject(gameObject1.transform);
           if (firstEngineObject == null)
@@ -53,7 +54,7 @@ public class POISequenceCrowd : POISequence, IStub, ISerializeDataWrite, ISerial
           if (parentComponent == null)
             return;
           GameObject gameObject2 = ((IEntityView) parentComponent.Owner)?.GameObject;
-          if ((UnityEngine.Object) gameObject2 == (UnityEngine.Object) null)
+          if (gameObject2 == null)
             return;
           FindPOIsInGameObject(gameObject2, poiCache);
         }

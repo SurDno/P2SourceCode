@@ -1,5 +1,4 @@
-﻿using System;
-using Engine.Common.Components;
+﻿using Engine.Common.Components;
 using Engine.Common.Services;
 using Engine.Source.Components;
 using Engine.Source.Services.Utilities;
@@ -25,11 +24,11 @@ namespace Engine.Source.Blueprints
         if (target == null)
           return;
         ((MarketComponent) target).FillPrices();
-        UIServiceUtility.PushWindow(output, (Action<ITradeWindow>) (window =>
+        UIServiceUtility.PushWindow<ITradeWindow>(output, window =>
         {
           window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
           window.Market = target;
-        }));
+        });
       });
       targetInput = AddValueInput<IMarketComponent>("Market");
     }

@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services;
+using UnityEngine;
 
 [RequireComponent(typeof (VolumetricLight))]
 public class VolumetricLightDensity : EngineDependent
@@ -16,9 +17,9 @@ public class VolumetricLightDensity : EngineDependent
   {
     if (referenceDensity == 0.0)
       return;
-    if ((UnityEngine.Object) volumetricLight == (UnityEngine.Object) null)
+    if (volumetricLight == null)
     {
-      volumetricLight = this.GetComponent<VolumetricLight>();
+      volumetricLight = GetComponent<VolumetricLight>();
       baseExtinction = volumetricLight.ExtinctionCoef;
       baseScattering = volumetricLight.ScatteringCoef;
     }

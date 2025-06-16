@@ -1,5 +1,6 @@
 ﻿using System;
 using Engine.Common.Services;
+using UnityEngine;
 
 namespace JerboaAnimationInstancing
 {

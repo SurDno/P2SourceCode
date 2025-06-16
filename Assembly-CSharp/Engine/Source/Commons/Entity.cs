@@ -9,6 +9,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Impl.Services.HierarchyServices;
 using Engine.Impl.Services.Simulations;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons
 {
@@ -114,7 +115,7 @@ namespace Engine.Source.Commons
     {
       if (IsDisposed)
       {
-        Debug.LogError((object) ("Object already disposed : " + this.GetInfo()));
+        Debug.LogError("Object already disposed : " + this.GetInfo());
       }
       else
       {
@@ -263,10 +264,10 @@ namespace Engine.Source.Commons
         if (template != null)
           hierarchyItem = container.GetItemByTemplateId(template.Id);
         else
-          Debug.LogError((object) ("Template not found , scene : " + sceneEntity.GetInfo() + " , entity : " + this.GetInfo()));
+          Debug.LogError("Template not found , scene : " + sceneEntity.GetInfo() + " , entity : " + this.GetInfo());
       }
       else
-        Debug.LogError((object) ("Container not found : " + sceneEntity.GetInfo()));
+        Debug.LogError("Container not found : " + sceneEntity.GetInfo());
     }
 
     public void OnRemovedHierarchy() => hierarchyItem = null;
@@ -311,22 +312,22 @@ namespace Engine.Source.Commons
       set
       {
         IsAttached = false;
-        if ((UnityEngine.Object) View.GameObject != (UnityEngine.Object) null)
+        if (View.GameObject != null)
         {
           tmp.Clear();
-          View.GameObject.GetComponents<MonoBehaviour>(tmp);
+          View.GameObject.GetComponents(tmp);
           foreach (MonoBehaviour monoBehaviour in tmp)
           {
             if (monoBehaviour is IEntityAttachable entityAttachable)
               entityAttachable.Detach();
           }
-          View.GameObject = (GameObject) null;
+          View.GameObject = null;
         }
         View.GameObject = value;
-        if ((UnityEngine.Object) View.GameObject != (UnityEngine.Object) null)
+        if (View.GameObject != null)
         {
           tmp.Clear();
-          View.GameObject.GetComponents<MonoBehaviour>(tmp);
+          View.GameObject.GetComponents(tmp);
           foreach (MonoBehaviour monoBehaviour in tmp)
           {
             if (monoBehaviour is IEntityAttachable entityAttachable)

@@ -1,5 +1,8 @@
 ﻿using System.Text.RegularExpressions;
 using InputServices;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -8,7 +11,7 @@ namespace Engine.Impl.UI.Controls
     [SerializeField]
     private TextMeshProUGUI _textMeshPro;
     [SerializeField]
-    private UnityEngine.UI.Text _text;
+    private Text _text;
 
     public override void SkipAnimation()
     {
@@ -16,10 +19,10 @@ namespace Engine.Impl.UI.Controls
 
     protected override void ApplyStringValue()
     {
-      if ((Object) _textMeshPro == (Object) null)
-        _textMeshPro = this.gameObject?.GetComponentInChildren<TextMeshProUGUI>();
-      if ((Object) _text == (Object) null)
-        _text = this.gameObject?.GetComponentInChildren<UnityEngine.UI.Text>();
+      if (_textMeshPro == null)
+        _textMeshPro = gameObject?.GetComponentInChildren<TextMeshProUGUI>();
+      if (_text == null)
+        _text = gameObject?.GetComponentInChildren<Text>();
       string str = StringValue;
       if (string.IsNullOrEmpty(str))
         return;
@@ -31,7 +34,7 @@ namespace Engine.Impl.UI.Controls
         match2 = Regex.Match(str, string.Format("<joystick={0}>(?<value>((.*?)))</joystick>", JoystickLayoutSwitcher.Instance.GetCurrentLayoutIndex()));
       if (match1 != null)
         str = match1.Groups["value"].Value;
-      if ((Object) _textMeshPro != (Object) null)
+      if (_textMeshPro != null)
       {
         Regex regex = new Regex("(?<tag>(<b><color(.*?)>)(?<value>((.*?)))(</color></b>))");
         if (InputService.Instance.JoystickUsed && regex.IsMatch(str))
@@ -55,16 +58,16 @@ namespace Engine.Impl.UI.Controls
 
     private void ShowSingle(string text)
     {
-      if ((Object) _textMeshPro != (Object) null)
+      if (_textMeshPro != null)
       {
         _textMeshPro.gameObject?.SetActive(true);
-        if ((Object) _text != (Object) null)
+        if (_text != null)
           _text.gameObject?.SetActive(false);
         _textMeshPro.text = text;
       }
       else
       {
-        if (!((Object) _text != (Object) null))
+        if (!(_text != null))
           return;
         _text.gameObject?.SetActive(true);
         _text.text = text;

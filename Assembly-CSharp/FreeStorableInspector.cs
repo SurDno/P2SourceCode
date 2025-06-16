@@ -1,3 +1,5 @@
-﻿public class FreeStorableInspector : MonoBehaviour
+﻿using UnityEngine;
+
+public class FreeStorableInspector : MonoBehaviour
 {
 }

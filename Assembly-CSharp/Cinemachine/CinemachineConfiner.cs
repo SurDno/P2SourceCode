@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -31,7 +32,7 @@ namespace Cinemachine
     {
       get
       {
-        return m_ConfineMode == Mode.Confine3D && (Object) m_BoundingVolume != (Object) null;
+        return m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null;
       }
     }
 
@@ -55,7 +56,7 @@ namespace Cinemachine
       extraState.confinerDisplacement = vector3_1.magnitude;
     }
 
-    public void InvalidatePathCache() => m_pathCache = (List<List<Vector2>>) null;
+    public void InvalidatePathCache() => m_pathCache = null;
 
     private bool ValidatePathCache()
     {
@@ -69,14 +70,14 @@ namespace Cinemachine
         return m_BoundingVolume.ClosestPoint(camPos) - camPos;
       if (!ValidatePathCache())
         return Vector3.zero;
-      Vector2 vector2_1 = (Vector2) camPos;
+      Vector2 vector2_1 = camPos;
       Vector2 vector2_2 = vector2_1;
       for (int index = 0; index < m_pathCache.Count; ++index)
       {
         if (m_pathCache[index].Count <= 0)
           ;
       }
-      return (Vector3) (vector2_2 - vector2_1);
+      return vector2_2 - vector2_1;
     }
 
     private Vector3 ConfineScreenEdges(CinemachineVirtualCameraBase vcam, ref CameraState state)

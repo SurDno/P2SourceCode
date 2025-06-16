@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Generator;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects.Engine
 {
@@ -7,7 +8,7 @@ namespace Engine.Source.Effects.Engine
   [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
   public class EffectContextIntValuePowAssignment : EffectContextValueAssignment<int>
   {
-    protected override int Compute(int a, int b) => (int) Mathf.Pow((float) a, (float) b);
+    protected override int Compute(int a, int b) => (int) Mathf.Pow(a, b);
 
     public override string ValueView
     {

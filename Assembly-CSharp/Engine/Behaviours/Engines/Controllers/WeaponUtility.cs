@@ -22,7 +22,7 @@ namespace Engine.Behaviours.Engines.Controllers
         for (int index = 0; index < hits.Count; ++index)
         {
           GameObject gameObject1 = hits[index].collider.gameObject;
-          if (!((Object) gameObject1 == (Object) gameObject))
+          if (!(gameObject1 == gameObject))
           {
             IEntity entity = EntityUtility.GetEntity(gameObject1);
             if (entity != null)
@@ -34,7 +34,7 @@ namespace Engine.Behaviours.Engines.Controllers
               }
               break;
             }
-            Debug.LogWarningFormat("{0} can't map entity.", (object) gameObject1.name);
+            Debug.LogWarningFormat("{0} can't map entity.", gameObject1.name);
             break;
           }
         }
@@ -49,7 +49,7 @@ namespace Engine.Behaviours.Engines.Controllers
             return true;
         }
       }
-      return (double) Random.value < (durability == null ? 0.0 : (double) Mathf.Pow(1f - durability.Value, 2f));
+      return Random.value < (durability == null ? 0.0 : Mathf.Pow(1f - durability.Value, 2f));
     }
   }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using Engine.Common;
 using Engine.Common.Components;
@@ -9,6 +8,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Settings;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -51,11 +51,11 @@ namespace Engine.Source.Services
 
     public void RegisterPostman(IEntity owner, SpawnpointKindEnum spawnpointKind)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Register static postman, kind : ").Append(spawnpointKind).Append(" , owner : ").GetInfo(owner));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Register static postman, kind : ").Append(spawnpointKind).Append(" , owner : ").GetInfo(owner));
       if (spawnpointKind == SpawnpointKindEnum.None)
-        Debug.LogError((object) string.Format("Adding static postman with {0} {1}", SpawnpointKindEnum.None, owner.GetInfo()));
+        Debug.LogError(string.Format("Adding static postman with {0} {1}", SpawnpointKindEnum.None, owner.GetInfo()));
       if (IsRegistered(owner))
-        Debug.LogError((object) ("Postman already register, owner : " + owner.GetInfo()));
+        Debug.LogError("Postman already register, owner : " + owner.GetInfo());
       else
         postmans.Add(new Slot {
           Owner = owner,
@@ -66,15 +66,15 @@ namespace Engine.Source.Services
 
     public void UnregisterPostman(IEntity owner)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Unregister static postman, owner : ").GetInfo(owner));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Unregister static postman, owner : ").GetInfo(owner));
       if (!IsRegistered(owner))
       {
-        Debug.LogError((object) ("Postman already unregister, owner : " + owner.GetInfo()));
+        Debug.LogError("Postman already unregister, owner : " + owner.GetInfo());
       }
       else
       {
         int index = postmans.FindIndex(s => s.Owner == owner);
-        if ((UnityEngine.Object) postmans[index].Spawnpoint != (UnityEngine.Object) null)
+        if (postmans[index].Spawnpoint != null)
           postmans[index].Spawnpoint.Locked = false;
         postmans.RemoveAt(index);
       }
@@ -88,7 +88,7 @@ namespace Engine.Source.Services
       if (player == null)
         return;
       GameObject gameObject = ((IEntityView) player).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       LocationItemComponent component1 = player.GetComponent<LocationItemComponent>();
       if (component1 == null || component1.IsIndoor)
@@ -118,7 +118,7 @@ namespace Engine.Source.Services
           else
           {
             IEntityView owner = (IEntityView) postman.Owner;
-            if ((UnityEngine.Object) owner.GameObject != (UnityEngine.Object) null && PostmanTeleportUtility.IsPointVisibleByPlayer(playerGameObject, owner.GameObject.transform.position))
+            if (owner.GameObject != null && PostmanTeleportUtility.IsPointVisibleByPlayer(playerGameObject, owner.GameObject.transform.position))
             {
               postman.TimeLeft = Mathf.Max(postman.TimeLeft, 10f);
               continue;
@@ -135,7 +135,7 @@ namespace Engine.Source.Services
         {
           teleport.Owner.GetComponent<NavigationComponent>().TeleportTo(playerLocation.Location, spawnpoint.transform.position, spawnpoint.transform.rotation);
           teleport.TimeLeft = 30f;
-          if ((UnityEngine.Object) teleport.Spawnpoint != (UnityEngine.Object) null)
+          if (teleport.Spawnpoint != null)
             teleport.Spawnpoint.Locked = false;
           teleport.Spawnpoint = spawnpoint;
           teleport.Spawnpoint.Locked = true;
@@ -155,7 +155,7 @@ namespace Engine.Source.Services
         return false;
       }
       float num = InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value * GameCamera.Instance.Camera.aspect;
-      foreach (Spawnpoint spawnpoint1 in spawnpoints.OrderBy((Func<Spawnpoint, float>) (p => Vector3.Distance(playerGameObject.transform.position, p.transform.position))))
+      foreach (Spawnpoint spawnpoint1 in spawnpoints.OrderBy(p => Vector3.Distance(playerGameObject.transform.position, p.transform.position)))
       {
         if (spawnpoint1.SpawnpointKind == kind && !spawnpoint1.Locked)
         {
@@ -165,7 +165,7 @@ namespace Engine.Source.Services
             {
               y = 0.0f
             };
-            if ((double) to.magnitude < 30.0 && (double) Vector3.Angle(playerGameObject.transform.forward, to) < num / 2.0)
+            if (to.magnitude < 30.0 && Vector3.Angle(playerGameObject.transform.forward, to) < num / 2.0)
               continue;
           }
           spawnpoint = spawnpoint1;

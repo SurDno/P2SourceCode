@@ -5,6 +5,7 @@ using System.Text;
 using System.Xml;
 using Cofe.Serializations.Data.Xml;
 using Engine.Source.Saves;
+using UnityEngine;
 
 namespace Engine.Source.Services.Saves
 {
@@ -27,7 +28,7 @@ namespace Engine.Source.Services.Saves
         }
         catch (Exception ex)
         {
-          Debug.LogError((object) ("Error open file : " + fileName + ".gz , error : " + ex));
+          Debug.LogError("Error open file : " + fileName + ".gz , error : " + ex);
           return null;
         }
       }
@@ -42,12 +43,12 @@ namespace Engine.Source.Services.Saves
         }
         catch (Exception ex)
         {
-          Debug.LogError((object) ("Error open file : " + fileName + " , error : " + ex));
+          Debug.LogError("Error open file : " + fileName + " , error : " + ex);
           return null;
         }
       }
 
-      Debug.LogError((object) ("File not found : " + fileName));
+      Debug.LogError("File not found : " + fileName);
       return null;
     }
 

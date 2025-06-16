@@ -1,5 +1,7 @@
 ﻿using SRDebugger.UI.Controls;
 using SRF;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace SRDebugger.UI.Other
 {

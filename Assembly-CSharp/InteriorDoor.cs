@@ -8,6 +8,8 @@ using Engine.Source.Components;
 using Engine.Source.Settings.External;
 using Inspectors;
 using SoundPropagation;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class InteriorDoor : MonoBehaviour, IEntityAttachable
 {
@@ -87,23 +89,23 @@ public class InteriorDoor : MonoBehaviour, IEntityAttachable
     }
     else
       update = false;
-    this.transform.localRotation = Quaternion.Euler(0.0f, currentAngle, 0.0f);
+    transform.localRotation = Quaternion.Euler(0.0f, currentAngle, 0.0f);
     UpdateOcclusion();
     UpdateObstacle();
   }
 
   private void UpdateOcclusion()
   {
-    if ((Object) occlusionPortal != (Object) null)
+    if (occlusionPortal != null)
       occlusionPortal.open = currentAngle != 0.0;
-    if (!((Object) soundPropagationPortal != (Object) null))
+    if (!(soundPropagationPortal != null))
       return;
-    soundPropagationPortal.Occlusion = (float) ((1.0 - (double) Mathf.Min(1f, Mathf.Abs(currentAngle) / 45f)) * 1.5);
+    soundPropagationPortal.Occlusion = (float) ((1.0 - Mathf.Min(1f, Mathf.Abs(currentAngle) / 45f)) * 1.5);
   }
 
   private void UpdateObstacle()
   {
-    if (!((Object) navMeshObstacle != (Object) null))
+    if (!(navMeshObstacle != null))
       return;
     bool flag = Mathf.Approximately(Mathf.Abs(currentAngle), Mathf.Abs(angle));
     if (navMeshObstacle.enabled != flag)
@@ -125,9 +127,9 @@ public class InteriorDoor : MonoBehaviour, IEntityAttachable
   private float GetAngle(IEntity entity)
   {
     GameObject gameObject = ((IEntityView) entity).GameObject;
-    if ((Object) gameObject == (Object) null)
+    if (gameObject == null)
       return float.NaN;
-    float num = Mathf.Sign(Vector3.Dot(this.transform.parent.rotation * Vector3.forward, gameObject.transform.rotation * Vector3.forward));
+    float num = Mathf.Sign(Vector3.Dot(transform.parent.rotation * Vector3.forward, gameObject.transform.rotation * Vector3.forward));
     return Mathf.Abs(angle) * -num;
   }
 

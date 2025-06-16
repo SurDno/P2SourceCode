@@ -7,6 +7,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -28,18 +30,18 @@ namespace BehaviorDesigner.Runtime.Tasks
     {
       OutPOI = null;
       POISetup component1 = gameObject.GetComponent<POISetup>();
-      if ((UnityEngine.Object) component1 == (UnityEngine.Object) null)
+      if (component1 == null)
       {
-        Debug.LogWarning((object) (gameObject.name + ": doesn't contain POISetup Unity component"));
+        Debug.LogWarning(gameObject.name + ": doesn't contain POISetup Unity component");
       }
       else
       {
         IEntity owner = Owner.GetComponent<EngineGameObject>()?.Owner;
-        if ((UnityEngine.Object) CallingPOI.Value == (UnityEngine.Object) null)
+        if (CallingPOI.Value == null)
           return;
         POIBase component2 = CallingPOI.Value.GetComponent<POIBase>();
         POIAnimationEnum poiAnimationEnum = component2.SupportedAnimations & component1.SupportedAnimations;
-        int num1 = UnityEngine.Random.Range(0, 32);
+        int num1 = Random.Range(0, 32);
         for (int index = 0; index < 32; ++index)
         {
           int num2 = (num1 + index) % 32;
@@ -47,7 +49,7 @@ namespace BehaviorDesigner.Runtime.Tasks
           {
             POIAnimationEnum animation = (POIAnimationEnum) (1 << num2);
             POIAnimationSetupBase animationSetup = component1.GetAnimationSetup(animation);
-            OutAnimationIndex = UnityEngine.Random.Range(0, animationSetup.Elements.Count);
+            OutAnimationIndex = Random.Range(0, animationSetup.Elements.Count);
             if (animationSetup.Elements.Count > OutAnimationIndex && animationSetup.Elements[OutAnimationIndex] is POIAnimationSetupElementSlow)
               OutMiddleAnimationsCount = (animationSetup.Elements[OutAnimationIndex] as POIAnimationSetupElementSlow).MiddleAnimationClips.Count;
             OutAngle = component2.GetAngle(Owner.gameObject);

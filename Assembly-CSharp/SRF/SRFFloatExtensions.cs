@@ -1,4 +1,6 @@
-﻿namespace SRF
+﻿using UnityEngine;
+
+namespace SRF
 {
   public static class SRFFloatExtensions
   {

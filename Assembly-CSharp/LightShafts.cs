@@ -1,6 +1,6 @@
-﻿using System;
-using Engine.Common;
+﻿using Engine.Common;
 using Engine.Source.Commons;
+using UnityEngine;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (MeshFilter), typeof (ParticleSystem))]
@@ -50,8 +50,8 @@ public class LightShafts : MonoBehaviour, IUpdatable
   {
     get
     {
-      if ((UnityEngine.Object) _meshFilter == (UnityEngine.Object) null)
-        _meshFilter = this.GetComponent<MeshFilter>();
+      if (_meshFilter == null)
+        _meshFilter = GetComponent<MeshFilter>();
       return _meshFilter;
     }
   }
@@ -60,8 +60,8 @@ public class LightShafts : MonoBehaviour, IUpdatable
   {
     get
     {
-      if ((UnityEngine.Object) _meshRenderer == (UnityEngine.Object) null)
-        _meshRenderer = this.GetComponent<MeshRenderer>();
+      if (_meshRenderer == null)
+        _meshRenderer = GetComponent<MeshRenderer>();
       return _meshRenderer;
     }
   }
@@ -70,24 +70,20 @@ public class LightShafts : MonoBehaviour, IUpdatable
   {
     get
     {
-      if ((UnityEngine.Object) _particleSystem == (UnityEngine.Object) null)
-        _particleSystem = this.GetComponent<ParticleSystem>();
+      if (_particleSystem == null)
+        _particleSystem = GetComponent<ParticleSystem>();
       return _particleSystem;
     }
   }
 
   private void CheckChild()
   {
-    if (!((UnityEngine.Object) _child == (UnityEngine.Object) null))
+    if (!(_child == null))
       return;
-    _child = new GameObject("Light Shaft Fade", new Type[2]
-    {
-      typeof (MeshFilter),
-      typeof (MeshRenderer)
-    });
-    _child.layer = this.gameObject.layer;
-    _child.tag = this.gameObject.tag;
-    _child.transform.SetParent(this.transform, false);
+    _child = new GameObject("Light Shaft Fade", typeof (MeshFilter), typeof (MeshRenderer));
+    _child.layer = gameObject.layer;
+    _child.tag = gameObject.tag;
+    _child.transform.SetParent(transform, false);
     _child.transform.localPosition = Vector3.zero;
     _child.transform.localRotation = Quaternion.identity;
     _child.transform.localScale = Vector3.one;
@@ -99,17 +95,17 @@ public class LightShafts : MonoBehaviour, IUpdatable
 
   private void NullChild()
   {
-    if (!((UnityEngine.Object) _child != (UnityEngine.Object) null))
+    if (!(_child != null))
       return;
-    UnityEngine.Object.Destroy((UnityEngine.Object) _child);
-    _child = (GameObject) null;
-    _childMeshFilter = (MeshFilter) null;
-    _childMeshRenderer = (MeshRenderer) null;
+    Destroy(_child);
+    _child = null;
+    _childMeshFilter = null;
+    _childMeshRenderer = null;
   }
 
   private void CheckMesh()
   {
-    if ((UnityEngine.Object) meshFilter.sharedMesh != (UnityEngine.Object) null)
+    if (meshFilter.sharedMesh != null)
       return;
     Mesh mesh = new Mesh();
     mesh.MarkDynamic();
@@ -126,16 +122,16 @@ public class LightShafts : MonoBehaviour, IUpdatable
 
   public void NullMesh()
   {
-    if ((UnityEngine.Object) meshFilter.sharedMesh != (UnityEngine.Object) null)
+    if (meshFilter.sharedMesh != null)
     {
-      UnityEngine.Object.Destroy((UnityEngine.Object) meshFilter.sharedMesh);
-      meshFilter.sharedMesh = (Mesh) null;
+      Destroy(meshFilter.sharedMesh);
+      meshFilter.sharedMesh = null;
     }
     particleSystem.Stop();
     ParticleSystem.ShapeModule shape = particleSystem.shape with
     {
       shapeType = ParticleSystemShapeType.Sphere,
-      mesh = (Mesh) null
+      mesh = null
     };
     meshRenderer.enabled = false;
   }
@@ -178,7 +174,7 @@ public class LightShafts : MonoBehaviour, IUpdatable
         float num1 = 1f / nearUpdateTime;
         if (isPlayerSet)
         {
-          float num2 = Vector3.Distance(this.transform.position, playerPosition);
+          float num2 = Vector3.Distance(transform.position, playerPosition);
           if (num2 >= (double) farDistance)
             num1 = 0.0f;
           else if (num2 > (double) nearDistance)
@@ -195,7 +191,7 @@ public class LightShafts : MonoBehaviour, IUpdatable
         }
         if (thisFrameRebuilds < 4 || _phase >= 2.0)
         {
-          if ((UnityEngine.Object) meshFilter.sharedMesh == (UnityEngine.Object) null)
+          if (meshFilter.sharedMesh == null)
           {
             NullChild();
           }
@@ -211,9 +207,9 @@ public class LightShafts : MonoBehaviour, IUpdatable
           ++thisFrameRebuilds;
         }
       }
-      if ((UnityEngine.Object) meshFilter.sharedMesh != (UnityEngine.Object) null)
+      if (meshFilter.sharedMesh != null)
         UpdateRenderer(meshRenderer, _phase);
-      if ((UnityEngine.Object) _childMeshRenderer != (UnityEngine.Object) null)
+      if (_childMeshRenderer != null)
         UpdateRenderer(_childMeshRenderer, 1f - _phase);
     }
     _lastUpdateTime = Time.unscaledTime;
@@ -239,7 +235,7 @@ public class LightShafts : MonoBehaviour, IUpdatable
     }
     else
     {
-      float opacity = Mathf.Clamp01(Vector3.Dot(LightDirection, this.transform.forward));
+      float opacity = Mathf.Clamp01(Vector3.Dot(LightDirection, transform.forward));
       if (opacity <= 0.0)
       {
         NullMesh();
@@ -248,13 +244,13 @@ public class LightShafts : MonoBehaviour, IUpdatable
       {
         LightShaftsBuilder instance = LightShaftsBuilder.Instance;
         instance.Prepare(this, opacity, points.Length);
-        Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+        Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
         bool flag = false;
         float num = 0.0f;
         for (int index = 0; index < points.Length; ++index)
         {
           Vector3 origin = localToWorldMatrix.MultiplyPoint(points[index]);
-          if (outdoorDistance > (double) outdoorBias && Physics.Raycast(origin - _lightDirection * outdoorBias, -_lightDirection, outdoorDistance - outdoorBias, (int) shadowCastingColliders, QueryTriggerInteraction.Ignore))
+          if (outdoorDistance > (double) outdoorBias && Physics.Raycast(origin - _lightDirection * outdoorBias, -_lightDirection, outdoorDistance - outdoorBias, shadowCastingColliders, QueryTriggerInteraction.Ignore))
           {
             float length = 0.0f;
             instance.AddRay(origin, length);
@@ -263,7 +259,7 @@ public class LightShafts : MonoBehaviour, IUpdatable
           {
             RaycastHit hitInfo;
             float length1;
-            if (length > (double) indoorBias && Physics.Raycast(origin + _lightDirection * indoorBias, _lightDirection, out hitInfo, length - indoorBias, (int) shadowCastingColliders, QueryTriggerInteraction.Ignore))
+            if (length > (double) indoorBias && Physics.Raycast(origin + _lightDirection * indoorBias, _lightDirection, out hitInfo, length - indoorBias, shadowCastingColliders, QueryTriggerInteraction.Ignore))
             {
               length1 = hitInfo.distance + indoorBias + radius;
               if (length1 > (double) length)

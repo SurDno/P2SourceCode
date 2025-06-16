@@ -7,6 +7,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace Engine.BehaviourNodes.Conditionals
 {
@@ -26,7 +27,7 @@ namespace Engine.BehaviourNodes.Conditionals
     public override TaskStatus OnUpdate()
     {
       NpcState component = gameObject.GetComponent<NpcState>();
-      return (UnityEngine.Object) component == (UnityEngine.Object) null ? TaskStatus.Failure : (component.CurrentNpcState == npcState ? TaskStatus.Success : TaskStatus.Failure);
+      return component == null ? TaskStatus.Failure : (component.CurrentNpcState == npcState ? TaskStatus.Success : TaskStatus.Failure);
     }
 
     public void DataWrite(IDataWriter writer)

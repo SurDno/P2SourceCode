@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using ClipperLib;
+using UnityEngine;
 
 public static class ClipperVector2
 {
@@ -26,11 +27,11 @@ public static class ClipperVector2
 
   private static Vector2 IntPointToVector2(IntPoint input)
   {
-    return new Vector2((float) input.X, (float) input.Y) / 1000f;
+    return new Vector2(input.X, input.Y) / 1000f;
   }
 
   private static IntPoint Vector2ToIntPoint(Vector2 input)
   {
-    return new IntPoint((double) input.x * 1000.0, (double) input.y * 1000.0);
+    return new IntPoint(input.x * 1000.0, input.y * 1000.0);
   }
 }

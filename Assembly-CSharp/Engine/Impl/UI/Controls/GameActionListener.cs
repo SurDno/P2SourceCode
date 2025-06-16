@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -22,7 +23,7 @@ namespace Engine.Impl.UI.Controls
 
     private bool OnGameAction(GameActionType type, bool down)
     {
-      if (!down || (Object) view == (Object) null)
+      if (!down || view == null)
         return false;
       view.Invoke();
       return true;

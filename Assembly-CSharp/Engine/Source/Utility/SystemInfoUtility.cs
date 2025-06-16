@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using Cofe.Serializations.Converters;
 using Engine.Source.Settings;
+using Debug = UnityEngine.Debug;
 
 namespace Engine.Source.Utility
 {
@@ -40,7 +41,7 @@ namespace Engine.Source.Utility
       {
         try
         {
-          UnityEngine.Debug.Log((object) "Try get system info");
+          Debug.Log("Try get system info");
           Process process = new Process();
           process.StartInfo.FileName = "wmic.exe";
           process.StartInfo.Arguments = "CPU Get NumberOfCores,NumberOfLogicalProcessors /Format:List";
@@ -53,7 +54,7 @@ namespace Engine.Source.Utility
           process.BeginErrorReadLine();
           string end = process.StandardOutput.ReadToEnd();
           process.WaitForExit();
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Compute result : ").Append(end));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("Compute result : ").Append(end));
           string str1 = end;
           char[] separator = new char[2]{ '\n', '\r' };
           foreach (string str2 in str1.Split(separator, StringSplitOptions.RemoveEmptyEntries))
@@ -76,17 +77,17 @@ namespace Engine.Source.Utility
         }
         catch (Exception ex)
         {
-          UnityEngine.Debug.LogException(ex);
+          Debug.LogException(ex);
         }
         if (numberOfCores == -1 || numberOfLogicalProcessors == -1)
         {
-          UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Wrong get system info , cores : ").Append(numberOfCores).Append(" , logics : ").Append(numberOfLogicalProcessors));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("Wrong get system info , cores : ").Append(numberOfCores).Append(" , logics : ").Append(numberOfLogicalProcessors));
           numberOfCores = Environment.ProcessorCount;
           numberOfLogicalProcessors = Environment.ProcessorCount;
         }
       }
       else
-        UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Loaded system info , cores : ").Append(numberOfCores).Append(" , logics : ").Append(numberOfLogicalProcessors));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("Loaded system info , cores : ").Append(numberOfCores).Append(" , logics : ").Append(numberOfLogicalProcessors));
       PlayerSettings.Instance.SetInt("NumberOfCores", numberOfCores);
       PlayerSettings.Instance.SetInt("NumberOfLogicalProcessors", numberOfLogicalProcessors);
     }

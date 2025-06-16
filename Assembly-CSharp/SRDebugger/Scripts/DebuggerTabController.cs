@@ -2,6 +2,7 @@
 using System.Linq;
 using SRDebugger.UI.Other;
 using SRF;
+using UnityEngine;
 
 namespace SRDebugger.Scripts
 {
@@ -28,7 +29,7 @@ namespace SRDebugger.Scripts
       foreach (SRTab prefab in srTabArray)
       {
         if (!(prefab.GetComponent(typeof (IEnableTab)) is IEnableTab component) || component.IsEnabled)
-          TabController.AddTab(SRInstantiate.Instantiate<SRTab>(prefab));
+          TabController.AddTab(SRInstantiate.Instantiate(prefab));
       }
       if (OpenTab((DefaultTabs) ((int) _activeTab ?? (int) Settings.Instance.DefaultTab)))
         return;

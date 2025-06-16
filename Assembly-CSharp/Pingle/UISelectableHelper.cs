@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 namespace Pingle
 {
@@ -11,7 +12,7 @@ namespace Pingle
       bool IsDirectionPriority = true)
     {
       RectTransform transform = origin.transform as RectTransform;
-      return UISelectableHelper.Select(objects, (Object) transform != (Object) null ? transform.TransformPoint(GetPointOnRectEdge(transform, (Vector2) dirrection)) : origin.transform.position, dirrection, IsDirectionPriority);
+      return Select(objects, transform != null ? transform.TransformPoint(GetPointOnRectEdge(transform, dirrection)) : origin.transform.position, dirrection, IsDirectionPriority);
     }
 
     public static GameObject Select(
@@ -21,13 +22,13 @@ namespace Pingle
       bool isDirectionPriority = true)
     {
       float num1 = float.NegativeInfinity;
-      GameObject gameObject1 = (GameObject) null;
+      GameObject gameObject1 = null;
       foreach (GameObject gameObject2 in objects)
       {
-        if (!((Object) gameObject2 == (Object) null) && gameObject2.activeInHierarchy)
+        if (!(gameObject2 == null) && gameObject2.activeInHierarchy)
         {
           RectTransform transform = gameObject2.transform as RectTransform;
-          Vector3 position = (Object) transform != (Object) null ? (Vector3) transform.rect.center : Vector3.zero;
+          Vector3 position = transform != null ? transform.rect.center : Vector3.zero;
           Vector3 vector3 = gameObject2.transform.TransformPoint(position) - origin;
           float f = Vector3.Dot(dirrection, vector3.normalized);
           if (f > 0.0)
@@ -49,7 +50,7 @@ namespace Pingle
     public static GameObject SelectClosest(IEnumerable<GameObject> objects, Vector3 origin)
     {
       float num = float.MaxValue;
-      GameObject gameObject1 = (GameObject) null;
+      GameObject gameObject1 = null;
       foreach (GameObject gameObject2 in objects)
       {
         float sqrMagnitude = ((Vector2) (gameObject2.transform.position - origin)).sqrMagnitude;
@@ -64,12 +65,12 @@ namespace Pingle
 
     private static Vector3 GetPointOnRectEdge(RectTransform rect, Vector2 dir)
     {
-      if ((Object) rect == (Object) null)
+      if (rect == null)
         return Vector3.zero;
       if (dir != Vector2.zero)
         dir /= Mathf.Max(Mathf.Abs(dir.x), Mathf.Abs(dir.y));
       dir = rect.rect.center + Vector2.Scale(rect.rect.size, dir * 0.5f);
-      return (Vector3) dir;
+      return dir;
     }
   }
 }

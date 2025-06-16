@@ -1,4 +1,6 @@
-﻿namespace Cinemachine.Utility
+﻿using UnityEngine;
+
+namespace Cinemachine.Utility
 {
   internal static class SplineHelpers
   {
@@ -66,7 +68,7 @@
             numArray1[index3] = 1f;
             numArray2[index3] = 4f;
             numArray3[index3] = 1f;
-            numArray4[index3] = (float) (4.0 * (double) knot[index3][index1] + 2.0 * (double) knot[index3 + 1][index1]);
+            numArray4[index3] = (float) (4.0 * knot[index3][index1] + 2.0 * knot[index3 + 1][index1]);
           }
           numArray1[index2 - 1] = 2f;
           numArray2[index2 - 1] = 7f;
@@ -83,7 +85,7 @@
             ctrl1[index5][index1] = (numArray4[index5] - numArray3[index5] * ctrl1[index5 + 1][index1]) / numArray2[index5];
           for (int index6 = 0; index6 < index2; ++index6)
             ctrl2[index6][index1] = 2f * knot[index6 + 1][index1] - ctrl1[index6 + 1][index1];
-          ctrl2[index2 - 1][index1] = (float) (0.5 * ((double) knot[index2][index1] + (double) ctrl1[index2 - 1][index1]));
+          ctrl2[index2 - 1][index1] = (float) (0.5 * (knot[index2][index1] + (double) ctrl1[index2 - 1][index1]));
         }
       }
     }

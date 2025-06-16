@@ -1,4 +1,6 @@
-﻿[RequireComponent(typeof (AudioSource))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (AudioSource))]
 public class UISounds : MonoBehaviourInstance<UISounds>
 {
   [SerializeField]
@@ -8,14 +10,14 @@ public class UISounds : MonoBehaviourInstance<UISounds>
   protected override void Awake()
   {
     base.Awake();
-    audioSource = this.GetComponent<AudioSource>();
+    audioSource = GetComponent<AudioSource>();
   }
 
   public void PlayClickSound() => PlaySound(clickSound);
 
   public void PlaySound(AudioClip sound)
   {
-    if ((Object) sound == (Object) null)
+    if (sound == null)
       return;
     audioSource.PlayOneShot(sound);
   }

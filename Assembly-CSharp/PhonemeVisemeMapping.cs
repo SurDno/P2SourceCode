@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Xml;
+using UnityEngine;
 
 [Serializable]
 public class PhonemeVisemeMapping
 {
-  public string[] visNames = null;
-  public phn_string_array_t[] mapping = null;
+  public string[] visNames;
+  public phn_string_array_t[] mapping;
 
   public PhonemeVisemeMapping()
   {
@@ -80,7 +81,7 @@ public class PhonemeVisemeMapping
       }
       else
       {
-        Debug.Log((object) "Load Error: Bad vis_phns in bone config file");
+        Debug.Log("Load Error: Bad vis_phns in bone config file");
         visNames[index] = "BAD";
       }
       mapping[index] = new phn_string_array_t(stringListList[index]);

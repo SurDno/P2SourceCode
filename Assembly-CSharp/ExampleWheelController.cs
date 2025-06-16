@@ -1,4 +1,6 @@
-﻿public class ExampleWheelController : MonoBehaviour
+﻿using UnityEngine;
+
+public class ExampleWheelController : MonoBehaviour
 {
   public float acceleration;
   public Renderer motionVectorRenderer;
@@ -6,7 +8,7 @@
 
   private void Start()
   {
-    m_Rigidbody = this.GetComponent<Rigidbody>();
+    m_Rigidbody = GetComponent<Rigidbody>();
     m_Rigidbody.maxAngularVelocity = 100f;
   }
 

@@ -1,4 +1,5 @@
 ﻿using Engine.Behaviours.Components;
+using UnityEngine;
 
 public class SetRandomDialogAnimationBehaviour : StateMachineBehaviour
 {
@@ -7,10 +8,10 @@ public class SetRandomDialogAnimationBehaviour : StateMachineBehaviour
   public override void OnStateEnter(Animator animator, AnimatorStateInfo stateInfo, int layerIndex)
   {
     Pivot component = animator.gameObject.GetComponent<Pivot>();
-    if ((Object) component == (Object) null)
+    if (component == null)
     {
       component = animator.gameObject.transform.parent.GetComponent<Pivot>();
-      if ((Object) component == (Object) null)
+      if (component == null)
         return;
     }
     int num1 = lastUsedAnimation == 0 ? 1 : 0;

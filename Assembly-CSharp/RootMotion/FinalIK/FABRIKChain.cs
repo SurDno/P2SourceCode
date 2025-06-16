@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -14,7 +15,7 @@ namespace RootMotion.FinalIK
 
     public bool IsValid(ref string message)
     {
-      if ((UnityEngine.Object) ik == (UnityEngine.Object) null)
+      if (ik == null)
       {
         message = "IK unassigned in FABRIKChain.";
         return false;

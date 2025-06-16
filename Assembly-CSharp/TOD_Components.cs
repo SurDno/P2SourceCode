@@ -1,15 +1,17 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+
+[ExecuteInEditMode]
 public class TOD_Components : MonoBehaviour
 {
-  public GameObject Space = (GameObject) null;
-  public GameObject Stars = (GameObject) null;
-  public GameObject Sun = (GameObject) null;
-  public GameObject Moon = (GameObject) null;
-  public GameObject Atmosphere = (GameObject) null;
-  public GameObject Clear = (GameObject) null;
-  public GameObject Clouds = (GameObject) null;
-  public GameObject Billboards = (GameObject) null;
-  public GameObject Light = (GameObject) null;
+  public GameObject Space;
+  public GameObject Stars;
+  public GameObject Sun;
+  public GameObject Moon;
+  public GameObject Atmosphere;
+  public GameObject Clear;
+  public GameObject Clouds;
+  public GameObject Billboards;
+  public GameObject Light;
 
   public Transform DomeTransform { get; set; }
 
@@ -79,7 +81,7 @@ public class TOD_Components : MonoBehaviour
 
   public Material[] BillboardMaterials { get; set; }
 
-  public UnityEngine.Light LightSource { get; set; }
+  public Light LightSource { get; set; }
 
   public TOD_Sky Sky { get; set; }
 
@@ -97,10 +99,10 @@ public class TOD_Components : MonoBehaviour
 
   public void Initialize()
   {
-    DomeTransform = this.GetComponent<Transform>();
-    Sky = this.GetComponent<TOD_Sky>();
-    Animation = this.GetComponent<TOD_Animation>();
-    Time = this.GetComponent<TOD_Time>();
+    DomeTransform = GetComponent<Transform>();
+    Sky = GetComponent<TOD_Sky>();
+    Animation = GetComponent<TOD_Animation>();
+    Time = GetComponent<TOD_Time>();
     if ((bool) (Object) Space)
     {
       SpaceTransform = Space.GetComponent<Transform>();
@@ -162,6 +164,6 @@ public class TOD_Components : MonoBehaviour
     if (!(bool) (Object) Light)
       return;
     LightTransform = Light.GetComponent<Transform>();
-    LightSource = Light.GetComponent<UnityEngine.Light>();
+    LightSource = Light.GetComponent<Light>();
   }
 }

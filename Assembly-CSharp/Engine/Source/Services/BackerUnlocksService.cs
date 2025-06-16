@@ -2,6 +2,7 @@
 using Engine.Common.Services;
 using Engine.Source.Settings;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -22,7 +23,7 @@ namespace Engine.Source.Services
       get
       {
         bool itemUnlocked = ItemUnlocked;
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("ItemUnlocked").Append(" , value : ").Append(itemUnlocked));
+        Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("ItemUnlocked").Append(" , value : ").Append(itemUnlocked));
         return itemUnlocked;
       }
     }
@@ -32,7 +33,7 @@ namespace Engine.Source.Services
       get
       {
         bool questUnlocked = QuestUnlocked;
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("QuestUnlocked").Append(" , value : ").Append(questUnlocked));
+        Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("QuestUnlocked").Append(" , value : ").Append(questUnlocked));
         return questUnlocked;
       }
     }
@@ -42,7 +43,7 @@ namespace Engine.Source.Services
       get
       {
         bool polyhedralRoomUnlocked = PolyhedralRoomUnlocked;
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("PolyhedralRoomUnlocked").Append(" , value : ").Append(polyhedralRoomUnlocked));
+        Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (BackerUnlocksService)).Append(" : ").Append("PolyhedralRoomUnlocked").Append(" , value : ").Append(polyhedralRoomUnlocked));
         return polyhedralRoomUnlocked;
       }
     }

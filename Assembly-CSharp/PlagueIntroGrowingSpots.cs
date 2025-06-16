@@ -2,6 +2,8 @@
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlagueIntroGrowingSpots : MonoBehaviour
 {
@@ -27,9 +29,9 @@ public class PlagueIntroGrowingSpots : MonoBehaviour
   private void Start()
   {
     IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
-    collider = this.GetComponent<Collider>();
-    audioSource = this.GetComponent<AudioSource>();
-    AddMaterial(this.gameObject);
+    collider = GetComponent<Collider>();
+    audioSource = GetComponent<AudioSource>();
+    AddMaterial(gameObject);
     if (subObjects != null)
     {
       for (int index = 0; index < subObjects.Length; ++index)
@@ -69,7 +71,7 @@ public class PlagueIntroGrowingSpots : MonoBehaviour
       level += Time.deltaTime / growTime;
       ApplyLevel();
     }
-    if (!((Object) audioSource != (Object) null))
+    if (!(audioSource != null))
       return;
     UpdateAudioSourceEnable();
     volume = !inside || level >= 1.0 ? Mathf.Clamp01(volume - Time.deltaTime / 1f) : Mathf.Clamp01(volume + Time.deltaTime / 1f);
@@ -87,12 +89,12 @@ public class PlagueIntroGrowingSpots : MonoBehaviour
   private bool AreYouLookingAtMe()
   {
     Camera camera = GetCamera();
-    return (double) (collider.bounds.ClosestPoint(camera.transform.position) - camera.transform.position).magnitude <= startDistance && GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(camera), collider.bounds);
+    return (collider.bounds.ClosestPoint(camera.transform.position) - camera.transform.position).magnitude <= (double) startDistance && GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(camera), collider.bounds);
   }
 
   private void UpdateAudioSourceEnable()
   {
-    bool flag = (double) (this.transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance) && volume != 0.0;
+    bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance) && volume != 0.0;
     if (audioSource.enabled == flag)
       return;
     audioSource.enabled = flag;

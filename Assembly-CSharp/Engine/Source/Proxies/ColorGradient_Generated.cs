@@ -25,8 +25,8 @@ namespace Engine.Source.Proxies
     public void CopyTo(object target2)
     {
       ColorGradient_Generated gradientGenerated = (ColorGradient_Generated) target2;
-      CloneableObjectUtility.FillListTo<GradientAlphaKey>(gradientGenerated.alphaKeys, alphaKeys);
-      CloneableObjectUtility.FillListTo<GradientColorKey>(gradientGenerated.colorKeys, colorKeys);
+      CloneableObjectUtility.FillListTo(gradientGenerated.alphaKeys, alphaKeys);
+      CloneableObjectUtility.FillListTo(gradientGenerated.colorKeys, colorKeys);
     }
 
     public void DataWrite(IDataWriter writer)

@@ -1,6 +1,8 @@
-﻿public class TOD_WeatherManager : MonoBehaviour
+﻿using UnityEngine;
+
+public class TOD_WeatherManager : MonoBehaviour
 {
-  public ParticleSystem RainParticleSystem = (ParticleSystem) null;
+  public ParticleSystem RainParticleSystem;
   public float FadeTime = 10f;
   public RainType Rain = RainType.None;
   public CloudType Clouds = CloudType.None;

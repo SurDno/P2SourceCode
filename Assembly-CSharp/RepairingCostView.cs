@@ -5,6 +5,8 @@ using Engine.Common.Components;
 using Engine.Source.Components;
 using Engine.Source.Components.Repairing;
 using Engine.Source.Components.Utilities;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class RepairingCostView : MonoBehaviour
 {
@@ -74,7 +76,7 @@ public class RepairingCostView : MonoBehaviour
         {
           itemViews[index].Storable = resource.GetComponent<StorableComponent>();
           Text componentInChildren = itemViews[index].GetComponentInChildren<Text>();
-          if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
+          if (componentInChildren != null)
           {
             int count = Cost[index].Count;
             int itemAmount = StorageUtility.GetItemAmount(Actor.Items, resource);
@@ -87,12 +89,12 @@ public class RepairingCostView : MonoBehaviour
 
   private void PrepareItemViews(int count)
   {
-    if (itemViews.Count == 0 || (UnityEngine.Object) itemViews[0] == (UnityEngine.Object) null)
+    if (itemViews.Count == 0 || itemViews[0] == null)
       return;
     while (itemViews.Count < count)
     {
       ItemView itemView1 = itemViews[0];
-      ItemView itemView2 = UnityEngine.Object.Instantiate<ItemView>(itemView1);
+      ItemView itemView2 = Instantiate(itemView1);
       itemView2.transform.SetParent(itemView1.transform.parent, false);
       itemViews.Add(itemView2);
     }

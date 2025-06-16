@@ -1,4 +1,6 @@
-﻿namespace Cinemachine
+﻿using UnityEngine;
+
+namespace Cinemachine
 {
   [DocumentationSorting(27f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -6,7 +8,7 @@
   [SaveDuringPlay]
   public class CinemachineSameAsFollowObject : CinemachineComponentBase
   {
-    public override bool IsValid => this.enabled && (Object) FollowTarget != (Object) null;
+    public override bool IsValid => enabled && FollowTarget != null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
 

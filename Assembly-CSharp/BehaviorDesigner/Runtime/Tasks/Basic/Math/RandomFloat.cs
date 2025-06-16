@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks.Basic.Math
 {
@@ -70,9 +72,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Basic.Math
     public override TaskStatus OnUpdate()
     {
       if (inclusive)
-        storeResult.Value = UnityEngine.Random.Range(min.Value, max.Value + 1f);
+        storeResult.Value = Random.Range(min.Value, max.Value + 1f);
       else
-        storeResult.Value = UnityEngine.Random.Range(min.Value, max.Value);
+        storeResult.Value = Random.Range(min.Value, max.Value);
       return TaskStatus.Success;
     }
 

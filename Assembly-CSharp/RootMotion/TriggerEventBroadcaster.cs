@@ -1,4 +1,6 @@
-﻿namespace RootMotion
+﻿using UnityEngine;
+
+namespace RootMotion
 {
   public class TriggerEventBroadcaster : MonoBehaviour
   {
@@ -6,23 +8,23 @@
 
     private void OnTriggerEnter(Collider collider)
     {
-      if (!((Object) target != (Object) null))
+      if (!(target != null))
         return;
-      target.SendMessage(nameof (OnTriggerEnter), (object) collider, SendMessageOptions.DontRequireReceiver);
+      target.SendMessage(nameof (OnTriggerEnter), collider, SendMessageOptions.DontRequireReceiver);
     }
 
     private void OnTriggerStay(Collider collider)
     {
-      if (!((Object) target != (Object) null))
+      if (!(target != null))
         return;
-      target.SendMessage(nameof (OnTriggerStay), (object) collider, SendMessageOptions.DontRequireReceiver);
+      target.SendMessage(nameof (OnTriggerStay), collider, SendMessageOptions.DontRequireReceiver);
     }
 
     private void OnTriggerExit(Collider collider)
     {
-      if (!((Object) target != (Object) null))
+      if (!(target != null))
         return;
-      target.SendMessage(nameof (OnTriggerExit), (object) collider, SendMessageOptions.DontRequireReceiver);
+      target.SendMessage(nameof (OnTriggerExit), collider, SendMessageOptions.DontRequireReceiver);
     }
   }
 }

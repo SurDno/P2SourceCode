@@ -8,6 +8,7 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -34,7 +35,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) Enemy.Value == (UnityEngine.Object) null)
+      if (Enemy.Value == null)
         return;
       combatService = ServiceLocator.GetService<CombatService>();
       character = Owner.GetComponent<EnemyBase>();

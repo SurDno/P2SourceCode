@@ -2,6 +2,9 @@
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 using UnityEngine.Timeline;
 
 public class PlagueIntroFlamethrowersTrigger : MonoBehaviour
@@ -19,7 +22,7 @@ public class PlagueIntroFlamethrowersTrigger : MonoBehaviour
   private void OnEnable()
   {
     IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
-    director.Play((PlayableAsset) timelineIdle, DirectorWrapMode.Loop);
+    director.Play(timelineIdle, DirectorWrapMode.Loop);
     if (!IsGame)
       return;
     InstanceByRequest<EngineApplication>.Instance.OnPauseEvent += OnPauseEvent;
@@ -47,9 +50,9 @@ public class PlagueIntroFlamethrowersTrigger : MonoBehaviour
     if (done)
       return;
     GameObject playerGameObject = GetPlayerGameObject();
-    if ((UnityEngine.Object) playerGameObject == (UnityEngine.Object) null || !((UnityEngine.Object) playerGameObject == (UnityEngine.Object) other.gameObject))
+    if (playerGameObject == null || !(playerGameObject == other.gameObject))
       return;
-    director.Play((PlayableAsset) timeline, DirectorWrapMode.Hold);
+    director.Play(timeline, DirectorWrapMode.Hold);
     done = true;
     if (IsGame)
       ServiceLocator.GetService<LogicEventService>().FireCommonEvent("PlagueIntroFlamethrowersDone");

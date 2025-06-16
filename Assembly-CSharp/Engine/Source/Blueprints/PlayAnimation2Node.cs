@@ -2,6 +2,7 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -18,11 +19,11 @@ namespace Engine.Source.Blueprints
       AddFlowInput("In", () =>
       {
         Animation animation = inputAnimation.value;
-        if (!((Object) animation != (Object) null))
+        if (!(animation != null))
           return;
         animation.wrapMode = WrapMode.Once;
         AnimationClip clip = inputAnimationClip.value;
-        if ((Object) clip != (Object) null)
+        if (clip != null)
         {
           animation.clip = clip;
           animation.AddClip(clip, clip.name);

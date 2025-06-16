@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services;
+using UnityEngine;
 
 public class LandingSpotObject : MonoBehaviour
 {
@@ -16,8 +17,8 @@ public class LandingSpotObject : MonoBehaviour
   {
     get
     {
-      if ((Object) this != (Object) null && (Object) landingController == (Object) null)
-        landingController = this.GetComponent<LandingSpotController>();
+      if (this != null && landingController == null)
+        landingController = GetComponent<LandingSpotController>();
       return landingController;
     }
   }
@@ -30,7 +31,7 @@ public class LandingSpotObject : MonoBehaviour
     set
     {
       flock = value;
-      if ((Object) LandingController == (Object) null || !((Object) flock != (Object) null))
+      if (LandingController == null || !(flock != null))
         return;
       LandingController._flock = flock.FlockController;
       LandingController.LandAll();
@@ -39,9 +40,9 @@ public class LandingSpotObject : MonoBehaviour
 
   private void Start()
   {
-    if ((Object) LandingController != (Object) null)
+    if (LandingController != null)
     {
-      preseted = (Object) LandingController._flock != (Object) null;
+      preseted = LandingController._flock != null;
       LandingController._onlyBirdsAbove = true;
       LandingController._maxBirdDistance = 30f;
     }
@@ -55,7 +56,7 @@ public class LandingSpotObject : MonoBehaviour
 
   public void Scare()
   {
-    if ((Object) LandingController == (Object) null)
+    if (LandingController == null)
       return;
     LandingController.ScareAll();
   }

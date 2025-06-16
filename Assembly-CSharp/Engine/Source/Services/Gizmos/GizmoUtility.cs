@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine.Source.Services.Gizmos
 {
@@ -38,7 +39,7 @@ namespace Engine.Source.Services.Gizmos
 
     public static void DrawCircle(Vector3 position, float radius, bool solid)
     {
-      int num = (int) Mathf.Clamp((float) (int) (6.28318548f * radius / 0.5), 32f, 100f) / 2 * 2;
+      int num = (int) Mathf.Clamp((int) (6.28318548f * radius / 0.5), 32f, 100f) / 2 * 2;
       Vector3 v1 = new Vector3(Mathf.Cos(0.0f) * radius + position.x, position.y, Mathf.Sin(0.0f) * radius + position.z);
       for (int index = 0; index < num; ++index)
       {
@@ -71,7 +72,7 @@ namespace Engine.Source.Services.Gizmos
       float num2 = endAngle * ((float) Math.PI / 180f);
       if (num1 > (double) num2)
         num2 += 6.28318548f;
-      int num3 = (int) Mathf.Clamp((float) (int) ((num2 - num1) * radius / 0.5), 32f, 100f) / 2 * 2 + 1;
+      int num3 = (int) Mathf.Clamp((int) ((num2 - num1) * radius / 0.5), 32f, 100f) / 2 * 2 + 1;
       float num4 = radius * func(0.0f, num2 - num1);
       Vector3 v1 = new Vector3(Mathf.Cos(num1) * num4 + position.x, position.y, Mathf.Sin(num1) * num4 + position.z);
       GL.Vertex(v1);

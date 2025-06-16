@@ -636,7 +636,7 @@ namespace Facepunch.Steamworks
       {
         if (FileId.Count != 0)
         {
-          PublishedFileId_t[] array = FileId.Select((Func<ulong, PublishedFileId_t>) (x => x)).ToArray();
+          PublishedFileId_t[] array = FileId.Select<ulong, PublishedFileId_t>(x => x).ToArray();
           _resultsRemain = array.Length;
           Handle = workshop.ugc.CreateQueryUGCDetailsRequest(array);
         }

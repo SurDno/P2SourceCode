@@ -2,6 +2,8 @@
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -13,7 +15,7 @@ namespace Engine.Source.Blueprints.Effects
 
     public void Update()
     {
-      GameCamera.Instance.Camera.transform.localPosition = Vector3.one * UnityEngine.Random.value * valueInput.value;
+      GameCamera.Instance.Camera.transform.localPosition = Vector3.one * Random.value * valueInput.value;
     }
   }
 }

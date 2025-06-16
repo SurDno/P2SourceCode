@@ -3,6 +3,8 @@ using Engine.Impl.MindMap;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class HUDQuestMarker : MonoBehaviour
 {
@@ -43,12 +45,12 @@ public class HUDQuestMarker : MonoBehaviour
   {
     if (mapItem == null)
     {
-      image.texture = (Texture) null;
-      shadowImage.texture = (Texture) null;
+      image.texture = null;
+      shadowImage.texture = null;
     }
     else
     {
-      Texture texture = (Texture) null;
+      Texture texture = null;
       foreach (IMMNode node in mapItem.Nodes)
       {
         if (node.Content?.Placeholder is MMPlaceholder placeholder)
@@ -57,8 +59,8 @@ public class HUDQuestMarker : MonoBehaviour
           break;
         }
       }
-      if ((Object) texture == (Object) null)
-        texture = mapItem.TooltipResource is MapTooltipResource tooltipResource ? tooltipResource.Image.Value : (Texture) null;
+      if (texture == null)
+        texture = mapItem.TooltipResource is MapTooltipResource tooltipResource ? tooltipResource.Image.Value : null;
       image.texture = texture;
       shadowImage.texture = texture;
     }
@@ -69,7 +71,7 @@ public class HUDQuestMarker : MonoBehaviour
     if (mapItem == null)
       return;
     Transform cameraTransform = GameCamera.Instance?.CameraTransform;
-    if ((Object) cameraTransform == (Object) null)
+    if (cameraTransform == null)
       return;
     Vector3 position = cameraTransform.position;
     Vector2 vector2 = mapItem.WorldPosition - new Vector2(position.x, position.z);
@@ -80,7 +82,7 @@ public class HUDQuestMarker : MonoBehaviour
     rhs1.Normalize();
     forwardDotView.Progress = Mathf.Clamp01(Vector2.Dot(lhs, rhs1));
     Vector2 rhs2 = new Vector2(rhs1.y, -rhs1.x);
-    rightDotView.Progress = (float) (((double) Vector2.Dot(lhs, rhs2) + 1.0) / 2.0);
+    rightDotView.Progress = (float) ((Vector2.Dot(lhs, rhs2) + 1.0) / 2.0);
     distanceView.FloatValue = magnitude;
   }
 }

@@ -1,6 +1,7 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.UI;
+using UnityEngine;
 
 public class MainMenuPrefabAnchor : EngineDependent
 {
@@ -16,9 +17,9 @@ public class MainMenuPrefabAnchor : EngineDependent
     if (spawned)
       return;
     spawned = true;
-    if ((Object) prefab == (Object) null)
+    if (prefab == null)
       return;
-    instance = Object.Instantiate<GameObject>(prefab, this.transform, false);
+    instance = Instantiate(prefab, transform, false);
     instance.name = prefab.name;
   }
 
@@ -27,10 +28,10 @@ public class MainMenuPrefabAnchor : EngineDependent
     if (!spawned)
       return;
     spawned = false;
-    if ((Object) instance == (Object) null)
+    if (instance == null)
       return;
-    Object.Destroy((Object) instance);
-    instance = (GameObject) null;
+    Destroy(instance);
+    instance = null;
   }
 
   protected override void OnConnectToEngine() => CheckMainMenu();

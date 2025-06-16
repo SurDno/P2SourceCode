@@ -1,5 +1,6 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -35,7 +36,7 @@ namespace Cinemachine
       float deltaTime)
     {
       VcamExtraState extraState = GetExtraState<VcamExtraState>(vcam);
-      if (!this.enabled || deltaTime < 0.0)
+      if (!enabled || deltaTime < 0.0)
         extraState.m_previousFrameZoom = state.Lens.FieldOfView;
       if (stage != CinemachineCore.Stage.Body)
         return;
@@ -53,7 +54,7 @@ namespace Cinemachine
           float num6 = Damper.Damp(num4 - num5, m_Damping, deltaTime);
           num4 = num5 + num6;
         }
-        num2 = (float) (2.0 * (double) Mathf.Atan(num4 / (2f * num3)) * 57.295780181884766);
+        num2 = (float) (2.0 * Mathf.Atan(num4 / (2f * num3)) * 57.295780181884766);
       }
       LensSettings lens = state.Lens with
       {

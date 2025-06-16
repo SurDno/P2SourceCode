@@ -5,6 +5,10 @@ using Engine.Source.Services.CameraServices;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -30,15 +34,15 @@ namespace Engine.Impl.UI.Menu.Main
       RegisterLayer();
       inputGameSetting = InstanceByRequest<InputGameSetting>.Instance;
       SetMenuState();
-      sliderMouseSensitivity.onValueChanged.AddListener(new UnityAction<float>(Slider_Mouse_Sensitivity_Value_Changed_Handler));
-      toggleInvertMouse.onValueChanged.AddListener(new UnityAction<bool>(Toggle_Mouse_Invert_Value_Changed_Handler));
-      Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
+      sliderMouseSensitivity.onValueChanged.AddListener(Slider_Mouse_Sensitivity_Value_Changed_Handler);
+      toggleInvertMouse.onValueChanged.AddListener(Toggle_Mouse_Invert_Value_Changed_Handler);
+      Button[] componentsInChildren = GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
+        entry.callback.AddListener(eventData => Button_Click_Handler());
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -52,9 +56,9 @@ namespace Engine.Impl.UI.Menu.Main
 
     public void Button_Click_Handler()
     {
-      if (!this.gameObject.activeInHierarchy)
+      if (!gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
+      gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_Back_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();

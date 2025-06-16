@@ -1,12 +1,14 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
+using UnityEngine.UI;
 
 [RequireComponent(typeof (Button))]
 public class WindowCloseButton : MonoBehaviour
 {
   private void Awake()
   {
-    this.GetComponent<Button>().onClick.AddListener(new UnityAction(CloseActiveWindow));
+    GetComponent<Button>().onClick.AddListener(CloseActiveWindow);
   }
 
   private void CloseActiveWindow() => ServiceLocator.GetService<UIService>().Pop();

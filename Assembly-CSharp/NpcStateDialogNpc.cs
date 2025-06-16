@@ -7,6 +7,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateDialogNpc : INpcState
 {
@@ -53,10 +55,10 @@ public class NpcStateDialogNpc : INpcState
     agent = pivot.GetAgent();
     rigidbody = pivot.GetRigidbody();
     animator = pivot.GetAnimator();
-    if ((Object) animator == (Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -100,7 +102,7 @@ public class NpcStateDialogNpc : INpcState
   {
     if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused)
       return;
-    if ((Object) agent != (Object) null)
+    if (agent != null)
       agent.nextPosition = animator.rootPosition;
     GameObject.transform.position = animator.rootPosition;
     GameObject.transform.rotation = animator.rootRotation;

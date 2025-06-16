@@ -1,4 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class OcclusionCullingSettings : HideableView
 {
@@ -7,7 +8,7 @@ public class OcclusionCullingSettings : HideableView
 
   protected override void ApplyVisibility()
   {
-    if (!((Object) targetCamera != (Object) null))
+    if (!(targetCamera != null))
       return;
     targetCamera.useOcclusionCulling = Visible;
   }

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 namespace SRF.Components
 {
@@ -11,24 +13,24 @@ namespace SRF.Components
     {
       [DebuggerStepThrough] get
       {
-        return !((UnityEngine.Object) _instance == (UnityEngine.Object) null) ? _instance : throw new InvalidOperationException("No instance of {0} present in scene".Fmt(typeof (T).Name));
+        return !(_instance == null) ? _instance : throw new InvalidOperationException("No instance of {0} present in scene".Fmt(typeof (T).Name));
       }
     }
 
     public static bool HasInstance
     {
-      [DebuggerStepThrough] get => (UnityEngine.Object) _instance != (UnityEngine.Object) null;
+      [DebuggerStepThrough] get => _instance != null;
     }
 
     private void Register()
     {
-      if ((UnityEngine.Object) _instance != (UnityEngine.Object) null)
+      if (_instance != null)
       {
-        UnityEngine.Debug.LogWarning((object) "More than one singleton object of type {0} exists.".Fmt(typeof (T).Name));
-        if (this.GetComponents<Component>().Length == 2)
-          UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+        Debug.LogWarning("More than one singleton object of type {0} exists.".Fmt(typeof (T).Name));
+        if (GetComponents<Component>().Length == 2)
+          Destroy(gameObject);
         else
-          UnityEngine.Object.Destroy((UnityEngine.Object) this);
+          Destroy(this);
       }
       else
         _instance = (T) this;
@@ -38,7 +40,7 @@ namespace SRF.Components
 
     protected virtual void OnEnable()
     {
-      if (!((UnityEngine.Object) _instance == (UnityEngine.Object) null))
+      if (!(_instance == null))
         return;
       Register();
     }

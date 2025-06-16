@@ -10,6 +10,7 @@ using Engine.Source.Components.Regions;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
 using Scripts.Behaviours.LoadControllers;
+using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -51,7 +52,7 @@ namespace Engine.Source.Debugs
           }
           string text2 = str + " , Loaded childs (" + num1 + " / " + num2 + ")";
           GameObject gameObject = ((IEntityView) regionByName.Owner).GameObject;
-          if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+          if (gameObject == null)
           {
             string text3 = text2 + " , Error : go == null";
             ServiceLocator.GetService<GizmoService>().DrawText(text3, GetColor(component1));
@@ -59,7 +60,7 @@ namespace Engine.Source.Debugs
           else
           {
             BaseLoadByDistance component = gameObject.GetComponent<BaseLoadByDistance>();
-            if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+            if (component == null)
             {
               string text4 = text2 + " , Error : reginController == null";
               ServiceLocator.GetService<GizmoService>().DrawText(text4, GetColor(component1));
@@ -68,7 +69,7 @@ namespace Engine.Source.Debugs
             {
               ServiceLocator.GetService<GizmoService>().DrawText(text2, GetColor(component1));
               RegionMesh regionMesh = regionByName.RegionMesh;
-              if (!((UnityEngine.Object) regionMesh == (UnityEngine.Object) null))
+              if (!(regionMesh == null))
               {
                 float magnitude = (regionMesh.Center - EngineApplication.PlayerPosition).magnitude;
                 string text5 = regionByName.Owner.Name + "\nDistance : " + magnitude.ToString("F2") + "\nRadius : " + regionMesh.Radius.ToString("F2") + "\nLoad Distance : " + (component.LoadDistance + regionMesh.Radius).ToString("F2") + "\nUnload Distance : " + (component.UnloadDistance + regionMesh.Radius).ToString("F2");

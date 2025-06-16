@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -29,7 +30,7 @@ namespace RootMotion.FinalIK
       if (IKPositionWeight <= 0.0)
         return;
       IKPositionWeight = Mathf.Clamp(IKPositionWeight, 0.0f, 1f);
-      if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+      if (target != null)
         IKPosition = target.position;
       if (XY)
         IKPosition.z = bones[0].transform.position.z;
@@ -59,7 +60,7 @@ namespace RootMotion.FinalIK
             float target = Mathf.Atan2(vector3_2.x, vector3_2.y) * 57.29578f;
             bones[index].transform.rotation = Quaternion.AngleAxis(Mathf.DeltaAngle(current, target) * num, Vector3.back) * bones[index].transform.rotation;
           }
-          if (useRotationLimits && (UnityEngine.Object) bones[index].rotationLimit != (UnityEngine.Object) null)
+          if (useRotationLimits && bones[index].rotationLimit != null)
             bones[index].rotationLimit.Apply();
         }
       }
@@ -76,7 +77,7 @@ namespace RootMotion.FinalIK
             else
               bones[index].transform.rotation = Quaternion.Lerp(bones[index].transform.rotation, b, t);
           }
-          if (useRotationLimits && (UnityEngine.Object) bones[index].rotationLimit != (UnityEngine.Object) null)
+          if (useRotationLimits && bones[index].rotationLimit != null)
             bones[index].rotationLimit.Apply();
         }
       }

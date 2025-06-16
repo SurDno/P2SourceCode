@@ -1,4 +1,8 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace RootMotion.FinalIK
 {
@@ -49,15 +53,15 @@ namespace RootMotion.FinalIK
     {
       if (!references.isFilled)
       {
-        Debug.LogError((object) "Invalid references, one or more Transforms are missing.");
+        Debug.LogError("Invalid references, one or more Transforms are missing.");
       }
       else
       {
         solverTransforms = references.GetTransforms();
-        hasChest = (UnityEngine.Object) solverTransforms[3] != (UnityEngine.Object) null;
-        hasNeck = (UnityEngine.Object) solverTransforms[4] != (UnityEngine.Object) null;
-        hasShoulders = (UnityEngine.Object) solverTransforms[6] != (UnityEngine.Object) null && (UnityEngine.Object) solverTransforms[10] != (UnityEngine.Object) null;
-        hasToes = (UnityEngine.Object) solverTransforms[17] != (UnityEngine.Object) null && (UnityEngine.Object) solverTransforms[21] != (UnityEngine.Object) null;
+        hasChest = solverTransforms[3] != null;
+        hasNeck = solverTransforms[4] != null;
+        hasShoulders = solverTransforms[6] != null && solverTransforms[10] != null;
+        hasToes = solverTransforms[17] != null && solverTransforms[21] != null;
         readPositions = new Vector3[solverTransforms.Length];
         readRotations = new Quaternion[solverTransforms.Length];
         DefaultAnimationCurves();
@@ -69,7 +73,7 @@ namespace RootMotion.FinalIK
     {
       if (!references.isFilled)
       {
-        Debug.LogWarning((object) "VRIK References are not filled in, can not guess hand orientations. Right-click on VRIK header and slect 'Guess Hand Orientations' when you have filled in the References.");
+        Debug.LogWarning("VRIK References are not filled in, can not guess hand orientations. Right-click on VRIK header and slect 'Guess Hand Orientations' when you have filled in the References.");
       }
       else
       {
@@ -134,7 +138,7 @@ namespace RootMotion.FinalIK
 
     public void AddRotationOffset(RotationOffset rotationOffset, Vector3 value)
     {
-      this.AddRotationOffset(rotationOffset, Quaternion.Euler(value));
+      AddRotationOffset(rotationOffset, Quaternion.Euler(value));
     }
 
     public void AddRotationOffset(RotationOffset rotationOffset, Quaternion value)
@@ -179,7 +183,7 @@ namespace RootMotion.FinalIK
     {
       for (int index = 1; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
+        if (solverTransforms[index] != null)
         {
           defaultLocalPositions[index - 1] = solverTransforms[index].localPosition;
           defaultLocalRotations[index - 1] = solverTransforms[index].localRotation;
@@ -193,7 +197,7 @@ namespace RootMotion.FinalIK
         return;
       for (int index = 1; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
+        if (solverTransforms[index] != null)
         {
           if (index == 1 | (index > 5 && index < 14))
             solverTransforms[index].localPosition = defaultLocalPositions[index - 1];
@@ -204,13 +208,13 @@ namespace RootMotion.FinalIK
 
     public override Point[] GetPoints()
     {
-      Debug.LogError((object) "GetPoints() is not applicable to IKSolverVR.");
+      Debug.LogError("GetPoints() is not applicable to IKSolverVR.");
       return null;
     }
 
     public override Point GetPoint(Transform transform)
     {
-      Debug.LogError((object) "GetPoint is not applicable to IKSolverVR.");
+      Debug.LogError("GetPoint is not applicable to IKSolverVR.");
       return null;
     }
 
@@ -248,7 +252,7 @@ namespace RootMotion.FinalIK
       Vector3 zero2 = Vector3.zero;
       for (int index = 0; index < transforms.Length; ++index)
         zero2 += transforms[index].position;
-      Vector3 vector3 = zero2 / (float) transforms.Length;
+      Vector3 vector3 = zero2 / transforms.Length;
       for (int index = 0; index < transforms.Length - 1; ++index)
         zero1 += Vector3.Cross(transforms[index].position - vector3, transforms[index + 1].position - vector3).normalized;
       return zero1;
@@ -258,7 +262,7 @@ namespace RootMotion.FinalIK
     {
       Vector3 vector3 = forearm.position - hand.position;
       Vector3 palmAxis = AxisTools.ToVector3(AxisTools.GetAxisToDirection(hand, vector3));
-      if ((double) Vector3.Dot(vector3, hand.rotation * palmAxis) > 0.0)
+      if (Vector3.Dot(vector3, hand.rotation * palmAxis) > 0.0)
         palmAxis = -palmAxis;
       return palmAxis;
     }
@@ -267,7 +271,7 @@ namespace RootMotion.FinalIK
     {
       if (hand.childCount == 0)
       {
-        Debug.LogWarning((object) ("Hand " + hand.name + " does not have any fingers, VRIK can not guess the hand bone's orientation. Please assign 'Wrist To Palm Axis' and 'Palm To Thumb Axis' manually for both arms in VRIK settings."), (UnityEngine.Object) hand);
+        Debug.LogWarning("Hand " + hand.name + " does not have any fingers, VRIK can not guess the hand bone's orientation. Please assign 'Wrist To Palm Axis' and 'Palm To Thumb Axis' manually for both arms in VRIK settings.", hand);
         return Vector3.zero;
       }
       float num1 = float.PositiveInfinity;
@@ -283,7 +287,7 @@ namespace RootMotion.FinalIK
       }
       Vector3 vector3 = Vector3.Cross(Vector3.Cross(hand.position - forearm.position, hand.GetChild(index1).position - hand.position), hand.position - forearm.position);
       Vector3 thumbAxis = AxisTools.ToVector3(AxisTools.GetAxisToDirection(hand, vector3));
-      if ((double) Vector3.Dot(vector3, hand.rotation * thumbAxis) < 0.0)
+      if (Vector3.Dot(vector3, hand.rotation * thumbAxis) < 0.0)
         thumbAxis = -thumbAxis;
       return thumbAxis;
     }
@@ -304,7 +308,7 @@ namespace RootMotion.FinalIK
     {
       for (int index = 0; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
+        if (solverTransforms[index] != null)
         {
           readPositions[index] = solverTransforms[index].position;
           readRotations[index] = solverTransforms[index].rotation;
@@ -333,7 +337,7 @@ namespace RootMotion.FinalIK
     {
       for (int index = 0; index < solverTransforms.Length; ++index)
       {
-        if ((UnityEngine.Object) solverTransforms[index] != (UnityEngine.Object) null)
+        if (solverTransforms[index] != null)
         {
           if (index < 2 | (index > 5 && index < 14))
             solverTransforms[index].position = V3Tools.Lerp(solverTransforms[index].position, GetPosition(index), IKPositionWeight);
@@ -490,7 +494,7 @@ namespace RootMotion.FinalIK
 
     private Vector3 GetPelvisOffset()
     {
-      if (locomotion.weight <= 0.0 || (int) locomotion.blockingLayers == -1)
+      if (locomotion.weight <= 0.0 || locomotion.blockingLayers == -1)
         return Vector3.zero;
       Vector3 raycastOriginPelvis = this.raycastOriginPelvis with
       {
@@ -504,19 +508,19 @@ namespace RootMotion.FinalIK
       RaycastHit hitInfo;
       if (locomotion.raycastRadius <= 0.0)
       {
-        if (Physics.Raycast(raycastOriginPelvis, direction1, out hitInfo, direction1.magnitude * 1.1f, (int) locomotion.blockingLayers))
+        if (Physics.Raycast(raycastOriginPelvis, direction1, out hitInfo, direction1.magnitude * 1.1f, locomotion.blockingLayers))
           origin = hitInfo.point;
       }
-      else if (Physics.SphereCast(raycastOriginPelvis, locomotion.raycastRadius * 1.1f, direction1, out hitInfo, direction1.magnitude, (int) locomotion.blockingLayers))
+      else if (Physics.SphereCast(raycastOriginPelvis, locomotion.raycastRadius * 1.1f, direction1, out hitInfo, direction1.magnitude, locomotion.blockingLayers))
         origin = raycastOriginPelvis + direction1.normalized * hitInfo.distance / 1.1f;
       Vector3 vector3 = spine.pelvis.solverPosition;
       Vector3 direction2 = vector3 - origin;
       if (locomotion.raycastRadius <= 0.0)
       {
-        if (Physics.Raycast(origin, direction2, out hitInfo, direction2.magnitude, (int) locomotion.blockingLayers))
+        if (Physics.Raycast(origin, direction2, out hitInfo, direction2.magnitude, locomotion.blockingLayers))
           vector3 = hitInfo.point;
       }
-      else if (Physics.SphereCast(origin, locomotion.raycastRadius, direction2, out hitInfo, direction2.magnitude, (int) locomotion.blockingLayers))
+      else if (Physics.SphereCast(origin, locomotion.raycastRadius, direction2, out hitInfo, direction2.magnitude, locomotion.blockingLayers))
         vector3 = origin + direction2.normalized * hitInfo.distance;
       lastOffset = Vector3.Lerp(lastOffset, Vector3.zero, Time.deltaTime * 3f);
       lastOffset = Vector3.Lerp(lastOffset, (vector3 + Vector3.ClampMagnitude(lastOffset, 0.75f)) with
@@ -651,7 +655,7 @@ namespace RootMotion.FinalIK
 
       public override void PreSolve()
       {
-        if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+        if (target != null)
         {
           IKPosition = target.position;
           IKRotation = target.rotation;
@@ -789,7 +793,7 @@ namespace RootMotion.FinalIK
 
       private Vector3 GetBendNormal(Vector3 dir)
       {
-        if ((UnityEngine.Object) bendGoal != (UnityEngine.Object) null)
+        if (bendGoal != null)
           bendDirection = bendGoal.position - bones[1].solverPosition;
         Vector3 vector3_1 = bones[0].solverRotation * bones[0].axis;
         Vector3 vector3_2 = Quaternion.FromToRotation(Vector3.down, Quaternion.Inverse(chestRotation) * dir.normalized + Vector3.forward) * Vector3.back;
@@ -994,7 +998,7 @@ namespace RootMotion.FinalIK
         float num = Quaternion.Angle(rotation, quaternion);
         if (num <= (double) minAngle)
           return;
-        rotation = Quaternion.RotateTowards(rotation, quaternion, Mathf.Min((float) ((double) Time.deltaTime * speed * (1.0 - supportLegW)), num - minAngle));
+        rotation = Quaternion.RotateTowards(rotation, quaternion, Mathf.Min((float) (Time.deltaTime * (double) speed * (1.0 - supportLegW)), num - minAngle));
       }
 
       public void Update(InterpolationMode interpolation, UnityEvent onStep)
@@ -1129,7 +1133,7 @@ namespace RootMotion.FinalIK
 
       public override void PreSolve()
       {
-        if ((UnityEngine.Object) target != (UnityEngine.Object) null)
+        if (target != null)
         {
           IKPosition = target.position;
           IKRotation = target.rotation;
@@ -1155,7 +1159,7 @@ namespace RootMotion.FinalIK
         footPosition = position + rotation * (footPosition - position);
         footRotation = rotation * footRotation;
         float num = 0.0f;
-        if ((UnityEngine.Object) bendGoal != (UnityEngine.Object) null && bendGoalWeight > 0.0)
+        if (bendGoal != null && bendGoalWeight > 0.0)
         {
           Vector3 vector3_1 = Vector3.Cross(bendGoal.position - thigh.solverPosition, position - thigh.solverPosition);
           Vector3 vector3_2 = Quaternion.Inverse(Quaternion.LookRotation(bendNormal, thigh.solverPosition - foot.solverPosition)) * vector3_1;
@@ -1375,7 +1379,7 @@ namespace RootMotion.FinalIK
           centerOfMass += rightArm.position * num3;
           centerOfMass /= num4;
           centerOfMass += rootBone.solverRotation * offset;
-          comVelocity = (double) Time.deltaTime > 0.0 ? (centerOfMass - lastComPosition) / Time.deltaTime : Vector3.zero;
+          comVelocity = Time.deltaTime > 0.0 ? (centerOfMass - lastComPosition) / Time.deltaTime : Vector3.zero;
           lastComPosition = centerOfMass;
           comVelocity = Vector3.ClampMagnitude(comVelocity, maxVelocity) * velocityFactor;
           Vector3 point = centerOfMass + comVelocity;
@@ -1419,7 +1423,7 @@ namespace RootMotion.FinalIK
                 {
                   if (index3 != index2 && !flag1)
                   {
-                    if ((double) Vector3.Distance(footsteps[index2].position, footsteps[index3].position) >= 0.25 || (double) (footsteps[index2].position - vector3_6).sqrMagnitude >= (double) (footsteps[index3].position - vector3_6).sqrMagnitude)
+                    if (Vector3.Distance(footsteps[index2].position, footsteps[index3].position) >= 0.25 || (footsteps[index2].position - vector3_6).sqrMagnitude >= (double) (footsteps[index3].position - vector3_6).sqrMagnitude)
                       flag2 = GetLineSphereCollision(footsteps[index2].position, vector3_6, footsteps[index3].position, 0.25f);
                     if (flag2)
                       break;
@@ -1449,7 +1453,7 @@ namespace RootMotion.FinalIK
             if (index1 != -1)
             {
               Vector3 p = plane2 + rootBone.solverRotation * footsteps[index1].characterSpaceOffset;
-              footsteps[index1].stepSpeed = UnityEngine.Random.Range(stepSpeed, stepSpeed * 1.5f);
+              footsteps[index1].stepSpeed = Random.Range(stepSpeed, stepSpeed * 1.5f);
               footsteps[index1].StepTo(p, quaternion);
             }
           }
@@ -1478,7 +1482,7 @@ namespace RootMotion.FinalIK
 
       private bool StepBlocked(Vector3 fromPosition, Vector3 toPosition, Vector3 rootPosition)
       {
-        if ((int) blockingLayers == -1 || !blockingEnabled)
+        if (blockingLayers == -1 || !blockingEnabled)
           return false;
         Vector3 origin = fromPosition with
         {
@@ -1489,7 +1493,7 @@ namespace RootMotion.FinalIK
           y = 0.0f
         };
         RaycastHit hitInfo;
-        return raycastRadius <= 0.0 ? Physics.Raycast(origin, direction, out hitInfo, direction.magnitude, (int) blockingLayers) : Physics.SphereCast(origin, raycastRadius, direction, out hitInfo, direction.magnitude, (int) blockingLayers);
+        return raycastRadius <= 0.0 ? Physics.Raycast(origin, direction, out hitInfo, direction.magnitude, blockingLayers) : Physics.SphereCast(origin, raycastRadius, direction, out hitInfo, direction.magnitude, blockingLayers);
       }
 
       private bool CanStep()
@@ -1514,7 +1518,7 @@ namespace RootMotion.FinalIK
         if (num > (double) forward.magnitude)
           return false;
         Vector3 vector3 = Quaternion.Inverse(Quaternion.LookRotation(forward, upwards)) * upwards;
-        return (double) vector3.z < 0.0 ? num < 0.0 : (double) vector3.y - sphereRadius < 0.0;
+        return vector3.z < 0.0 ? num < 0.0 : vector3.y - (double) sphereRadius < 0.0;
       }
     }
 
@@ -1727,14 +1731,14 @@ namespace RootMotion.FinalIK
 
       public override void PreSolve()
       {
-        if ((UnityEngine.Object) headTarget != (UnityEngine.Object) null)
+        if (headTarget != null)
         {
           IKPositionHead = headTarget.position;
           IKRotationHead = headTarget.rotation;
         }
-        if ((UnityEngine.Object) chestGoal != (UnityEngine.Object) null)
+        if (chestGoal != null)
           goalPositionChest = chestGoal.position;
-        if ((UnityEngine.Object) pelvisTarget != (UnityEngine.Object) null)
+        if (pelvisTarget != null)
         {
           IKPositionPelvis = pelvisTarget.position;
           IKRotationPelvis = pelvisTarget.rotation;
@@ -1756,9 +1760,9 @@ namespace RootMotion.FinalIK
           Vector3 v = headPosition - rootPosition;
           Vector3 horizontal = V3Tools.ExtractHorizontal(v, vector3, 1f);
           Vector3 lhs = v - horizontal;
-          if ((double) Vector3.Dot(lhs, vector3) > 0.0)
+          if (Vector3.Dot(lhs, vector3) > 0.0)
           {
-            if ((double) lhs.magnitude < minHeadHeight)
+            if (lhs.magnitude < (double) minHeadHeight)
               lhs = lhs.normalized * minHeadHeight;
           }
           else
@@ -1960,7 +1964,7 @@ namespace RootMotion.FinalIK
         for (int index = firstIndex; index < lastIndex + 1; ++index)
         {
           if (!uniformWeight)
-            num2 = Mathf.Clamp((float) ((index - firstIndex + 1) / num1), 0.0f, 1f);
+            num2 = Mathf.Clamp((index - firstIndex + 1) / num1, 0.0f, 1f);
           VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, Quaternion.Slerp(Quaternion.identity, b, num2 * w));
         }
       }
@@ -1985,7 +1989,7 @@ namespace RootMotion.FinalIK
         for (int index = firstIndex; index < lastIndex + 1; ++index)
         {
           if (!uniformWeight)
-            t = Mathf.Clamp((float) ((index - firstIndex + 1) / num), 0.0f, 1f);
+            t = Mathf.Clamp((index - firstIndex + 1) / num, 0.0f, 1f);
           VirtualBone.RotateAroundPoint(bones, index, bones[index].solverPosition, Quaternion.Slerp(Quaternion.Slerp(Quaternion.identity, rotationOffset, t), b, t * w));
         }
       }
@@ -2161,7 +2165,7 @@ namespace RootMotion.FinalIK
         float sqrMag2)
       {
         float z = (float) ((directionMag * (double) directionMag + (sqrMag1 - (double) sqrMag2)) / 2.0) / directionMag;
-        float y = (float) Math.Sqrt((double) Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
+        float y = (float) Math.Sqrt(Mathf.Clamp(sqrMag1 - z * z, 0.0f, float.PositiveInfinity));
         return direction == Vector3.zero ? Vector3.zero : Quaternion.LookRotation(direction, bendDirection) * new Vector3(0.0f, y, z);
       }
 

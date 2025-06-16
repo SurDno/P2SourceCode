@@ -2,6 +2,7 @@
 using Engine.Common.Components;
 using Engine.Common.Components.Locations;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -36,11 +37,11 @@ namespace Engine.Source.Services
       do
       {
         EngineGameObject componentNonAlloc = trans.GetComponentNonAlloc<EngineGameObject>();
-        if ((Object) componentNonAlloc != (Object) null)
+        if (componentNonAlloc != null)
           return componentNonAlloc.Owner;
         trans = trans.parent;
       }
-      while ((Object) trans != (Object) null);
+      while (trans != null);
       return null;
     }
 

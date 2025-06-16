@@ -1,4 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class TextTooltipViewInstance : TextTooltipView
 {
@@ -88,15 +89,15 @@ public class TextTooltipViewInstance : TextTooltipView
     if (state == newState)
       return;
     state = newState;
-    this.enabled = state == State.FadingIn || state == State.FadingOut;
+    enabled = state == State.FadingIn || state == State.FadingOut;
   }
 
   private void SetData(Vector2 screenPosition, string text)
   {
     textView.StringValue = text;
-    Vector2 vector2 = new Vector2((float) Screen.width * 0.5f, (float) Screen.height * 0.5f);
+    Vector2 vector2 = new Vector2(Screen.width * 0.5f, Screen.height * 0.5f);
     RectTransform transform = (RectTransform) this.transform;
-    transform.pivot = new Vector2((double) screenPosition.x < (double) vector2.x ? 0.0f : 1f, (double) screenPosition.y < (double) vector2.y ? 0.0f : 1f);
+    transform.pivot = new Vector2(screenPosition.x < (double) vector2.x ? 0.0f : 1f, screenPosition.y < (double) vector2.y ? 0.0f : 1f);
     transform.anchoredPosition = screenPosition;
   }
 

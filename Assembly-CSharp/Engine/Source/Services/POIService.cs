@@ -7,6 +7,8 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Components;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Services
 {
@@ -95,7 +97,7 @@ namespace Engine.Source.Services
       POIServiceCharacterInfo character = characters[go];
       if (freeDialogTargetCharacters.ContainsKey(character))
         freeDialogTargetCharacters.Remove(character);
-      if (currentDialogs.Find(x => (UnityEngine.Object) x.DialogTarget.Character == (UnityEngine.Object) go) == null)
+      if (currentDialogs.Find(x => x.DialogTarget.Character == go) == null)
         return;
       CharacterCanceledDialogActivity(go);
     }
@@ -138,7 +140,7 @@ namespace Engine.Source.Services
         return;
       NpcStatePointOfInterest dialogTargetCharacter = freeDialogTargetCharacters[serviceCharacterInfo];
       POIBase poi = dialogTargetCharacter.GetPOI();
-      if ((UnityEngine.Object) poi == (UnityEngine.Object) null)
+      if (poi == null)
       {
         RemoveCharacterAsDialogTarget(serviceCharacterInfo.Character);
       }
@@ -164,7 +166,7 @@ namespace Engine.Source.Services
       dialog.poi.GetClosestTargetPoint(POIAnimationEnum.S_Dialog, 0, dialog.DialogActor.Character.GetComponent<POISetup>(), dialog.EnterPoint, out closestTargetPosition, out Quaternion _);
       BehaviorTree characterSubtree = BehaviorSubtreeUtility.GetCharacterSubtree(dialog.DialogActor.Character);
       BehaviorSubtreeUtility.SetCharacterSubtree(characterSubtree, ScriptableObjectInstance<ResourceFromCodeData>.Instance.POIDialogGoToTarget);
-      characterSubtree.SetVariableValue("TargetPosition", (object) closestTargetPosition);
+      characterSubtree.SetVariableValue("TargetPosition", closestTargetPosition);
     }
 
     public void CharacterReadyForDialog(GameObject character)
@@ -174,14 +176,14 @@ namespace Engine.Source.Services
 
     private void CharacterReadyForDialogAction(GameObject character)
     {
-      POIDialogActivity poiDialogActivity = currentDialogs.Find(x => (UnityEngine.Object) x.DialogActor.Character == (UnityEngine.Object) character);
+      POIDialogActivity poiDialogActivity = currentDialogs.Find(x => x.DialogActor.Character == character);
       if (poiDialogActivity == null)
         return;
       BehaviorTree characterSubtree = BehaviorSubtreeUtility.GetCharacterSubtree(character);
       BehaviorSubtreeUtility.SetCharacterSubtree(characterSubtree, ScriptableObjectInstance<ResourceFromCodeData>.Instance.POIDialogSpeakToCharacter);
-      if ((UnityEngine.Object) characterSubtree != (UnityEngine.Object) null && poiDialogActivity.DialogTarget != null)
-        characterSubtree.SetVariableValue("TargetGameObject", (object) poiDialogActivity.DialogTarget.Character);
-      if (poiDialogActivity.DialogTarget == null || !((UnityEngine.Object) poiDialogActivity.DialogTarget.Character != (UnityEngine.Object) null))
+      if (characterSubtree != null && poiDialogActivity.DialogTarget != null)
+        characterSubtree.SetVariableValue("TargetGameObject", poiDialogActivity.DialogTarget.Character);
+      if (poiDialogActivity.DialogTarget == null || !(poiDialogActivity.DialogTarget.Character != null))
         return;
       poiDialogActivity.DialogTargetPoiState.LookAt(poiDialogActivity.DialogActor.Character);
     }
@@ -195,13 +197,13 @@ namespace Engine.Source.Services
         if (character.Value != target && !character.Value.IsIndoors && (character.Value.State == POIServiceCharacterStateEnum.Free || character.Value.State == POIServiceCharacterStateEnum.SingleActivity))
         {
           Pivot component1 = character.Key.GetComponent<Pivot>();
-          if (!((UnityEngine.Object) component1.SoundBank == (UnityEngine.Object) null))
+          if (!(component1.SoundBank == null))
           {
             Pivot component2 = target.Character.GetComponent<Pivot>();
-            if (!((UnityEngine.Object) component2.SoundBank == (UnityEngine.Object) null) && (component2.SoundBank.DialogRole != NPCSoundBankDialogRoleEnum.Child || component1.SoundBank.DialogRole == NPCSoundBankDialogRoleEnum.Child) && (component2.SoundBank.DialogRole == NPCSoundBankDialogRoleEnum.Child || component1.SoundBank.DialogRole != NPCSoundBankDialogRoleEnum.Child))
+            if (!(component2.SoundBank == null) && (component2.SoundBank.DialogRole != NPCSoundBankDialogRoleEnum.Child || component1.SoundBank.DialogRole == NPCSoundBankDialogRoleEnum.Child) && (component2.SoundBank.DialogRole == NPCSoundBankDialogRoleEnum.Child || component1.SoundBank.DialogRole != NPCSoundBankDialogRoleEnum.Child))
             {
               POISetup component3 = character.Key.GetComponent<POISetup>();
-              if (!((UnityEngine.Object) component3 == (UnityEngine.Object) null) && component3.SupportedAnimations.HasValue(POIAnimationEnum.S_Dialog))
+              if (!(component3 == null) && component3.SupportedAnimations.HasValue(POIAnimationEnum.S_Dialog))
               {
                 float magnitude = (character.Value.Character.transform.position - target.Character.transform.position).magnitude;
                 if (magnitude < (double) num)
@@ -225,7 +227,7 @@ namespace Engine.Source.Services
 
     private void CharacterCanceledDialogActivityAction(GameObject character)
     {
-      POIDialogActivity dialog = currentDialogs.Find(x => (UnityEngine.Object) x.DialogTarget.Character == (UnityEngine.Object) character || (UnityEngine.Object) x.DialogActor.Character == (UnityEngine.Object) character);
+      POIDialogActivity dialog = currentDialogs.Find(x => x.DialogTarget.Character == character || x.DialogActor.Character == character);
       if (dialog == null)
         return;
       CancelDialogActivity(dialog);
@@ -242,23 +244,23 @@ namespace Engine.Source.Services
 
     public void StartDialog(GameObject actor, GameObject target)
     {
-      POIDialogActivity dialog = currentDialogs.Find(x => (UnityEngine.Object) x.DialogActor.Character == (UnityEngine.Object) actor);
+      POIDialogActivity dialog = currentDialogs.Find(x => x.DialogActor.Character == actor);
       if (dialog == null)
         return;
       Pivot component1 = actor.GetComponent<Pivot>();
       Pivot component2 = target.GetComponent<Pivot>();
-      if ((UnityEngine.Object) component1 == (UnityEngine.Object) null || (UnityEngine.Object) component2 == (UnityEngine.Object) null)
+      if (component1 == null || component2 == null)
         return;
       dialog.ActorSoundBank = component1.SoundBank;
       dialog.TargetSoundBank = component2.SoundBank;
-      if ((UnityEngine.Object) dialog.ActorSoundBank == (UnityEngine.Object) null || (UnityEngine.Object) dialog.TargetSoundBank == (UnityEngine.Object) null)
+      if (dialog.ActorSoundBank == null || dialog.TargetSoundBank == null)
         return;
       NPCSoundBankDialogTypeEnum type = GetRightDialogType(component1.SoundBank, component2.SoundBank);
       NPCSoundBankDialogObject bankDialogObject1 = dialog.ActorSoundBank.CivilTalks.Find(x => x.Type == type);
       NPCSoundBankDialogObject bankDialogObject2 = dialog.TargetSoundBank.CivilTalks.Find(x => x.Type == type);
       if (bankDialogObject1 == null)
         return;
-      dialog.CurrentDialogPairIndex = (int) ((double) UnityEngine.Random.value * bankDialogObject1.Pairs.Count);
+      dialog.CurrentDialogPairIndex = (int) (Random.value * (double) bankDialogObject1.Pairs.Count);
       if (dialog.CurrentDialogPairIndex >= bankDialogObject1.Pairs.Count)
         return;
       NPCSoundBankDialogObjectPair pair1 = bankDialogObject1.Pairs[dialog.CurrentDialogPairIndex];
@@ -295,7 +297,7 @@ namespace Engine.Source.Services
 
     private void DialogComplete(GameObject character)
     {
-      POIDialogActivity dialog = currentDialogs.Find(x => (UnityEngine.Object) x.DialogActor.Character == (UnityEngine.Object) character);
+      POIDialogActivity dialog = currentDialogs.Find(x => x.DialogActor.Character == character);
       if (dialog == null)
         return;
       dialog.IsPlaying = false;
@@ -309,7 +311,7 @@ namespace Engine.Source.Services
 
     public void StopDialog(GameObject character)
     {
-      POIDialogActivity poiDialogActivity = currentDialogs.Find(x => (UnityEngine.Object) x.DialogActor.Character == (UnityEngine.Object) character || (UnityEngine.Object) x.DialogTarget.Character == (UnityEngine.Object) character);
+      POIDialogActivity poiDialogActivity = currentDialogs.Find(x => x.DialogActor.Character == character || x.DialogTarget.Character == character);
       if (poiDialogActivity == null)
         return;
       poiDialogActivity.IsPlaying = false;
@@ -325,7 +327,7 @@ namespace Engine.Source.Services
 
     public void ResumeDialog(GameObject character)
     {
-      POIDialogActivity poiDialogActivity = currentDialogs.Find(x => (UnityEngine.Object) x.DialogTarget.Character == (UnityEngine.Object) character || (UnityEngine.Object) x.DialogActor.Character == (UnityEngine.Object) character);
+      POIDialogActivity poiDialogActivity = currentDialogs.Find(x => x.DialogTarget.Character == character || x.DialogActor.Character == character);
       if (poiDialogActivity == null)
         return;
       if (poiDialogActivity.ActorLipsync != null)

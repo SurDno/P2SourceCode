@@ -1,6 +1,7 @@
 ﻿using Engine.Common.BoundCharacters;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
+using UnityEngine;
 
 namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 {
@@ -26,7 +27,7 @@ namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
 
     public BoundCharacterView AddCharacter(BoundCharacterComponent character)
     {
-      BoundCharacterView boundCharacterView = Object.Instantiate<BoundCharacterView>(characterViewPrefab, (Transform) layout, false);
+      BoundCharacterView boundCharacterView = Instantiate(characterViewPrefab, layout, false);
       boundCharacterView.SetCharacter(character);
       return boundCharacterView;
     }

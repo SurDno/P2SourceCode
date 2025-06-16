@@ -11,6 +11,7 @@ using Engine.Source.Commons;
 using Engine.Source.Connections;
 using Engine.Source.Inventory;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {

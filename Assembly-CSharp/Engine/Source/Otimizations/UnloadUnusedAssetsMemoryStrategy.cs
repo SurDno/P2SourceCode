@@ -2,6 +2,7 @@
 using AssetDatabases;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace Engine.Source.Otimizations
 {
@@ -19,7 +20,7 @@ namespace Engine.Source.Otimizations
       while (!SceneController.CanLoad)
         yield return null;
       SceneController.Disabled = true;
-      yield return (object) Resources.UnloadUnusedAssets();
+      yield return Resources.UnloadUnusedAssets();
       SceneController.Disabled = false;
     }
   }

@@ -11,6 +11,9 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Components.Regions;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.AI;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -78,12 +81,12 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       }
       else
       {
-        Debug.LogWarningFormat("{0} not supported area type", (object) gameObject.name);
+        Debug.LogWarningFormat("{0} not supported area type", gameObject.name);
         return false;
       }
       for (int index = 0; index < num; ++index)
       {
-        float f = (float) UnityEngine.Random.Range(0, 360);
+        float f = Random.Range(0, 360);
         Vector3 position = gameObject.transform.position;
         position.x += SearchRadius.Value * Mathf.Sin(f);
         position.z += SearchRadius.Value * Mathf.Cos(f);
@@ -96,7 +99,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       float maxDistance2 = maxDistance1 * 2f;
       for (int index = 0; index < num; ++index)
       {
-        float f = (float) UnityEngine.Random.Range(0, 360);
+        float f = Random.Range(0, 360);
         Vector3 position = gameObject.transform.position;
         position.x += SearchRadius.Value * Mathf.Sin(f);
         position.z += SearchRadius.Value * Mathf.Cos(f);

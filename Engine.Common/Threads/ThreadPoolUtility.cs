@@ -1,7 +1,7 @@
-﻿using Cofe.Loggers;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
+using Cofe.Loggers;
 
 namespace Engine.Common.Threads
 {
@@ -13,9 +13,9 @@ namespace Engine.Common.Threads
       int threadCount,
       T2 context)
     {
-      ThreadState<T, T2> state = ThreadPoolUtility.BeginCompute<T, T2>(method, data, threadCount, context);
-      ThreadPoolUtility.Worker<T, T2>(state);
-      ThreadPoolUtility.Wait<T, T2>(state);
+      ThreadState<T, T2> state = BeginCompute(method, data, threadCount, context);
+      Worker(state);
+      Wait(state);
     }
 
     public static ThreadState<T, T2> BeginCompute<T, T2>(
@@ -31,7 +31,7 @@ namespace Engine.Common.Threads
       state.Context = context;
       for (int index = 0; index < threadCount; ++index)
       {
-        if (!ThreadPool.QueueUserWorkItem(new WaitCallback(ThreadPoolUtility.Worker<T, T2>), (object) state))
+        if (!ThreadPool.QueueUserWorkItem(Worker<T, T2>, state))
           Logger.AddError("ThreadPool error!");
       }
       return state;
@@ -49,7 +49,7 @@ label_0:
 
     public static void Worker<T, T2>(ThreadState<T, T2> state)
     {
-      ThreadPoolUtility.Worker<T, T2>((object) state);
+      Worker<T, T2>((object) state);
     }
 
     private static void Worker<T, T2>(object value)

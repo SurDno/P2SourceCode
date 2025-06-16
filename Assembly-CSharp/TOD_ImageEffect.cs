@@ -1,25 +1,27 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 [ExecuteInEditMode]
 [RequireComponent(typeof (Camera))]
 public abstract class TOD_ImageEffect : MonoBehaviour
 {
   public TOD_Sky sky;
-  protected Camera cam = (Camera) null;
+  protected Camera cam;
 
   protected Material CreateMaterial(Shader shader)
   {
-    if (!(bool) (UnityEngine.Object) shader)
+    if (!(bool) (Object) shader)
     {
-      Debug.Log((object) ("Missing shader in " + ToString()));
-      this.enabled = false;
-      return (Material) null;
+      Debug.Log("Missing shader in " + ToString());
+      enabled = false;
+      return null;
     }
     if (!shader.isSupported)
     {
-      Debug.LogError((object) ("The shader " + ((object) shader) + " on effect " + ToString() + " is not supported on this platform!"));
-      this.enabled = false;
-      return (Material) null;
+      Debug.LogError("The shader " + shader + " on effect " + ToString() + " is not supported on this platform!");
+      enabled = false;
+      return null;
     }
     Material material = new Material(shader);
     material.hideFlags = HideFlags.DontSave;
@@ -28,39 +30,39 @@ public abstract class TOD_ImageEffect : MonoBehaviour
 
   protected void Awake()
   {
-    if (!(bool) (UnityEngine.Object) cam)
-      cam = this.GetComponent<Camera>();
-    if ((bool) (UnityEngine.Object) sky)
+    if (!(bool) (Object) cam)
+      cam = GetComponent<Camera>();
+    if ((bool) (Object) sky)
       return;
-    sky = UnityEngine.Object.FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
+    sky = FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
   }
 
   protected bool CheckSupport(bool needDepth = false, bool needHdr = false)
   {
-    if (!(bool) (UnityEngine.Object) cam)
-      cam = this.GetComponent<Camera>();
-    if (!(bool) (UnityEngine.Object) cam)
+    if (!(bool) (Object) cam)
+      cam = GetComponent<Camera>();
+    if (!(bool) (Object) cam)
       return false;
-    if (!(bool) (UnityEngine.Object) sky)
-      sky = UnityEngine.Object.FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
-    if (!(bool) (UnityEngine.Object) sky || !sky.Initialized)
+    if (!(bool) (Object) sky)
+      sky = FindObjectOfType(typeof (TOD_Sky)) as TOD_Sky;
+    if (!(bool) (Object) sky || !sky.Initialized)
       return false;
     if (!SystemInfo.supportsImageEffects || !SystemInfo.supportsRenderTextures)
     {
-      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it's not supported on the current platform."));
-      this.enabled = false;
+      Debug.LogWarning("The image effect " + ToString() + " has been disabled as it's not supported on the current platform.");
+      enabled = false;
       return false;
     }
     if (needDepth && !SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.Depth))
     {
-      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it requires a depth texture."));
-      this.enabled = false;
+      Debug.LogWarning("The image effect " + ToString() + " has been disabled as it requires a depth texture.");
+      enabled = false;
       return false;
     }
     if (needHdr && !SystemInfo.SupportsRenderTextureFormat(RenderTextureFormat.ARGBHalf))
     {
-      Debug.LogWarning((object) ("The image effect " + ToString() + " has been disabled as it requires HDR."));
-      this.enabled = false;
+      Debug.LogWarning("The image effect " + ToString() + " has been disabled as it requires HDR.");
+      enabled = false;
       return false;
     }
     if (needDepth)
@@ -92,7 +94,7 @@ public abstract class TOD_ImageEffect : MonoBehaviour
         y2 = 1f;
       }
       float x1 = 0.0f;
-      float x2 = (float) (0.0 + 1.0 / ((double) dest.width * 1.0));
+      float x2 = (float) (0.0 + 1.0 / (dest.width * 1.0));
       float y3 = 0.0f;
       float y4 = 1f;
       GL.Begin(7);
@@ -104,7 +106,7 @@ public abstract class TOD_ImageEffect : MonoBehaviour
       GL.Vertex3(x2, y4, 0.1f);
       GL.TexCoord2(0.0f, y2);
       GL.Vertex3(x1, y4, 0.1f);
-      float x3 = (float) (1.0 - 1.0 / ((double) dest.width * 1.0));
+      float x3 = (float) (1.0 - 1.0 / (dest.width * 1.0));
       float x4 = 1f;
       float y5 = 0.0f;
       float y6 = 1f;
@@ -119,7 +121,7 @@ public abstract class TOD_ImageEffect : MonoBehaviour
       float x5 = 0.0f;
       float x6 = 1f;
       float y7 = 0.0f;
-      float y8 = (float) (0.0 + 1.0 / ((double) dest.height * 1.0));
+      float y8 = (float) (0.0 + 1.0 / (dest.height * 1.0));
       GL.TexCoord2(0.0f, y1);
       GL.Vertex3(x5, y7, 0.1f);
       GL.TexCoord2(1f, y1);
@@ -130,7 +132,7 @@ public abstract class TOD_ImageEffect : MonoBehaviour
       GL.Vertex3(x5, y8, 0.1f);
       float x7 = 0.0f;
       float x8 = 1f;
-      float y9 = (float) (1.0 - 1.0 / ((double) dest.height * 1.0));
+      float y9 = (float) (1.0 - 1.0 / (dest.height * 1.0));
       float y10 = 1f;
       GL.TexCoord2(0.0f, y1);
       GL.Vertex3(x7, y9, 0.1f);
@@ -152,7 +154,7 @@ public abstract class TOD_ImageEffect : MonoBehaviour
     int passNr = 0)
   {
     RenderTexture.active = dest;
-    fxMaterial.SetTexture("_MainTex", (Texture) source);
+    fxMaterial.SetTexture("_MainTex", source);
     GL.PushMatrix();
     GL.LoadOrtho();
     fxMaterial.SetPass(passNr);
@@ -195,10 +197,10 @@ public abstract class TOD_ImageEffect : MonoBehaviour
     Vector3 vector3_6 = forward * nearClipPlane - vector3_1 - vector3_2;
     vector3_6.Normalize();
     Vector3 row4 = vector3_6 * num2;
-    identity.SetRow(0, (Vector4) row1);
-    identity.SetRow(1, (Vector4) row2);
-    identity.SetRow(2, (Vector4) row3);
-    identity.SetRow(3, (Vector4) row4);
+    identity.SetRow(0, row1);
+    identity.SetRow(1, row2);
+    identity.SetRow(2, row3);
+    identity.SetRow(3, row4);
     return identity;
   }
 }

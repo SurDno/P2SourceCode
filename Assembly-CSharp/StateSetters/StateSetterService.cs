@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Cofe.Utility;
+using UnityEngine;
 
 namespace StateSetters
 {
@@ -21,7 +22,7 @@ namespace StateSetters
       if (controllers.TryGetValue(type, out setterItemController))
         setterItemController.Apply(item, value);
       else
-        Debug.LogError((object) ("Controller not found : " + item.Type));
+        Debug.LogError("Controller not found : " + item.Type);
     }
   }
 }

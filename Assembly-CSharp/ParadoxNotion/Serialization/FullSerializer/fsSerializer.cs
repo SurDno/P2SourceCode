@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using ParadoxNotion.Serialization.FullSerializer.Internal;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace ParadoxNotion.Serialization.FullSerializer
 {
@@ -79,7 +81,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
       for (int index = 0; index < processors.Count; ++index)
         processors[index].OnBeforeSerialize(storageType, instance);
-      if (!(instance is ISerializationCallbackReceiver) || instance is UnityEngine.Object)
+      if (!(instance is ISerializationCallbackReceiver) || instance is Object)
         return;
       ((ISerializationCallbackReceiver) instance).OnBeforeSerialize();
     }
@@ -120,7 +122,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
     {
       for (int index = processors.Count - 1; index >= 0; --index)
         processors[index].OnAfterDeserialize(storageType, instance);
-      if (!(instance is ISerializationCallbackReceiver) || instance is UnityEngine.Object)
+      if (!(instance is ISerializationCallbackReceiver) || instance is Object)
         return;
       ((ISerializationCallbackReceiver) instance).OnAfterDeserialize();
     }
@@ -426,7 +428,7 @@ namespace ParadoxNotion.Serialization.FullSerializer
       catch (Exception ex)
       {
         string str = string.Format("<b>(Deserialization Error)</b>: {0}\n{1}", ex.Message, ex.StackTrace);
-        Debug.LogError((object) str);
+        Debug.LogError(str);
         return fsResult.Fail(str);
       }
       finally
@@ -477,13 +479,13 @@ namespace ParadoxNotion.Serialization.FullSerializer
           {
             string message = "Unable to locate specified type \"" + asString + "\" , " + ReflectionTools.GetContext();
             success.AddMessage(message);
-            Debug.LogWarning((object) message);
+            Debug.LogWarning(message);
           }
           else if (!storageType.IsAssignableFrom(type2))
           {
             string message = "Ignoring type specifier; a field/property of type " + storageType + " cannot hold an instance of " + type2;
             success.AddMessage(message);
-            Debug.LogWarning((object) message);
+            Debug.LogWarning(message);
           }
           else
             type1 = type2;

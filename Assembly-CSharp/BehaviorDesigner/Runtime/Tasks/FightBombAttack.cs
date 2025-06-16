@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -37,7 +38,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) owner.gameObject == (UnityEngine.Object) null || !owner.gameObject.activeSelf || (UnityEngine.Object) owner?.Enemy == (UnityEngine.Object) null)
+      if (owner.gameObject == null || !owner.gameObject.activeSelf || owner?.Enemy == null)
         return TaskStatus.Failure;
       if (owner.IsReacting)
         return TaskStatus.Running;

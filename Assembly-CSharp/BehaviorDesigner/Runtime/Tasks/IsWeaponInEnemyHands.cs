@@ -7,6 +7,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -28,19 +29,19 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnAwake()
     {
       owner = gameObject.GetComponent<EnemyBase>();
-      if (!((UnityEngine.Object) owner != (UnityEngine.Object) null) || !((UnityEngine.Object) owner.Enemy != (UnityEngine.Object) null))
+      if (!(owner != null) || !(owner.Enemy != null))
         return;
       npcState = owner.Enemy.gameObject.GetComponent<NpcState>();
     }
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) owner == (UnityEngine.Object) null || (UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner == null || owner.Enemy == null)
         return TaskStatus.Failure;
       if (owner.Enemy is PlayerEnemy)
       {
         PlayerWeaponServiceNew component = owner.Enemy.gameObject.GetComponent<PlayerWeaponServiceNew>();
-        if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+        if (component == null)
           return TaskStatus.Failure;
         switch (component.KindBase)
         {
@@ -76,7 +77,7 @@ namespace BehaviorDesigner.Runtime.Tasks
         return TaskStatus.Failure;
       }
       npcState = owner.Enemy.gameObject.GetComponent<NpcState>();
-      return (UnityEngine.Object) npcState == (UnityEngine.Object) null || npcState.Weapon != weapon ? TaskStatus.Failure : TaskStatus.Success;
+      return npcState == null || npcState.Weapon != weapon ? TaskStatus.Failure : TaskStatus.Success;
     }
 
     public void DataWrite(IDataWriter writer)

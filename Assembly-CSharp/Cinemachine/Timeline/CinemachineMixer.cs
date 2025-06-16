@@ -1,4 +1,7 @@
-﻿namespace Cinemachine.Timeline
+﻿using UnityEngine;
+using UnityEngine.Playables;
+
+namespace Cinemachine.Timeline
 {
   public sealed class CinemachineMixer : PlayableBehaviour
   {
@@ -9,7 +12,7 @@
 
     public override void OnGraphStop(Playable playable)
     {
-      if ((Object) mBrain != (Object) null)
+      if (mBrain != null)
         mBrain.ReleaseCameraOverride(mBrainOverrideId);
       mBrainOverrideId = -1;
     }
@@ -18,18 +21,18 @@
     {
       base.ProcessFrame(playable, info, playerData);
       GameObject gameObject = playerData as GameObject;
-      mBrain = !((Object) gameObject == (Object) null) ? gameObject.GetComponent<CinemachineBrain>() : (CinemachineBrain) playerData;
-      if ((Object) mBrain == (Object) null)
+      mBrain = !(gameObject == null) ? gameObject.GetComponent<CinemachineBrain>() : (CinemachineBrain) playerData;
+      if (mBrain == null)
         return;
       int num = 0;
       ICinemachineCamera camB = null;
       ICinemachineCamera camA = null;
       float weightB = 1f;
-      for (int index = 0; index < playable.GetInputCount<Playable>(); ++index)
+      for (int index = 0; index < playable.GetInputCount(); ++index)
       {
-        CinemachineShotPlayable behaviour = ((ScriptPlayable<CinemachineShotPlayable>) playable.GetInput<Playable>(index)).GetBehaviour();
-        float inputWeight = playable.GetInputWeight<Playable>(index);
-        if (behaviour != null && (Object) behaviour.VirtualCamera != (Object) null && playable.GetPlayState<Playable>() == PlayState.Playing && inputWeight > 9.9999997473787516E-05)
+        CinemachineShotPlayable behaviour = ((ScriptPlayable<CinemachineShotPlayable>) playable.GetInput(index)).GetBehaviour();
+        float inputWeight = playable.GetInputWeight(index);
+        if (behaviour != null && behaviour.VirtualCamera != null && playable.GetPlayState() == PlayState.Playing && inputWeight > 9.9999997473787516E-05)
         {
           if (num == 1)
             camA = camB;
@@ -47,7 +50,7 @@
           mLastOverrideFrame = -1f;
         float realtimeSinceStartup = Time.realtimeSinceStartup;
         deltaTime = Time.unscaledDeltaTime;
-        if (!Application.isPlaying && (mLastOverrideFrame < 0.0 || realtimeSinceStartup - (double) mLastOverrideFrame > (double) Time.maximumDeltaTime))
+        if (!Application.isPlaying && (mLastOverrideFrame < 0.0 || realtimeSinceStartup - (double) mLastOverrideFrame > Time.maximumDeltaTime))
           deltaTime = -1f;
         mLastOverrideFrame = realtimeSinceStartup;
       }

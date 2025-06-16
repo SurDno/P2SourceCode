@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(fileName = "Sanitar follow", menuName = "Pathologic2/States/Sanitar follow", order = 101)]
+﻿using UnityEngine;
+
+[CreateAssetMenu(fileName = "Sanitar follow", menuName = "Pathologic2/States/Sanitar follow", order = 101)]
 public class SanitarFollowDescription : ScriptableObject
 {
   [Tooltip("NPC стремится сохранять эту дистанцию")]

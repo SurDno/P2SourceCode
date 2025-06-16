@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -46,7 +47,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override TaskStatus OnUpdate()
     {
       EnemyBase component = Owner.gameObject.GetComponent<EnemyBase>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null || (UnityEngine.Object) component.Enemy == (UnityEngine.Object) null)
+      if (component == null || component.Enemy == null)
         return TaskStatus.Failure;
       EnemyTransform.Value = component?.Enemy?.transform;
       return TaskStatus.Success;

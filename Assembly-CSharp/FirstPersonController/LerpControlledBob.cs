@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using UnityEngine;
 
 namespace FirstPersonController
 {
@@ -19,14 +20,14 @@ namespace FirstPersonController
       {
         m_Offset = Mathf.Lerp(0.0f, BobAmount, t / BobDuration);
         t += Time.deltaTime;
-        yield return (object) new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
       }
       t = 0.0f;
       while (t < (double) BobDuration)
       {
         m_Offset = Mathf.Lerp(BobAmount, 0.0f, t / BobDuration);
         t += Time.deltaTime;
-        yield return (object) new WaitForFixedUpdate();
+        yield return new WaitForFixedUpdate();
       }
       m_Offset = 0.0f;
     }

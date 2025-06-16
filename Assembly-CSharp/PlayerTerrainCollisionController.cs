@@ -1,5 +1,6 @@
 ﻿using Engine.Behaviours.Components;
 using Inspectors;
+using UnityEngine;
 
 public class PlayerTerrainCollisionController : MonoBehaviour
 {
@@ -17,7 +18,7 @@ public class PlayerTerrainCollisionController : MonoBehaviour
 
   private void Awake()
   {
-    playerMoveController = this.GetComponent<PlayerMoveController>();
+    playerMoveController = GetComponent<PlayerMoveController>();
     playerMoveController.DisableMovement = true;
   }
 

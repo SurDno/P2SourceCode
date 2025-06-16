@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -55,7 +56,7 @@ namespace RootMotion.FinalIK
 
     public RaycastHit rootHit { get; private set; }
 
-    public bool rootGrounded => (double) rootHit.distance < maxStep * 2.0;
+    public bool rootGrounded => rootHit.distance < maxStep * 2.0;
 
     public RaycastHit GetRootHit(float maxDistanceMlp = 10f)
     {
@@ -64,22 +65,22 @@ namespace RootMotion.FinalIK
       Vector3 zero = Vector3.zero;
       foreach (Leg leg in legs)
         zero += leg.transform.position;
-      Vector3 vector3 = zero / (float) legs.Length;
+      Vector3 vector3 = zero / legs.Length;
       hitInfo.point = vector3 - up * maxStep * 10f;
       float num = maxDistanceMlp + 1f;
       hitInfo.distance = maxStep * num;
       if (maxStep <= 0.0)
         return hitInfo;
       if (quality != Quality.Best)
-        Physics.Raycast(vector3 + up * maxStep, -up, out hitInfo, maxStep * num, (int) layers);
+        Physics.Raycast(vector3 + up * maxStep, -up, out hitInfo, maxStep * num, layers);
       else
-        Physics.SphereCast(vector3 + up * maxStep, rootSphereCastRadius, -this.up, out hitInfo, maxStep * num, (int) layers);
+        Physics.SphereCast(vector3 + up * maxStep, rootSphereCastRadius, -this.up, out hitInfo, maxStep * num, layers);
       return hitInfo;
     }
 
     public bool IsValid(ref string errorMessage)
     {
-      if ((UnityEngine.Object) root == (UnityEngine.Object) null)
+      if (root == null)
       {
         errorMessage = "Root transform is null. Can't initiate Grounding.";
         return false;
@@ -136,7 +137,7 @@ namespace RootMotion.FinalIK
     {
       if (!initiated)
         return;
-      if ((int) layers == 0)
+      if (layers == 0)
         LogWarning("Grounding layers are set to nothing. Please add a ground layer.");
       maxStep = Mathf.Clamp(maxStep, 0.0f, maxStep);
       footRadius = Mathf.Clamp(footRadius, 0.0001f, maxStep);
@@ -308,8 +309,8 @@ namespace RootMotion.FinalIK
             Vector3 vector3_1 = grounding.GetFootCenterOffset();
             if (invertFootCenter)
               vector3_1 = -vector3_1;
-            Vector3 vector3_2 = Vector3.Cross(GetRaycastHit(vector3_1 + offsetFromHeel).point - heelHit.point, this.GetRaycastHit(grounding.root.right * grounding.footRadius * 0.5f).point - heelHit.point).normalized;
-            if ((double) Vector3.Dot(vector3_2, up) < 0.0)
+            Vector3 vector3_2 = Vector3.Cross(GetRaycastHit(vector3_1 + offsetFromHeel).point - heelHit.point, GetRaycastHit(grounding.root.right * grounding.footRadius * 0.5f).point - heelHit.point).normalized;
+            if (Vector3.Dot(vector3_2, up) < 0.0)
               vector3_2 = -vector3_2;
             SetFootToPlane(vector3_2, heelHit.point, heelHit.point);
             break;
@@ -348,7 +349,7 @@ namespace RootMotion.FinalIK
         hitInfo.normal = up;
         Vector3 point1 = vector3_2 + grounding.maxStep * up;
         Vector3 point2 = point1 + offsetFromHeel;
-        if (Physics.CapsuleCast(point1, point2, grounding.footRadius, -up, out hitInfo, grounding.maxStep * 3f, (int) grounding.layers) && float.IsNaN(hitInfo.point.x))
+        if (Physics.CapsuleCast(point1, point2, grounding.footRadius, -up, out hitInfo, grounding.maxStep * 3f, grounding.layers) && float.IsNaN(hitInfo.point.x))
         {
           hitInfo.point = vector3_2 - up * grounding.maxStep * 2f;
           hitInfo.normal = up;
@@ -364,7 +365,7 @@ namespace RootMotion.FinalIK
         hitInfo.normal = up;
         if (grounding.maxStep <= 0.0)
           return hitInfo;
-        Physics.Raycast(vector3 + grounding.maxStep * up, -up, out hitInfo, grounding.maxStep * 3f, (int) grounding.layers);
+        Physics.Raycast(vector3 + grounding.maxStep * up, -up, out hitInfo, grounding.maxStep * 3f, grounding.layers);
         return hitInfo;
       }
 

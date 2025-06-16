@@ -1,4 +1,5 @@
 ﻿using RootMotion.FinalIK;
+using UnityEngine;
 
 public class Trailer_SupproterIKLook : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class Trailer_SupproterIKLook : MonoBehaviour
 
   private void Start()
   {
-    lookComponent = this.GetComponent<LookAtIK>();
+    lookComponent = GetComponent<LookAtIK>();
     ResetWeight();
   }
 

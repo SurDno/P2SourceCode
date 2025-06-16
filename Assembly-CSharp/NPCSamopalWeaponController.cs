@@ -1,6 +1,7 @@
 ﻿using Engine.Behaviours.Components;
 using Engine.Behaviours.Engines.Controllers;
 using Engine.Common.Components.AttackerPlayer;
+using UnityEngine;
 
 public class NPCSamopalWeaponController : NPCWeaponControllerBase
 {
@@ -12,11 +13,11 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
   public override void Initialise(NPCWeaponService service)
   {
     base.Initialise(service);
-    if ((Object) service.SamopalParent != (Object) null)
+    if (service.SamopalParent != null)
     {
-      if ((Object) samopal == (Object) null)
-        samopal = Object.Instantiate<GameObject>(service.SamopalPrefab, service.SamopalParent);
-      if ((Object) samopal != (Object) null)
+      if (samopal == null)
+        samopal = Object.Instantiate(service.SamopalPrefab, service.SamopalParent);
+      if (samopal != null)
       {
         samopal.SetActive(false);
         samopalObject = samopal.GetComponentInChildren<SamopalObject>();
@@ -31,14 +32,14 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
 
   public override void IndoorChanged()
   {
-    if (!((Object) samopalObject != (Object) null) || !((Object) service != (Object) null))
+    if (!(samopalObject != null) || !(service != null))
       return;
     samopalObject.SetIndoor(service.IsIndoor);
   }
 
   public override void Shutdown()
   {
-    if ((Object) samopal != (Object) null)
+    if (samopal != null)
       samopal.SetActive(false);
     Drop();
     base.Shutdown();
@@ -47,15 +48,15 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
   protected override void ShowWeapon(bool show)
   {
     base.ShowWeapon(show);
-    if (show && (Object) service.SamopalPrefab == (Object) null)
+    if (show && service.SamopalPrefab == null)
     {
-      Debug.LogError((object) (owner.gameObject.ToString() + " doesn`t support samopal!"));
+      Debug.LogError(owner.gameObject + " doesn`t support samopal!");
     }
     else
     {
-      if (show && (Object) samopal == (Object) null)
-        samopal = Object.Instantiate<GameObject>(service.SamopalPrefab, service.SamopalParent);
-      if (!((Object) samopal != (Object) null))
+      if (show && samopal == null)
+        samopal = Object.Instantiate(service.SamopalPrefab, service.SamopalParent);
+      if (!(samopal != null))
         return;
       samopal.SetActive(show);
     }
@@ -63,7 +64,7 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
 
   protected override void GetLayersIndices()
   {
-    if (!((Object) animator != (Object) null))
+    if (!(animator != null))
       return;
     walkLayerIndex = animator.GetLayerIndex("Fight Gun Walk Layer");
     attackLayerIndex = animator.GetLayerIndex("Fight Gun Attack Layer");
@@ -74,7 +75,7 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
   {
     if (data.StartsWith("Samopal.StartAiming"))
     {
-      if ((Object) ikController != (Object) null && (Object) owner.Enemy != (Object) null)
+      if (ikController != null && owner.Enemy != null)
       {
         ikController.WeaponTarget = owner.Enemy.transform;
         ikController.WeaponAimTo = Pivot.AimWeaponType.Chest;
@@ -83,15 +84,15 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
     }
     if (data.StartsWith("Samopal.Fire"))
     {
-      if ((Object) samopal != (Object) null)
+      if (samopal != null)
         samopal.SetActive(true);
-      if ((Object) samopalObject != (Object) null)
+      if (samopalObject != null)
         samopalObject.Shoot();
     }
     if (data.StartsWith("Samopal.Hit"))
     {
-      if ((Object) ikController != (Object) null)
-        ikController.WeaponTarget = (Transform) null;
+      if (ikController != null)
+        ikController.WeaponTarget = null;
       owner.SetAiming(false);
     }
     if (data.StartsWith("Samopal.Drop"))
@@ -103,8 +104,8 @@ public class NPCSamopalWeaponController : NPCWeaponControllerBase
 
   public override void PunchReaction(ReactionType reactionType)
   {
-    if ((Object) ikController != (Object) null)
-      ikController.WeaponTarget = (Transform) null;
+    if (ikController != null)
+      ikController.WeaponTarget = null;
     owner.SetAiming(false);
     TriggerAction(WeaponActionEnum.ForcedSamopalDrop);
     Shutdown();

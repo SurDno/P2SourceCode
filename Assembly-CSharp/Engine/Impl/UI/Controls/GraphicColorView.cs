@@ -1,4 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   public class GraphicColorView : SingleColorView
   {
@@ -7,7 +10,7 @@
 
     protected override void ApplyValue(bool instant)
     {
-      if (!((Object) graphic != (Object) null))
+      if (!(graphic != null))
         return;
       graphic.color = GetValue();
     }

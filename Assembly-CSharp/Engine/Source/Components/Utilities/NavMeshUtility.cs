@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Source.Services.Gizmos;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Engine.Source.Components.Utilities
 {
@@ -28,7 +30,7 @@ namespace Engine.Source.Components.Utilities
 
     public static bool IsBrokenPath(NavMeshAgent agent)
     {
-      if ((Object) agent == (Object) null || !agent.hasPath)
+      if (agent == null || !agent.hasPath)
         return false;
       NavMeshPath path = agent.path;
       return path != null && GetPathAndCount(path) < 2;
@@ -36,12 +38,12 @@ namespace Engine.Source.Components.Utilities
 
     public static bool HasPathNoGarbage(NavMeshAgent agent)
     {
-      return !((Object) agent == (Object) null) && agent.hasPath;
+      return !(agent == null) && agent.hasPath;
     }
 
     public static bool HasPathWithGarbage(NavMeshAgent agent)
     {
-      if ((Object) agent == (Object) null || !agent.hasPath)
+      if (agent == null || !agent.hasPath)
         return false;
       NavMeshPath path = agent.path;
       return path != null && GetPathAndCount(path) >= 2;
@@ -49,7 +51,7 @@ namespace Engine.Source.Components.Utilities
 
     public static void DrawPath(NavMeshAgent agent)
     {
-      if ((Object) agent == (Object) null || !agent.hasPath)
+      if (agent == null || !agent.hasPath)
         return;
       NavMeshPath path = agent.path;
       if (path == null)
@@ -70,7 +72,7 @@ namespace Engine.Source.Components.Utilities
 
     public static int DrawPath(NavMeshAgent agent, GizmoService gizmoService)
     {
-      if ((Object) agent == (Object) null || !agent.hasPath)
+      if (agent == null || !agent.hasPath)
         return 0;
       NavMeshPath path = agent.path;
       if (path == null)
@@ -93,7 +95,7 @@ namespace Engine.Source.Components.Utilities
     public static void GetCornersNonAlloc(NavMeshAgent agent, List<Vector3> result)
     {
       result.Clear();
-      if ((Object) agent == (Object) null || !agent.hasPath)
+      if (agent == null || !agent.hasPath)
         return;
       NavMeshPath path = agent.path;
       if (path == null)
@@ -136,7 +138,7 @@ namespace Engine.Source.Components.Utilities
       for (int maxDistance = 2; maxDistance <= maxRadius; maxDistance *= 2)
       {
         NavMeshHit hit;
-        if (NavMesh.SamplePosition(point, out hit, (float) maxDistance, mask))
+        if (NavMesh.SamplePosition(point, out hit, maxDistance, mask))
         {
           point = hit.position;
           resultRadius = maxDistance;

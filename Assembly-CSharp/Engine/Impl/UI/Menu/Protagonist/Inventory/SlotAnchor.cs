@@ -1,5 +1,7 @@
 ﻿using System;
 using Engine.Common.Components.Storable;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {

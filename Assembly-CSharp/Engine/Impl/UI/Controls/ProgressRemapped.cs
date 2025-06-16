@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressRemapped : ProgressView
   {
@@ -9,7 +11,7 @@
 
     protected override void ApplyProgress()
     {
-      if (!((Object) nestedView != (Object) null))
+      if (!(nestedView != null))
         return;
       nestedView.Progress = Mathf.Lerp(targetRange.x, targetRange.y, Progress);
     }
@@ -28,7 +30,7 @@
 
     public override void SkipAnimation()
     {
-      if (!((Object) nestedView != (Object) null))
+      if (!(nestedView != null))
         return;
       nestedView.SkipAnimation();
     }

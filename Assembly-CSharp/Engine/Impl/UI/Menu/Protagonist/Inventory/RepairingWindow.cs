@@ -14,6 +14,10 @@ using Engine.Source.UI;
 using Engine.Source.UI.Controls.BoolViews;
 using InputServices;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {
@@ -42,15 +46,15 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     private HideableView noNeedForRepairMessage;
     [SerializeField]
     private HideableView notEnoughResourcesMessage;
-    private IEntity target = null;
-    private RepairableComponent targetRepairable = null;
-    private IParameter<float> durabilityParameter = null;
-    private RepairerComponent targetRepairer = null;
+    private IEntity target;
+    private RepairableComponent targetRepairable;
+    private IParameter<float> durabilityParameter;
+    private RepairerComponent targetRepairer;
     private bool targetIsHydrant;
     private bool RepairingVisible;
     [SerializeField]
     private GameObject _repairingHint;
-    private StorableUI holdableStorable = null;
+    private StorableUI holdableStorable;
 
     [Inspected]
     private IParameter<float> DurabilityParameter
@@ -108,7 +112,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
         if (targetRepairable == null)
         {
           nonItemImage.gameObject.SetActive(false);
-          nonItemImage.sprite = (Sprite) null;
+          nonItemImage.sprite = null;
           selectedEntityView.Value = null;
           DurabilityParameter = null;
         }
@@ -117,7 +121,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
           if (TargetRepairer == null)
           {
             nonItemImage.sprite = targetRepairable.Settings?.NonItemImage;
-            nonItemImage.gameObject.SetActive((UnityEngine.Object) nonItemImage.sprite != (UnityEngine.Object) null);
+            nonItemImage.gameObject.SetActive(nonItemImage.sprite != null);
           }
           selectedEntityView.Value = targetRepairable.Owner;
           DurabilityParameter = targetRepairable.GetComponent<ParametersComponent>()?.GetByName<float>(ParameterNameEnum.Durability);
@@ -167,8 +171,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     public override void Initialize()
     {
-      RegisterLayer((IRepairingWindow) this);
-      repairButton.onClick.AddListener(new UnityAction(Repair));
+      RegisterLayer<IRepairingWindow>(this);
+      repairButton.onClick.AddListener(Repair);
       itemSelector.ValidateItemEvent += SelectorItemValid;
       itemSelector.ChangeItemEvent += OnSelectorItemChange;
       base.Initialize();
@@ -193,7 +197,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       CurrentSelector = SelectedSelector.None;
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickLeft, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LStickRight, new GameActionHandle(((SelectableInventoryWindow) this).ConsoleController));
-      SelectorButtons = new List<Button>((IEnumerable<Button>) itemSelector.GetComponentsInChildren<Button>());
+      SelectorButtons = new List<Button>(itemSelector.GetComponentsInChildren<Button>());
       if (itemSelector.Item == null)
         return;
       holdableStorable = GetStorableByComponent(itemSelector.Item);
@@ -207,7 +211,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Submit, RepairController);
       UnsubscribeNavigation();
       SelectorButtons.Clear();
-      if ((UnityEngine.Object) holdableStorable != (UnityEngine.Object) null)
+      if (holdableStorable != null)
       {
         holdableStorable.HoldSelected(false);
         holdableStorable = null;
@@ -228,20 +232,20 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
     {
       if (!InputService.Instance.JoystickUsed || !down)
         return false;
-      if ((UnityEngine.Object) holdableStorable != (UnityEngine.Object) null)
+      if (holdableStorable != null)
       {
         holdableStorable.HoldSelected(false);
         holdableStorable = null;
       }
       if (type == GameActionType.LStickLeft & down)
       {
-        ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[0].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+        ExecuteEvents.Execute(SelectorButtons[0].gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
         OnInvalidate();
         return true;
       }
       if (!(type == GameActionType.LStickRight & down))
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(SelectorButtons[1].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute(SelectorButtons[1].gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       OnInvalidate();
       return true;
     }
@@ -252,7 +256,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
       if (RepairingVisible)
         _repairingHint.SetActive(joystick);
       controlPanel.SetActive(itemSelector.gameObject.activeInHierarchy & joystick);
-      if (!((UnityEngine.Object) holdableStorable != (UnityEngine.Object) null))
+      if (!(holdableStorable != null))
         return;
       holdableStorable.HoldSelected(joystick);
     }
@@ -321,7 +325,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 
     private void RedrawCost()
     {
-      if ((UnityEngine.Object) costView == (UnityEngine.Object) null)
+      if (costView == null)
         return;
       RepairableLevel repairableLevel = targetRepairable?.TargetLevel();
       if (repairableLevel != null)

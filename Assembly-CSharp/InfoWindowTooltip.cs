@@ -1,6 +1,8 @@
 ﻿using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Impl.UI;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class InfoWindowTooltip : UIControl
 {
@@ -11,9 +13,9 @@ public class InfoWindowTooltip : UIControl
 
   public void SetParams(StorableTooltipInfo info)
   {
-    if ((Object) Name != (Object) null && info != null)
+    if (Name != null && info != null)
       Name.text = ServiceLocator.GetService<LocalizationService>().GetText(info.Name.ToString());
-    if (!((Object) Value != (Object) null) || info == null || info.Value == null)
+    if (!(Value != null) || info == null || info.Value == null)
       return;
     Value.text = ServiceLocator.GetService<LocalizationService>().GetText(info.Value);
     Value.color = info.Color;

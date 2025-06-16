@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using TriangleNet;
 using TriangleNet.Data;
 using TriangleNet.Geometry;
+using UnityEngine;
+using Mesh = TriangleNet.Mesh;
 
 public static class TriangleVector2
 {
@@ -94,7 +96,7 @@ public static class TriangleVector2
     int count = inputGeometry.Count;
     for (int index = 0; index < contour.Length; ++index)
     {
-      inputGeometry.AddPoint((double) contour[index].x, (double) contour[index].y, marker);
+      inputGeometry.AddPoint(contour[index].x, contour[index].y, marker);
       inputGeometry.AddSegment(count + index, index == 0 ? count + contour.Length - 1 : count + index - 1, marker);
     }
   }

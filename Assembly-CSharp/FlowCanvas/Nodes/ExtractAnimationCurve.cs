@@ -1,4 +1,6 @@
-﻿namespace FlowCanvas.Nodes
+﻿using UnityEngine;
+
+namespace FlowCanvas.Nodes
 {
   public class ExtractAnimationCurve : 
     ExtractorNode<AnimationCurve, Keyframe[], float, WrapMode, WrapMode>
@@ -11,7 +13,7 @@
       out WrapMode preWrapMode)
     {
       keys = curve.keys;
-      length = (float) curve.length;
+      length = curve.length;
       postWrapMode = curve.postWrapMode;
       preWrapMode = curve.preWrapMode;
     }

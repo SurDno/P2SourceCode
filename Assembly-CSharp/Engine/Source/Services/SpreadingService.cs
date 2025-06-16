@@ -17,6 +17,7 @@ using Engine.Source.Components;
 using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Services
 {
@@ -73,7 +74,7 @@ namespace Engine.Source.Services
       Action<IEntity> regionLoadedOnce = OnRegionLoadedOnce;
       if (regionLoadedOnce != null)
         regionLoadedOnce(component.Owner);
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Spreading items, region : ").GetInfo(component.Owner));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Spreading items, region : ").GetInfo(component.Owner));
     }
 
     public void AddSpreading(SpreadingComponent spreadingComponent)
@@ -111,7 +112,7 @@ namespace Engine.Source.Services
       Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> furnitureLoadedOnce = OnFurnitureLoadedOnce;
       if (furnitureLoadedOnce != null)
         furnitureLoadedOnce(parent, owner, buildingEnum, diseasedState);
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Spreading items, entity : ").GetInfo(parent).Append(" , region : ").Append(owner.Name).Append(" ,  building : ").Append(buildingEnum).Append(" , diseased : ").Append(diseasedState));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("Spreading items, entity : ").GetInfo(parent).Append(" , region : ").Append(owner.Name).Append(" ,  building : ").Append(buildingEnum).Append(" , diseased : ").Append(diseasedState));
     }
 
     public IEnumerator Load(IErrorLoadingHandler errorHandler)

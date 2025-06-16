@@ -3,6 +3,7 @@ using Engine.Behaviours.Components;
 using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
+using UnityEngine;
 
 public class NPCFlamethrowerWeaponController : INPCWeaponController
 {
@@ -25,7 +26,7 @@ public class NPCFlamethrowerWeaponController : INPCWeaponController
     pivotSanitar = service.gameObject.GetComponent<PivotSanitar>();
     IndoorChanged();
     animatorState = AnimatorState45.GetAnimatorState(animator);
-    if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+    if (animator != null)
     {
       walkLayerIndex = animator.GetLayerIndex("Fight Flamethrower Walk Layer");
       attackLayerIndex = animator.GetLayerIndex("Fight Attack Layer");
@@ -36,7 +37,7 @@ public class NPCFlamethrowerWeaponController : INPCWeaponController
 
   public void IndoorChanged()
   {
-    if (!((UnityEngine.Object) pivotSanitar != (UnityEngine.Object) null) || !((UnityEngine.Object) service != (UnityEngine.Object) null))
+    if (!(pivotSanitar != null) || !(service != null))
       return;
     pivotSanitar.IsIndoor = service.IsIndoor;
   }
@@ -62,7 +63,7 @@ public class NPCFlamethrowerWeaponController : INPCWeaponController
 
   public void Shutdown()
   {
-    if ((UnityEngine.Object) pivotSanitar != (UnityEngine.Object) null)
+    if (pivotSanitar != null)
       pivotSanitar.Flamethrower = false;
     SetLayers(0.0f);
   }
@@ -77,7 +78,7 @@ public class NPCFlamethrowerWeaponController : INPCWeaponController
   {
     layersWeight = 0.0f;
     SetLayers(0.0f, true);
-    if (!((UnityEngine.Object) pivotSanitar != (UnityEngine.Object) null))
+    if (!(pivotSanitar != null))
       return;
     pivotSanitar.Flamethrower = false;
   }
@@ -98,7 +99,7 @@ public class NPCFlamethrowerWeaponController : INPCWeaponController
 
   protected void SetLayers(float weight, bool immediate = false)
   {
-    if ((UnityEngine.Object) service == (UnityEngine.Object) null)
+    if (service == null)
       return;
     if (walkLayerIndex != -1)
       service.AddNeededLayer(walkLayerIndex, weight);

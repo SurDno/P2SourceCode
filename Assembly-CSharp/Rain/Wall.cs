@@ -1,4 +1,6 @@
-﻿namespace Rain
+﻿using UnityEngine;
+
+namespace Rain
 {
   [RequireComponent(typeof (MeshRenderer))]
   public class Wall : MonoBehaviour
@@ -10,20 +12,20 @@
 
     private void Start()
     {
-      _renderer = this.GetComponent<MeshRenderer>();
+      _renderer = GetComponent<MeshRenderer>();
       _material = _renderer.material;
     }
 
     private void LateUpdate()
     {
       RainManager instance = RainManager.Instance;
-      if ((Object) instance == (Object) null || instance.actualRainIntensity <= 0.0)
+      if (instance == null || instance.actualRainIntensity <= 0.0)
       {
         _renderer.enabled = false;
       }
       else
       {
-        this.transform.position = instance.PlayerPosition;
+        transform.position = instance.PlayerPosition;
         _phase += Time.deltaTime * speed;
         _phase = Mathf.Repeat(_phase, 1f);
         if (_phase > 1.0)

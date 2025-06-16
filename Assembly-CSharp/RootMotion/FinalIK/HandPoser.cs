@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   public class HandPoser : Poser
   {
@@ -10,13 +12,13 @@
 
     public override void AutoMapping()
     {
-      poseChildren = !((Object) poseRoot == (Object) null) ? poseRoot.GetComponentsInChildren<Transform>() : new Transform[0];
+      poseChildren = !(poseRoot == null) ? poseRoot.GetComponentsInChildren<Transform>() : new Transform[0];
       _poseRoot = poseRoot;
     }
 
     protected override void InitiatePoser()
     {
-      children = this.GetComponentsInChildren<Transform>();
+      children = GetComponentsInChildren<Transform>();
       StoreDefaultState();
     }
 
@@ -33,13 +35,13 @@
     {
       if (weight <= 0.0 || localPositionWeight <= 0.0 && localRotationWeight <= 0.0)
         return;
-      if ((Object) _poseRoot != (Object) poseRoot)
+      if (_poseRoot != poseRoot)
         AutoMapping();
-      if ((Object) poseRoot == (Object) null)
+      if (poseRoot == null)
         return;
       if (children.Length != poseChildren.Length)
       {
-        Warning.Log("Number of children does not match with the pose", this.transform);
+        Warning.Log("Number of children does not match with the pose", transform);
       }
       else
       {
@@ -47,7 +49,7 @@
         float t2 = localPositionWeight * weight;
         for (int index = 0; index < children.Length; ++index)
         {
-          if ((Object) children[index] != (Object) this.transform)
+          if (children[index] != transform)
           {
             children[index].localRotation = Quaternion.Lerp(children[index].localRotation, poseChildren[index].localRotation, t1);
             children[index].localPosition = Vector3.Lerp(children[index].localPosition, poseChildren[index].localPosition, t2);

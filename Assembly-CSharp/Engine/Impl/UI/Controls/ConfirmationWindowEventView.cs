@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ConfirmationWindowEventView : EventView
   {
@@ -16,8 +18,8 @@
 
     public override void Invoke()
     {
-      if ((UnityEngine.Object) window == (UnityEngine.Object) null)
-        window = UnityEngine.Object.Instantiate<ConfirmationWindow>(prefab, (bool) (UnityEngine.Object) layout ? layout : this.transform, false);
+      if (window == null)
+        window = Instantiate(prefab, (bool) (Object) layout ? layout : transform, false);
       window.Show(text, OnAccept, OnCancel);
     }
 

@@ -1,4 +1,8 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   public class CompareMeter : MonoBehaviour
   {

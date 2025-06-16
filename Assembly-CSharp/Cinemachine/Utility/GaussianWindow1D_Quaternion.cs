@@ -1,4 +1,6 @@
-﻿namespace Cinemachine.Utility
+﻿using UnityEngine;
+
+namespace Cinemachine.Utility
 {
   internal class GaussianWindow1D_Quaternion : GaussianWindow1d<Quaternion>
   {
@@ -16,7 +18,7 @@
       {
         float num = mKernel[index];
         Quaternion b = quaternion2 * mData[windowPos];
-        if ((double) Quaternion.Dot(Quaternion.identity, b) < 0.0)
+        if (Quaternion.Dot(Quaternion.identity, b) < 0.0)
           num = -num;
         quaternion1.x += b.x * num;
         quaternion1.y += b.y * num;

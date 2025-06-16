@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine.Source.Connections;
+using UnityEngine;
 
 [CreateAssetMenu(fileName = "NPCSoundBankDescription", menuName = "Pathologic2/NPC SoundBank Description", order = 101)]
 public class NPCSoundBankDescription : ScriptableObject

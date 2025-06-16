@@ -3,6 +3,7 @@ using Engine.Common.Generator;
 using Engine.Source.Connections;
 using Engine.Source.Services.Inputs;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components.Interactable
 {

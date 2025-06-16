@@ -5,6 +5,7 @@ using Engine.Impl.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
 
 public class TextHelper
 {
@@ -62,7 +63,7 @@ public class TextHelper
   {
     if (string.IsNullOrEmpty(message))
       return null;
-    string str = "<size=" + (object) Mathf.RoundToInt(fontSize * 1.25f) + ">";
+    string str = "<size=" + Mathf.RoundToInt(fontSize * 1.25f) + ">";
     StringBuilder stringBuilder = new StringBuilder();
     bool flag = false;
     for (int index = 0; index < message.Length; ++index)

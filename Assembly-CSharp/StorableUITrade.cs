@@ -2,6 +2,7 @@
 using Engine.Source.Components;
 using Engine.Source.UI.Menu.Protagonist.Inventory;
 using InputServices;
+using UnityEngine;
 
 public class StorableUITrade : StorableUI
 {
@@ -16,13 +17,13 @@ public class StorableUITrade : StorableUI
     if (internalStorable.Max > 1)
     {
       textCount.text = selectedCount == 0 ? internalStorable.Count.ToString() : selectedCount + "/" + internalStorable.Count;
-      if ((Object) textCount.gameObject != (Object) null)
+      if (textCount.gameObject != null)
         textCount.gameObject.SetActive(true);
     }
     else
     {
-      textCount.text = (string) null;
-      if ((Object) textCount.gameObject != (Object) null)
+      textCount.text = null;
+      if (textCount.gameObject != null)
         textCount.gameObject.SetActive(false);
     }
     selectedImage.gameObject.SetActive(isSelected);

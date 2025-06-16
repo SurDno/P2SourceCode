@@ -1,4 +1,6 @@
-﻿public class Random_movement : MonoBehaviour
+﻿using UnityEngine;
+
+public class Random_movement : MonoBehaviour
 {
   private Vector3 dir;
 
@@ -7,5 +9,5 @@
     dir = Quaternion.Euler(0.0f, Random.Range(0.0f, 360f), 0.0f) * Vector3.forward;
   }
 
-  private void FixedUpdate() => this.transform.Translate(dir / 20f);
+  private void FixedUpdate() => transform.Translate(dir / 20f);
 }

@@ -1,4 +1,6 @@
-﻿namespace Engine.Behaviours.Unity.Mecanim
+﻿using UnityEngine;
+
+namespace Engine.Behaviours.Unity.Mecanim
 {
   public static class AnimatorBehaviorBase45Utility
   {
@@ -25,7 +27,7 @@
       float num3 = RightLegStopDistance(pivot, speed);
       float num4 = LeftLegStopDistance(pivot, speed);
       float f = remainingDistance - (num2 / 2f + num4);
-      if ((double) Mathf.Abs((float) (remainingDistance - num2 / 2.0 - (num2 / 2.0 + num3))) > (double) Mathf.Abs(f))
+      if (Mathf.Abs((float) (remainingDistance - num2 / 2.0 - (num2 / 2.0 + num3))) > (double) Mathf.Abs(f))
       {
         scale = remainingDistance / (num2 / 2f + num4);
         return true;
@@ -45,7 +47,7 @@
       float num3 = RightLegStopDistance(pivot, speed);
       float num4 = LeftLegStopDistance(pivot, speed);
       float f = remainingDistance - (num2 / 2f + num3);
-      if ((double) Mathf.Abs((float) (remainingDistance - num2 / 2.0 - (num2 / 2.0 + num4))) > (double) Mathf.Abs(f))
+      if (Mathf.Abs((float) (remainingDistance - num2 / 2.0 - (num2 / 2.0 + num4))) > (double) Mathf.Abs(f))
       {
         scale = remainingDistance / (num2 / 2f + num3);
         return true;

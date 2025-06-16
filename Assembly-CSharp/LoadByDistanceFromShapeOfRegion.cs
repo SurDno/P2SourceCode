@@ -4,6 +4,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
 using Scripts.Behaviours.LoadControllers;
+using UnityEngine;
 
 public class LoadByDistanceFromShapeOfRegion : BaseLoadByDistance, IEntityAttachable
 {
@@ -59,7 +60,7 @@ public class LoadByDistanceFromShapeOfRegion : BaseLoadByDistance, IEntityAttach
 
   private void Update()
   {
-    if (region == null || (Object) region.RegionMesh == (Object) null)
+    if (region == null || region.RegionMesh == null)
       return;
     if (!initialise)
     {
@@ -69,7 +70,7 @@ public class LoadByDistanceFromShapeOfRegion : BaseLoadByDistance, IEntityAttach
     if (model == null)
       return;
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-    if (player == null || player.GetComponent<NavigationComponent>().WaitTeleport || (double) Random.value > (double) Time.deltaTime / 0.5)
+    if (player == null || player.GetComponent<NavigationComponent>().WaitTeleport || Random.value > Time.deltaTime / 0.5)
       return;
     position = ((IEntityView) player).Position;
     position.y = 0.0f;
@@ -143,7 +144,7 @@ public class LoadByDistanceFromShapeOfRegion : BaseLoadByDistance, IEntityAttach
 
   private void ComputeBounds()
   {
-    if (region == null || (Object) region.RegionMesh == (Object) null)
+    if (region == null || region.RegionMesh == null)
       return;
     triangles = region.RegionMesh.Triangles;
     if (triangles.Length == 0)

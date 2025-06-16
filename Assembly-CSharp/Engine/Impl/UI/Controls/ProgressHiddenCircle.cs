@@ -1,4 +1,7 @@
 ﻿using Inspectors;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -8,10 +11,10 @@ namespace Engine.Impl.UI.Controls
   {
     [SerializeField]
     [FormerlySerializedAs("CircleBase")]
-    private Image circleBase = (Image) null;
+    private Image circleBase;
     [SerializeField]
     [FormerlySerializedAs("CircleFill")]
-    private Image circleFill = (Image) null;
+    private Image circleFill;
     private float progress;
 
     [Inspected]
@@ -22,15 +25,15 @@ namespace Engine.Impl.UI.Controls
       {
         if (value <= 0.0)
         {
-          this.gameObject.SetActive(false);
+          gameObject.SetActive(false);
         }
         else
         {
           if (progress <= 0.0)
-            this.gameObject.SetActive(true);
-          if ((Object) circleFill != (Object) null)
+            gameObject.SetActive(true);
+          if (circleFill != null)
             circleFill.fillAmount = value;
-          if ((Object) circleBase != (Object) null)
+          if (circleBase != null)
             circleBase.fillAmount = 1f - value;
         }
         progress = value;

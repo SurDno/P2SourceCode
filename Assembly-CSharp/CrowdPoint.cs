@@ -1,4 +1,6 @@
 ﻿using Engine.Common.Components.Movable;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CrowdPoint : MonoBehaviour
 {

@@ -1,4 +1,6 @@
-﻿public class RiverAudio : MonoBehaviour
+﻿using UnityEngine;
+
+public class RiverAudio : MonoBehaviour
 {
   public Transform Source;
   public Collider2D PlayerCollider;
@@ -23,7 +25,7 @@
   {
     get
     {
-      if ((Object) GameCamera.Instance.CameraTransform == (Object) null)
+      if (GameCamera.Instance.CameraTransform == null)
         return Vector2.zero;
       Vector3 position = GameCamera.Instance.CameraTransform.position;
       return new Vector2(position.x, position.z);
@@ -39,12 +41,12 @@
 
   private void Start()
   {
-    riverCollider = this.GetComponent<Collider2D>();
-    if ((Object) Source == (Object) null || (Object) PlayerCollider == (Object) null || (Object) riverCollider == (Object) null)
+    riverCollider = GetComponent<Collider2D>();
+    if (Source == null || PlayerCollider == null || riverCollider == null)
     {
-      if ((Object) Source != (Object) null)
+      if (Source != null)
         Source.gameObject.SetActive(false);
-      this.enabled = false;
+      enabled = false;
     }
     else
       SourcePosition = ClosestPoint(PlayerPosition);

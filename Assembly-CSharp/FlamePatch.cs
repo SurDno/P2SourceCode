@@ -1,4 +1,6 @@
-﻿public class FlamePatch : MonoBehaviour
+﻿using UnityEngine;
+
+public class FlamePatch : MonoBehaviour
 {
   [SerializeField]
   private ParticleSystem smokeSystem;
@@ -45,7 +47,7 @@
   {
     if (Strength == 0.0)
     {
-      this.GetComponent<MeshRenderer>().enabled = false;
+      GetComponent<MeshRenderer>().enabled = false;
       smokeSystem.emission.enabled = false;
       sparkSystem.emission.enabled = false;
     }
@@ -53,8 +55,8 @@
     {
       randomSeed.x = Mathf.Sqrt(Strength);
       mpb.SetVector(propertyId, randomSeed);
-      this.GetComponent<MeshRenderer>().SetPropertyBlock(mpb);
-      this.GetComponent<MeshRenderer>().enabled = true;
+      GetComponent<MeshRenderer>().SetPropertyBlock(mpb);
+      GetComponent<MeshRenderer>().enabled = true;
       ParticleSystem.EmissionModule emission = smokeSystem.emission with
       {
         enabled = true
@@ -64,11 +66,11 @@
       {
         a = Strength * smokeMaxAlpha
       };
-      main.startColor = (ParticleSystem.MinMaxGradient) color;
+      main.startColor = color;
       emission = sparkSystem.emission with
       {
         enabled = true,
-        rateOverTime = (ParticleSystem.MinMaxCurve) (Strength * sparkMaxRate)
+        rateOverTime = Strength * sparkMaxRate
       };
     }
     if (decalOpacity > 0.0)

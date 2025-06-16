@@ -3,6 +3,7 @@ using Engine.Common;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
+using UnityEngine;
 
 public class LeafAnimator : MonoBehaviour, IUpdatable
 {
@@ -12,7 +13,7 @@ public class LeafAnimator : MonoBehaviour, IUpdatable
   public float firstRadius = 1f;
   public float firstPeriod = 5f;
   [Range(0.0f, 360f)]
-  public float rotation = 0.0f;
+  public float rotation;
   [Space]
   public float secondRadius = 1f;
   public float secondPeriod = -2.15f;
@@ -62,7 +63,7 @@ public class LeafAnimator : MonoBehaviour, IUpdatable
   {
     if (time > 0.0)
       time = 0.0f;
-    if ((UnityEngine.Object) manager == (UnityEngine.Object) null || manager.minSimulationTime <= 0.0)
+    if (manager == null || manager.minSimulationTime <= 0.0)
       return CalculateTransform(time);
     if (time > (double) cachedTransform1Time)
     {
@@ -109,14 +110,14 @@ public class LeafAnimator : MonoBehaviour, IUpdatable
     Vector3 vector3_3 = new Vector3(Mathf.Sin(f2), 0.0f, Mathf.Cos(f2));
     vector3_3.y = vector3_3.z * slope;
     Vector3 vector3_4 = new Vector3 {
-      x = (float) ((double) vector3_2.x * (double) vector3_3.x + (double) vector3_1.x * (double) vector3_3.z),
-      y = (float) ((double) vector3_2.y * (double) vector3_3.x + (double) vector3_3.y + (double) vector3_1.y * (double) vector3_3.z),
-      z = (float) ((double) vector3_2.z * (double) vector3_3.x + (double) vector3_1.z * (double) vector3_3.z)
+      x = (float) (vector3_2.x * (double) vector3_3.x + vector3_1.x * (double) vector3_3.z),
+      y = (float) (vector3_2.y * (double) vector3_3.x + vector3_3.y + vector3_1.y * (double) vector3_3.z),
+      z = (float) (vector3_2.z * (double) vector3_3.x + vector3_1.z * (double) vector3_3.z)
     };
     point.position = new Vector3 {
-      x = (float) ((double) velocity.x * time + (double) vector3_1.x * firstRadius + (double) vector3_4.x * secondRadius),
-      y = (float) ((double) velocity.y * time + (double) vector3_1.y * firstRadius + (slope + (double) vector3_4.y) * secondRadius),
-      z = (float) ((double) velocity.z * time + (double) vector3_1.z * firstRadius + (double) vector3_4.z * secondRadius)
+      x = (float) (velocity.x * (double) time + vector3_1.x * (double) firstRadius + vector3_4.x * (double) secondRadius),
+      y = (float) (velocity.y * (double) time + vector3_1.y * (double) firstRadius + (slope + (double) vector3_4.y) * secondRadius),
+      z = (float) (velocity.z * (double) time + vector3_1.z * (double) firstRadius + vector3_4.z * (double) secondRadius)
     };
     point.normal = vector3_4;
     return point;
@@ -127,7 +128,7 @@ public class LeafAnimator : MonoBehaviour, IUpdatable
     Gizmos.color = !landing ? new Color(1f, 0.75f, 0.0f) : new Color(0.0f, 1f, 0.0f);
     int num1 = Mathf.RoundToInt(flyTime * 4f);
     float num2 = flyTime / num1;
-    Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+    Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
     Vector3 from = localToWorldMatrix.MultiplyPoint(GetPoint(0.0f).position);
     for (int index = 1; index < num1 + 1; ++index)
     {
@@ -139,17 +140,17 @@ public class LeafAnimator : MonoBehaviour, IUpdatable
 
   private void Remove()
   {
-    if ((UnityEngine.Object) manager != (UnityEngine.Object) null)
+    if (manager != null)
       manager.ReturnAnimator(this);
     else
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+      Destroy(gameObject);
   }
 
   private void SetOpacity(float opacity)
   {
     if (opacity == 1.0)
     {
-      leafRenderer.SetPropertyBlock((MaterialPropertyBlock) null);
+      leafRenderer.SetPropertyBlock(null);
     }
     else
     {
@@ -180,7 +181,7 @@ public class LeafAnimator : MonoBehaviour, IUpdatable
 
   void IUpdatable.ComputeUpdate()
   {
-    if (!this.isActiveAndEnabled)
+    if (!isActiveAndEnabled)
       return;
     TimeSpan timeSpan = timeService.RealTime - prevTime;
     prevTime = timeService.RealTime;

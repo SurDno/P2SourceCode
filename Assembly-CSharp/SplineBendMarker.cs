@@ -1,4 +1,6 @@
-﻿public class SplineBendMarker : MonoBehaviour
+﻿using UnityEngine;
+
+public class SplineBendMarker : MonoBehaviour
 {
   public SplineBend splineScript;
   [HideInInspector]
@@ -36,8 +38,8 @@
   {
     splineScript = script;
     num = mnum;
-    up = this.transform.up;
-    position = script.transform.InverseTransformPoint(this.transform.position);
+    up = transform.up;
+    position = script.transform.InverseTransformPoint(transform.position);
     SplineBendMarker marker2 = null;
     SplineBendMarker marker1 = null;
     if (num > 0)
@@ -95,11 +97,11 @@
         break;
       case MarkerType.Transform:
         if ((bool) (Object) marker1)
-          prewHandle = -this.transform.forward * this.transform.localScale.z * (position - marker1.position).magnitude * 0.4f;
+          prewHandle = -transform.forward * transform.localScale.z * (position - marker1.position).magnitude * 0.4f;
         if ((bool) (Object) marker2)
         {
           vector3_2 = position - vector3_1;
-          nextHandle = this.transform.forward * this.transform.localScale.z * vector3_2.magnitude * 0.4f;
+          nextHandle = transform.forward * transform.localScale.z * vector3_2.magnitude * 0.4f;
         }
         break;
       case MarkerType.Corner:
@@ -108,7 +110,7 @@
         break;
     }
     vector3_2 = nextHandle - prewHandle;
-    if ((double) vector3_2.sqrMagnitude >= 0.0099999997764825821)
+    if (vector3_2.sqrMagnitude >= 0.0099999997764825821)
       return;
     nextHandle += new Vector3(1f / 1000f, 0.0f, 0.0f);
   }

@@ -1,4 +1,6 @@
-﻿namespace BehaviorDesigner.Runtime.Tasks.Pathologic.PlagueCloud
+﻿using UnityEngine;
+
+namespace BehaviorDesigner.Runtime.Tasks.Pathologic.PlagueCloud
 {
   public abstract class PlagueCloudBase : Action
   {
@@ -13,7 +15,7 @@
       clouds = gameObject.GetComponentsInChildren<global::PlagueCloud>();
       if (clouds != null)
         return;
-      Debug.LogError((object) (gameObject.name + ": doesn't contain " + typeof (global::PlagueCloud).Name + " unity component"), (Object) gameObject);
+      Debug.LogError(gameObject.name + ": doesn't contain " + typeof (global::PlagueCloud).Name + " unity component", gameObject);
     }
 
     public override TaskStatus OnUpdate()

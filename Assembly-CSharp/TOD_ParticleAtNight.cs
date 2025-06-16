@@ -1,4 +1,6 @@
-﻿[RequireComponent(typeof (ParticleSystem))]
+﻿using UnityEngine;
+
+[RequireComponent(typeof (ParticleSystem))]
 public class TOD_ParticleAtNight : MonoBehaviour
 {
   public float fadeTime = 1f;
@@ -8,7 +10,7 @@ public class TOD_ParticleAtNight : MonoBehaviour
 
   protected void Start()
   {
-    particleComponent = this.GetComponent<ParticleSystem>();
+    particleComponent = GetComponent<ParticleSystem>();
     particleEmission = particleComponent.emissionRate;
     particleComponent.emissionRate = TOD_Sky.Instance.IsNight ? particleEmission : 0.0f;
   }

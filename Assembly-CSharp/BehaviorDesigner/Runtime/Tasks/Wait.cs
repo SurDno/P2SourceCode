@@ -6,6 +6,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -75,14 +77,14 @@ namespace BehaviorDesigner.Runtime.Tasks
     {
       startTime = Time.time;
       if (randomWait.Value)
-        waitDuration = UnityEngine.Random.Range(randomWaitMin.Value, randomWaitMax.Value);
+        waitDuration = Random.Range(randomWaitMin.Value, randomWaitMax.Value);
       else
         waitDuration = waitTime.Value;
     }
 
     public override TaskStatus OnUpdate()
     {
-      return startTime + (double) waitDuration < (double) Time.time ? TaskStatus.Success : TaskStatus.Running;
+      return startTime + (double) waitDuration < Time.time ? TaskStatus.Success : TaskStatus.Running;
     }
 
     public override void OnPause(bool paused)

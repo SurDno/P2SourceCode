@@ -1,4 +1,6 @@
-﻿public class RandomMaterial : MonoBehaviour
+﻿using UnityEngine;
+
+public class RandomMaterial : MonoBehaviour
 {
   public Renderer targetRenderer;
   public Material[] materials;

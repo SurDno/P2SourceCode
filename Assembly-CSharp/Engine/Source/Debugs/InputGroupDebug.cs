@@ -6,6 +6,7 @@ using Engine.Source.Services.Gizmos;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -45,9 +46,9 @@ namespace Engine.Source.Debugs
         joystickVisible.Value = !joystickVisible;
       string text1 = "\n" + name + " (" + InputUtility.GetHotKeyText(key, modifficators) + ")";
       ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
-      string text2 = "  Common " + (commonVisible ? "True" : (object) "False") + " [Control + " + (object) commonKey + "]";
+      string text2 = "  Common " + (commonVisible ? "True" : (object) "False") + " [Control + " + commonKey + "]";
       ServiceLocator.GetService<GizmoService>().DrawText(text2, commonVisible ? trueColor : falseColor);
-      string text3 = "  Joystick " + (joystickVisible ? "True" : (object) "False") + " [Control + " + (object) joystickKey + "]";
+      string text3 = "  Joystick " + (joystickVisible ? "True" : (object) "False") + " [Control + " + joystickKey + "]";
       ServiceLocator.GetService<GizmoService>().DrawText(text3, joystickVisible ? trueColor : falseColor);
       if (commonVisible)
         DrawCommon();
@@ -58,17 +59,17 @@ namespace Engine.Source.Debugs
 
     private static void DrawCommon()
     {
-      string str1 = "\nMouse present : " + Input.mousePresent.ToString() + "\n";
+      string str1 = "\nMouse present : " + Input.mousePresent + "\n";
       string axisName1 = "MouseX";
-      string str2 = str1 + axisName1 + " : " + (object) Input.GetAxisRaw(axisName1) + "\n";
+      string str2 = str1 + axisName1 + " : " + Input.GetAxisRaw(axisName1) + "\n";
       string axisName2 = "MouseY";
-      string str3 = str2 + axisName2 + " : " + (object) Input.GetAxisRaw(axisName2) + "\n";
+      string str3 = str2 + axisName2 + " : " + Input.GetAxisRaw(axisName2) + "\n";
       string axisName3 = "MouseWheel";
-      string text1 = str3 + axisName3 + " : " + (object) Input.GetAxisRaw(axisName3) + "\n";
+      string text1 = str3 + axisName3 + " : " + Input.GetAxisRaw(axisName3) + "\n";
       for (int index = 1; index <= 28; ++index)
       {
         string axisName4 = "JoystickAxis" + index;
-        text1 = text1 + axisName4 + " : " + (object) Input.GetAxisRaw(axisName4) + "\n";
+        text1 = text1 + axisName4 + " : " + Input.GetAxisRaw(axisName4) + "\n";
       }
       ServiceLocator.GetService<GizmoService>().DrawText(text1, bodyColor);
       string text2 = "";
@@ -78,7 +79,7 @@ namespace Engine.Source.Debugs
         foreach (KeyCode key in keys)
         {
           if (Input.GetKey(key))
-            text2 = text2 + (object) key + "\n";
+            text2 = text2 + key + "\n";
         }
       }
       ServiceLocator.GetService<GizmoService>().DrawText(text2, bodyColor);

@@ -1,7 +1,9 @@
-﻿public class TOD_LoadSkyFromFile : MonoBehaviour
+﻿using UnityEngine;
+
+public class TOD_LoadSkyFromFile : MonoBehaviour
 {
   public TOD_Sky sky;
-  public TextAsset textAsset = (TextAsset) null;
+  public TextAsset textAsset;
 
   protected void Start()
   {

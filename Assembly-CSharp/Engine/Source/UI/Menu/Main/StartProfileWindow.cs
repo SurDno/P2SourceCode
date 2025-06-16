@@ -12,7 +12,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      RegisterLayer((IStartProfileWindow) this);
+      RegisterLayer<IStartProfileWindow>(this);
     }
 
     public override Type GetWindowType() => typeof (IStartProfileWindow);

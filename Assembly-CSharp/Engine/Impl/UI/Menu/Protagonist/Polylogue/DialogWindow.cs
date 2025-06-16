@@ -14,6 +14,10 @@ using Engine.Source.Settings.External;
 using Engine.Source.UI;
 using InputServices;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
 {
@@ -46,8 +50,8 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
     [SerializeField]
     private GameObject helpPanel;
     private int currentIndex;
-    private Button[] buttons = (Button[]) null;
-    private Text finalAnswerSign = (Text) null;
+    private Button[] buttons;
+    private Text finalAnswerSign;
     private Color normalColor;
     private Color highlightedColor;
     private bool InputBlocked;
@@ -63,22 +67,22 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
       for (int index = 0; index < answers.Count; ++index)
       {
         DialogString answer = answers[index];
-        GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(unityAnswerPrefab);
+        GameObject gameObject = Instantiate(unityAnswerPrefab);
         gameObject.GetComponentInChildren<Text>().text = service.GetText(answer.String);
         RectTransform component = gameObject.GetComponent<RectTransform>();
-        component.SetParent((Transform) unityAnswersContent, false);
-        gameObject.GetComponent<Button>().onClick.AddListener((UnityAction) (() =>
+        component.SetParent(unityAnswersContent, false);
+        gameObject.GetComponent<Button>().onClick.AddListener(() =>
         {
           if (mode != DialogKind.Answering)
             return;
           mode = DialogKind.Saying;
           AnswersClear();
           ((SpeakingComponent) Target).FireSpeechReply(answer.Id);
-        }));
+        });
         if (answer.Type == DialogStringEnum.Final)
-          UnityEngine.Object.Instantiate<GameObject>(unityFinalAnswerPrefab).GetComponent<RectTransform>().SetParent((Transform) component, false);
+          Instantiate(unityFinalAnswerPrefab).GetComponent<RectTransform>().SetParent(component, false);
       }
-      buttons = this.GetComponentsInChildren<Button>();
+      buttons = GetComponentsInChildren<Button>();
       currentIndex = 0;
       ChangeSelection();
       LayoutRebuilder.MarkLayoutForRebuild(unityAnswersContent);
@@ -101,19 +105,19 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
     {
       SpeechClear();
       LocalizationService service = ServiceLocator.GetService<LocalizationService>();
-      GameObject gameObject = UnityEngine.Object.Instantiate<GameObject>(unitySpeechPrefab);
+      GameObject gameObject = Instantiate(unitySpeechPrefab);
       Text component1 = gameObject.GetComponent<Text>();
       string str = service.GetText(localizedText);
       if (str.Length > 750)
       {
         str = str.Substring(0, 750) + " (max length: 750)";
-        Debug.LogError((object) ("Speech text is too long to render (over 750) , tag : " + localizedText.Id + " , localization : " + ServiceLocator.GetService<LocalizationService>().CurrentLanguage + " , actor : " + actor.Owner.GetInfo()));
+        Debug.LogError("Speech text is too long to render (over 750) , tag : " + localizedText.Id + " , localization : " + ServiceLocator.GetService<LocalizationService>().CurrentLanguage + " , actor : " + actor.Owner.GetInfo());
       }
       component1.text = str.Replace("\n", "\n<size=" + (component1.fontSize / 2) + ">\n</size>");
       InteractableComponent component2 = actor.GetComponent<InteractableComponent>();
       if (component2 != null)
         characterName.text = service.GetText(component2.Title);
-      gameObject.transform.SetParent((Transform) unitySpeechContent, false);
+      gameObject.transform.SetParent(unitySpeechContent, false);
       LayoutRebuilder.MarkLayoutForRebuild(unitySpeechContent);
     }
 
@@ -148,7 +152,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
       dialogModeController.EnableCameraKind(Target?.Owner);
       dialogModeController.SetDialogMode(Target?.Owner, true);
       PlayInitialPhrase();
-      buttons = this.GetComponentsInChildren<Button>();
+      buttons = GetComponentsInChildren<Button>();
       if (buttons.Length != 0)
       {
         highlightedColor = buttons[currentIndex].colors.highlightedColor;
@@ -214,7 +218,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
       }
       if (!(type == GameActionType.Submit & down))
         return false;
-      ExecuteEvents.Execute<ISubmitHandler>(buttons[currentIndex].gameObject, (BaseEventData) new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
+      ExecuteEvents.Execute(buttons[currentIndex].gameObject, new PointerEventData(EventSystem.current), ExecuteEvents.submitHandler);
       return true;
     }
 
@@ -226,11 +230,11 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
         currentIndex = 0;
       if (currentIndex < 0)
         currentIndex = buttons.Length - 1;
-      if ((UnityEngine.Object) finalAnswerSign != (UnityEngine.Object) null)
+      if (finalAnswerSign != null)
       {
         Color white = Color.white;
         finalAnswerSign.color = normalColor;
-        finalAnswerSign = (Text) null;
+        finalAnswerSign = null;
       }
       EventSystem.current.SetSelectedGameObject(buttons[currentIndex].gameObject);
       if (buttons[currentIndex].transform.childCount <= 0)
@@ -243,7 +247,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
     {
       base.OnJoystick(joystick);
       helpPanel.SetActive(joystick);
-      EventSystem.current.SetSelectedGameObject((GameObject) null);
+      EventSystem.current.SetSelectedGameObject(null);
       if (joystick)
       {
         ChangeSelection();
@@ -251,13 +255,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
       }
       else
       {
-        EventSystem.current.SetSelectedGameObject((GameObject) null);
+        EventSystem.current.SetSelectedGameObject(null);
         InputBlocked = true;
-        if ((UnityEngine.Object) finalAnswerSign != (UnityEngine.Object) null)
+        if (finalAnswerSign != null)
         {
           Color white = Color.white;
           finalAnswerSign.color = normalColor;
-          finalAnswerSign = (Text) null;
+          finalAnswerSign = null;
         }
         RemoveDialogListeners();
       }
@@ -269,7 +273,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
       {
         GameObject gameObject = unityAnswersContent.GetChild(index).gameObject;
         gameObject.SetActive(false);
-        UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+        Destroy(gameObject);
       }
     }
 
@@ -279,7 +283,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
       {
         GameObject gameObject = unitySpeechContent.GetChild(index).gameObject;
         gameObject.SetActive(false);
-        UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+        Destroy(gameObject);
       }
     }
 
@@ -301,7 +305,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
 
     public override void Initialize()
     {
-      RegisterLayer((IDialogWindow) this);
+      RegisterLayer<IDialogWindow>(this);
       base.Initialize();
     }
 
@@ -310,7 +314,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Polylogue
     private void PlayInitialPhrase()
     {
       if (Target == null)
-        Debug.LogError((object) "Dialog Target is null!");
+        Debug.LogError("Dialog Target is null!");
       else
         Target.GetComponent<ILipSyncComponent>()?.Play3D(Target.InitialPhrases.RandomUniform(), ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsDistanceMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsDistanceMax, false);
     }

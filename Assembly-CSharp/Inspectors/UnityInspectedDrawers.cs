@@ -1,4 +1,6 @@
 ﻿using Cofe.Meta;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Inspectors
 {
@@ -16,7 +18,7 @@ namespace Inspectors
         Bounds bounds2 = drawer.BoundsField(name, bounds1);
         if (!mutable || !(bounds1 != bounds2))
           return;
-        value = (object) bounds2;
+        value = bounds2;
         if (setter != null)
           setter(value);
       });
@@ -26,7 +28,7 @@ namespace Inspectors
         Vector2 vector2_2 = drawer.Vector2Field(name, vector2_1);
         if (!mutable || !(vector2_1 != vector2_2))
           return;
-        value = (object) vector2_2;
+        value = vector2_2;
         if (setter != null)
           setter(value);
       });
@@ -36,7 +38,7 @@ namespace Inspectors
         Vector3 vector3_2 = drawer.Vector3Field(name, vector3_1);
         if (!mutable || !(vector3_1 != vector3_2))
           return;
-        value = (object) vector3_2;
+        value = vector3_2;
         if (setter != null)
           setter(value);
       });
@@ -46,7 +48,7 @@ namespace Inspectors
         Vector4 vector4_2 = drawer.Vector4Field(name, vector4_1);
         if (!mutable || !(vector4_1 != vector4_2))
           return;
-        value = (object) vector4_2;
+        value = vector4_2;
         if (setter != null)
           setter(value);
       });
@@ -56,7 +58,7 @@ namespace Inspectors
         Vector3 euler = drawer.Vector3Field(name, eulerAngles);
         if (!mutable || !(eulerAngles != euler))
           return;
-        value = (object) Quaternion.Euler(euler);
+        value = Quaternion.Euler(euler);
         if (setter != null)
           setter(value);
       });
@@ -66,7 +68,7 @@ namespace Inspectors
         Color color2 = drawer.ColorField(name, color1);
         if (!mutable || !(color1 != color2))
           return;
-        value = (object) color2;
+        value = color2;
         if (setter != null)
           setter(value);
       });
@@ -76,7 +78,7 @@ namespace Inspectors
         Rect rect2 = drawer.RectField(name, rect1);
         if (!mutable || !(rect1 != rect2))
           return;
-        value = (object) rect2;
+        value = rect2;
         if (setter != null)
           setter(value);
       });
@@ -86,7 +88,7 @@ namespace Inspectors
         AnimationCurve animationCurve2 = drawer.CurveField(name, animationCurve1);
         if (!mutable || animationCurve1 == animationCurve2)
           return;
-        value = (object) animationCurve2;
+        value = animationCurve2;
         if (setter != null)
           setter(value);
       });
@@ -113,13 +115,13 @@ namespace Inspectors
         string path = ((Scene) value).path;
         drawer.TextField(name, path);
       });
-      InspectedDrawerService.AddConditional(type => typeof (UnityEngine.Object).IsAssignableFrom(type), (name, type, value, mutable, context, drawer, target, member, setter) =>
+      InspectedDrawerService.AddConditional(type => typeof (Object).IsAssignableFrom(type), (name, type, value, mutable, context, drawer, target, member, setter) =>
       {
-        UnityEngine.Object object1 = (UnityEngine.Object) value;
-        UnityEngine.Object object2 = drawer.ObjectField(name, object1, type);
+        Object object1 = (Object) value;
+        Object object2 = drawer.ObjectField(name, object1, type);
         if (!mutable || !(object1 != object2))
           return;
-        value = (object) object2;
+        value = object2;
         if (setter != null)
           setter(value);
       });

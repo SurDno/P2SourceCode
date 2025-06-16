@@ -5,6 +5,7 @@ using System.Xml;
 using Cofe.Serializations.Data.Xml;
 using Engine.Common;
 using Engine.Common.Commons.Converters;
+using UnityEngine;
 
 namespace AssetDatabases
 {
@@ -73,7 +74,7 @@ namespace AssetDatabases
       }
       catch (Exception ex)
       {
-        Debug.LogError((object) ("Error open file : " + fileName + ".gz , error : " + ex));
+        Debug.LogError("Error open file : " + fileName + ".gz , error : " + ex);
         return default (T);
       }
     }

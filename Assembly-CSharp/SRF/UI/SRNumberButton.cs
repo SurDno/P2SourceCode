@@ -1,4 +1,8 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace SRF.UI
 {
   [AddComponentMenu("SRF/UI/SRNumberButton")]
   public class SRNumberButton : 
@@ -19,7 +23,7 @@
     public override void OnPointerDown(PointerEventData eventData)
     {
       base.OnPointerDown(eventData);
-      if (!this.interactable)
+      if (!interactable)
         return;
       Apply();
       _isDown = true;
@@ -39,7 +43,7 @@
         return;
       Apply();
       float num1 = 0.2f;
-      int num2 = Mathf.RoundToInt((float) (((double) Time.realtimeSinceStartup - _downTime) / 3.0));
+      int num2 = Mathf.RoundToInt((float) ((Time.realtimeSinceStartup - (double) _downTime) / 3.0));
       for (int index = 0; index < num2; ++index)
         num1 *= 0.5f;
       _delayTime = Time.realtimeSinceStartup + num1;

@@ -6,6 +6,8 @@ using NodeCanvas.Framework.Internal;
 using ParadoxNotion;
 using ParadoxNotion.Serialization;
 using ParadoxNotion.Services;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace FlowCanvas
 {
@@ -46,7 +48,7 @@ namespace FlowCanvas
         updatableNodes[index].Update();
     }
 
-    public void Serialize(out string json, out List<UnityEngine.Object> references)
+    public void Serialize(out string json, out List<Object> references)
     {
       GraphData graphData = new GraphData();
       graphData.nodes = nodes;
@@ -57,11 +59,11 @@ namespace FlowCanvas
           connectionList.Add(graphData.nodes[index1].outConnections[index2]);
       }
       graphData.connections = connectionList;
-      references = new List<UnityEngine.Object>();
+      references = new List<Object>();
       json = JSONSerializer.Serialize(typeof (GraphData), graphData, objectReferences: references);
     }
 
-    public void Deserialize(string serializedGraph, List<UnityEngine.Object> objectReferences)
+    public void Deserialize(string serializedGraph, List<Object> objectReferences)
     {
       if (ReflectionTools.ContextObject == null)
         ReflectionTools.ContextObject = agent;
@@ -70,10 +72,10 @@ namespace FlowCanvas
       for (int index = 0; index < graphData.connections.Count; ++index)
       {
         if (graphData.connections[index].sourceNode == null)
-          Debug.LogError((object) ("connections[i].sourceNode is null, i : " + index + " , graph : " + agent.gameObject.GetFullName()));
+          Debug.LogError("connections[i].sourceNode is null, i : " + index + " , graph : " + agent.gameObject.GetFullName());
         else if (graphData.connections[index].targetNode == null)
         {
-          Debug.LogError((object) ("connections[i].targetNode is null, i : " + index + " , graph : " + agent.gameObject.GetFullName()));
+          Debug.LogError("connections[i].targetNode is null, i : " + index + " , graph : " + agent.gameObject.GetFullName());
         }
         else
         {
@@ -96,7 +98,7 @@ namespace FlowCanvas
       for (int index = 0; index < nodes.Count; ++index)
       {
         Node node = nodes[index];
-        if ((double) node.nodePosition.x < (double) translation.x)
+        if (node.nodePosition.x < (double) translation.x)
           translation = node.nodePosition;
       }
       if (translation == Vector2.positiveInfinity)
@@ -115,7 +117,7 @@ namespace FlowCanvas
         }
         catch (Exception ex)
         {
-          Debug.LogError((object) ex.ToString());
+          Debug.LogError(ex.ToString());
         }
       }
     }
@@ -201,10 +203,10 @@ namespace FlowCanvas
 
     public void SendEvent(EventData eventData)
     {
-      if (!isRunning || eventData == null || !((UnityEngine.Object) agent != (UnityEngine.Object) null))
+      if (!isRunning || eventData == null || !(agent != null))
         return;
       MessageRouter component = agent.GetComponent<MessageRouter>();
-      if ((UnityEngine.Object) component != (UnityEngine.Object) null)
+      if (component != null)
       {
         component.Dispatch("OnCustomEvent", eventData);
         component.Dispatch(eventData.name, eventData.value);
@@ -242,7 +244,7 @@ namespace FlowCanvas
     {
       if (!nodeType.RTIsSubclassOf(baseNodeType))
       {
-        Debug.LogWarning((object) (nodeType + " can't be added to " + GetType().FriendlyName() + " graph"));
+        Debug.LogWarning(nodeType + " can't be added to " + GetType().FriendlyName() + " graph");
         return null;
       }
       Node node = Node.Create(this, nodeType, pos);
@@ -256,7 +258,7 @@ namespace FlowCanvas
     {
       if (!nodes.Contains(node))
       {
-        Debug.LogWarning((object) "Node is not part of this graph");
+        Debug.LogWarning("Node is not part of this graph");
       }
       else
       {

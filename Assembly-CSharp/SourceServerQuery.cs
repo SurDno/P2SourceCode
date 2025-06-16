@@ -204,7 +204,7 @@ internal class SourceServerQuery : IDisposable
   {
     byte[] bytes = BitConverter.GetBytes(value);
     if (BitConverter.IsLittleEndian)
-      Array.Reverse(bytes);
+      Array.Reverse((Array) bytes);
     return BitConverter.ToInt32(bytes, 0);
   }
 

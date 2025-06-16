@@ -1,4 +1,6 @@
-﻿namespace Cinemachine
+﻿using UnityEngine;
+
+namespace Cinemachine
 {
   [DocumentationSorting(23f, DocumentationSortingAttribute.Level.UserRef)]
   [AddComponentMenu("")]
@@ -6,7 +8,7 @@
   [SaveDuringPlay]
   public class CinemachineHardLockToTarget : CinemachineComponentBase
   {
-    public override bool IsValid => this.enabled && (Object) FollowTarget != (Object) null;
+    public override bool IsValid => enabled && FollowTarget != null;
 
     public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 

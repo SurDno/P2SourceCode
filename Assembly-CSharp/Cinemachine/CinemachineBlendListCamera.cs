@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -11,24 +12,24 @@ namespace Cinemachine
   {
     [Tooltip("Default object for the camera children to look at (the aim target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
     [NoSaveDuringPlay]
-    public Transform m_LookAt = (Transform) null;
+    public Transform m_LookAt;
     [Tooltip("Default object for the camera children wants to move with (the body target), if not specified in a child camera.  May be empty if all of the children define targets of their own.")]
     [NoSaveDuringPlay]
-    public Transform m_Follow = (Transform) null;
+    public Transform m_Follow;
     [Tooltip("When enabled, the current child camera and blend will be indicated in the game window, for debugging")]
-    public bool m_ShowDebugText = false;
+    public bool m_ShowDebugText;
     [Tooltip("Force all child cameras to be enabled.  This is useful if animating them in Timeline, but consumes extra resources")]
     public bool m_EnableAllChildCameras;
     [SerializeField]
     [HideInInspector]
     [NoSaveDuringPlay]
-    public CinemachineVirtualCameraBase[] m_ChildCameras = null;
+    public CinemachineVirtualCameraBase[] m_ChildCameras;
     [Tooltip("The set of instructions for enabling child cameras.")]
     public Instruction[] m_Instructions;
     private CameraState m_State = CameraState.Default;
     private float mActivationTime = -1f;
     private int mCurrentInstruction;
-    private CinemachineBlend mActiveBlend = null;
+    private CinemachineBlend mActiveBlend;
 
     public override string Description
     {
@@ -98,9 +99,9 @@ namespace Cinemachine
         for (int index = 0; index < m_ChildCameras.Length; ++index)
         {
           CinemachineVirtualCameraBase childCamera = m_ChildCameras[index];
-          if ((UnityEngine.Object) childCamera != (UnityEngine.Object) null)
+          if (childCamera != null)
           {
-            bool flag = m_EnableAllChildCameras || (UnityEngine.Object) childCamera == (UnityEngine.Object) virtualCameraBase;
+            bool flag = m_EnableAllChildCameras || childCamera == virtualCameraBase;
             if (flag != childCamera.VirtualCameraGameObject.activeInHierarchy)
             {
               childCamera.gameObject.SetActive(flag);
@@ -110,7 +111,7 @@ namespace Cinemachine
           }
         }
       }
-      if ((UnityEngine.Object) virtualCameraBase != (UnityEngine.Object) null)
+      if (virtualCameraBase != null)
       {
         ICinemachineCamera liveChild = LiveChild;
         LiveChild = virtualCameraBase;
@@ -170,9 +171,9 @@ namespace Cinemachine
       if (m_ChildCameras != null)
         return;
       List<CinemachineVirtualCameraBase> virtualCameraBaseList = new List<CinemachineVirtualCameraBase>();
-      foreach (CinemachineVirtualCameraBase componentsInChild in this.GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
+      foreach (CinemachineVirtualCameraBase componentsInChild in GetComponentsInChildren<CinemachineVirtualCameraBase>(true))
       {
-        if ((UnityEngine.Object) componentsInChild.transform.parent == (UnityEngine.Object) this.transform)
+        if (componentsInChild.transform.parent == transform)
           virtualCameraBaseList.Add(componentsInChild);
       }
       m_ChildCameras = virtualCameraBaseList.ToArray();
@@ -185,7 +186,7 @@ namespace Cinemachine
         m_Instructions = new Instruction[0];
       for (int index = 0; index < m_Instructions.Length; ++index)
       {
-        if ((UnityEngine.Object) m_Instructions[index].m_VirtualCamera != (UnityEngine.Object) null && (UnityEngine.Object) m_Instructions[index].m_VirtualCamera.transform.parent != (UnityEngine.Object) this.transform)
+        if (m_Instructions[index].m_VirtualCamera != null && m_Instructions[index].m_VirtualCamera.transform.parent != transform)
           m_Instructions[index].m_VirtualCamera = null;
       }
       mActiveBlend = null;
@@ -211,7 +212,7 @@ namespace Cinemachine
           mActivationTime = time;
           mCurrentInstruction = 0;
         }
-        else if (time - (double) mActivationTime > (double) Mathf.Max(0.0f, m_Instructions[mCurrentInstruction].m_Hold))
+        else if (time - (double) mActivationTime > Mathf.Max(0.0f, m_Instructions[mCurrentInstruction].m_Hold))
         {
           mActivationTime = time;
           ++mCurrentInstruction;

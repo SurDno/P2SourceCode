@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(menuName = "Data/Load Window String Data")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(menuName = "Data/Load Window String Data")]
 public class LoadWindowStringData : ScriptableObject
 {
   [SerializeField]

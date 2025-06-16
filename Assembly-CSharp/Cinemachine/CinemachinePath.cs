@@ -1,5 +1,6 @@
 ﻿using System;
 using Cinemachine.Utility;
+using UnityEngine;
 
 namespace Cinemachine
 {
@@ -32,7 +33,7 @@ namespace Cinemachine
     {
       pos = NormalizePos(pos);
       int num = Mathf.RoundToInt(pos);
-      if ((double) Mathf.Abs(pos - num) < 9.9999997473787516E-05)
+      if (Mathf.Abs(pos - num) < 9.9999997473787516E-05)
       {
         indexA = indexB = num == m_Waypoints.Length ? 0 : num;
       }
@@ -57,7 +58,7 @@ namespace Cinemachine
       Vector3 position;
       if (m_Waypoints.Length == 0)
       {
-        position = this.transform.position;
+        position = transform.position;
       }
       else
       {
@@ -75,7 +76,7 @@ namespace Cinemachine
           position = SplineHelpers.Bezier3(pos - indexA, m_Waypoints[indexA].position, waypoint1.position + waypoint1.tangent, waypoint2.position - waypoint2.tangent, waypoint2.position);
         }
       }
-      return this.transform.TransformPoint(position);
+      return transform.TransformPoint(position);
     }
 
     public override Vector3 EvaluateTangent(float pos)
@@ -84,7 +85,7 @@ namespace Cinemachine
       Vector3 direction;
       if (m_Waypoints.Length == 0)
       {
-        direction = this.transform.rotation * Vector3.forward;
+        direction = transform.rotation * Vector3.forward;
       }
       else
       {
@@ -102,12 +103,12 @@ namespace Cinemachine
           direction = SplineHelpers.BezierTangent3(pos - indexA, m_Waypoints[indexA].position, waypoint1.position + waypoint1.tangent, waypoint2.position - waypoint2.tangent, waypoint2.position);
         }
       }
-      return this.transform.TransformDirection(direction);
+      return transform.TransformDirection(direction);
     }
 
     public override Quaternion EvaluateOrientation(float pos)
     {
-      Quaternion orientation = this.transform.rotation;
+      Quaternion orientation = transform.rotation;
       if (m_Waypoints.Length != 0)
       {
         int indexA;
@@ -132,7 +133,7 @@ namespace Cinemachine
         Vector3 tangent = EvaluateTangent(pos);
         if (!tangent.AlmostZero())
         {
-          Vector3 upwards = this.transform.rotation * Vector3.up;
+          Vector3 upwards = transform.rotation * Vector3.up;
           orientation = Quaternion.LookRotation(tangent, upwards) * Quaternion.AngleAxis(angle, Vector3.forward);
         }
       }

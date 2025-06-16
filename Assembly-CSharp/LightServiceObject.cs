@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Services;
 using Engine.Source.Services;
+using UnityEngine;
 
 public class LightServiceObject : MonoBehaviour
 {

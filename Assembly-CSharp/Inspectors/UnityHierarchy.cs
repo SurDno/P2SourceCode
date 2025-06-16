@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Inspectors
 {
@@ -38,7 +40,7 @@ namespace Inspectors
             GameObject[] roots = scene.GetRootGameObjects();
             for (int index = 0; index < roots.Length; ++index)
               yield return new GameObjectInfo(roots[index]);
-            roots = (GameObject[]) null;
+            roots = null;
           }
         }
       }
@@ -55,7 +57,7 @@ namespace Inspectors
       {
         get
         {
-          return (Object) transform != (Object) null ? transform.localPosition : Vector3.zero;
+          return transform != null ? transform.localPosition : Vector3.zero;
         }
       }
 
@@ -64,14 +66,14 @@ namespace Inspectors
       {
         get
         {
-          return (Object) transform != (Object) null ? transform.localRotation : Quaternion.identity;
+          return transform != null ? transform.localRotation : Quaternion.identity;
         }
       }
 
       [Inspected]
       private Vector3 Scale
       {
-        get => (Object) transform != (Object) null ? transform.localScale : Vector3.one;
+        get => transform != null ? transform.localScale : Vector3.one;
       }
     }
 
@@ -82,29 +84,29 @@ namespace Inspectors
       public GameObjectInfo(GameObject gameObject) => this.gameObject = gameObject;
 
       [Inspected(Header = true)]
-      private string Name => (Object) gameObject != (Object) null ? gameObject.name : "";
+      private string Name => gameObject != null ? gameObject.name : "";
 
       [Inspected(Mutable = true)]
       public bool Enable
       {
-        get => (Object) gameObject != (Object) null && gameObject.activeSelf;
+        get => gameObject != null && gameObject.activeSelf;
         set
         {
-          if (!((Object) gameObject != (Object) null))
+          if (!(gameObject != null))
             return;
           gameObject.SetActive(value);
         }
       }
 
       [Inspected]
-      public string Tag => (Object) gameObject != (Object) null ? gameObject.tag : "";
+      public string Tag => gameObject != null ? gameObject.tag : "";
 
       [Inspected]
       public string Layer
       {
         get
         {
-          return (Object) gameObject != (Object) null ? LayerMask.LayerToName(gameObject.layer) : "";
+          return gameObject != null ? LayerMask.LayerToName(gameObject.layer) : "";
         }
       }
 
@@ -113,7 +115,7 @@ namespace Inspectors
       {
         get
         {
-          if ((Object) gameObject != (Object) null)
+          if (gameObject != null)
           {
             Component[] components = gameObject.GetComponents<Component>();
             Component[] componentArray = components;
@@ -121,15 +123,15 @@ namespace Inspectors
             {
               Component component = componentArray[index];
               Transform transform = component as Transform;
-              if ((Object) transform != (Object) null)
+              if (transform != null)
                 yield return new TransformInfo(transform);
               else
-                yield return (object) component;
-              transform = (Transform) null;
-              component = (Component) null;
+                yield return component;
+              transform = null;
+              component = null;
             }
-            componentArray = (Component[]) null;
-            components = (Component[]) null;
+            componentArray = null;
+            components = null;
           }
         }
       }
@@ -139,7 +141,7 @@ namespace Inspectors
       {
         get
         {
-          if ((Object) gameObject != (Object) null)
+          if (gameObject != null)
           {
             int count = gameObject.transform.childCount;
             for (int index = 0; index < count; ++index)

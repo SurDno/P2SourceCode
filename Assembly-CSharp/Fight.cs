@@ -6,7 +6,7 @@
   {
     get
     {
-      if ((Object) description == (Object) null)
+      if (description == null)
         description = ScriptableObjectInstance<FightSettingsData>.Instance.Description;
       return description;
     }

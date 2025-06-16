@@ -1,4 +1,6 @@
-﻿namespace UnityStandardAssets.CinematicEffects
+﻿using UnityEngine;
+
+namespace UnityStandardAssets.CinematicEffects
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (Camera))]
@@ -35,8 +37,8 @@
     {
       get
       {
-        if ((Object) m_Camera == (Object) null)
-          m_Camera = this.GetComponent<Camera>();
+        if (m_Camera == null)
+          m_Camera = GetComponent<Camera>();
         return m_Camera;
       }
     }

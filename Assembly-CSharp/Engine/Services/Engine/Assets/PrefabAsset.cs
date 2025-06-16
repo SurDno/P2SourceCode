@@ -1,5 +1,6 @@
 ﻿using AssetDatabases;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Services.Engine.Assets
 {
@@ -53,13 +54,13 @@ namespace Engine.Services.Engine.Assets
       }
       if (!IsDisposed)
         return;
-      Prefab = (GameObject) null;
+      Prefab = null;
       IsReadyToDispose = true;
     }
 
     public void Dispose(string reason) => IsDisposed = true;
 
-    public bool IsValid => (Object) Prefab != (Object) null;
+    public bool IsValid => Prefab != null;
 
     public string Path => Prefab.GetFullName();
   }

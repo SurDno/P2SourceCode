@@ -5,6 +5,7 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
+using UnityEngine;
 
 public class CustomizableObject : MonoBehaviour, IEntityAttachable, IChangeParameterListener
 {
@@ -35,7 +36,7 @@ public class CustomizableObject : MonoBehaviour, IEntityAttachable, IChangeParam
     for (int index = 0; index < preset.Infos.Length; ++index)
     {
       SubMeshInfo info = preset.Infos[index];
-      if (!((UnityEngine.Object) info.Renderer == (UnityEngine.Object) null) && info.Materials != null)
+      if (!(info.Renderer == null) && info.Materials != null)
         info.Renderer.materials = info.Materials;
     }
   }

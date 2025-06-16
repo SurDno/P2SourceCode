@@ -9,6 +9,7 @@ using Engine.Impl.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Components
 {
@@ -89,13 +90,13 @@ namespace Engine.Source.Components
       {
         if (!(Owner.Template is IEntity template))
         {
-          Debug.LogError((object) ("Template not found, owner : " + Owner.GetInfo()));
+          Debug.LogError("Template not found, owner : " + Owner.GetInfo());
           return true;
         }
         DiseaseComponent component = template.GetComponent<DiseaseComponent>();
         if (component == null)
         {
-          Debug.LogError((object) (GetType().Name + " not found, owner : " + Owner.GetInfo()));
+          Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
           return true;
         }
         return diseaseValue != (double) component.diseaseValue;

@@ -2,6 +2,7 @@
 using Engine.Common.Components.Regions;
 using Engine.Source.Commons;
 using Scripts.Data;
+using UnityEngine;
 
 namespace RegionReputation
 {
@@ -17,7 +18,7 @@ namespace RegionReputation
       RegionReputationNameItem reputationNameItem = Items.FirstOrDefault(o => o.DataName == gameData.GameName);
       if (reputationNameItem == null)
       {
-        Debug.LogError((object) ("Data not found : " + gameData.GameName));
+        Debug.LogError("Data not found : " + gameData.GameName);
         return "";
       }
       int index = reputationNameItem.RegionExceptions.FindIndex(v => v.Region == region);

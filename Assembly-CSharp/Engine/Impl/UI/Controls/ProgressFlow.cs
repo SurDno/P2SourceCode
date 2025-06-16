@@ -1,4 +1,8 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   [DisallowMultipleComponent]
   [ExecuteInEditMode]
@@ -6,7 +10,7 @@
   {
     [SerializeField]
     [FormerlySerializedAs("Invert")]
-    private bool invert = false;
+    private bool invert;
     [SerializeField]
     [FormerlySerializedAs("Overlap")]
     private float overlap = 1f;
@@ -17,8 +21,8 @@
 
     protected override void ApplyProgress()
     {
-      Image component = this.GetComponent<Image>();
-      if ((Object) component == (Object) null)
+      Image component = GetComponent<Image>();
+      if (component == null)
         return;
       float num1 = Mathf.Clamp01((float) ((1.0 - Progress) * (1.0 + overlap)));
       float num2 = Mathf.Clamp01(Progress * (1f + overlap));

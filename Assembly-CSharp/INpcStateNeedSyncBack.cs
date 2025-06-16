@@ -1,4 +1,6 @@
-﻿public interface INpcStateNeedSyncBack
+﻿using UnityEngine;
+
+public interface INpcStateNeedSyncBack
 {
   Vector3 GetSyncBackPosition();
 

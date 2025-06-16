@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace JBrothers.PreIntegratedSkinShader2.Demo
 {
@@ -26,27 +28,27 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
     private void Start()
     {
       _MainTex = Shader.PropertyToID("_MainTex");
-      if (!(bool) (UnityEngine.Object) skyboxSphereShader)
+      if (!(bool) (Object) skyboxSphereShader)
       {
-        Debug.LogWarning((object) "no skybox preview shader");
-        this.enabled = false;
+        Debug.LogWarning("no skybox preview shader");
+        enabled = false;
       }
       else
       {
         skyboxSphereMaterial = new Material(skyboxSphereShader);
-        if (!(bool) (UnityEngine.Object) profileSphereShader)
+        if (!(bool) (Object) profileSphereShader)
         {
-          Debug.LogWarning((object) "no profile preview shader");
-          this.enabled = false;
+          Debug.LogWarning("no profile preview shader");
+          enabled = false;
         }
         else
         {
           profileSphereMaterial = new Material(profileSphereShader);
-          profileSphereMaterial.SetTexture("_LookupDirectSM2", (Texture) Resources.Load<Texture2D>("PSSLookupDirectSM2"));
-          if (!(bool) (UnityEngine.Object) meshRenderer)
+          profileSphereMaterial.SetTexture("_LookupDirectSM2", Resources.Load<Texture2D>("PSSLookupDirectSM2"));
+          if (!(bool) (Object) meshRenderer)
           {
-            Debug.LogWarning((object) "no mesh renderer");
-            this.enabled = false;
+            Debug.LogWarning("no mesh renderer");
+            enabled = false;
           }
           else
           {
@@ -57,10 +59,10 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
             {
               Material skybox = skyboxes[index];
               SkyboxSphere skyboxSphere = new SkyboxSphere();
-              if (!(bool) (UnityEngine.Object) skybox)
+              if (!(bool) (Object) skybox)
               {
-                Debug.LogWarning((object) "no skybox material specified");
-                this.enabled = false;
+                Debug.LogWarning("no skybox material specified");
+                enabled = false;
                 return;
               }
               skyboxSphere.skybox = skybox;
@@ -79,13 +81,13 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
       if (skyboxSpheres != null)
       {
         foreach (SkyboxSphere skyboxSphere in skyboxSpheres)
-          UnityEngine.Object.Destroy((UnityEngine.Object) skyboxSphere.cube);
+          Destroy(skyboxSphere.cube);
       }
-      if ((bool) (UnityEngine.Object) skyboxSphereMaterial)
-        UnityEngine.Object.Destroy((UnityEngine.Object) skyboxSphereMaterial);
-      if (!(bool) (UnityEngine.Object) materialCopy)
+      if ((bool) (Object) skyboxSphereMaterial)
+        Destroy(skyboxSphereMaterial);
+      if (!(bool) (Object) materialCopy)
         return;
-      UnityEngine.Object.Destroy((UnityEngine.Object) materialCopy);
+      Destroy(materialCopy);
     }
 
     private void SelectSkybox(SkyboxSphere sb)
@@ -98,10 +100,10 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
 
     private void OnGUI()
     {
-      GUIStyle style1 = new GUIStyle((GUIStyle) "label");
+      GUIStyle style1 = new GUIStyle("label");
       style1.alignment = TextAnchor.MiddleCenter;
       style1.fontStyle = FontStyle.Bold;
-      GUIStyle style2 = new GUIStyle((GUIStyle) "label");
+      GUIStyle style2 = new GUIStyle("label");
       style2.alignment = TextAnchor.UpperLeft;
       style2.fontStyle = FontStyle.Normal;
       int controlId = GUIUtility.GetControlID(FocusType.Passive);
@@ -110,21 +112,21 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
       foreach (SkyboxSphere skyboxSphere in skyboxSpheres)
       {
         Rect rect1 = GUILayoutUtility.GetRect(sphereSize, sphereSize, GUILayout.ExpandWidth(false));
-        Rect rect2 = new Rect(rect1.x, (float) Screen.height - rect1.y - rect1.height, rect1.width, rect1.height);
+        Rect rect2 = new Rect(rect1.x, Screen.height - rect1.y - rect1.height, rect1.width, rect1.height);
         bool flag = false;
         if (rect2.Contains(Input.mousePosition))
         {
-          float num = (float) ((double) rect1.width * (double) rect1.height / 4.0);
-          flag = (double) ((Vector2) Input.mousePosition - rect2.center).sqrMagnitude < num;
+          float num = (float) (rect1.width * (double) rect1.height / 4.0);
+          flag = ((Vector2) Input.mousePosition - rect2.center).sqrMagnitude < (double) num;
         }
         if (Event.current.type == EventType.Repaint)
         {
           float num = Mathf.Repeat(Time.time / 10f, 1f);
           skyboxSphereMaterial.SetFloat("_Alpha", flag ? 1f : 0.5f);
           skyboxSphereMaterial.SetFloat("_Radius", flag ? 0.5f : 0.4f);
-          skyboxSphereMaterial.SetTexture("_Cube", (Texture) skyboxSphere.cube);
+          skyboxSphereMaterial.SetTexture("_Cube", skyboxSphere.cube);
           skyboxSphereMaterial.SetFloat("_Rotation", num);
-          Graphics.DrawTexture(rect1, (Texture) Texture2D.whiteTexture, skyboxSphereMaterial);
+          Graphics.DrawTexture(rect1, Texture2D.whiteTexture, skyboxSphereMaterial);
         }
         if (flag)
           GUI.Label(rect1, skyboxSphere.skybox.name, style1);
@@ -136,21 +138,21 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
       foreach (PreIntegratedSkinProfile profile in profiles)
       {
         Rect rect3 = GUILayoutUtility.GetRect(sphereSize, sphereSize, GUILayout.ExpandWidth(false));
-        Rect rect4 = new Rect(rect3.x, (float) Screen.height - rect3.y - rect3.height, rect3.width, rect3.height);
+        Rect rect4 = new Rect(rect3.x, Screen.height - rect3.y - rect3.height, rect3.width, rect3.height);
         bool flag = false;
         if (rect4.Contains(Input.mousePosition))
         {
-          float num = (float) ((double) rect3.width * (double) rect3.height / 4.0);
-          flag = (double) ((Vector2) Input.mousePosition - rect4.center).sqrMagnitude < num;
+          float num = (float) (rect3.width * (double) rect3.height / 4.0);
+          flag = ((Vector2) Input.mousePosition - rect4.center).sqrMagnitude < (double) num;
         }
-        if (Event.current.type.Equals((object) EventType.Repaint))
+        if (Event.current.type.Equals(EventType.Repaint))
         {
           float num = Mathf.Repeat(Time.time / 10f, 1f);
           profileSphereMaterial.SetFloat("_Alpha", flag ? 1f : 0.5f);
           profileSphereMaterial.SetFloat("_Radius", flag ? 0.5f : 0.4f);
           profileSphereMaterial.SetFloat("_Rotation", num);
           profile.ApplyProfile(profileSphereMaterial);
-          Graphics.DrawTexture(rect3, (Texture) Texture2D.whiteTexture, profileSphereMaterial);
+          Graphics.DrawTexture(rect3, Texture2D.whiteTexture, profileSphereMaterial);
         }
         if (flag)
           GUI.Label(rect3, profile.name, style1);
@@ -174,7 +176,7 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
         if (flag2)
           materialCopy.SetTexture(_MainTex, materialOrig.GetTexture(_MainTex));
         else
-          materialCopy.SetTexture(_MainTex, (Texture) Texture2D.whiteTexture);
+          materialCopy.SetTexture(_MainTex, Texture2D.whiteTexture);
       }
       GUILayout.EndVertical();
       Rect lastRect = GUILayoutUtility.GetLastRect();
@@ -207,7 +209,7 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
 
     private void UpdateRelfectionProbeIfNecessary()
     {
-      if (!(bool) (UnityEngine.Object) sun)
+      if (!(bool) (Object) sun)
         return;
       bool flag = false;
       if (probeBakedWithSkybox != selectedSkybox)
@@ -243,7 +245,7 @@ namespace JBrothers.PreIntegratedSkinShader2.Demo
       }
       finally
       {
-        UnityEngine.Object.Destroy((UnityEngine.Object) gameObject);
+        Destroy(gameObject);
       }
     }
 

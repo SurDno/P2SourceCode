@@ -1,4 +1,6 @@
-﻿namespace UnityEngine.PostProcessing
+﻿using UnityEngine.Rendering;
+
+namespace UnityEngine.PostProcessing
 {
   public sealed class ScreenSpaceReflectionComponent : 
     PostProcessingComponentCommandBuffer<ScreenSpaceReflectionModel>
@@ -51,7 +53,7 @@
       mat.SetInt(Uniforms._FullResolutionFiltering, 0);
       mat.SetInt(Uniforms._HalfResolution, settings.reflection.reflectionQuality != ScreenSpaceReflectionModel.SSRResolution.High ? 1 : 0);
       mat.SetInt(Uniforms._HighlightSuppression, k_HighlightSuppression ? 1 : 0);
-      float num6 = width / (-2f * Mathf.Tan((float) ((double) camera.fieldOfView / 180.0 * 3.1415927410125732 * 0.5)));
+      float num6 = width / (-2f * Mathf.Tan((float) (camera.fieldOfView / 180.0 * 3.1415927410125732 * 0.5)));
       mat.SetFloat(Uniforms._PixelsPerMeterAtOneMeter, num6);
       mat.SetFloat(Uniforms._ScreenEdgeFading, settings.screenEdgeMask.intensity);
       mat.SetFloat(Uniforms._ReflectionBlur, settings.reflection.reflectionBlur);
@@ -64,11 +66,11 @@
       Matrix4x4 projectionMatrix = camera.projectionMatrix;
       Vector4 vector4 = new Vector4((float) (-2.0 / (width * (double) projectionMatrix[0])), (float) (-2.0 / (height * (double) projectionMatrix[5])), (1f - projectionMatrix[2]) / projectionMatrix[0], (1f + projectionMatrix[6]) / projectionMatrix[5]);
       Vector3 vector3 = float.IsPositiveInfinity(camera.farClipPlane) ? new Vector3(camera.nearClipPlane, -1f, 1f) : new Vector3(camera.nearClipPlane * camera.farClipPlane, camera.nearClipPlane - camera.farClipPlane, camera.farClipPlane);
-      mat.SetVector(Uniforms._ReflectionBufferSize, (Vector4) new Vector2((float) num2, (float) num3));
-      mat.SetVector(Uniforms._ScreenSize, (Vector4) new Vector2(width, height));
-      mat.SetVector(Uniforms._InvScreenSize, (Vector4) new Vector2(1f / width, 1f / height));
+      mat.SetVector(Uniforms._ReflectionBufferSize, new Vector2(num2, num3));
+      mat.SetVector(Uniforms._ScreenSize, new Vector2(width, height));
+      mat.SetVector(Uniforms._InvScreenSize, new Vector2(1f / width, 1f / height));
       mat.SetVector(Uniforms._ProjInfo, vector4);
-      mat.SetVector(Uniforms._CameraClipInfo, (Vector4) vector3);
+      mat.SetVector(Uniforms._CameraClipInfo, vector3);
       Matrix4x4 matrix4x4_1 = new Matrix4x4();
       matrix4x4_1.SetRow(0, new Vector4(num4, 0.0f, 0.0f, num4));
       matrix4x4_1.SetRow(1, new Vector4(0.0f, num5, 0.0f, num5));
@@ -91,10 +93,10 @@
         cb.GetTemporaryRT(m_ReflectionTextures[index], num2 >> index, num3 >> index, 0, FilterMode.Bilinear, format);
       cb.GetTemporaryRT(filteredReflections, num2, num3, 0, k_BilateralUpsample ? FilterMode.Point : FilterMode.Bilinear, format);
       cb.GetTemporaryRT(reflectionTexture1, num2, num3, 0, FilterMode.Point, format);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) roughnessTexture, mat, 6);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) hitPointTexture, mat, 0);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) filteredReflections, mat, 5);
-      cb.Blit((RenderTargetIdentifier) filteredReflections, (RenderTargetIdentifier) m_ReflectionTextures[0], mat, 8);
+      cb.Blit(BuiltinRenderTextureType.CameraTarget, roughnessTexture, mat, 6);
+      cb.Blit(BuiltinRenderTextureType.CameraTarget, hitPointTexture, mat, 0);
+      cb.Blit(BuiltinRenderTextureType.CameraTarget, filteredReflections, mat, 5);
+      cb.Blit(filteredReflections, m_ReflectionTextures[0], mat, 8);
       for (int index = 1; index < 5; ++index)
       {
         int reflectionTexture2 = m_ReflectionTextures[index - 1];
@@ -102,16 +104,16 @@
         cb.GetTemporaryRT(blurTexture, num2 >> num7, num3 >> num7, 0, FilterMode.Bilinear, format);
         cb.SetGlobalVector(Uniforms._Axis, new Vector4(1f, 0.0f, 0.0f, 0.0f));
         cb.SetGlobalFloat(Uniforms._CurrentMipLevel, index - 1f);
-        cb.Blit((RenderTargetIdentifier) reflectionTexture2, (RenderTargetIdentifier) blurTexture, mat, 2);
+        cb.Blit(reflectionTexture2, blurTexture, mat, 2);
         cb.SetGlobalVector(Uniforms._Axis, new Vector4(0.0f, 1f, 0.0f, 0.0f));
         int reflectionTexture3 = m_ReflectionTextures[index];
-        cb.Blit((RenderTargetIdentifier) blurTexture, (RenderTargetIdentifier) reflectionTexture3, mat, 2);
+        cb.Blit(blurTexture, reflectionTexture3, mat, 2);
         cb.ReleaseTemporaryRT(blurTexture);
       }
-      cb.Blit((RenderTargetIdentifier) m_ReflectionTextures[0], (RenderTargetIdentifier) reflectionTexture1, mat, 3);
+      cb.Blit(m_ReflectionTextures[0], reflectionTexture1, mat, 3);
       cb.GetTemporaryRT(tempTexture, camera.pixelWidth, camera.pixelHeight, 0, FilterMode.Bilinear, format);
-      cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) tempTexture, mat, 1);
-      cb.Blit((RenderTargetIdentifier) tempTexture, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
+      cb.Blit(BuiltinRenderTextureType.CameraTarget, tempTexture, mat, 1);
+      cb.Blit(tempTexture, BuiltinRenderTextureType.CameraTarget);
       cb.ReleaseTemporaryRT(tempTexture);
     }
 

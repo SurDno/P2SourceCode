@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
 
 namespace RootMotion.Dynamics
 {
@@ -147,7 +149,7 @@ namespace RootMotion.Dynamics
 
     public void OnFixTransforms()
     {
-      if (!initiated || !this.enabled)
+      if (!initiated || !enabled)
         return;
       if (OnPreFixTransforms != null)
         OnPreFixTransforms();
@@ -159,7 +161,7 @@ namespace RootMotion.Dynamics
 
     public void OnRead()
     {
-      if (!initiated || !this.enabled)
+      if (!initiated || !enabled)
         return;
       if (OnPreRead != null)
         OnPreRead();
@@ -171,7 +173,7 @@ namespace RootMotion.Dynamics
 
     public void OnWrite()
     {
-      if (!initiated || !this.enabled)
+      if (!initiated || !enabled)
         return;
       if (OnPreWrite != null)
         OnPreWrite();
@@ -227,7 +229,7 @@ namespace RootMotion.Dynamics
     public void Activate()
     {
       foreach (BehaviourBase behaviour in puppetMaster.behaviours)
-        behaviour.enabled = (UnityEngine.Object) behaviour == (UnityEngine.Object) this;
+        behaviour.enabled = behaviour == this;
       if (OnPreActivate != null)
         OnPreActivate();
       OnActivate();
@@ -252,10 +254,10 @@ namespace RootMotion.Dynamics
     {
       if (!initiated || puppetMaster.muscles.Length == 0)
         return;
-      if (OnPreFixedUpdate != null && this.enabled)
+      if (OnPreFixedUpdate != null && enabled)
         OnPreFixedUpdate();
       OnFixedUpdate();
-      if (OnPostFixedUpdate == null || !this.enabled)
+      if (OnPostFixedUpdate == null || !enabled)
         return;
       OnPostFixedUpdate();
     }
@@ -264,10 +266,10 @@ namespace RootMotion.Dynamics
     {
       if (!initiated || puppetMaster.muscles.Length == 0)
         return;
-      if (OnPreUpdate != null && this.enabled)
+      if (OnPreUpdate != null && enabled)
         OnPreUpdate();
       OnUpdate();
-      if (OnPostUpdate == null || !this.enabled)
+      if (OnPostUpdate == null || !enabled)
         return;
       OnPostUpdate();
     }
@@ -276,10 +278,10 @@ namespace RootMotion.Dynamics
     {
       if (!initiated || puppetMaster.muscles.Length == 0)
         return;
-      if (OnPreLateUpdate != null && this.enabled)
+      if (OnPreLateUpdate != null && enabled)
         OnPreLateUpdate();
       OnLateUpdate();
-      if (OnPostLateUpdate == null || !this.enabled)
+      if (OnPostLateUpdate == null || !enabled)
         return;
       OnPostLateUpdate();
     }
@@ -325,7 +327,7 @@ namespace RootMotion.Dynamics
     protected virtual void GroundTarget(LayerMask layers)
     {
       RaycastHit hitInfo;
-      if (!Physics.Raycast(new Ray(puppetMaster.targetRoot.position + puppetMaster.targetRoot.up, -puppetMaster.targetRoot.up), out hitInfo, 4f, (int) layers))
+      if (!Physics.Raycast(new Ray(puppetMaster.targetRoot.position + puppetMaster.targetRoot.up, -puppetMaster.targetRoot.up), out hitInfo, 4f, layers))
         return;
       puppetMaster.targetRoot.position = hitInfo.point;
     }
@@ -372,7 +374,7 @@ namespace RootMotion.Dynamics
         bool flag = false;
         foreach (BehaviourBase behaviour in puppetMaster.behaviours)
         {
-          if ((UnityEngine.Object) behaviour != (UnityEngine.Object) null && behaviour.GetType().ToString() == "RootMotion.Dynamics." + switchToBehaviour)
+          if (behaviour != null && behaviour.GetType().ToString() == "RootMotion.Dynamics." + switchToBehaviour)
           {
             flag = true;
             behaviour.enabled = true;
@@ -380,7 +382,7 @@ namespace RootMotion.Dynamics
           }
         }
         if (!flag)
-          Debug.LogWarning((object) ("No Puppet Behaviour of type '" + switchToBehaviour + "' was found. Can not switch to the behaviour, please check the spelling (also for empty spaces)."));
+          Debug.LogWarning("No Puppet Behaviour of type '" + switchToBehaviour + "' was found. Can not switch to the behaviour, please check the spelling (also for empty spaces).");
       }
     }
 
@@ -395,11 +397,11 @@ namespace RootMotion.Dynamics
 
       public void Activate(Animator animator, Animation animation)
       {
-        if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
-          this.Activate(animator);
-        if (!((UnityEngine.Object) animation != (UnityEngine.Object) null))
+        if (animator != null)
+          Activate(animator);
+        if (!(animation != null))
           return;
-        this.Activate(animation);
+        Activate(animation);
       }
 
       private void Activate(Animator animator)

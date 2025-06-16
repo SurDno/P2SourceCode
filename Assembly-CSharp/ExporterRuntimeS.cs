@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using UnityEngine;
 
 public class ExporterRuntimeS : ScriptableObject
 {
@@ -19,19 +20,19 @@ public class ExporterRuntimeS : ScriptableObject
     foreach (Vector3 vertex in sharedMesh.vertices)
     {
       Vector3 vector3 = mf.transform.TransformPoint(vertex);
-      stringBuilder.Append(string.Format("v {0} {1} {2}\n", (float) -(double) vector3.x, (object) vector3.y, (object) vector3.z));
+      stringBuilder.Append(string.Format("v {0} {1} {2}\n", (float) -(double) vector3.x, vector3.y, vector3.z));
     }
     stringBuilder.Append("\n");
     foreach (Vector3 normal in sharedMesh.normals)
     {
       Vector3 vector3 = mf.transform.TransformDirection(normal);
-      stringBuilder.Append(string.Format("vn {0} {1} {2}\n", (float) -(double) vector3.x, (object) vector3.y, (object) vector3.z));
+      stringBuilder.Append(string.Format("vn {0} {1} {2}\n", (float) -(double) vector3.x, vector3.y, vector3.z));
     }
     stringBuilder.Append("\n");
     foreach (Vector2 vector2 in sharedMesh.uv)
     {
-      Vector3 vector3 = (Vector3) vector2;
-      stringBuilder.Append(string.Format("vt {0} {1}\n", (object) vector3.x, (object) vector3.y));
+      Vector3 vector3 = vector2;
+      stringBuilder.Append(string.Format("vt {0} {1}\n", vector3.x, vector3.y));
     }
     for (int submesh = 0; submesh < sharedMesh.subMeshCount; ++submesh)
     {
@@ -141,9 +142,9 @@ public class ExporterRuntimeS : ScriptableObject
       if (num2 >= 0)
         filename = filename.Substring(num2 + 1).Trim();
       MeshesToFile(mf, mainPath, filename);
-      Debug.Log((object) ("Exported: " + mainPath + "/" + filename));
+      Debug.Log("Exported: " + mainPath + "/" + filename);
     }
     else
-      Debug.Log((object) "Error exporting. Make sure you selected the object.");
+      Debug.Log("Error exporting. Make sure you selected the object.");
   }
 }

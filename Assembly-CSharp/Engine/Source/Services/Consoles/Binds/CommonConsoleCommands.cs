@@ -3,6 +3,7 @@ using System.IO;
 using Cofe.Meta;
 using Cofe.Serializations.Converters;
 using Engine.Common.Services;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -89,7 +90,7 @@ namespace Engine.Source.Services.Consoles.Binds
           string valueText = line.Substring(delayTag.Length).Trim();
           float value = DefaultConverter.ParseFloat(valueText);
           console.AddLine(line);
-          yield return (object) new WaitForSecondsRealtime(value);
+          yield return new WaitForSecondsRealtime(value);
         }
         else
         {

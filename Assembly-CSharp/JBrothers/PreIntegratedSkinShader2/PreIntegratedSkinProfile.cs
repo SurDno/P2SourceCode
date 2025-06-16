@@ -1,4 +1,6 @@
-﻿namespace JBrothers.PreIntegratedSkinShader2
+﻿using UnityEngine;
+
+namespace JBrothers.PreIntegratedSkinShader2
 {
   public class PreIntegratedSkinProfile : ScriptableObject
   {
@@ -96,12 +98,12 @@
     public void RecalculateDerived()
     {
       Vector3 zero = Vector3.zero;
-      Vector3 gauss61 = (Vector3) gauss6_1;
-      Vector3 gauss62 = (Vector3) gauss6_2;
-      Vector3 gauss63 = (Vector3) gauss6_3;
-      Vector3 gauss64 = (Vector3) gauss6_4;
-      Vector3 gauss65 = (Vector3) gauss6_5;
-      Vector3 gauss66 = (Vector3) gauss6_6;
+      Vector3 gauss61 = gauss6_1;
+      Vector3 gauss62 = gauss6_2;
+      Vector3 gauss63 = gauss6_3;
+      Vector3 gauss64 = gauss6_4;
+      Vector3 gauss65 = gauss6_5;
+      Vector3 gauss66 = gauss6_6;
       Vector3 vector3_1 = zero + gauss61 + gauss62 + gauss63 + gauss64 + gauss65 + gauss66;
       gauss61.x /= vector3_1.x;
       gauss61.y /= vector3_1.y;
@@ -133,11 +135,11 @@
       _PSSProfileHigh_weighths4_var4 = new Vector4(gauss64.x, gauss64.y, gauss64.z, gauss6_4.w);
       _PSSProfileHigh_weighths5_var5 = new Vector4(gauss65.x, gauss65.y, gauss65.z, gauss6_5.w);
       _PSSProfileHigh_weighths6_var6 = new Vector4(gauss66.x, gauss66.y, gauss66.z, gauss6_6.w);
-      _PSSProfileMedium_weighths1_var1 = new Vector4(gauss61.x + gauss62.x, gauss61.y + gauss62.y, gauss61.z + gauss62.z, (float) (((double) gauss6_1.w * grayscale1 + (double) gauss6_2.w * grayscale2) / (grayscale1 + (double) grayscale2)));
-      _PSSProfileMedium_weighths2_var2 = new Vector4(gauss63.x + gauss64.x, gauss63.y + gauss64.y, gauss63.z + gauss64.z, (float) (((double) gauss6_3.w * grayscale3 + (double) gauss6_4.w * grayscale4) / (grayscale3 + (double) grayscale4)));
-      _PSSProfileMedium_weighths3_var3 = new Vector4(gauss65.x + gauss66.x, gauss65.y + gauss66.y, gauss65.z + gauss66.z, (float) (((double) gauss6_5.w * grayscale5 + (double) gauss6_6.w * grayscale6) / (grayscale5 + (double) grayscale6)));
-      _PSSProfileLow_weighths1_var1 = new Vector4(gauss61.x + gauss62.x + gauss63.x, gauss61.y + gauss62.y + gauss63.y, gauss61.z + gauss62.z + gauss63.z, (float) (((double) gauss6_1.w * grayscale1 + (double) gauss6_2.w * grayscale2 + (double) gauss6_3.w * grayscale3) / (grayscale1 + (double) grayscale2 + grayscale3)));
-      _PSSProfileLow_weighths2_var2 = new Vector4(gauss64.x + gauss65.x + gauss66.x, gauss64.y + gauss65.y + gauss66.y, gauss64.z + gauss65.z + gauss66.z, (float) (((double) gauss6_4.w * grayscale4 + (double) gauss6_5.w * grayscale5 + (double) gauss6_6.w * grayscale6) / (grayscale4 + (double) grayscale5 + grayscale6)));
+      _PSSProfileMedium_weighths1_var1 = new Vector4(gauss61.x + gauss62.x, gauss61.y + gauss62.y, gauss61.z + gauss62.z, (float) ((gauss6_1.w * (double) grayscale1 + gauss6_2.w * (double) grayscale2) / (grayscale1 + (double) grayscale2)));
+      _PSSProfileMedium_weighths2_var2 = new Vector4(gauss63.x + gauss64.x, gauss63.y + gauss64.y, gauss63.z + gauss64.z, (float) ((gauss6_3.w * (double) grayscale3 + gauss6_4.w * (double) grayscale4) / (grayscale3 + (double) grayscale4)));
+      _PSSProfileMedium_weighths3_var3 = new Vector4(gauss65.x + gauss66.x, gauss65.y + gauss66.y, gauss65.z + gauss66.z, (float) ((gauss6_5.w * (double) grayscale5 + gauss6_6.w * (double) grayscale6) / (grayscale5 + (double) grayscale6)));
+      _PSSProfileLow_weighths1_var1 = new Vector4(gauss61.x + gauss62.x + gauss63.x, gauss61.y + gauss62.y + gauss63.y, gauss61.z + gauss62.z + gauss63.z, (float) ((gauss6_1.w * (double) grayscale1 + gauss6_2.w * (double) grayscale2 + gauss6_3.w * (double) grayscale3) / (grayscale1 + (double) grayscale2 + grayscale3)));
+      _PSSProfileLow_weighths2_var2 = new Vector4(gauss64.x + gauss65.x + gauss66.x, gauss64.y + gauss65.y + gauss66.y, gauss64.z + gauss65.z + gauss66.z, (float) ((gauss6_4.w * (double) grayscale4 + gauss6_5.w * (double) grayscale5 + gauss6_6.w * (double) grayscale6) / (grayscale4 + (double) grayscale5 + grayscale6)));
       _PSSProfileHigh_sqrtvar1234.x = Mathf.Sqrt(_PSSProfileHigh_weighths1_var1.w);
       _PSSProfileHigh_sqrtvar1234.y = Mathf.Sqrt(_PSSProfileHigh_weighths2_var2.w);
       _PSSProfileHigh_sqrtvar1234.z = Mathf.Sqrt(_PSSProfileHigh_weighths3_var3.w);
@@ -160,9 +162,9 @@
       _PSSProfileMedium_transl123.y = num / _PSSProfileMedium_weighths2_var2.w;
       _PSSProfileMedium_transl123.z = num / _PSSProfileMedium_weighths3_var3.w;
       Vector3 vector3_2;
-      vector3_2.x = (float) ((double) gauss6_1.w * (double) gauss61.x + (double) gauss6_2.w * (double) gauss62.x + (double) gauss6_3.w * (double) gauss63.x + (double) gauss6_4.w * (double) gauss64.x + (double) gauss6_5.w * (double) gauss65.x + (double) gauss6_6.w * (double) gauss66.x);
-      vector3_2.y = (float) ((double) gauss6_1.w * (double) gauss61.y + (double) gauss6_2.w * (double) gauss62.y + (double) gauss6_3.w * (double) gauss63.y + (double) gauss6_4.w * (double) gauss64.y + (double) gauss6_5.w * (double) gauss65.y + (double) gauss6_6.w * (double) gauss66.y);
-      vector3_2.z = (float) ((double) gauss6_1.w * (double) gauss61.z + (double) gauss6_2.w * (double) gauss62.z + (double) gauss6_3.w * (double) gauss63.z + (double) gauss6_4.w * (double) gauss64.z + (double) gauss6_5.w * (double) gauss65.z + (double) gauss6_6.w * (double) gauss66.z);
+      vector3_2.x = (float) (gauss6_1.w * (double) gauss61.x + gauss6_2.w * (double) gauss62.x + gauss6_3.w * (double) gauss63.x + gauss6_4.w * (double) gauss64.x + gauss6_5.w * (double) gauss65.x + gauss6_6.w * (double) gauss66.x);
+      vector3_2.y = (float) (gauss6_1.w * (double) gauss61.y + gauss6_2.w * (double) gauss62.y + gauss6_3.w * (double) gauss63.y + gauss6_4.w * (double) gauss64.y + gauss6_5.w * (double) gauss65.y + gauss6_6.w * (double) gauss66.y);
+      vector3_2.z = (float) (gauss6_1.w * (double) gauss61.z + gauss6_2.w * (double) gauss62.z + gauss6_3.w * (double) gauss63.z + gauss6_4.w * (double) gauss64.z + gauss6_5.w * (double) gauss65.z + gauss6_6.w * (double) gauss66.z);
       _PSSProfileLow_transl.x = num / vector3_2.x;
       _PSSProfileLow_transl.y = num / vector3_2.y;
       _PSSProfileLow_transl.z = num / vector3_2.z;

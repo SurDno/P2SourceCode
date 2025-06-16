@@ -7,6 +7,8 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -63,7 +65,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnAwake()
     {
       if (useSeed)
-        UnityEngine.Random.InitState(seed);
+        Random.InitState(seed);
       childIndexList.Clear();
       for (int index = 0; index < children.Count; ++index)
         childIndexList.Add(index);
@@ -108,7 +110,7 @@ namespace BehaviorDesigner.Runtime.Tasks
     {
       for (int count = childIndexList.Count; count > 0; --count)
       {
-        int index = UnityEngine.Random.Range(0, count);
+        int index = Random.Range(0, count);
         int childIndex = childIndexList[index];
         childrenExecutionOrder.Push(childIndex);
         childIndexList[index] = childIndexList[count - 1];

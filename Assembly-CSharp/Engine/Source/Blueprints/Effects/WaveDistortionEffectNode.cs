@@ -2,6 +2,7 @@
 using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints.Effects
 {
@@ -14,9 +15,9 @@ namespace Engine.Source.Blueprints.Effects
 
     public void Update()
     {
-      if ((Object) waveDistortion == (Object) null)
+      if (waveDistortion == null)
         waveDistortion = GameCamera.Instance.Camera.GetComponent<WaveDistortion>();
-      if ((Object) waveDistortion == (Object) null)
+      if (waveDistortion == null)
         return;
       waveDistortion.enabled = valueInput.value > 0.0;
       waveDistortion.Intensity = valueInput.value;

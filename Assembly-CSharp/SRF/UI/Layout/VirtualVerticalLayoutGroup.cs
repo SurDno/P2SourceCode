@@ -1,4 +1,8 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 namespace SRF.UI.Layout
 {
@@ -56,7 +60,7 @@ namespace SRF.UI.Layout
     {
       get
       {
-        return (float) (_itemList.Count * (double) ItemHeight + (double) this.padding.top + (double) this.padding.bottom + Spacing * (double) _itemList.Count);
+        return (float) (_itemList.Count * (double) ItemHeight + padding.top + padding.bottom + Spacing * (double) _itemList.Count);
       }
     }
 
@@ -65,9 +69,9 @@ namespace SRF.UI.Layout
       if (!EnableSelection)
         return;
       GameObject gameObject = eventData.pointerPressRaycast.gameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
-      int index = Mathf.FloorToInt(Mathf.Abs(this.rectTransform.InverseTransformPoint(gameObject.transform.position).y) / ItemHeight);
+      int index = Mathf.FloorToInt(Mathf.Abs(rectTransform.InverseTransformPoint(gameObject.transform.position).y) / ItemHeight);
       if (index >= 0 && index < _itemList.Count)
         SelectedItem = _itemList[index];
       else
@@ -77,15 +81,15 @@ namespace SRF.UI.Layout
     protected override void Awake()
     {
       base.Awake();
-      ScrollRect.onValueChanged.AddListener(new UnityAction<Vector2>(OnScrollRectValueChanged));
-      if (!((UnityEngine.Object) ItemPrefab.GetComponent(typeof (IVirtualView)) == (UnityEngine.Object) null))
+      ScrollRect.onValueChanged.AddListener(OnScrollRectValueChanged);
+      if (!(ItemPrefab.GetComponent(typeof (IVirtualView)) == null))
         return;
-      Debug.LogWarning((object) "[VirtualVerticalLayoutGroup] ItemPrefab does not have a component inheriting from IVirtualView, so no data binding can occur");
+      Debug.LogWarning("[VirtualVerticalLayoutGroup] ItemPrefab does not have a component inheriting from IVirtualView, so no data binding can occur");
     }
 
     private void OnScrollRectValueChanged(Vector2 d)
     {
-      if ((double) d.y < 0.0 || (double) d.y > 1.0)
+      if (d.y < 0.0 || d.y > 1.0)
         _scrollRect.verticalNormalizedPosition = Mathf.Clamp01(d.y);
       SetDirty();
     }
@@ -106,8 +110,8 @@ namespace SRF.UI.Layout
     {
       if (!AlignBottom && !AlignTop)
       {
-        Debug.LogWarning((object) "[VirtualVerticalLayoutGroup] Only Lower or Upper alignment is supported.", (UnityEngine.Object) this);
-        this.childAlignment = TextAnchor.UpperLeft;
+        Debug.LogWarning("[VirtualVerticalLayoutGroup] Only Lower or Upper alignment is supported.", this);
+        childAlignment = TextAnchor.UpperLeft;
       }
       if (SelectedItem != null && !_itemList.Contains(SelectedItem))
         SelectedItem = null;
@@ -143,7 +147,7 @@ namespace SRF.UI.Layout
     {
       if (!Application.isPlaying)
         return;
-      float y = this.rectTransform.anchoredPosition.y;
+      float y = rectTransform.anchoredPosition.y;
       float height = ((RectTransform) ScrollRect.transform).rect.height;
       int num1 = Mathf.FloorToInt(y / (ItemHeight + Spacing));
       int num2 = Mathf.CeilToInt((float) ((y + (double) height) / (ItemHeight + (double) Spacing)));
@@ -173,22 +177,22 @@ namespace SRF.UI.Layout
         }
       }
       if (flag || _visibleItemCount != _visibleRows.Count)
-        LayoutRebuilder.MarkLayoutForRebuild(this.rectTransform);
+        LayoutRebuilder.MarkLayoutForRebuild(rectTransform);
       _visibleItemCount = _visibleRows.Count;
     }
 
     public override void CalculateLayoutInputVertical()
     {
-      this.SetLayoutInputForAxis(minHeight, minHeight, -1f, 1);
+      SetLayoutInputForAxis(minHeight, minHeight, -1f, 1);
     }
 
     public override void SetLayoutHorizontal()
     {
-      float size = this.rectTransform.rect.width - (float) this.padding.left - (float) this.padding.right;
+      float size = rectTransform.rect.width - padding.left - padding.right;
       for (int index = 0; index < _visibleRows.Count; ++index)
-        this.SetChildAlongAxis(_visibleRows[index].Rect, 0, (float) this.padding.left, size);
+        SetChildAlongAxis(_visibleRows[index].Rect, 0, padding.left, size);
       for (int index = 0; index < _rowCache.Count; ++index)
-        this.SetChildAlongAxis(_rowCache[index].Rect, 0, -size - (float) this.padding.left, size);
+        SetChildAlongAxis(_rowCache[index].Rect, 0, -size - padding.left, size);
     }
 
     public override void SetLayoutVertical()
@@ -198,14 +202,14 @@ namespace SRF.UI.Layout
       for (int index = 0; index < _visibleRows.Count; ++index)
       {
         Row visibleRow = _visibleRows[index];
-        this.SetChildAlongAxis(visibleRow.Rect, 1, (float) (visibleRow.Index * (double) ItemHeight + (double) this.padding.top + Spacing * (double) visibleRow.Index), ItemHeight);
+        SetChildAlongAxis(visibleRow.Rect, 1, (float) (visibleRow.Index * (double) ItemHeight + padding.top + Spacing * (double) visibleRow.Index), ItemHeight);
       }
     }
 
-    private void SetDirty()
+    private new void SetDirty()
     {
       base.SetDirty();
-      if (!this.IsActive())
+      if (!IsActive())
         return;
       _isDirty = true;
     }
@@ -241,8 +245,8 @@ namespace SRF.UI.Layout
     {
       get
       {
-        if ((UnityEngine.Object) _scrollRect == (UnityEngine.Object) null)
-          _scrollRect = this.GetComponentInParent<ScrollRect>();
+        if (_scrollRect == null)
+          _scrollRect = GetComponentInParent<ScrollRect>();
         return _scrollRect;
       }
     }
@@ -251,7 +255,7 @@ namespace SRF.UI.Layout
     {
       get
       {
-        return this.childAlignment == TextAnchor.LowerRight || this.childAlignment == TextAnchor.LowerCenter || this.childAlignment == TextAnchor.LowerLeft;
+        return childAlignment == TextAnchor.LowerRight || childAlignment == TextAnchor.LowerCenter || childAlignment == TextAnchor.LowerLeft;
       }
     }
 
@@ -259,7 +263,7 @@ namespace SRF.UI.Layout
     {
       get
       {
-        return this.childAlignment == TextAnchor.UpperLeft || this.childAlignment == TextAnchor.UpperCenter || this.childAlignment == TextAnchor.UpperRight;
+        return childAlignment == TextAnchor.UpperLeft || childAlignment == TextAnchor.UpperCenter || childAlignment == TextAnchor.UpperRight;
       }
     }
 
@@ -272,7 +276,7 @@ namespace SRF.UI.Layout
           _itemHeight = !(ItemPrefab.GetComponent(typeof (ILayoutElement)) is ILayoutElement component) ? ItemPrefab.rect.height : component.preferredHeight;
           if (_itemHeight.ApproxZero())
           {
-            Debug.LogWarning((object) "[VirtualVerticalLayoutGroup] ItemPrefab must have a preferred size greater than 0");
+            Debug.LogWarning("[VirtualVerticalLayoutGroup] ItemPrefab must have a preferred size greater than 0");
             _itemHeight = 10f;
           }
         }
@@ -331,10 +335,10 @@ namespace SRF.UI.Layout
     private Row CreateRow()
     {
       Row row = new Row();
-      RectTransform rectTransform = SRInstantiate.Instantiate<RectTransform>(ItemPrefab);
+      RectTransform rectTransform = SRInstantiate.Instantiate(ItemPrefab);
       row.Rect = rectTransform;
       row.View = rectTransform.GetComponent(typeof (IVirtualView)) as IVirtualView;
-      rectTransform.SetParent((Transform) this.rectTransform, false);
+      rectTransform.SetParent(this.rectTransform, false);
       return row;
     }
 

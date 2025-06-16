@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Cinemachine.Utility;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Cinemachine
 {
@@ -12,7 +14,7 @@ namespace Cinemachine
   {
     [Header("Obstacle Detection")]
     [Tooltip("The Unity layer mask against which the collider will raycast")]
-    public LayerMask m_CollideAgainst = (LayerMask) 1;
+    public LayerMask m_CollideAgainst = 1;
     [TagField]
     [Tooltip("Obstacles with this tag will be ignored.  It is a good idea to set this field to the target's tag")]
     public string m_IgnoreTag = string.Empty;
@@ -35,7 +37,7 @@ namespace Cinemachine
     [Range(0.0f, 10f)]
     [Tooltip("The gradualness of collision resolution.  Higher numbers will move the camera more gradually away from obstructions.")]
     [FormerlySerializedAs("m_Smoothing")]
-    public float m_Damping = 0.0f;
+    public float m_Damping;
     [Header("Shot Evaluation")]
     [Tooltip("If greater than zero, a higher score will be given to shots when the target is closer to this distance.  Set this to zero to disable this feature.")]
     public float m_OptimalTargetDistance;
@@ -96,7 +98,7 @@ namespace Cinemachine
         extra = GetExtraState<VcamExtraState>(vcam);
         extra.targetObscured = false;
         extra.colliderDisplacement = 0.0f;
-        extra.debugResolutionPath = (List<Vector3>) null;
+        extra.debugResolutionPath = null;
       }
       if (stage == CinemachineCore.Stage.Body && m_AvoidObstacles)
       {
@@ -172,7 +174,7 @@ namespace Cinemachine
         }
         if (m_CameraRadius > 9.9999997473787516E-05)
           vector3_2 += RespectCameraRadius(vector3_2, state.ReferenceLookAt);
-        else if ((UnityEngine.Object) mCameraColliderGameObject != (UnityEngine.Object) null)
+        else if (mCameraColliderGameObject != null)
           CleanupCameraCollider();
         vector3_1 = vector3_2 - correctedPosition;
       }
@@ -272,11 +274,11 @@ namespace Cinemachine
         {
           if (m_IgnoreTag.Length <= 0 || !m_CornerBuffer[index].collider.CompareTag(m_IgnoreTag))
           {
-            Type type = ((object) m_CornerBuffer[index].collider).GetType();
+            Type type = m_CornerBuffer[index].collider.GetType();
             if (type == typeof (BoxCollider) || type == typeof (SphereCollider) || type == typeof (CapsuleCollider))
             {
               Vector3 direction = m_CornerBuffer[index].collider.ClosestPoint(pos) - pos;
-              if ((double) direction.magnitude > 9.9999997473787516E-06 && m_CornerBuffer[index].collider.Raycast(new Ray(pos, direction), out m_CornerBuffer[index], num1))
+              if (direction.magnitude > 9.9999997473787516E-06 && m_CornerBuffer[index].collider.Raycast(new Ray(pos, direction), out m_CornerBuffer[index], num1))
               {
                 if (!(m_CornerBuffer[index].normal - obstacle.normal).AlmostZero())
                 {
@@ -296,7 +298,7 @@ namespace Cinemachine
       else
       {
         float f = Vector3.Dot(vector3, pushDir);
-        if ((double) Mathf.Abs(f) < 9.9999997473787516E-05)
+        if (Mathf.Abs(f) < 9.9999997473787516E-05)
           return false;
         if (f < 0.0)
           vector3 = -vector3;
@@ -333,26 +335,26 @@ namespace Cinemachine
     private float ClampRayToBounds(Ray ray, float distance, Bounds bounds)
     {
       float enter;
-      if ((double) Vector3.Dot(ray.direction, Vector3.up) > 0.0)
+      if (Vector3.Dot(ray.direction, Vector3.up) > 0.0)
       {
         if (new Plane(Vector3.down, bounds.max).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
           distance = Mathf.Min(distance, enter);
       }
-      else if ((double) Vector3.Dot(ray.direction, Vector3.down) > 0.0 && new Plane(Vector3.up, bounds.min).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
+      else if (Vector3.Dot(ray.direction, Vector3.down) > 0.0 && new Plane(Vector3.up, bounds.min).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
         distance = Mathf.Min(distance, enter);
-      if ((double) Vector3.Dot(ray.direction, Vector3.right) > 0.0)
+      if (Vector3.Dot(ray.direction, Vector3.right) > 0.0)
       {
         if (new Plane(Vector3.left, bounds.max).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
           distance = Mathf.Min(distance, enter);
       }
-      else if ((double) Vector3.Dot(ray.direction, Vector3.left) > 0.0 && new Plane(Vector3.right, bounds.min).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
+      else if (Vector3.Dot(ray.direction, Vector3.left) > 0.0 && new Plane(Vector3.right, bounds.min).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
         distance = Mathf.Min(distance, enter);
-      if ((double) Vector3.Dot(ray.direction, Vector3.forward) > 0.0)
+      if (Vector3.Dot(ray.direction, Vector3.forward) > 0.0)
       {
         if (new Plane(Vector3.back, bounds.max).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
           distance = Mathf.Min(distance, enter);
       }
-      else if ((double) Vector3.Dot(ray.direction, Vector3.back) > 0.0 && new Plane(Vector3.forward, bounds.min).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
+      else if (Vector3.Dot(ray.direction, Vector3.back) > 0.0 && new Plane(Vector3.forward, bounds.min).Raycast(ray, out enter) && enter > 9.9999997473787516E-05)
         distance = Mathf.Min(distance, enter);
       return distance;
     }
@@ -360,10 +362,10 @@ namespace Cinemachine
     private Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
     {
       Vector3 zero = Vector3.zero;
-      int num = Physics.OverlapSphereNonAlloc(cameraPos, m_CameraRadius, mColliderBuffer, (int) m_CollideAgainst, QueryTriggerInteraction.Ignore);
+      int num = Physics.OverlapSphereNonAlloc(cameraPos, m_CameraRadius, mColliderBuffer, m_CollideAgainst, QueryTriggerInteraction.Ignore);
       if (num > 0)
       {
-        if ((UnityEngine.Object) mCameraColliderGameObject == (UnityEngine.Object) null)
+        if (mCameraColliderGameObject == null)
         {
           mCameraColliderGameObject = new GameObject("Cinemachine Collider Collider");
           mCameraColliderGameObject.hideFlags = HideFlags.HideAndDontSave;
@@ -377,7 +379,7 @@ namespace Cinemachine
           Collider colliderB = mColliderBuffer[index];
           Vector3 direction;
           float distance;
-          if ((m_IgnoreTag.Length <= 0 || !colliderB.CompareTag(m_IgnoreTag)) && Physics.ComputePenetration((Collider) mCameraCollider, cameraPos, Quaternion.identity, colliderB, colliderB.transform.position, colliderB.transform.rotation, out direction, out distance))
+          if ((m_IgnoreTag.Length <= 0 || !colliderB.CompareTag(m_IgnoreTag)) && Physics.ComputePenetration(mCameraCollider, cameraPos, Quaternion.identity, colliderB, colliderB.transform.position, colliderB.transform.rotation, out direction, out distance))
             zero += direction * distance;
         }
       }
@@ -386,10 +388,10 @@ namespace Cinemachine
 
     private void CleanupCameraCollider()
     {
-      if ((UnityEngine.Object) mCameraColliderGameObject != (UnityEngine.Object) null)
-        UnityEngine.Object.DestroyImmediate((UnityEngine.Object) mCameraColliderGameObject);
-      mCameraColliderGameObject = (GameObject) null;
-      mCameraCollider = (SphereCollider) null;
+      if (mCameraColliderGameObject != null)
+        DestroyImmediate(mCameraColliderGameObject);
+      mCameraColliderGameObject = null;
+      mCameraCollider = null;
     }
 
     private bool CheckForTargetObstructions(CameraState state)

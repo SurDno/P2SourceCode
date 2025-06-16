@@ -53,10 +53,10 @@ namespace Engine.Source.Services
       if (player == null)
         return;
       IEntityView entityView = (IEntityView) player;
-      if ((UnityEngine.Object) entityView.GameObject == (UnityEngine.Object) null)
+      if (entityView.GameObject == null)
         return;
       Transform cameraTransform = GameCamera.Instance.CameraTransform;
-      if ((UnityEngine.Object) cameraTransform == (UnityEngine.Object) null)
+      if (cameraTransform == null)
         return;
       ray = new Ray(cameraTransform.position, cameraTransform.forward);
       targetEntityDistance = float.PositiveInfinity;
@@ -64,10 +64,10 @@ namespace Engine.Source.Services
       for (int index = 0; index < hits.Count; ++index)
       {
         RaycastHit hit = hits[index];
-        if (!((UnityEngine.Object) hit.transform == (UnityEngine.Object) null))
+        if (!(hit.transform == null))
         {
           GameObject gameObject = hit.transform.gameObject;
-          if (!((UnityEngine.Object) gameObject == (UnityEngine.Object) entityView.GameObject))
+          if (!(gameObject == entityView.GameObject))
           {
             targetGameObject = gameObject;
             targetGameObjectDistance = hit.distance;
@@ -87,7 +87,7 @@ namespace Engine.Source.Services
       ray = new Ray();
       targetEntity = null;
       targetEntityDistance = float.PositiveInfinity;
-      targetGameObject = (GameObject) null;
+      targetGameObject = null;
       targetGameObjectDistance = float.PositiveInfinity;
     }
   }

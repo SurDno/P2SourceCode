@@ -14,6 +14,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [TaskDescription("Fight target is unvailiable")]
 [TaskCategory("Pathologic")]
@@ -35,24 +36,24 @@ public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite,
     entity = EntityUtility.GetEntity(gameObject);
     if (entity == null)
     {
-      Debug.LogWarning((object) (gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name), (UnityEngine.Object) gameObject);
+      Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
     }
     else
     {
       detector = entity.GetComponent<DetectorComponent>();
       if (detector != null)
         return;
-      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", (object) gameObject.name, (object) typeof (IDetectorComponent).Name);
+      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", gameObject.name, typeof (IDetectorComponent).Name);
     }
   }
 
   public override TaskStatus OnUpdate()
   {
-    if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) null)
+    if (Target.Value == null)
       return TaskStatus.Success;
     if (entity == null || detector == null)
       return TaskStatus.Failure;
-    if ((UnityEngine.Object) Target.Value == (UnityEngine.Object) gameObject.transform || !Target.Value.gameObject.activeSelf)
+    if (Target.Value == gameObject.transform || !Target.Value.gameObject.activeSelf)
       return TaskStatus.Success;
     if (gameObject.GetComponent<EnemyBase>().IsFaint)
       return TaskStatus.Failure;
@@ -78,7 +79,7 @@ public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite,
     if (owner == null)
       return false;
     GameObject gameObject = ((IEntityView) owner).GameObject;
-    return !((UnityEngine.Object) gameObject == (UnityEngine.Object) null) && (UnityEngine.Object) gameObject.transform == (UnityEngine.Object) Target.Value;
+    return !(gameObject == null) && gameObject.transform == Target.Value;
   }
 
   public void DataWrite(IDataWriter writer)

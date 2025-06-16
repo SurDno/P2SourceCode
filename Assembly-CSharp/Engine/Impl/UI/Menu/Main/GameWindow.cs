@@ -8,6 +8,10 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -34,21 +38,21 @@ namespace Engine.Impl.UI.Menu.Main
     [SerializeField]
     private Image selectedLine;
     private int currentIndex;
-    private Button[] buttons = (Button[]) null;
+    private Button[] buttons;
     private bool isReturnedFromGame = true;
 
     public GameObject Menu => menu;
 
     public override void Initialize()
     {
-      RegisterLayer((IGameWindow) this);
-      Button[] componentsInChildren = this.GetComponentsInChildren<Button>(true);
+      RegisterLayer<IGameWindow>(this);
+      Button[] componentsInChildren = GetComponentsInChildren<Button>(true);
       for (int index = 0; index < componentsInChildren.Length; ++index)
       {
         componentsInChildren[index].gameObject.AddComponent<EventTrigger>();
         EventTrigger.Entry entry = new EventTrigger.Entry();
         entry.eventID = EventTriggerType.PointerClick;
-        entry.callback.AddListener((UnityAction<BaseEventData>) (eventData => Button_Click_Handler()));
+        entry.callback.AddListener(eventData => Button_Click_Handler());
         componentsInChildren[index].gameObject.GetComponent<EventTrigger>().triggers.Add(entry);
       }
       base.Initialize();
@@ -56,9 +60,9 @@ namespace Engine.Impl.UI.Menu.Main
 
     public void Button_Click_Handler()
     {
-      if (!this.gameObject.activeInHierarchy)
+      if (!gameObject.activeInHierarchy)
         return;
-      this.gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
+      gameObject.GetComponent<AudioSource>().PlayOneShot(clickSound);
     }
 
     public void Button_BackToGame_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
@@ -93,7 +97,7 @@ namespace Engine.Impl.UI.Menu.Main
       ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       GameActionService service = ServiceLocator.GetService<GameActionService>();
       if (buttons == null)
-        buttons = this.GetComponentsInChildren<Button>();
+        buttons = GetComponentsInChildren<Button>();
       service.AddListener(GameActionType.LStickDown, ChangeSelectedItem);
       service.AddListener(GameActionType.LStickUp, ChangeSelectedItem);
       service.AddListener(GameActionType.Submit, ChangeSelectedItem);
@@ -104,7 +108,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     protected override void OnDisable()
     {
-      if ((UnityEngine.Object) exitConfirmationInstance != (UnityEngine.Object) null)
+      if (exitConfirmationInstance != null)
         exitConfirmationInstance.Hide();
       ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, new GameActionHandle(((UIWindow) this).CancelListener));
       CursorService.Instance.Free = CursorService.Instance.Visible = false;
@@ -124,7 +128,7 @@ namespace Engine.Impl.UI.Menu.Main
     {
       base.OnJoystick(joystick);
       helpPanel.SetActive(joystick);
-      EventSystem.current.SetSelectedGameObject((GameObject) null);
+      EventSystem.current.SetSelectedGameObject(null);
       if (joystick)
       {
         if (isReturnedFromGame)
@@ -148,7 +152,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private bool ChangeSelectedItem(GameActionType type, bool down)
     {
-      if (!helpPanel.activeInHierarchy || (UnityEngine.Object) exitConfirmationInstance != (UnityEngine.Object) null && exitConfirmationInstance.gameObject.activeInHierarchy)
+      if (!helpPanel.activeInHierarchy || exitConfirmationInstance != null && exitConfirmationInstance.gameObject.activeInHierarchy)
         return false;
       if (type == GameActionType.LStickUp & down)
       {
@@ -166,7 +170,7 @@ namespace Engine.Impl.UI.Menu.Main
       {
         PointerEventData eventData = new PointerEventData(EventSystem.current);
         isReturnedFromGame = currentIndex == 0;
-        ExecuteEvents.Execute<ISubmitHandler>(buttons[currentIndex].gameObject, (BaseEventData) eventData, ExecuteEvents.submitHandler);
+        ExecuteEvents.Execute(buttons[currentIndex].gameObject, eventData, ExecuteEvents.submitHandler);
         return true;
       }
       if (!(type == GameActionType.Cancel & down))
@@ -189,8 +193,8 @@ namespace Engine.Impl.UI.Menu.Main
     private void SetSelectionLine()
     {
       GameObject selectedGameObject = EventSystem.current.currentSelectedGameObject;
-      Text component = (UnityEngine.Object) selectedGameObject != (UnityEngine.Object) null ? selectedGameObject.GetComponent<Text>() : (Text) null;
-      bool flag = (UnityEngine.Object) component != (UnityEngine.Object) null && InputService.Instance.JoystickUsed;
+      Text component = selectedGameObject != null ? selectedGameObject.GetComponent<Text>() : null;
+      bool flag = component != null && InputService.Instance.JoystickUsed;
       selectedLine.enabled = flag;
       if (!flag)
         return;
@@ -206,8 +210,8 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void ShowExitConfirmation(Action onAccept)
     {
-      if ((UnityEngine.Object) exitConfirmationInstance == (UnityEngine.Object) null)
-        exitConfirmationInstance = UnityEngine.Object.Instantiate<ConfirmationWindow>(exitConfirmationPrefab, this.transform, false);
+      if (exitConfirmationInstance == null)
+        exitConfirmationInstance = Instantiate(exitConfirmationPrefab, transform, false);
       exitConfirmationInstance.Show("{UI.Menu.Main.Game.ExitConfirmation}", onAccept, null);
     }
   }

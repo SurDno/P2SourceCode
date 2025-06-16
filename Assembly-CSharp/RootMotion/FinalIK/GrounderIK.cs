@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page11.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Grounder/Grounder IK")]
@@ -40,11 +42,11 @@
 
     private bool IsReadyToInitiate()
     {
-      if ((Object) pelvis == (Object) null || legs.Length == 0)
+      if (pelvis == null || legs.Length == 0)
         return false;
       foreach (IK leg in legs)
       {
-        if ((Object) leg == (Object) null)
+        if (leg == null)
           return false;
         switch (leg)
         {
@@ -70,7 +72,7 @@
         return;
       for (int index = 0; index < legs.Length; ++index)
       {
-        if ((Object) legs[index] != (Object) null)
+        if (legs[index] != null)
           legs[index].GetIKSolver().IKPositionWeight = 0.0f;
       }
     }
@@ -85,12 +87,12 @@
       {
         rootRotationWeight = Mathf.Clamp(rootRotationWeight, 0.0f, 1f);
         rootRotationSpeed = Mathf.Clamp(rootRotationSpeed, 0.0f, rootRotationSpeed);
-        if (!((Object) characterRoot != (Object) null) || rootRotationSpeed <= 0.0 || rootRotationWeight <= 0.0)
+        if (!(characterRoot != null) || rootRotationSpeed <= 0.0 || rootRotationWeight <= 0.0)
           return;
         Vector3 vector3 = solver.GetLegsPlaneNormal();
         if (rootRotationWeight < 1.0)
           vector3 = Vector3.Slerp(Vector3.up, vector3, rootRotationWeight);
-        characterRoot.rotation = Quaternion.Lerp(characterRoot.rotation, Quaternion.RotateTowards(Quaternion.FromToRotation(this.transform.up, Vector3.up) * characterRoot.rotation, Quaternion.FromToRotation(this.transform.up, vector3) * characterRoot.rotation, maxRootRotationAngle), Time.deltaTime * rootRotationSpeed);
+        characterRoot.rotation = Quaternion.Lerp(characterRoot.rotation, Quaternion.RotateTowards(Quaternion.FromToRotation(transform.up, Vector3.up) * characterRoot.rotation, Quaternion.FromToRotation(transform.up, vector3) * characterRoot.rotation, maxRootRotationAngle), Time.deltaTime * rootRotationSpeed);
       }
       else
       {
@@ -114,7 +116,7 @@
         legs[index].GetIKSolver().OnPostUpdate += OnPostSolverUpdate;
       }
       animatedPelvisLocalPosition = pelvis.localPosition;
-      solver.Initiate(this.transform, feet);
+      solver.Initiate(transform, feet);
       for (int index = 0; index < legs.Length; ++index)
       {
         if (legs[index] is LegIK)
@@ -125,7 +127,7 @@
 
     private void OnSolverUpdate()
     {
-      if (!this.enabled)
+      if (!enabled)
         return;
       if (weight <= 0.0)
       {
@@ -167,7 +169,7 @@
 
     private void OnPostSolverUpdate()
     {
-      if (weight <= 0.0 || !this.enabled)
+      if (weight <= 0.0 || !enabled)
         return;
       ++solvedFeet;
       if (solvedFeet < feet.Length)
@@ -183,7 +185,7 @@
         return;
       foreach (IK leg in legs)
       {
-        if ((Object) leg != (Object) null)
+        if (leg != null)
         {
           leg.GetIKSolver().OnPreUpdate -= OnSolverUpdate;
           leg.GetIKSolver().OnPostUpdate -= OnPostSolverUpdate;

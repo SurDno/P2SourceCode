@@ -5,6 +5,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateFightEscape : INpcState
 {
@@ -35,10 +37,10 @@ public class NpcStateFightEscape : INpcState
     agent = pivot.GetAgent();
     animator = pivot.GetAnimator();
     weaponService = pivot.GetNpcWeaponService();
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -69,7 +71,7 @@ public class NpcStateFightEscape : INpcState
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
       Status = NpcStateStatusEnum.Failed;
     }
     else
@@ -93,19 +95,19 @@ public class NpcStateFightEscape : INpcState
       enemy.DesiredWalkSpeed = 0.0f;
       animatorState.SetTrigger("Fight.Triggers/CancelAttack");
       animatorState.ResetTrigger("Fight.Triggers/CancelEscape");
-      if ((UnityEngine.Object) enemy == (UnityEngine.Object) null)
-        Debug.LogError((object) "enemy == null");
-      else if ((UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) null)
-        Debug.LogError((object) "enemy.Enemy == null");
-      else if ((UnityEngine.Object) enemy.Enemy.transform == (UnityEngine.Object) null)
-        Debug.LogError((object) "enemy.Enemy.transform == null");
-      else if ((UnityEngine.Object) enemy.transform == (UnityEngine.Object) null)
+      if (enemy == null)
+        Debug.LogError("enemy == null");
+      else if (enemy.Enemy == null)
+        Debug.LogError("enemy.Enemy == null");
+      else if (enemy.Enemy.transform == null)
+        Debug.LogError("enemy.Enemy.transform == null");
+      else if (enemy.transform == null)
       {
-        Debug.LogError((object) "enemy.transform == null");
+        Debug.LogError("enemy.transform == null");
       }
       else
       {
-        if ((double) Vector3.Angle(enemy.Enemy.transform.position - enemy.transform.position, enemy.transform.forward) < 60.0)
+        if (Vector3.Angle(enemy.Enemy.transform.position - enemy.transform.position, enemy.transform.forward) < 60.0)
           animatorState.SetTrigger("Fight.Triggers/Escape");
         else
           animatorState.SetTrigger("Fight.Triggers/EscapeImmediate");
@@ -149,13 +151,13 @@ public class NpcStateFightEscape : INpcState
   {
     if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || Status != 0)
       return;
-    if ((UnityEngine.Object) enemy == (UnityEngine.Object) null || (UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) null)
+    if (enemy == null || enemy.Enemy == null)
     {
       Status = NpcStateStatusEnum.Failed;
     }
     else
     {
-      enemy.RotationTarget = (Transform) null;
+      enemy.RotationTarget = null;
       enemy.RotateByPath = false;
       enemy.RetreatAngle = new float?();
       if (fightAnimatorState.IsReaction)

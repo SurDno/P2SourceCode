@@ -9,6 +9,11 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
 using RootMotion.Dynamics;
+using UnityEngine;
+using UnityEngine.AI;
+using UnityEngine.Audio;
+using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace Engine.Behaviours.Components
 {
@@ -154,11 +159,11 @@ namespace Engine.Behaviours.Components
 
     private void Awake()
     {
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
-        Debug.LogWarning((object) (this.gameObject.name + " doesn't contain " + typeof (Animator).Name + " unity component."));
-      if (!((UnityEngine.Object) agent == (UnityEngine.Object) null))
+      if (animator == null)
+        Debug.LogWarning(gameObject.name + " doesn't contain " + typeof (Animator).Name + " unity component.");
+      if (!(agent == null))
         return;
-      Debug.LogWarning((object) (this.gameObject.name + " doesn't contain " + typeof (NavMeshAgent).Name + " unity component."));
+      Debug.LogWarning(gameObject.name + " doesn't contain " + typeof (NavMeshAgent).Name + " unity component.");
     }
 
     private void Start()
@@ -176,19 +181,19 @@ namespace Engine.Behaviours.Components
       float volume,
       float spatialBlend)
     {
-      if (sounds == null || sounds.Length == 0 || (UnityEngine.Object) transform == (UnityEngine.Object) null)
+      if (sounds == null || sounds.Length == 0 || transform == null)
         return false;
-      AudioClip sound = sounds[UnityEngine.Random.Range(0, sounds.Length)];
+      AudioClip sound = sounds[Random.Range(0, sounds.Length)];
       if (spatialBlend > 0.5)
-        SoundUtility.PlayAudioClip3D(Chest.transform, sound, mixer, volume, 1f, 2.5f, true, 0.0f, context: this.gameObject.GetFullName());
+        SoundUtility.PlayAudioClip3D(Chest.transform, sound, mixer, volume, 1f, 2.5f, true, 0.0f, context: gameObject.GetFullName());
       else
-        SoundUtility.PlayAudioClip2D(sound, mixer, volume, 0.0f, context: this.gameObject.GetFullName());
+        SoundUtility.PlayAudioClip2D(sound, mixer, volume, 0.0f, context: gameObject.GetFullName());
       return true;
     }
 
     public void PlaySound(SoundEnum soundEnum, float volumeScale = 1f, bool protagonist = false)
     {
-      if ((UnityEngine.Object) soundBank == (UnityEngine.Object) null)
+      if (soundBank == null)
         return;
       AudioMixerGroup mixer;
       float spatialBlend;
@@ -254,13 +259,13 @@ namespace Engine.Behaviours.Components
       switch (aimType)
       {
         case AimWeaponType.Head:
-          return (UnityEngine.Object) Head != (UnityEngine.Object) null ? Head.transform : (Transform) null;
+          return Head != null ? Head.transform : null;
         case AimWeaponType.Chest:
-          return (UnityEngine.Object) Chest != (UnityEngine.Object) null ? Chest.transform : (Transform) null;
+          return Chest != null ? Chest.transform : null;
         case AimWeaponType.Belly:
-          return (UnityEngine.Object) Belly != (UnityEngine.Object) null ? Belly.transform : (Transform) null;
+          return Belly != null ? Belly.transform : null;
         case AimWeaponType.Foot:
-          return (UnityEngine.Object) Foot == (UnityEngine.Object) null ? this.transform : Foot.transform;
+          return Foot == null ? transform : Foot.transform;
         default:
           throw new NotImplementedException();
       }
@@ -285,8 +290,8 @@ namespace Engine.Behaviours.Components
         if (actualRagdollWeight < 0.949999988079071 && value >= 0.949999988079071)
           PlaySound(SoundEnum.RagdollFall);
         actualRagdollWeight = value;
-        IKController component1 = this.GetComponent<IKController>();
-        if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
+        IKController component1 = GetComponent<IKController>();
+        if (component1 != null)
           component1.enabled = value == 0.0;
         if (HierarhyStructure == HierarhyStructureEnum.Ordinary)
         {
@@ -302,10 +307,10 @@ namespace Engine.Behaviours.Components
           EnableRagdool(ragdollRightElbow, enable);
           EnableRagdool(ragdollMiddleSpine, enable);
           EnableRagdool(ragdollHead, enable);
-          if ((UnityEngine.Object) ragdollHead != (UnityEngine.Object) null && enable && (double) headImpulseValue.sqrMagnitude > 0.10000000149011612)
+          if (ragdollHead != null && enable && headImpulseValue.sqrMagnitude > 0.10000000149011612)
           {
             Rigidbody component2 = ragdollHead.GetComponent<Rigidbody>();
-            if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
+            if (component2 != null)
             {
               component2.AddForceAtPosition(headImpulseValue, ragdollHead.transform.position, ForceMode.Impulse);
               headImpulseValue = Vector3.zero;
@@ -315,7 +320,7 @@ namespace Engine.Behaviours.Components
         }
         else
         {
-          if (HierarhyStructure != HierarhyStructureEnum.PuppetMaster || (UnityEngine.Object) puppet == (UnityEngine.Object) null)
+          if (HierarhyStructure != HierarhyStructureEnum.PuppetMaster || puppet == null)
             return;
           float a = 0.0f;
           if (value < 0.029999999329447746)
@@ -355,7 +360,7 @@ namespace Engine.Behaviours.Components
       set
       {
         ragdollInternalCollisions = value;
-        if (HierarhyStructure != HierarhyStructureEnum.PuppetMaster || !((UnityEngine.Object) puppet != (UnityEngine.Object) null))
+        if (HierarhyStructure != HierarhyStructureEnum.PuppetMaster || !(puppet != null))
           return;
         puppet.internalCollisions = ragdollInternalCollisions;
       }
@@ -363,17 +368,17 @@ namespace Engine.Behaviours.Components
 
     private void EnableRagdool(GameObject go, bool enable)
     {
-      if (!((UnityEngine.Object) go != (UnityEngine.Object) null))
+      if (!(go != null))
         return;
       go.layer = enable ? ScriptableObjectInstance<GameSettingsData>.Instance.RagdollLayer.GetIndex() : ScriptableObjectInstance<GameSettingsData>.Instance.DynamicLayer.GetIndex();
       Rigidbody component1 = go.GetComponent<Rigidbody>();
-      if ((UnityEngine.Object) component1 != (UnityEngine.Object) null)
+      if (component1 != null)
       {
         component1.isKinematic = !enable;
         component1.useGravity = enable;
       }
       Collider component2 = go.GetComponent<Collider>();
-      if ((UnityEngine.Object) component2 != (UnityEngine.Object) null)
+      if (component2 != null)
         component2.enabled = enable;
     }
 

@@ -1,4 +1,6 @@
-﻿public class demo_scene_control : MonoBehaviour
+﻿using UnityEngine;
+
+public class demo_scene_control : MonoBehaviour
 {
   public Transform c_point;
   public Transform c_point1;
@@ -20,7 +22,7 @@
 
   private void Update()
   {
-    this.transform.RotateAround(c_point1.transform.position, Vector3.up, 0.5f);
+    transform.RotateAround(c_point1.transform.position, Vector3.up, 0.5f);
   }
 
   private void OnGUI()
@@ -67,7 +69,7 @@
   private void Restart()
   {
     Transform cPoint = c_point;
-    Object.Destroy((Object) current);
+    Destroy(current);
     if (cur_effect == 4 || cur_effect == 5)
     {
       cPoint.transform.eulerAngles = new Vector3(0.0f, -90f, 0.0f);
@@ -89,13 +91,13 @@
       cPoint.transform.position = c_point1.transform.position;
     }
     if (style == 0)
-      current = Object.Instantiate<Transform>(style1[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+      current = Instantiate(style1[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
     if (style == 1)
-      current = Object.Instantiate<Transform>(style2[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+      current = Instantiate(style2[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
     if (style == 2)
-      current = Object.Instantiate<Transform>(style3[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+      current = Instantiate(style3[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
     if (style != 3)
       return;
-    current = Object.Instantiate<Transform>(style4[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
+    current = Instantiate(style4[cur_effect], cPoint.transform.position, cPoint.transform.rotation).gameObject;
   }
 }

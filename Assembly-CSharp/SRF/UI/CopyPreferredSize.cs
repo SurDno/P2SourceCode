@@ -1,4 +1,7 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace SRF.UI
 {
   [RequireComponent(typeof (RectTransform))]
   [ExecuteInEditMode]
@@ -13,7 +16,7 @@
     {
       get
       {
-        return (Object) CopySource == (Object) null || !this.IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingWidth;
+        return CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredWidth(CopySource) + PaddingWidth;
       }
     }
 
@@ -21,7 +24,7 @@
     {
       get
       {
-        return (Object) CopySource == (Object) null || !this.IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingHeight;
+        return CopySource == null || !IsActive() ? -1f : LayoutUtility.GetPreferredHeight(CopySource) + PaddingHeight;
       }
     }
 

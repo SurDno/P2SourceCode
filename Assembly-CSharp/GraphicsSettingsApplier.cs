@@ -1,6 +1,7 @@
 ﻿using Engine.Source.Commons;
 using Engine.Source.Settings;
 using Engine.Source.Settings.External;
+using UnityEngine;
 
 public class GraphicsSettingsApplier : EngineDependent
 {
@@ -17,7 +18,7 @@ public class GraphicsSettingsApplier : EngineDependent
   public void ApplyAmplifyOcclusion(Camera camera, bool value)
   {
     AmplifyOcclusionEffect component = camera.GetComponent<AmplifyOcclusionEffect>();
-    if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+    if (!(component != null))
       return;
     component.enabled = value;
   }
@@ -25,7 +26,7 @@ public class GraphicsSettingsApplier : EngineDependent
   private void ApplyCameraSettings(GameCamera gameCamera, GraphicsGameSettings settings)
   {
     Camera camera = gameCamera.Camera;
-    if ((UnityEngine.Object) camera == (UnityEngine.Object) null)
+    if (camera == null)
       return;
     ApplyAmplifyOcclusion(camera, settings.SSAO.Value);
     ApplyContactShadows(camera, settings.ContactShadows.Value);
@@ -36,7 +37,7 @@ public class GraphicsSettingsApplier : EngineDependent
   public void ApplyContactShadows(Camera camera, bool value)
   {
     NGSS_ContactShadows component = camera.GetComponent<NGSS_ContactShadows>();
-    if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+    if (!(component != null))
       return;
     component.enabled = value;
   }
@@ -44,7 +45,7 @@ public class GraphicsSettingsApplier : EngineDependent
   private void ApplyGameCameraSettings(GraphicsGameSettings settings)
   {
     GameCamera instance = GameCamera.Instance;
-    if ((UnityEngine.Object) instance == (UnityEngine.Object) null)
+    if (instance == null)
       return;
     ApplyPostProcessingOverrides(instance, settings);
     ApplyCameraSettings(instance, settings);
@@ -55,7 +56,7 @@ public class GraphicsSettingsApplier : EngineDependent
   private void ApplyPostProcessingOverrides(GameCamera gameCamera, GraphicsGameSettings settings)
   {
     PostProcessingStackOverride processingOverride = gameCamera.SettingsPostProcessingOverride;
-    if ((UnityEngine.Object) processingOverride == (UnityEngine.Object) null)
+    if (processingOverride == null)
       return;
     PostProcessingStackOverride.AntialiasingOverride antialiasing = processingOverride.Antialiasing;
     antialiasing.Enabled = false;
@@ -77,10 +78,10 @@ public class GraphicsSettingsApplier : EngineDependent
   public void ApplyReflections(Camera camera, bool value)
   {
     Transform transform = camera.transform.Find("Local Reflection Probe");
-    if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
+    if (transform != null)
       transform.gameObject.SetActive(value);
     PlanarReflectionCapture component = camera.GetComponent<PlanarReflectionCapture>();
-    if (!((UnityEngine.Object) component != (UnityEngine.Object) null))
+    if (!(component != null))
       return;
     component.ReflectWorld = value;
   }
@@ -88,7 +89,7 @@ public class GraphicsSettingsApplier : EngineDependent
   public void ApplyVolumetricLight(Camera camera, int value)
   {
     VolumetricLightRenderer component = camera.GetComponent<VolumetricLightRenderer>();
-    if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+    if (component == null)
       return;
     switch (value)
     {

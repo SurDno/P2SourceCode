@@ -2,6 +2,7 @@
 using System.Collections;
 using Engine.Common.Services;
 using Engine.Impl.Services;
+using UnityEngine;
 
 public class CreditsGenerator : MonoBehaviour
 {
@@ -28,17 +29,17 @@ public class CreditsGenerator : MonoBehaviour
     set
     {
       position = value;
-      ((RectTransform) this.transform).anchoredPosition = new Vector2(0.0f, position);
+      ((RectTransform) transform).anchoredPosition = new Vector2(0.0f, position);
     }
   }
 
-  private void Start() => this.StartCoroutine(Generate());
+  private void Start() => StartCoroutine(Generate());
 
   private IEnumerator Generate()
   {
     LocalizationService localizationService = ServiceLocator.GetService<LocalizationService>();
     LanguageEnum language = localizationService != null ? localizationService.CurrentLanguage : LanguageEnum.English;
-    TextAsset asset = (TextAsset) null;
+    TextAsset asset = null;
     for (int i = 0; i < languages.Length; ++i)
     {
       if (languages[i] == language)
@@ -47,7 +48,7 @@ public class CreditsGenerator : MonoBehaviour
         break;
       }
     }
-    if (!((UnityEngine.Object) asset == (UnityEngine.Object) null))
+    if (!(asset == null))
     {
       string document = asset.text;
       items = new CreditsItem[itemBufferSize];
@@ -89,12 +90,12 @@ public class CreditsGenerator : MonoBehaviour
                   break;
                 }
               }
-              if ((UnityEngine.Object) prefab != (UnityEngine.Object) null)
+              if (prefab != null)
               {
                 CreditsItem instance = null;
                 while (i < closeTagStart)
                 {
-                  if ((UnityEngine.Object) instance == (UnityEngine.Object) null || instance.IsFull())
+                  if (instance == null || instance.IsFull())
                   {
                     do
                     {
@@ -106,11 +107,11 @@ public class CreditsGenerator : MonoBehaviour
                       int lastIndex = (itemCount - 1) % itemBufferSize;
                       Size = items[lastIndex].UpdateBottomEnd();
                     }
-                    instance = UnityEngine.Object.Instantiate<CreditsItem>(prefab, this.transform, false);
+                    instance = Instantiate(prefab, transform, false);
                     instance.SetPosition(Size);
                     int index = itemCount % itemBufferSize;
-                    if ((UnityEngine.Object) items[index] != (UnityEngine.Object) null)
-                      UnityEngine.Object.Destroy((UnityEngine.Object) items[index].gameObject);
+                    if (items[index] != null)
+                      Destroy(items[index].gameObject);
                     items[index] = instance;
                     ++itemCount;
                   }

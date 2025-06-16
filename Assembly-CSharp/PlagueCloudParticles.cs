@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.Serialization;
 
 public class PlagueCloudParticles : MonoBehaviour
 {
   private static Dictionary<int, Mesh> meshes;
   private static MaterialPropertyBlock mpb;
-  public Shader KernelShader = (Shader) null;
+  public Shader KernelShader;
   [FormerlySerializedAs("Radius")]
   public float EmissionRadius = 2f;
   [Range(1f, 65000f)]
@@ -19,7 +21,7 @@ public class PlagueCloudParticles : MonoBehaviour
   public float NoiseAmplitude = 1f;
   public float NoiseMotion = 1f;
   [Space]
-  public float Gravity = 0.0f;
+  public float Gravity;
   public float GravitySphereRadius = 0.5f;
   public float GravityFadeRadius = 10f;
   public float GravityMovementPrediction = 2f;
@@ -40,12 +42,12 @@ public class PlagueCloudParticles : MonoBehaviour
   private void Start()
   {
     int height = Mathf.CeilToInt(MaxPointCount / 256f);
-    Mesh mesh = (Mesh) null;
+    Mesh mesh = null;
     if (meshes == null)
       meshes = new Dictionary<int, Mesh>();
     else
       meshes.TryGetValue(MaxPointCount, out mesh);
-    if ((Object) mesh == (Object) null)
+    if (mesh == null)
     {
       mesh = new Mesh();
       Vector3[] vector3Array = new Vector3[MaxPointCount];
@@ -72,13 +74,13 @@ public class PlagueCloudParticles : MonoBehaviour
       mesh.name = "Plague Cloud Particles (" + MaxPointCount + ")";
       meshes.Add(MaxPointCount, mesh);
     }
-    this.GetComponent<MeshFilter>().sharedMesh = mesh;
+    GetComponent<MeshFilter>().sharedMesh = mesh;
     positionBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
     velocityBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
     targetBuffer = new RenderTexture(256, height, 0, RenderTextureFormat.ARGBFloat);
     if (!UpdateKernelMaterial())
       return;
-    Graphics.Blit((Texture) null, positionBuffer, kernelMaterial, 0);
+    Graphics.Blit(null, positionBuffer, kernelMaterial, 0);
     ApplyPositionBuffer();
   }
 
@@ -86,8 +88,8 @@ public class PlagueCloudParticles : MonoBehaviour
   {
     if (mpb == null)
       mpb = new MaterialPropertyBlock();
-    mpb.SetTexture("_PositionBuffer", (Texture) positionBuffer);
-    this.GetComponent<MeshRenderer>().SetPropertyBlock(mpb);
+    mpb.SetTexture("_PositionBuffer", positionBuffer);
+    GetComponent<MeshRenderer>().SetPropertyBlock(mpb);
   }
 
   private void SwapBuffers(ref RenderTexture rt0, ref RenderTexture rt1)
@@ -99,31 +101,31 @@ public class PlagueCloudParticles : MonoBehaviour
 
   private bool UpdateKernelMaterial()
   {
-    if ((Object) kernelMaterial == (Object) null)
+    if (kernelMaterial == null)
     {
-      if (!((Object) KernelShader != (Object) null))
+      if (!(KernelShader != null))
         return false;
       kernelMaterial = new Material(KernelShader);
     }
     float z = Mathf.Min(Time.deltaTime, 0.1f);
-    Vector3 position = this.transform.position;
+    Vector3 position = transform.position;
     delayedPosition = Vector3.SmoothDamp(delayedPosition, position, ref velocity, 0.1f);
     Vector3 vector3 = position + velocity * GravityMovementPrediction;
     kernelMaterial.SetVector("_Acceleration", new Vector4(Acceleration.x, Acceleration.y, Acceleration.z, Mathf.Exp(-Drag * z)));
-    kernelMaterial.SetVector("_NoiseParams", (Vector4) new Vector2(NoiseFrequency, NoiseAmplitude));
+    kernelMaterial.SetVector("_NoiseParams", new Vector2(NoiseFrequency, NoiseAmplitude));
     if (Acceleration == Vector3.zero)
       noiseOffset += Vector3.up * NoiseMotion * z;
     else
       noiseOffset += Acceleration.normalized * NoiseMotion * z;
-    kernelMaterial.SetVector("_NoiseOffset", (Vector4) noiseOffset);
+    kernelMaterial.SetVector("_NoiseOffset", noiseOffset);
     kernelMaterial.SetFloat("_LifeTime", 1f / LifeTime);
     kernelMaterial.SetVector("_Emitter", new Vector4(position.x, position.y, position.z, EmissionRadius));
     kernelMaterial.SetVector("_GravityPosition", new Vector4(vector3.x, vector3.y, vector3.z, 0.0f));
     kernelMaterial.SetVector("_GravityConfig", new Vector4(Gravity, GravitySphereRadius, GravityFadeRadius, 0.0f));
     kernelMaterial.SetVector("_Config", new Vector4(Emission, Random.value, z, 0.0f));
-    kernelMaterial.SetTexture("_PatternTex", (Texture) Pattern);
+    kernelMaterial.SetTexture("_PatternTex", Pattern);
     kernelMaterial.SetVector("_PatternConfig", new Vector4(PatternPlaneForce, PatternOrthogonalForce, PatternRandomForce, 0.0f));
-    Quaternion rotation = this.transform.rotation;
+    Quaternion rotation = transform.rotation;
     kernelMaterial.SetMatrix("_ToPattern", Matrix4x4.TRS(position, rotation, new Vector3(PatternSize.x, PatternSize.y, 1f)).inverse);
     kernelMaterial.SetMatrix("_FromPatternRotation", Matrix4x4.TRS(Vector3.zero, rotation, Vector3.one));
     return true;
@@ -133,13 +135,13 @@ public class PlagueCloudParticles : MonoBehaviour
   {
     if (!UpdateKernelMaterial())
       return;
-    kernelMaterial.SetTexture("_PositionBuffer", (Texture) positionBuffer);
-    kernelMaterial.SetTexture("_VelocityBuffer", (Texture) velocityBuffer);
-    Graphics.Blit((Texture) null, targetBuffer, kernelMaterial, 1);
+    kernelMaterial.SetTexture("_PositionBuffer", positionBuffer);
+    kernelMaterial.SetTexture("_VelocityBuffer", velocityBuffer);
+    Graphics.Blit(null, targetBuffer, kernelMaterial, 1);
     SwapBuffers(ref velocityBuffer, ref targetBuffer);
-    kernelMaterial.SetTexture("_PositionBuffer", (Texture) positionBuffer);
-    kernelMaterial.SetTexture("_VelocityBuffer", (Texture) velocityBuffer);
-    Graphics.Blit((Texture) null, targetBuffer, kernelMaterial, 2);
+    kernelMaterial.SetTexture("_PositionBuffer", positionBuffer);
+    kernelMaterial.SetTexture("_VelocityBuffer", velocityBuffer);
+    Graphics.Blit(null, targetBuffer, kernelMaterial, 2);
     SwapBuffers(ref positionBuffer, ref targetBuffer);
     ApplyPositionBuffer();
   }

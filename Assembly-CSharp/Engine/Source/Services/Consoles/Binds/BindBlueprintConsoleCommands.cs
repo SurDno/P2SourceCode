@@ -9,6 +9,7 @@ using Engine.Services;
 using Engine.Source.Commons;
 using FlowCanvas;
 using NodeCanvas.Framework;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles.Binds
 {
@@ -43,11 +44,11 @@ namespace Engine.Source.Services.Consoles.Binds
       if (index < 0 || index >= ServiceLocator.GetService<SelectionService>().SelectionCount)
         return "Slot not found";
       GameObject gameObject = ((BlueprintObject) target).GameObject;
-      if ((UnityEngine.Object) gameObject.GetComponent<FlowScriptController>() == (UnityEngine.Object) null)
+      if (gameObject.GetComponent<FlowScriptController>() == null)
         return typeof (FlowScriptController).Name + " not found";
       GameObject selection = UnityFactory.Instantiate(gameObject, "[Blueprints]");
       selection.name = gameObject.name;
-      ServiceLocator.GetService<SelectionService>().SetSelection(index, (object) selection);
+      ServiceLocator.GetService<SelectionService>().SetSelection(index, selection);
       selection.GetComponent<FlowScriptController>().StartBehaviour();
       return "Create blueprint : " + target.Name + " , in slot : " + index;
     }
@@ -61,10 +62,10 @@ namespace Engine.Source.Services.Consoles.Binds
         return "Error parameters count";
       GameObject target = ConsoleTargetService.GetTarget(typeof (GameObject), parameters[0]) as GameObject;
       string eventName = parameters[1].Value;
-      if ((UnityEngine.Object) target == (UnityEngine.Object) null)
+      if (target == null)
         return "Blueprint not found";
       FlowScriptController component = target.GetComponent<FlowScriptController>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return typeof (FlowScriptController).Name + " not found";
       component.SendEvent(eventName);
       return "Blueprint send event : " + eventName;
@@ -80,10 +81,10 @@ namespace Engine.Source.Services.Consoles.Binds
       GameObject target1 = ConsoleTargetService.GetTarget(typeof (GameObject), parameters[0]) as GameObject;
       string name = parameters[1].Value;
       IObject target2 = ConsoleTargetService.GetTarget(typeof (IObject), parameters[2]) as IObject;
-      if ((UnityEngine.Object) target1 == (UnityEngine.Object) null)
+      if (target1 == null)
         return "Blueprint not found";
       Blackboard component = target1.GetComponent<Blackboard>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return typeof (Blackboard).Name + " not found";
       component.SetValue(name, target2);
       return "Blueprint set value : " + name;

@@ -6,6 +6,7 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -42,22 +43,22 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     public override void OnAwake()
     {
       npcState = gameObject.GetComponent<NpcState>();
-      if (!((UnityEngine.Object) npcState == (UnityEngine.Object) null))
+      if (!(npcState == null))
         return;
-      Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"));
+      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
     }
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+      if (npcState == null)
         return;
       if (ReferencedPOISequence == null)
       {
-        Debug.LogWarning((object) "Poi sequence not set to poi idle!");
+        Debug.LogWarning("Poi sequence not set to poi idle!");
       }
       else
       {
-        if (!((UnityEngine.Object) ReferencedPOISequence.OutPOI != (UnityEngine.Object) null))
+        if (!(ReferencedPOISequence.OutPOI != null))
           return;
         npcState.PointOfInterest(InPOITime.Value, ReferencedPOISequence.OutPOI, ReferencedPOISequence.OutPOIAnimation, ReferencedPOISequence.OutAnimationIndex, ReferencedPOISequence.OutMiddleAnimationsCount);
       }

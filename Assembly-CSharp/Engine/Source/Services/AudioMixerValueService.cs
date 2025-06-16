@@ -4,6 +4,8 @@ using Engine.Source.Blueprints.Sounds;
 using Engine.Source.Commons;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Services
 {
@@ -32,9 +34,9 @@ namespace Engine.Source.Services
     public void AddNode(AudioMixerValueNode node)
     {
       AudioMixerGroup mixer = node.Mixer;
-      if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (mixer == null)
       {
-        Debug.LogError((object) ("Mixer not found, owner : " + node.graph.agent.GetInfo()));
+        Debug.LogError("Mixer not found, owner : " + node.graph.agent.GetInfo());
       }
       else
       {
@@ -54,7 +56,7 @@ namespace Engine.Source.Services
           itemInfo1.Name = str;
           if (!node.Mixer.audioMixer.GetFloat(node.Name, out itemInfo1.DefaultValue))
           {
-            Debug.LogError((object) ("Parameter not found : " + node.Name + " , graph : " + node.Agent.GetInfo()));
+            Debug.LogError("Parameter not found : " + node.Name + " , graph : " + node.Agent.GetInfo());
             node.Failed = true;
           }
           items.Add(itemInfo1);
@@ -66,7 +68,7 @@ namespace Engine.Source.Services
     public void RemoveNode(AudioMixerValueNode node)
     {
       AudioMixerGroup mixer = node.Mixer;
-      if ((UnityEngine.Object) mixer == (UnityEngine.Object) null)
+      if (mixer == null)
         return;
       string str = mixer.name + "   [" + node.Name + "]";
       ItemInfo itemInfo1 = null;
@@ -80,14 +82,14 @@ namespace Engine.Source.Services
       }
       if (itemInfo1 == null)
       {
-        Debug.LogError((object) ("Value not found, owner : " + node.Agent.GetInfo()));
+        Debug.LogError("Value not found, owner : " + node.Agent.GetInfo());
       }
       else
       {
         itemInfo1.Nodes.Remove(node);
         if (itemInfo1.Nodes.Count != 0 || node.Mixer.audioMixer.SetFloat(node.Name, itemInfo1.DefaultValue))
           return;
-        Debug.LogError((object) ("Parameter not found : " + node.Name + " , graph : " + node.Agent.GetInfo()));
+        Debug.LogError("Parameter not found : " + node.Name + " , graph : " + node.Agent.GetInfo());
         node.Failed = true;
       }
     }
@@ -117,7 +119,7 @@ namespace Engine.Source.Services
       string name = audioMixerValueNode1.Name;
       if (audioMixerValueNode1.Mixer.audioMixer.SetFloat(name, num1))
         return;
-      Debug.LogError((object) ("Parameter not found : " + name + " , graph : " + audioMixerValueNode1.Agent.GetInfo()));
+      Debug.LogError("Parameter not found : " + name + " , graph : " + audioMixerValueNode1.Agent.GetInfo());
       audioMixerValueNode1.Failed = true;
     }
 

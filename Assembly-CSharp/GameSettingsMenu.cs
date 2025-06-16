@@ -4,6 +4,9 @@ using Engine.Common.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class GameSettingsMenu : MonoBehaviour
 {
@@ -34,20 +37,20 @@ public class GameSettingsMenu : MonoBehaviour
 
   private void Awake()
   {
-    languageButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameLanguageSettingsWindow>));
-    difficultyButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameDifficultySettingsWindow>));
-    displayButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameDisplaySettingsWindow>));
-    graphicsButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameGraphicsSettingsWindow>));
-    controlButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameControlSettingsWindow>));
-    keysButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameKeySettingsWindow>));
-    soundButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameSoundSettingsWindow>));
-    backerUnlocksButton.onClick.AddListener(new UnityAction(SettingsMenuHelper.Instatnce.ShowSettings<IGameBackerUnlocksWindow>));
+    languageButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameLanguageSettingsWindow>);
+    difficultyButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameDifficultySettingsWindow>);
+    displayButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameDisplaySettingsWindow>);
+    graphicsButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameGraphicsSettingsWindow>);
+    controlButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameControlSettingsWindow>);
+    keysButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameKeySettingsWindow>);
+    soundButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameSoundSettingsWindow>);
+    backerUnlocksButton.onClick.AddListener(SettingsMenuHelper.Instatnce.ShowSettings<IGameBackerUnlocksWindow>);
     ShowSelectableButton();
   }
 
   private void ShowSelectableButton()
   {
-    IWindow componentInParent = this.GetComponentInParent<IWindow>();
+    IWindow componentInParent = GetComponentInParent<IWindow>();
     languageButton.interactable = !(componentInParent is IGameLanguageSettingsWindow);
     difficultyButton.interactable = !(componentInParent is IGameDifficultySettingsWindow);
     displayButton.interactable = !(componentInParent is IGameDisplaySettingsWindow);
@@ -60,7 +63,7 @@ public class GameSettingsMenu : MonoBehaviour
 
   private void OnJoystick(bool isUsed)
   {
-    buttons = new List<Button>((IEnumerable<Button>) this.GetComponentsInChildren<Button>()).FindAll((Predicate<Button>) (b => b.gameObject.activeInHierarchy)).ToArray();
+    buttons = new List<Button>(GetComponentsInChildren<Button>()).FindAll(b => b.gameObject.activeInHierarchy).ToArray();
     if (isUsed)
     {
       toolTip.SetActive(!SettingsMenuHelper.Instatnce.isSelected);
@@ -108,7 +111,7 @@ public class GameSettingsMenu : MonoBehaviour
 
   private void ChangeSelection()
   {
-    buttons = new List<Button>((IEnumerable<Button>) this.GetComponentsInChildren<Button>()).FindAll((Predicate<Button>) (b => b.gameObject.activeInHierarchy)).ToArray();
+    buttons = new List<Button>(GetComponentsInChildren<Button>()).FindAll(b => b.gameObject.activeInHierarchy).ToArray();
     if (currentIndex > buttons.Length - 1)
       currentIndex = 0;
     if (currentIndex < 0)
@@ -129,7 +132,7 @@ public class GameSettingsMenu : MonoBehaviour
     }
     ChangeLinePosition();
     PointerEventData eventData = new PointerEventData(EventSystem.current);
-    ExecuteEvents.Execute<ISubmitHandler>(buttons[currentIndex].gameObject, (BaseEventData) eventData, ExecuteEvents.submitHandler);
+    ExecuteEvents.Execute(buttons[currentIndex].gameObject, eventData, ExecuteEvents.submitHandler);
     selectedIndex = currentIndex;
     SettingsMenuHelper.Instatnce.SetSelectedState();
     return true;

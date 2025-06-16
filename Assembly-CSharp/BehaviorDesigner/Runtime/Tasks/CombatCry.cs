@@ -7,6 +7,7 @@ using Engine.Common.Generator;
 using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -26,10 +27,10 @@ namespace BehaviorDesigner.Runtime.Tasks
     public override void OnStart()
     {
       CombatService service = ServiceLocator.GetService<CombatService>();
-      if (service == null || (UnityEngine.Object) Owner == (UnityEngine.Object) null)
+      if (service == null || Owner == null)
         return;
       EnemyBase component = Owner.GetComponent<EnemyBase>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return;
       service.CharacterCry(component, cryType);
     }

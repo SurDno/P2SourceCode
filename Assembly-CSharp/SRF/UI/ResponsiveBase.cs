@@ -1,4 +1,6 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+
+namespace SRF.UI
 {
   [ExecuteInEditMode]
   [RequireComponent(typeof (RectTransform))]

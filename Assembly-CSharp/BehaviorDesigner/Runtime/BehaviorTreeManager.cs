@@ -8,6 +8,8 @@ using Engine.Source.Commons;
 using Engine.Source.Services;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.Profiling;
 using Action = BehaviorDesigner.Runtime.Tasks.Action;
 
 namespace BehaviorDesigner.Runtime
@@ -69,7 +71,7 @@ namespace BehaviorDesigner.Runtime
         Task rootTask = behavior.BehaviorSource.RootTask;
         if (rootTask == null)
         {
-          Debug.LogWarning((object) string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains no root task. This behavior will be disabled.", behavior.BehaviorSource.Name, (object) behavior.gameObject.name));
+          Debug.LogWarning(string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains no root task. This behavior will be disabled.", behavior.BehaviorSource.Name, behavior.gameObject.name));
         }
         else
         {
@@ -78,33 +80,33 @@ namespace BehaviorDesigner.Runtime
           behaviorTree.parentIndex.Add(-1);
           behaviorTree.relativeChildIndex.Add(-1);
           behaviorTree.parentCompositeIndex.Add(-1);
-          bool hasExternalBehavior = (UnityEngine.Object) behavior.ExternalBehaviorTree != (UnityEngine.Object) null;
+          bool hasExternalBehavior = behavior.ExternalBehaviorTree != null;
           TaskState taskList = AddToTaskList(behaviorTree, rootTask, ref hasExternalBehavior, data);
           if (taskList != 0)
           {
             if (behavior.BehaviorSource.Name == null)
-              Debug.LogError((object) "behavior.BehaviorSource.Name == null");
+              Debug.LogError("behavior.BehaviorSource.Name == null");
             if (behavior.gameObject.name == null)
-              Debug.LogError((object) "behavior.gameObject.name == null");
+              Debug.LogError("behavior.gameObject.name == null");
             switch (taskList)
             {
               case TaskState.RootTaskDisabled:
-                Debug.LogError((object) string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a root task which is disabled. This behavior will be disabled.", behavior.BehaviorSource.Name, (object) behavior.gameObject.name));
+                Debug.LogError(string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a root task which is disabled. This behavior will be disabled.", behavior.BehaviorSource.Name, behavior.gameObject.name));
                 break;
               case TaskState.BehaviorTreeReferenceTaskContainsNullExternalTree:
-                Debug.LogError((object) string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a BehaviorTree Tree Reference task ({2} (index {3})) that which has an element with a null value in the externalBehaviors array. This behavior will be disabled.", behavior.BehaviorSource.Name, (object) behavior.gameObject.name, data.errorTaskName, data.errorTask));
+                Debug.LogError(string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a BehaviorTree Tree Reference task ({2} (index {3})) that which has an element with a null value in the externalBehaviors array. This behavior will be disabled.", behavior.BehaviorSource.Name, behavior.gameObject.name, data.errorTaskName, data.errorTask));
                 break;
               case TaskState.MultipleExternalBehaviorTreesAndParentTaskIsNullOrCannotHandleAsManyBehaviorTreesSpecified:
-                Debug.LogError((object) string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains multiple external behavior trees at the root task or as a child of a parent task which cannot contain so many children (such as a decorator task). This behavior will be disabled.", behavior.BehaviorSource.Name, (object) behavior.gameObject.name));
+                Debug.LogError(string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains multiple external behavior trees at the root task or as a child of a parent task which cannot contain so many children (such as a decorator task). This behavior will be disabled.", behavior.BehaviorSource.Name, behavior.gameObject.name));
                 break;
               case TaskState.TaskIsNull:
-                Debug.LogError((object) string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a null task (referenced from parent task {2} (index {3})). This behavior will be disabled.", behavior.BehaviorSource.Name, (object) behavior.gameObject.name, data.errorTaskName, data.errorTask));
+                Debug.LogError(string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a null task (referenced from parent task {2} (index {3})). This behavior will be disabled.", behavior.BehaviorSource.Name, behavior.gameObject.name, data.errorTaskName, data.errorTask));
                 break;
               case TaskState.ExternalTaskCannotBeFound:
-                Debug.LogError((object) string.Format("The behavior \"{0}\" on GameObject \"{1}\" cannot find the referenced external task. This behavior will be disabled.", behavior.BehaviorSource.Name, (object) behavior.gameObject.name));
+                Debug.LogError(string.Format("The behavior \"{0}\" on GameObject \"{1}\" cannot find the referenced external task. This behavior will be disabled.", behavior.BehaviorSource.Name, behavior.gameObject.name));
                 break;
               case TaskState.ParentNotHaveAnyChildren:
-                Debug.LogError((object) string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a parent task ({2} (index {3})) with no children. This behavior will be disabled.", behavior.BehaviorSource.Name, (object) behavior.gameObject.name, data.errorTaskName, data.errorTask));
+                Debug.LogError(string.Format("The behavior \"{0}\" on GameObject \"{1}\" contains a parent task ({2} (index {3})) with no children. This behavior will be disabled.", behavior.BehaviorSource.Name, behavior.gameObject.name, data.errorTaskName, data.errorTask));
                 break;
             }
           }
@@ -152,7 +154,7 @@ namespace BehaviorDesigner.Runtime
         BehaviorSource[] behaviorSourceArray = new BehaviorSource[externalBehaviors.Length];
         for (int index = 0; index < externalBehaviors.Length; ++index)
         {
-          if ((UnityEngine.Object) externalBehaviors[index] == (UnityEngine.Object) null)
+          if (externalBehaviors[index] == null)
           {
             data.errorTask = behaviorTree.taskList.Count;
             data.errorTaskName = !string.IsNullOrEmpty(task.FriendlyName) ? task.FriendlyName : task.GetType().ToString();
@@ -196,7 +198,7 @@ namespace BehaviorDesigner.Runtime
                     {
                       if (string.IsNullOrEmpty(genericVariable.value.Name))
                       {
-                        Debug.LogWarning((object) ("Warning: Named variable on reference task " + behaviorReference.FriendlyName + " (id " + behaviorReference.Id + ") is null"));
+                        Debug.LogWarning("Warning: Named variable on reference task " + behaviorReference.FriendlyName + " (id " + behaviorReference.Id + ") is null");
                         continue;
                       }
                       OverrideFieldValue overrideFieldValue2;
@@ -209,7 +211,7 @@ namespace BehaviorDesigner.Runtime
                     NamedVariable namedVariable = behaviorReference.variables[index2].Value;
                     if (string.IsNullOrEmpty(namedVariable.value.Name))
                     {
-                      Debug.LogWarning((object) ("Warning: Named variable on reference task " + behaviorReference.FriendlyName + " (id " + behaviorReference.Id + ") is null"));
+                      Debug.LogWarning("Warning: Named variable on reference task " + behaviorReference.FriendlyName + " (id " + behaviorReference.Id + ") is null");
                       continue;
                     }
                     OverrideFieldValue overrideFieldValue3;
@@ -556,7 +558,7 @@ namespace BehaviorDesigner.Runtime
           return;
       }
       if (Profiler.enabled)
-        Profiler.BeginSample(item.behaviorName, (UnityEngine.Object) item.behavior.gameObject);
+        Profiler.BeginSample(item.behaviorName, item.behavior.gameObject);
       Tick(item);
       if (!Profiler.enabled)
         return;
@@ -565,7 +567,7 @@ namespace BehaviorDesigner.Runtime
 
     private void Tick(BehaviorTreeClient behaviorTree)
     {
-      if ((UnityEngine.Object) behaviorTree.behavior == (UnityEngine.Object) null || !behaviorTree.behavior.isActiveAndEnabled)
+      if (behaviorTree.behavior == null || !behaviorTree.behavior.isActiveAndEnabled)
         return;
       behaviorTree.executionCount = 0;
       ReevaluateParentTasks(behaviorTree);

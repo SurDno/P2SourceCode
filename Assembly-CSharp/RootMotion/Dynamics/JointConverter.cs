@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   public static class JointConverter
   {
@@ -26,15 +28,15 @@
         ++num;
       }
       if (num > 0)
-        Debug.Log((object) (num + " joints were successfully converted to ConfigurableJoints."));
+        Debug.Log(num + " joints were successfully converted to ConfigurableJoints.");
       else
-        Debug.Log((object) ("No joints found in the children of " + root.name + " to convert to ConfigurableJoints."));
+        Debug.Log("No joints found in the children of " + root.name + " to convert to ConfigurableJoints.");
     }
 
     public static void HingeToConfigurable(HingeJoint src)
     {
       ConfigurableJoint conf = src.gameObject.AddComponent<ConfigurableJoint>();
-      ConvertJoint(ref conf, (Joint) src);
+      ConvertJoint(ref conf, src);
       conf.secondaryAxis = Vector3.zero;
       conf.xMotion = ConfigurableJointMotion.Locked;
       conf.yMotion = ConfigurableJointMotion.Locked;
@@ -46,14 +48,14 @@
       conf.angularXLimitSpring = ConvertToSoftJointLimitSpring(src.limits, src.spring, src.useSpring);
       conf.lowAngularXLimit = ConvertToLowSoftJointLimit(src.limits, src.spring, src.useSpring);
       if (src.useMotor)
-        Debug.LogWarning((object) "Can not convert HingeJoint Motor to ConfigurableJoint.");
-      Object.DestroyImmediate((Object) src);
+        Debug.LogWarning("Can not convert HingeJoint Motor to ConfigurableJoint.");
+      Object.DestroyImmediate(src);
     }
 
     public static void FixedToConfigurable(FixedJoint src)
     {
       ConfigurableJoint conf = src.gameObject.AddComponent<ConfigurableJoint>();
-      ConvertJoint(ref conf, (Joint) src);
+      ConvertJoint(ref conf, src);
       conf.secondaryAxis = Vector3.zero;
       conf.xMotion = ConfigurableJointMotion.Locked;
       conf.yMotion = ConfigurableJointMotion.Locked;
@@ -61,13 +63,13 @@
       conf.angularXMotion = ConfigurableJointMotion.Locked;
       conf.angularYMotion = ConfigurableJointMotion.Locked;
       conf.angularZMotion = ConfigurableJointMotion.Locked;
-      Object.DestroyImmediate((Object) src);
+      Object.DestroyImmediate(src);
     }
 
     public static void SpringToConfigurable(SpringJoint src)
     {
       ConfigurableJoint conf = src.gameObject.AddComponent<ConfigurableJoint>();
-      ConvertJoint(ref conf, (Joint) src);
+      ConvertJoint(ref conf, src);
       conf.xMotion = ConfigurableJointMotion.Limited;
       conf.yMotion = ConfigurableJointMotion.Limited;
       conf.zMotion = ConfigurableJointMotion.Limited;
@@ -82,13 +84,13 @@
         damper = src.damper,
         spring = src.spring
       };
-      Object.DestroyImmediate((Object) src);
+      Object.DestroyImmediate(src);
     }
 
     public static void CharacterToConfigurable(CharacterJoint src)
     {
       ConfigurableJoint conf = src.gameObject.AddComponent<ConfigurableJoint>();
-      ConvertJoint(ref conf, (Joint) src);
+      ConvertJoint(ref conf, src);
       conf.secondaryAxis = src.swingAxis;
       conf.xMotion = ConfigurableJointMotion.Locked;
       conf.yMotion = ConfigurableJointMotion.Locked;
@@ -106,7 +108,7 @@
       conf.projectionMode = src.enableProjection ? JointProjectionMode.PositionAndRotation : JointProjectionMode.None;
       conf.projectionAngle = src.projectionAngle;
       conf.projectionDistance = src.projectionDistance;
-      Object.DestroyImmediate((Object) src);
+      Object.DestroyImmediate(src);
     }
 
     private static void ConvertJoint(ref ConfigurableJoint conf, Joint src)

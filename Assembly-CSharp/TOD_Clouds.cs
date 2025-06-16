@@ -1,4 +1,6 @@
-﻿public class TOD_Clouds
+﻿using UnityEngine;
+
+public class TOD_Clouds
 {
   private static TOD_Clouds instance;
   private const float HexX = 0.6666667f;
@@ -51,7 +53,7 @@
   public Vector3 CloudPosition(Vector3 viewDir)
   {
     float num = 1f / Mathf.Lerp(0.15f, 1f, viewDir.y);
-    Vector3 globalVector = (Vector3) Shader.GetGlobalVector(cloudSizeId);
+    Vector3 globalVector = Shader.GetGlobalVector(cloudSizeId);
     return new Vector3(viewDir.x * num / globalVector.x, 1f / globalVector.y, viewDir.z * num / globalVector.z);
   }
 
@@ -61,7 +63,7 @@
     Vector4 uv = CloudUV(lightPosition);
     try
     {
-      return Mathf.Clamp01((float) (1.0 - (double) CloudLayerDensity(densityTexture, uv, lightPosition).x * CloudOpacity()));
+      return Mathf.Clamp01((float) (1.0 - CloudLayerDensity(densityTexture, uv, lightPosition).x * (double) CloudOpacity()));
     }
     catch
     {
@@ -94,8 +96,8 @@
   public Vector4 CloudUV(Vector3 cloudPos)
   {
     Vector4 zero = Vector4.zero;
-    Vector3 globalVector1 = (Vector3) Shader.GetGlobalVector(cloudOffsetId);
-    Vector3 globalVector2 = (Vector3) Shader.GetGlobalVector(cloudWindId);
+    Vector3 globalVector1 = Shader.GetGlobalVector(cloudOffsetId);
+    Vector3 globalVector2 = Shader.GetGlobalVector(cloudWindId);
     float f = 0.17453292f;
     Vector2 vector2_1 = new Vector2(Mathf.Cos(f), Mathf.Sin(f));
     Vector2 vector2_2 = new Vector2(Mathf.Sin(f), Mathf.Cos(f));

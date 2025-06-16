@@ -2,6 +2,7 @@
 using Engine.Behaviours.Components;
 using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
+using UnityEngine;
 
 public class NPCEmptyWeaponController : INPCWeaponController
 {
@@ -16,7 +17,7 @@ public class NPCEmptyWeaponController : INPCWeaponController
   {
     this.service = service;
     animator = service.gameObject.GetComponent<Pivot>().GetAnimator();
-    if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
+    if (!(animator != null))
       return;
     reactionLayerIndex = animator.GetLayerIndex("Fight Empty Reaction Layer");
   }
@@ -27,7 +28,7 @@ public class NPCEmptyWeaponController : INPCWeaponController
 
   private void SetLayers(float weight, bool immediate = false)
   {
-    if ((UnityEngine.Object) service == (UnityEngine.Object) null)
+    if (service == null)
       return;
     service.AddNeededLayer(reactionLayerIndex, weight);
     if (!immediate)
@@ -67,7 +68,7 @@ public class NPCEmptyWeaponController : INPCWeaponController
 
   private void ApplyLayerWeights()
   {
-    if (!((UnityEngine.Object) service == (UnityEngine.Object) null) && service.Weapon == WeaponEnum.Flamethrower)
+    if (!(service == null) && service.Weapon == WeaponEnum.Flamethrower)
       return;
     float weight = layersWeight * 0.5f;
     if (reactionLayerIndex != -1)

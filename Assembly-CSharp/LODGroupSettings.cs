@@ -1,4 +1,6 @@
-﻿[CreateAssetMenu(menuName = "Data/LOD Group Settings")]
+﻿using UnityEngine;
+
+[CreateAssetMenu(menuName = "Data/LOD Group Settings")]
 public class LODGroupSettings : ScriptableObject
 {
   [SerializeField]
@@ -19,7 +21,7 @@ public class LODGroupSettings : ScriptableObject
     {
       if (index < thresholds.Length)
         loDs[index].screenRelativeTransitionHeight = thresholds[index];
-      else if ((double) loDs[index].screenRelativeTransitionHeight >= thresholds[thresholds.Length - 1])
+      else if (loDs[index].screenRelativeTransitionHeight >= (double) thresholds[thresholds.Length - 1])
         loDs[index].screenRelativeTransitionHeight = loDs[index - 1].screenRelativeTransitionHeight * 0.5f;
       if (index < fadeTransitionWidths.Length)
         loDs[index].fadeTransitionWidth = fadeTransitionWidths[index];

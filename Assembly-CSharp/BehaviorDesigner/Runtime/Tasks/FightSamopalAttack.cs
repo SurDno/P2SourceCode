@@ -5,6 +5,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -41,7 +42,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus DoUpdate(float deltaTime)
     {
-      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner.Enemy == null)
         return TaskStatus.Failure;
       if (shotDone && !owner.IsAttacking)
         return TaskStatus.Success;

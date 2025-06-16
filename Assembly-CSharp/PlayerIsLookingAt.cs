@@ -51,12 +51,12 @@ public class PlayerIsLookingAt : Conditional, IStub, ISerializeDataWrite, ISeria
       DetectorComponent component = player.GetComponent<DetectorComponent>();
       return component == null || !component.Visible.Contains(detectable) ? TaskStatus.Failure : TaskStatus.Success;
     }
-    if ((UnityEngine.Object) ((IEntityView) player).GameObject == (UnityEngine.Object) null)
+    if (((IEntityView) player).GameObject == null)
       return TaskStatus.Failure;
     GameObject gameObject1 = ((IEntityView) player).GameObject;
     Pivot component1 = gameObject1.GetComponent<Pivot>();
     Pivot component2 = gameObject.GetComponent<Pivot>();
-    if ((UnityEngine.Object) component1 == (UnityEngine.Object) null || (UnityEngine.Object) component2 == (UnityEngine.Object) null || (double) (gameObject1.transform.position - gameObject.transform.position).magnitude > visionRange)
+    if (component1 == null || component2 == null || (gameObject1.transform.position - gameObject.transform.position).magnitude > (double) visionRange)
       return TaskStatus.Failure;
     Vector3 forward = gameObject.transform.position - gameObject1.transform.position;
     Quaternion rotation = gameObject1.transform.rotation;
@@ -64,25 +64,25 @@ public class PlayerIsLookingAt : Conditional, IStub, ISerializeDataWrite, ISeria
     Quaternion quaternion = Quaternion.identity;
     if (!Mathf.Approximately(magnitude, 0.0f))
       quaternion = rotation * Quaternion.Inverse(Quaternion.LookRotation(forward));
-    if ((double) Mathf.Abs(Mathf.DeltaAngle(quaternion.eulerAngles.y, 0.0f)) >= eyeAngle * 0.5)
+    if (Mathf.Abs(Mathf.DeltaAngle(quaternion.eulerAngles.y, 0.0f)) >= eyeAngle * 0.5)
       return TaskStatus.Failure;
     Vector3 position1 = component1.Head.transform.position;
     Vector3 position2 = gameObject.transform.position;
-    if ((UnityEngine.Object) component2 == (UnityEngine.Object) null)
-      Debug.LogError((object) (gameObject.ToString() + " has no pivot!"));
-    else if ((UnityEngine.Object) component2.Head == (UnityEngine.Object) null)
-      Debug.LogError((object) (gameObject.ToString() + "pivot has no head!"));
+    if (component2 == null)
+      Debug.LogError(gameObject + " has no pivot!");
+    else if (component2.Head == null)
+      Debug.LogError(gameObject + "pivot has no head!");
     else
       position2 = component2.Head.transform.position;
     LayerMask triggerInteractLayer = ScriptableObjectInstance<GameSettingsData>.Instance.TriggerInteractLayer;
     LayerMask ragdollLayer = ScriptableObjectInstance<GameSettingsData>.Instance.RagdollLayer;
     List<RaycastHit> result = new List<RaycastHit>();
-    PhysicsUtility.Raycast(result, position2, position1 - position2, visionRange, -1 ^ (int) triggerInteractLayer ^ (int) ragdollLayer, QueryTriggerInteraction.Ignore);
+    PhysicsUtility.Raycast(result, position2, position1 - position2, visionRange, -1 ^ triggerInteractLayer ^ ragdollLayer, QueryTriggerInteraction.Ignore);
     for (int index = 0; index < result.Count; ++index)
     {
       GameObject gameObject2 = result[index].collider.gameObject;
-      if (!((UnityEngine.Object) gameObject2 == (UnityEngine.Object) gameObject))
-        return (UnityEngine.Object) gameObject2 == (UnityEngine.Object) gameObject1 ? TaskStatus.Success : TaskStatus.Failure;
+      if (!(gameObject2 == gameObject))
+        return gameObject2 == gameObject1 ? TaskStatus.Success : TaskStatus.Failure;
     }
     return TaskStatus.Failure;
   }

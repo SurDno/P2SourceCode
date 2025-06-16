@@ -1,10 +1,13 @@
 ﻿using System.Collections;
 using System.Diagnostics;
 using Engine.Impl.UI.Menu.Main;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Debug = UnityEngine.Debug;
 
 public class MainSceneLoader : MonoBehaviour
 {
-  private void Start() => this.StartCoroutine(LoadMainMenu());
+  private void Start() => StartCoroutine(LoadMainMenu());
 
   private IEnumerator LoadMainMenu()
   {
@@ -28,9 +31,9 @@ public class MainSceneLoader : MonoBehaviour
       yield return null;
     }
     sw.Stop();
-    UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append("Load main scene, elapsed : ").Append(sw.Elapsed));
+    Debug.Log(ObjectInfoUtility.GetStream().Append("Load main scene, elapsed : ").Append(sw.Elapsed));
     Scene mainScene = SceneManager.GetSceneByName(mainName);
-    Scene loaderScene = this.gameObject.scene;
+    Scene loaderScene = gameObject.scene;
     GameObject[] gameObjectArray = loaderScene.GetRootGameObjects();
     for (int index = 0; index < gameObjectArray.Length; ++index)
     {
@@ -38,12 +41,12 @@ public class MainSceneLoader : MonoBehaviour
       if (!(root.name == "TempLinkPrefabsFromResources"))
       {
         SceneManager.MoveGameObjectToScene(root, mainScene);
-        root = (GameObject) null;
+        root = null;
       }
     }
-    gameObjectArray = (GameObject[]) null;
+    gameObjectArray = null;
     SceneManager.SetActiveScene(mainScene);
-    yield return (object) SceneManager.UnloadSceneAsync(loaderScene);
-    Object.Destroy((Object) this.gameObject);
+    yield return SceneManager.UnloadSceneAsync(loaderScene);
+    Destroy(gameObject);
   }
 }

@@ -1,4 +1,6 @@
-﻿namespace RootMotion
+﻿using UnityEngine;
+
+namespace RootMotion
 {
   public static class V3Tools
   {
@@ -45,7 +47,7 @@
         changed = true;
         return normalDirection;
       }
-      float num1 = (float) (1.0 - (double) Vector3.Angle(normalDirection, direction) / 180.0);
+      float num1 = (float) (1.0 - Vector3.Angle(normalDirection, direction) / 180.0);
       if (num1 > (double) clampWeight)
         return direction;
       changed = true;
@@ -68,7 +70,7 @@
         return direction;
       if (clampWeight >= 1.0)
         return normalDirection;
-      float num1 = (float) (1.0 - (double) Vector3.Angle(normalDirection, direction) / 180.0);
+      float num1 = (float) (1.0 - Vector3.Angle(normalDirection, direction) / 180.0);
       if (num1 > (double) clampWeight)
       {
         clampValue = 0.0f;

@@ -13,7 +13,7 @@ namespace Engine.Common.Commons
 
     public static bool IsRoot(Guid id)
     {
-      return id == Ids.HierarchyId || id == Ids.StorablesId || id == Ids.ObjectsId || id == Ids.OthersId;
+      return id == HierarchyId || id == StorablesId || id == ObjectsId || id == OthersId;
     }
   }
 }

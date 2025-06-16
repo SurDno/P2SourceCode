@@ -1,4 +1,8 @@
-﻿namespace SRF.UI
+﻿using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
+
+namespace SRF.UI
 {
   [RequireComponent(typeof (RectTransform))]
   [ExecuteInEditMode]
@@ -12,7 +16,7 @@
     {
       get
       {
-        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetMinWidth(CopySource.rectTransform) + Padding.x;
+        return CopySource == null ? -1f : LayoutUtility.GetMinWidth(CopySource.rectTransform) + Padding.x;
       }
     }
 
@@ -20,7 +24,7 @@
     {
       get
       {
-        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetPreferredWidth(CopySource.rectTransform) + Padding.x;
+        return CopySource == null ? -1f : LayoutUtility.GetPreferredWidth(CopySource.rectTransform) + Padding.x;
       }
     }
 
@@ -28,7 +32,7 @@
     {
       get
       {
-        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleWidth(CopySource.rectTransform);
+        return CopySource == null ? -1f : LayoutUtility.GetFlexibleWidth(CopySource.rectTransform);
       }
     }
 
@@ -36,7 +40,7 @@
     {
       get
       {
-        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform) + Padding.y;
+        return CopySource == null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform) + Padding.y;
       }
     }
 
@@ -44,7 +48,7 @@
     {
       get
       {
-        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetPreferredHeight(CopySource.rectTransform) + Padding.y;
+        return CopySource == null ? -1f : LayoutUtility.GetPreferredHeight(CopySource.rectTransform) + Padding.y;
       }
     }
 
@@ -52,7 +56,7 @@
     {
       get
       {
-        return (UnityEngine.Object) CopySource == (UnityEngine.Object) null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform);
+        return CopySource == null ? -1f : LayoutUtility.GetFlexibleHeight(CopySource.rectTransform);
       }
     }
 
@@ -87,9 +91,9 @@
 
     protected void SetDirty()
     {
-      if (!this.IsActive())
+      if (!IsActive())
         return;
-      LayoutRebuilder.MarkLayoutForRebuild(this.transform as RectTransform);
+      LayoutRebuilder.MarkLayoutForRebuild(transform as RectTransform);
     }
   }
 }

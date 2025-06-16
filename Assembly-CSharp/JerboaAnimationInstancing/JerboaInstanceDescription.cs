@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace JerboaAnimationInstancing
 {
@@ -70,7 +72,7 @@ namespace JerboaAnimationInstancing
         preAniIndex = aniIndex;
         aniIndex = animationIndex;
         preAniFrame = (int) (curFrame + 0.5);
-        curFrame = (float) UnityEngine.Random.Range(0, Source.aniInfo[aniIndex].totalFrame);
+        curFrame = Random.Range(0, Source.aniInfo[aniIndex].totalFrame);
         eventIndex = -1;
         preAniTextureIndex = aniTextureIndex;
         aniTextureIndex = Source.aniInfo[aniIndex].textureIndex;
@@ -78,7 +80,7 @@ namespace JerboaAnimationInstancing
         speedParameter = 1f;
       }
       else
-        Debug.LogWarning((object) "The requested animation index is out of the count.");
+        Debug.LogWarning("The requested animation index is out of the count.");
     }
 
     public void CrossFade(string animationName, float duration)
@@ -151,7 +153,7 @@ namespace JerboaAnimationInstancing
           }
           break;
       }
-      curFrame = Mathf.Clamp(curFrame, 0.0f, (float) (totalFrame - 1));
+      curFrame = Mathf.Clamp(curFrame, 0.0f, totalFrame - 1);
       UpdateAnimationEvent();
     }
 
@@ -265,7 +267,7 @@ namespace JerboaAnimationInstancing
       }
       if (aniEvent == null || aniEvent.time > (double) (curFrame / currentAnimationInfo.fps))
         return;
-      Source.gameObject.SendMessage(aniEvent.function, (object) aniEvent);
+      Source.gameObject.SendMessage(aniEvent.function, aniEvent);
       aniEvent = null;
     }
   }

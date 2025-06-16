@@ -1,5 +1,6 @@
 ﻿using Engine.Common.Commons;
 using Engine.Common.Components;
+using UnityEngine;
 
 namespace Engine.Source.Components.BoundCharacters
 {
@@ -62,7 +63,7 @@ namespace Engine.Source.Components.BoundCharacters
             return resource.LargeDeadSprite;
         }
       }
-      return (Sprite) null;
+      return null;
     }
 
     public static Sprite StateSprite(
@@ -86,7 +87,7 @@ namespace Engine.Source.Components.BoundCharacters
             return resource.DeadSprite;
         }
       }
-      return (Sprite) null;
+      return null;
     }
 
     public static string StateText(

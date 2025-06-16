@@ -2,6 +2,7 @@
 using SRDebugger.Internal;
 using SRF;
 using SRF.Service;
+using UnityEngine;
 
 namespace SRDebugger.Services.Implementation
 {
@@ -67,7 +68,7 @@ namespace SRDebugger.Services.Implementation
           SRDebug.Instance.IsProfilerDocked = !SRDebug.Instance.IsProfilerDocked;
           break;
         default:
-          Debug.LogWarning((object) ("[SRDebugger] Unhandled keyboard shortcut: " + shortcut.Action));
+          Debug.LogWarning("[SRDebugger] Unhandled keyboard shortcut: " + shortcut.Action);
           break;
       }
     }

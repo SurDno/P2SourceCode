@@ -1,6 +1,7 @@
 ﻿using System;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
+using UnityEngine;
 
 public class SwitchingItemView2 : ItemView
 {
@@ -74,7 +75,7 @@ public class SwitchingItemView2 : ItemView
       if (storable == value)
         return;
       storable = value;
-      if (this.isActiveAndEnabled)
+      if (isActiveAndEnabled)
         needToSwitch = true;
       else
         ForceResult();
@@ -101,7 +102,7 @@ public class SwitchingItemView2 : ItemView
     float num = 1f - phase;
     frontOpacity.Progress = frontView.Storable != null ? phase : 0.0f;
     backOpacity.Progress = backView.Storable != null ? num : 0.0f;
-    if (!((UnityEngine.Object) nullOpacity != (UnityEngine.Object) null))
+    if (!(nullOpacity != null))
       return;
     nullOpacity.Progress = (float) ((frontView.Storable == null ? phase : 0.0) + (backView.Storable == null ? num : 0.0));
   }

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Engine.Source.Settings.External;
+using UnityEngine;
 
 public class TerrainDetailChunk : MonoBehaviour
 {
@@ -26,11 +27,11 @@ public class TerrainDetailChunk : MonoBehaviour
 
   public void Preload()
   {
-    if ((Object) rendererPrefab == (Object) null)
+    if (rendererPrefab == null)
       return;
     for (int index = 0; index < renderers.Length; ++index)
     {
-      if ((Object) renderers[index] == (Object) null)
+      if (renderers[index] == null)
       {
         TerrainDetailRenderer terrainDetailRenderer = TerrainDetailRenderer.Create(rendererPrefab, this, indices[index * 2], indices[index * 2 + 1], out bounds[index * 2], out bounds[index * 2 + 1]);
         renderers[index] = terrainDetailRenderer;
@@ -41,7 +42,7 @@ public class TerrainDetailChunk : MonoBehaviour
 
   public bool UpdateVisibility(Vector3 terrainSpaceCameraPosition, float drawDistance)
   {
-    if ((Object) rendererPrefab == (Object) null)
+    if (rendererPrefab == null)
       return false;
     needsUpdate = false;
     for (int index1 = 0; index1 < renderers.Length; ++index1)
@@ -50,22 +51,22 @@ public class TerrainDetailChunk : MonoBehaviour
       Vector3 b = terrainSpaceCameraPosition;
       Vector3 bound1 = bounds[index1 * 2];
       Vector3 bound2 = bounds[index1 * 2 + 1];
-      if ((double) b.x < (double) bound1.x)
+      if (b.x < (double) bound1.x)
         b.x = bound1.x;
-      if ((double) b.y < (double) bound1.y)
+      if (b.y < (double) bound1.y)
         b.y = bound1.y;
-      if ((double) b.z < (double) bound1.z)
+      if (b.z < (double) bound1.z)
         b.z = bound1.z;
-      if ((double) b.x > (double) bound2.x)
+      if (b.x > (double) bound2.x)
         b.x = bound2.x;
-      if ((double) b.y > (double) bound2.y)
+      if (b.y > (double) bound2.y)
         b.y = bound2.y;
-      if ((double) b.z > (double) bound2.z)
+      if (b.z > (double) bound2.z)
         b.z = bound2.z;
       float num = Vector3.Distance(terrainSpaceCameraPosition, b);
       if (num < (double) drawDistance)
       {
-        if ((Object) renderers[index2] == (Object) null)
+        if (renderers[index2] == null)
         {
           if (frame != Time.frameCount)
           {
@@ -94,7 +95,7 @@ public class TerrainDetailChunk : MonoBehaviour
 
   public bool HideRenderer(int index)
   {
-    if (!((Object) renderers[index] != (Object) null))
+    if (!(renderers[index] != null))
       return false;
     if (Application.isPlaying && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadGrass)
     {
@@ -112,7 +113,7 @@ public class TerrainDetailChunk : MonoBehaviour
       ++invisibilityFrameCount[index];
       return true;
     }
-    Object.Destroy((Object) renderers[index].gameObject);
+    Destroy(renderers[index].gameObject);
     renderers[index] = null;
     return false;
   }
@@ -126,9 +127,9 @@ public class TerrainDetailChunk : MonoBehaviour
     {
       if (forceDestroy)
       {
-        if ((Object) renderers[index] != (Object) null)
+        if (renderers[index] != null)
         {
-          Object.Destroy((Object) renderers[index].gameObject);
+          Destroy(renderers[index].gameObject);
           renderers[index] = null;
         }
       }
@@ -173,7 +174,7 @@ public class TerrainDetailChunk : MonoBehaviour
     int f = pointList.Count / layer.MaxChunkCapacity;
     if (pointList.Count % layer.MaxChunkCapacity > 0)
       ++f;
-    int num4 = (int) Mathf.Sqrt((float) f);
+    int num4 = (int) Mathf.Sqrt(f);
     for (int index1 = 0; index1 < num4; ++index1)
     {
       int num5 = index1 * f / num4;
@@ -187,7 +188,7 @@ public class TerrainDetailChunk : MonoBehaviour
         int num8 = (index3 + 1) * pointList.Count / f - num7;
         if (num8 > layer.MaxChunkCapacity)
         {
-          Debug.LogWarning((object) ("Grass : Renderer exceeds mesh capacity (points.Count = " + pointList.Count + ", maxChunkCapacity = " + layer.MaxChunkCapacity + ", rendererCount = " + f + ", cols = " + num4 + ", colFirstRenderer = " + num5 + ", colAfterLastRenderer = " + num6 + ", colFirstPoint = " + index2 + ", colPointCount = " + count + ", rendererFirstPoint = " + num7 + ", rendererPointCount = " + num8));
+          Debug.LogWarning("Grass : Renderer exceeds mesh capacity (points.Count = " + pointList.Count + ", maxChunkCapacity = " + layer.MaxChunkCapacity + ", rendererCount = " + f + ", cols = " + num4 + ", colFirstRenderer = " + num5 + ", colAfterLastRenderer = " + num6 + ", colFirstPoint = " + index2 + ", colPointCount = " + count + ", rendererFirstPoint = " + num7 + ", rendererPointCount = " + num8);
           num8 = layer.MaxChunkCapacity;
         }
         byte num9 = byte.MaxValue;
@@ -208,13 +209,13 @@ public class TerrainDetailChunk : MonoBehaviour
         }
         indexList.Add(num7);
         indexList.Add(num8);
-        boundList.Add(new Vector3((float) (xBase + num9) * layer.DetailTexelSize.x - layer.PrototypeExtents.x, -layer.PrototypeExtents.z, (float) (yBase + num11) * layer.DetailTexelSize.y - layer.PrototypeExtents.x));
-        boundList.Add(new Vector3((float) (xBase + num10 + 1) * layer.DetailTexelSize.x + layer.PrototypeExtents.x, layer.TerrainData.size.y + layer.PrototypeExtents.y, (float) (yBase + num12 + 1) * layer.DetailTexelSize.y + layer.PrototypeExtents.x));
+        boundList.Add(new Vector3((xBase + num9) * layer.DetailTexelSize.x - layer.PrototypeExtents.x, -layer.PrototypeExtents.z, (yBase + num11) * layer.DetailTexelSize.y - layer.PrototypeExtents.x));
+        boundList.Add(new Vector3((xBase + num10 + 1) * layer.DetailTexelSize.x + layer.PrototypeExtents.x, layer.TerrainData.size.y + layer.PrototypeExtents.y, (yBase + num12 + 1) * layer.DetailTexelSize.y + layer.PrototypeExtents.x));
       }
     }
-    TerrainDetailChunk terrainDetailChunk = Object.Instantiate<TerrainDetailChunk>(prefab, layer.transform, false);
+    TerrainDetailChunk terrainDetailChunk = Instantiate(prefab, layer.transform, false);
     GameObject gameObject = terrainDetailChunk.gameObject;
-    gameObject.transform.localPosition = new Vector3((float) xBase * layer.DetailTexelSize.x, 0.0f, (float) yBase * layer.DetailTexelSize.y);
+    gameObject.transform.localPosition = new Vector3(xBase * layer.DetailTexelSize.x, 0.0f, yBase * layer.DetailTexelSize.y);
     gameObject.name = "Chunk (" + chunkX + ", " + chunkY + ")";
     gameObject.layer = layer.gameObject.layer;
     if (Application.isPlaying)

@@ -1,6 +1,8 @@
 ﻿using System;
 using Assets.Engine.Source.Utility;
 using Engine.Common.Services;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Behaviours.Localization
 {
@@ -11,7 +13,7 @@ namespace Engine.Behaviours.Localization
 
     protected override Sprite GetSprite(LanguageEnum language)
     {
-      Sprite sprite1 = (Sprite) null;
+      Sprite sprite1 = null;
       for (int index = 0; index < sprites.Length; ++index)
       {
         LanguageSprite sprite2 = sprites[index];
@@ -29,7 +31,7 @@ namespace Engine.Behaviours.Localization
       base.OnDisconnectFromEngine();
       for (int index = 0; index < sprites.Length; ++index)
         sprites[index].Dispose();
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.GetComponent<Image>().sprite);
+      Destroy(GetComponent<Image>().sprite);
     }
 
     [Serializable]
@@ -47,7 +49,7 @@ namespace Engine.Behaviours.Localization
       {
         get
         {
-          if ((UnityEngine.Object) sprite == (UnityEngine.Object) null)
+          if (sprite == null)
             sprite = ObjectCreator.InstantiateFromResources<Sprite>(spriteReference.Path);
           return sprite;
         }
@@ -55,9 +57,9 @@ namespace Engine.Behaviours.Localization
 
       public void Dispose()
       {
-        if (!((UnityEngine.Object) sprite != (UnityEngine.Object) null))
+        if (!(sprite != null))
           return;
-        sprite = (Sprite) null;
+        sprite = null;
       }
     }
   }

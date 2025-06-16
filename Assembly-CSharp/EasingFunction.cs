@@ -1,4 +1,6 @@
-﻿public static class EasingFunction
+﻿using UnityEngine;
+
+public static class EasingFunction
 {
   private const float NATURAL_LOG_OF_2 = 0.6931472f;
 
@@ -7,7 +9,7 @@
   public static float Spring(float start, float end, float value)
   {
     value = Mathf.Clamp01(value);
-    value = (float) (((double) Mathf.Sin((float) (value * 3.1415927410125732 * (0.20000000298023224 + 2.5 * value * value * value))) * (double) Mathf.Pow(1f - value, 2.2f) + value) * (1.0 + 1.2000000476837158 * (1.0 - value)));
+    value = (float) ((Mathf.Sin((float) (value * 3.1415927410125732 * (0.20000000298023224 + 2.5 * value * value * value))) * (double) Mathf.Pow(1f - value, 2.2f) + value) * (1.0 + 1.2000000476837158 * (1.0 - value)));
     return start + (end - start) * value;
   }
 
@@ -117,7 +119,7 @@
   public static float EaseInOutSine(float start, float end, float value)
   {
     end -= start;
-    return (float) (-(double) end * 0.5 * ((double) Mathf.Cos(3.14159274f * value) - 1.0)) + start;
+    return (float) (-(double) end * 0.5 * (Mathf.Cos(3.14159274f * value) - 1.0)) + start;
   }
 
   public static float EaseInExpo(float start, float end, float value)
@@ -145,7 +147,7 @@
   public static float EaseInCirc(float start, float end, float value)
   {
     end -= start;
-    return (float) (-(double) end * ((double) Mathf.Sqrt((float) (1.0 - value * (double) value)) - 1.0)) + start;
+    return (float) (-(double) end * (Mathf.Sqrt((float) (1.0 - value * (double) value)) - 1.0)) + start;
   }
 
   public static float EaseOutCirc(float start, float end, float value)
@@ -160,9 +162,9 @@
     value /= 0.5f;
     end -= start;
     if (value < 1.0)
-      return (float) (-(double) end * 0.5 * ((double) Mathf.Sqrt((float) (1.0 - value * (double) value)) - 1.0)) + start;
+      return (float) (-(double) end * 0.5 * (Mathf.Sqrt((float) (1.0 - value * (double) value)) - 1.0)) + start;
     value -= 2f;
-    return (float) (end * 0.5 * ((double) Mathf.Sqrt((float) (1.0 - value * (double) value)) + 1.0)) + start;
+    return (float) (end * 0.5 * (Mathf.Sqrt((float) (1.0 - value * (double) value)) + 1.0)) + start;
   }
 
   public static float EaseInBounce(float start, float end, float value)
@@ -248,7 +250,7 @@
     }
     else
       num4 = num2 / 6.28318548f * Mathf.Asin(end / num3);
-    return (float) -(num3 * (double) Mathf.Pow(2f, 10f * --value) * (double) Mathf.Sin((float) ((value * (double) num1 - num4) * 6.2831854820251465) / num2)) + start;
+    return (float) -(num3 * (double) Mathf.Pow(2f, 10f * --value) * Mathf.Sin((float) ((value * (double) num1 - num4) * 6.2831854820251465) / num2)) + start;
   }
 
   public static float EaseOutElastic(float start, float end, float value)
@@ -290,7 +292,7 @@
     }
     else
       num4 = num2 / 6.28318548f * Mathf.Asin(end / num3);
-    return value < 1.0 ? (float) (-0.5 * (num3 * (double) Mathf.Pow(2f, 10f * --value) * (double) Mathf.Sin((float) ((value * (double) num1 - num4) * 6.2831854820251465) / num2))) + start : (float) (num3 * (double) Mathf.Pow(2f, -10f * --value) * (double) Mathf.Sin((float) ((value * (double) num1 - num4) * 6.2831854820251465) / num2) * 0.5) + end + start;
+    return value < 1.0 ? (float) (-0.5 * (num3 * (double) Mathf.Pow(2f, 10f * --value) * Mathf.Sin((float) ((value * (double) num1 - num4) * 6.2831854820251465) / num2))) + start : (float) (num3 * (double) Mathf.Pow(2f, -10f * --value) * Mathf.Sin((float) ((value * (double) num1 - num4) * 6.2831854820251465) / num2) * 0.5) + end + start;
   }
 
   public static float LinearD(float start, float end, float value) => end - start;
@@ -437,9 +439,9 @@
     value /= 0.5f;
     end -= start;
     if (value < 1.0)
-      return (float) (end * (double) value / (2.0 * (double) Mathf.Sqrt((float) (1.0 - value * (double) value))));
+      return (float) (end * (double) value / (2.0 * Mathf.Sqrt((float) (1.0 - value * (double) value))));
     value -= 2f;
-    return (float) (-(double) end * value / (2.0 * (double) Mathf.Sqrt((float) (1.0 - value * (double) value))));
+    return (float) (-(double) end * value / (2.0 * Mathf.Sqrt((float) (1.0 - value * (double) value))));
   }
 
   public static float EaseInBounceD(float start, float end, float value)
@@ -524,7 +526,7 @@
     }
     else
       num4 = num2 / 6.28318548f * Mathf.Asin(end / num3);
-    return (float) (num3 * 3.1415927410125732 * num1 * (double) Mathf.Pow(2f, (float) (1.0 - 10.0 * value)) * (double) Mathf.Cos((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / num2 - 3.465735912322998 * num3 * (double) Mathf.Pow(2f, (float) (1.0 - 10.0 * value)) * (double) Mathf.Sin((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2));
+    return (float) (num3 * 3.1415927410125732 * num1 * Mathf.Pow(2f, (float) (1.0 - 10.0 * value)) * Mathf.Cos((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / num2 - 3.465735912322998 * num3 * Mathf.Pow(2f, (float) (1.0 - 10.0 * value)) * Mathf.Sin((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2));
   }
 
   public static float EaseInOutElasticD(float start, float end, float value)
@@ -544,17 +546,17 @@
     if (value < 1.0)
     {
       --value;
-      return (float) (-3.465735912322998 * num3 * (double) Mathf.Pow(2f, 10f * value) * (double) Mathf.Sin((float) (6.2831854820251465 * (num1 * (double) value - 2.0)) / num2) - num3 * 3.1415927410125732 * num1 * (double) Mathf.Pow(2f, 10f * value) * (double) Mathf.Cos((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / num2);
+      return (float) (-3.465735912322998 * num3 * Mathf.Pow(2f, 10f * value) * Mathf.Sin((float) (6.2831854820251465 * (num1 * (double) value - 2.0)) / num2) - num3 * 3.1415927410125732 * num1 * Mathf.Pow(2f, 10f * value) * Mathf.Cos((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / num2);
     }
     --value;
-    return (float) (num3 * 3.1415927410125732 * num1 * (double) Mathf.Cos((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / (num2 * (double) Mathf.Pow(2f, 10f * value)) - 3.465735912322998 * num3 * (double) Mathf.Sin((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / (double) Mathf.Pow(2f, 10f * value));
+    return (float) (num3 * 3.1415927410125732 * num1 * Mathf.Cos((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / (num2 * (double) Mathf.Pow(2f, 10f * value)) - 3.465735912322998 * num3 * Mathf.Sin((float) (6.2831854820251465 * (num1 * (double) value - num4)) / num2) / Mathf.Pow(2f, 10f * value));
   }
 
   public static float SpringD(float start, float end, float value)
   {
     value = Mathf.Clamp01(value);
     end -= start;
-    return (float) (end * (6.0 * (1.0 - value) / 5.0 + 1.0) * (-2.2000000476837158 * (double) Mathf.Pow(1f - value, 1.2f) * (double) Mathf.Sin((float) (3.1415927410125732 * value * (2.5 * value * value * value + 0.20000000298023224))) + (double) Mathf.Pow(1f - value, 2.2f) * (3.1415927410125732 * (2.5 * value * value * value + 0.20000000298023224) + 23.561944961547852 * value * value * value) * (double) Mathf.Cos((float) (3.1415927410125732 * value * (2.5 * value * value * value + 0.20000000298023224))) + 1.0) - 6.0 * end * ((double) Mathf.Pow(1f - value, 2.2f) * (double) Mathf.Sin((float) (3.1415927410125732 * value * (2.5 * value * value * value + 0.20000000298023224))) + value / 5.0));
+    return (float) (end * (6.0 * (1.0 - value) / 5.0 + 1.0) * (-2.2000000476837158 * Mathf.Pow(1f - value, 1.2f) * Mathf.Sin((float) (3.1415927410125732 * value * (2.5 * value * value * value + 0.20000000298023224))) + Mathf.Pow(1f - value, 2.2f) * (3.1415927410125732 * (2.5 * value * value * value + 0.20000000298023224) + 23.561944961547852 * value * value * value) * Mathf.Cos((float) (3.1415927410125732 * value * (2.5 * value * value * value + 0.20000000298023224))) + 1.0) - 6.0 * end * (Mathf.Pow(1f - value, 2.2f) * (double) Mathf.Sin((float) (3.1415927410125732 * value * (2.5 * value * value * value + 0.20000000298023224))) + value / 5.0));
   }
 
   public static Function GetEasingFunction(Ease easingFunction)

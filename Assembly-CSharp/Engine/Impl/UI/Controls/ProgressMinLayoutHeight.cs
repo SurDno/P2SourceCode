@@ -1,13 +1,16 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   public class ProgressMinLayoutHeight : ProgressView
   {
     [SerializeField]
     private LayoutElement element;
     [SerializeField]
-    private float min = 0.0f;
+    private float min;
     [SerializeField]
-    private float max = 0.0f;
+    private float max;
 
     public override void SkipAnimation()
     {
@@ -15,7 +18,7 @@
 
     protected override void ApplyProgress()
     {
-      if (!((Object) element != (Object) null))
+      if (!(element != null))
         return;
       element.minHeight = Mathf.Lerp(min, max, Progress);
     }

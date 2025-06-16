@@ -1,4 +1,5 @@
 ﻿using Engine.Behaviours.Components;
+using UnityEngine;
 
 public class NpcStateIdlePresetTest : NpcStateIdlePreset
 {

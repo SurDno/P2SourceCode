@@ -1,6 +1,7 @@
 ﻿using Engine.Common;
 using Engine.Common.Services;
 using Engine.Source.Commons;
+using UnityEngine;
 
 public class PlagueZoneParticles : MonoBehaviour, IUpdatable
 {
@@ -25,10 +26,10 @@ public class PlagueZoneParticles : MonoBehaviour, IUpdatable
   public void ComputeUpdate()
   {
     float num = 0.0f;
-    Vector3 position = this.transform.position;
+    Vector3 position = transform.position;
     position.y += 100f;
-    if (!Physics.Raycast(position, Vector3.down, 100f, (int) collisionLayers, QueryTriggerInteraction.Ignore))
-      num = PlagueZone.GetLevel(new Vector2(this.transform.position.x, this.transform.position.z));
+    if (!Physics.Raycast(position, Vector3.down, 100f, collisionLayers, QueryTriggerInteraction.Ignore))
+      num = PlagueZone.GetLevel(new Vector2(transform.position.x, transform.position.z));
     if (prevLevel == (double) num)
       return;
     prevLevel = num;

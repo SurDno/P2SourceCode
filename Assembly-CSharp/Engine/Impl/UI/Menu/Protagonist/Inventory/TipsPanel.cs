@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory
 {

@@ -8,6 +8,7 @@ using Cofe.Serializations.Data.Xml;
 using Cofe.Utility;
 using Engine.Common;
 using Engine.Common.Commons.Converters;
+using UnityEngine;
 
 public static class SerializeUtility
 {
@@ -17,7 +18,7 @@ public static class SerializeUtility
   {
     if (template == null)
     {
-      Debug.LogError((object) ("Template is null , type : " + TypeUtility.GetTypeName(typeof (T))));
+      Debug.LogError("Template is null , type : " + TypeUtility.GetTypeName(typeof (T)));
     }
     else
     {
@@ -34,7 +35,7 @@ public static class SerializeUtility
             writer.End("Object", true);
           }
           else
-            Debug.LogError((object) ("Type : " + TypeUtility.GetTypeName(template.GetType()) + " is not " + typeof (ISerializeDataWrite).Name));
+            Debug.LogError("Type : " + TypeUtility.GetTypeName(template.GetType()) + " is not " + typeof (ISerializeDataWrite).Name);
         }
       }
       catch (Exception ex)
@@ -61,7 +62,7 @@ public static class SerializeUtility
     }
     catch (Exception ex)
     {
-      Debug.LogError((object) (ex + " : " + context));
+      Debug.LogError(ex + " : " + context);
       return default (T);
     }
     T obj = DefaultDataReadUtility.ReadSerialize<T>(new XmlNodeDataReader(node, context), "Object");

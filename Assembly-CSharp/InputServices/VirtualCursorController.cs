@@ -2,6 +2,7 @@
 using Engine.Impl.Services;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace InputServices
 {
@@ -35,9 +36,9 @@ namespace InputServices
 
     private void OnInitialized()
     {
-      Position = new Vector2((float) (Screen.width / 2), (float) (Screen.height / 2));
+      Position = new Vector2(Screen.width / 2, Screen.height / 2);
       cursor = ServiceLocator.GetService<UIService>().VirtualCursor;
-      if (!((UnityEngine.Object) cursor != (UnityEngine.Object) null))
+      if (!(cursor != null))
         return;
       cursorTransform = cursor.GetComponent<RectTransform>();
       UpdateCursor();
@@ -47,13 +48,13 @@ namespace InputServices
     {
       float num1 = Position.x + diffX;
       float num2 = Position.y - diffY;
-      Position = new Vector2(Mathf.Clamp(num1, 0.0f, (float) Screen.width), Mathf.Clamp(num2, 0.0f, (float) Screen.height));
+      Position = new Vector2(Mathf.Clamp(num1, 0.0f, Screen.width), Mathf.Clamp(num2, 0.0f, Screen.height));
       UpdateCursor();
     }
 
     private void UpdateCursor()
     {
-      if ((UnityEngine.Object) cursor == (UnityEngine.Object) null)
+      if (cursor == null)
         return;
       if (cursor.activeSelf != Visible)
         cursor.SetActive(Visible && !InputService.Instance.JoystickUsed);

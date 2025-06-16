@@ -1,4 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class EnableOnEngineInitialized : EngineDependent
 {
@@ -7,7 +8,7 @@ public class EnableOnEngineInitialized : EngineDependent
 
   protected override void OnConnectToEngine()
   {
-    if (!((Object) view != (Object) null))
+    if (!(view != null))
       return;
     view.Visible = true;
   }

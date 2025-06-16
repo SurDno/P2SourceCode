@@ -6,6 +6,8 @@ using Engine.Impl.Tasks;
 using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
 {
@@ -72,17 +74,17 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
     weaponService = pivot.GetNpcWeaponService();
     animator = pivot.GetAnimator();
     enemy = pivot.GetNpcEnemy();
-    if ((Object) animator == (Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
     animatorState = AnimatorState45.GetAnimatorState(animator);
     fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
     syncBackInited = false;
-    if ((Object) poiSetup == (Object) null)
+    if (poiSetup == null)
     {
       failed = true;
       return false;
@@ -120,7 +122,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
     this.animation = animation;
     this.animationIndex = animationIndex;
     this.animationsCount = animationsCount;
-    if ((Object) enemy != (Object) null)
+    if (enemy != null)
       couldPlayReactionAnimation = enemy.CanPlayReactionAnimation;
     neededExtraExitPOI = npcState.NeedExtraExitPOI;
     if ((bool) (Object) rigidbody)
@@ -141,7 +143,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
         break;
       case POIAnimationEnum.S_SitOnBench:
         animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitOnBench;
-        if ((Object) enemy != (Object) null)
+        if (enemy != null)
           enemy.CanPlayReactionAnimation = false;
         npcState.NeedExtraExitPOI = true;
         break;
@@ -153,7 +155,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
         break;
       case POIAnimationEnum.S_SitNearWall:
         animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitNearWall;
-        if ((Object) enemy != (Object) null)
+        if (enemy != null)
           enemy.CanPlayReactionAnimation = false;
         npcState.NeedExtraExitPOI = true;
         break;
@@ -228,14 +230,14 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
     poiService = ServiceLocator.GetService<POIService>();
     state = StateEnum.Prepare;
     _poi = poi;
-    poiTarget = (GameObject) null;
+    poiTarget = null;
     dialogActivityChecked = false;
     frozenForDialog = false;
     animationIsQuick = poiSetup.AnimationIsQuick(animation);
     if (poiSetup.GetNeedSynchronizeAnimation(animation, animationIndex))
       SynchronizeAnimation();
     SetRandomNextAnimation();
-    if (!((Object) weaponService != (Object) null))
+    if (!(weaponService != null))
       return;
     weaponService.Weapon = WeaponEnum.Unknown;
   }
@@ -279,9 +281,9 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
       rigidbody.isKinematic = initiallyKinematic;
     if (poiService != null)
       poiService.RemoveCharacterAsDialogTarget(GameObject);
-    if ((Object) weaponService != (Object) null)
+    if (weaponService != null)
       weaponService.Weapon = npcState.Weapon;
-    if ((Object) enemy != (Object) null)
+    if (enemy != null)
       enemy.CanPlayReactionAnimation = couldPlayReactionAnimation;
     npcState.NeedExtraExitPOI = neededExtraExitPOI;
   }
@@ -339,7 +341,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
   {
     Vector3 closestTargetPosition;
     Quaternion closestTargetRotation;
-    if ((Object) _poi != (Object) null)
+    if (_poi != null)
     {
       _poi.GetClosestTargetPoint(animation, animationIndex, poiSetup, GameObject.transform.position, out closestTargetPosition, out closestTargetRotation);
       poiBackPosition = closestTargetPosition - poiSetup.GetAnimationOffset(animation, animationIndex);
@@ -382,7 +384,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
 
   public void Update()
   {
-    if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || (Object) poiTarget == (Object) null && ((Object) _poi == (Object) null || (Object) _poi.gameObject == (Object) null))
+    if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || poiTarget == null && (_poi == null || _poi.gameObject == null))
       return;
     if (state == StateEnum.Prepare)
     {
@@ -396,7 +398,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
       {
         dialogActivityChecked = true;
         enterPoint = GameObject.transform.position;
-        if ((Object) _poi != (Object) null && _poi.SupportsDialog && poiService != null && timeLeft > 0.0)
+        if (_poi != null && _poi.SupportsDialog && poiService != null && timeLeft > 0.0)
           poiService.AddCharacterAsDialogTarget(GameObject, this);
       }
       if (!UpdateDuringPOI(_poi))
@@ -418,7 +420,7 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
       return;
     SetSyncBack();
     animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
-    if ((Object) weaponService != (Object) null)
+    if (weaponService != null)
       weaponService.Weapon = npcState.Weapon;
   }
 
@@ -454,16 +456,16 @@ public class NpcStatePointOfInterest : INpcState, INpcStateNeedSyncBack
 
   public void LookAt(GameObject target)
   {
-    if ((Object) GameObject == (Object) null)
+    if (GameObject == null)
       return;
-    if ((Object) target == (Object) null)
+    if (target == null)
     {
-      Debug.LogError((object) "target == null, Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
+      Debug.LogError("target == null, Такого быть недолжно, воспроизвести, разобраться в чем дело и пофиксить нормально");
     }
     else
     {
       IKController component = GameObject.GetComponent<IKController>();
-      if (!((Object) component != (Object) null))
+      if (!(component != null))
         return;
       component.enabled = true;
       component.LookTarget = target.transform;

@@ -1,4 +1,6 @@
-﻿[ExecuteInEditMode]
+﻿using UnityEngine;
+
+[ExecuteInEditMode]
 public class TerrainDetails : MonoBehaviour
 {
   public const int ChunkSize = 104;
@@ -12,12 +14,12 @@ public class TerrainDetails : MonoBehaviour
 
   private void OnEnable()
   {
-    if ((Object) Terrain == (Object) null)
+    if (Terrain == null)
       return;
-    foreach (Component component1 in this.transform)
+    foreach (Component component1 in transform)
     {
       TerrainDetailLayer component2 = component1.GetComponent<TerrainDetailLayer>();
-      if ((Object) component2 != (Object) null)
+      if (component2 != null)
         component2.Terrain = Terrain;
     }
     Terrain.drawTreesAndFoliage = false;
@@ -25,7 +27,7 @@ public class TerrainDetails : MonoBehaviour
 
   private void OnDisable()
   {
-    if ((Object) Terrain == (Object) null)
+    if (Terrain == null)
       return;
     Terrain.drawTreesAndFoliage = true;
   }

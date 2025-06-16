@@ -7,7 +7,7 @@ namespace Engine.Source.UI.Menu.Main
   {
     protected override void RegisterLayer()
     {
-      RegisterLayer((IEndCreditsWindow) this);
+      RegisterLayer<IEndCreditsWindow>(this);
     }
 
     public override Type GetWindowType() => typeof (IEndCreditsWindow);

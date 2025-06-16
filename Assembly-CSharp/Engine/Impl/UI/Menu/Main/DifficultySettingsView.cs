@@ -5,6 +5,7 @@ using Engine.Source.Difficulties;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Settings;
 using Engine.Source.Settings.External;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Menu.Main
 {
@@ -33,8 +34,8 @@ namespace Engine.Impl.UI.Menu.Main
       floatViews = new List<FloatSettingsValueView>();
       difficultySettings = InstanceByRequest<DifficultySettings>.Instance;
       externalDifficultySettings = ExternalSettingsInstance<ExternalDifficultySettings>.Instance;
-      layout = UnityEngine.Object.Instantiate<LayoutContainer>(listLayoutPrefab, this.transform, false);
-      originalExperienceView = UnityEngine.Object.Instantiate<BoolSettingsValueView>(boolValueViewPrefab, (Transform) layout.Content, false);
+      layout = Instantiate(listLayoutPrefab, transform, false);
+      originalExperienceView = Instantiate(boolValueViewPrefab, layout.Content, false);
       originalExperienceView.name = "OriginalExperience";
       originalExperienceView.SetName("{UI.Menu.Main.Settings.Difficulty.OriginalExperience}");
       originalExperienceView.SetSetting(difficultySettings.OriginalExperience);
@@ -44,13 +45,13 @@ namespace Engine.Impl.UI.Menu.Main
       originalExperienceView2.PointerEnterEvent = originalExperienceView2.PointerEnterEvent + OnSelect;
       BoolSettingsValueView originalExperienceView3 = originalExperienceView;
       originalExperienceView3.PointerExitEvent = originalExperienceView3.PointerExitEvent + OnDeselect;
-      headerViews.Add(UnityEngine.Object.Instantiate<GameObject>(separatorPrefab, (Transform) layout.Content, false));
+      headerViews.Add(Instantiate(separatorPrefab, layout.Content, false));
       int count = externalDifficultySettings.Presets.Count;
       string[] names = new string[count + 1];
       for (int index = 0; index < count; ++index)
         names[index] = "{UI.Menu.Main.Settings.Difficulty.Preset." + externalDifficultySettings.Presets[index].Name + "}";
       names[count] = "{UI.Menu.Main.Settings.Difficulty.Preset.Custom}";
-      presetsView = UnityEngine.Object.Instantiate<NamedIntSettingsValueView>(namedIntValueViewPrefab, (Transform) layout.Content, false);
+      presetsView = Instantiate(namedIntValueViewPrefab, layout.Content, false);
       presetsView.name = "Preset";
       presetsView.SetName("{UI.Menu.Main.Settings.Difficulty.Preset}");
       presetsView.SetValueNames(names);
@@ -60,10 +61,10 @@ namespace Engine.Impl.UI.Menu.Main
       presetsView2.PointerEnterEvent = presetsView2.PointerEnterEvent + OnSelect;
       NamedIntSettingsValueView presetsView3 = presetsView;
       presetsView3.PointerExitEvent = presetsView3.PointerExitEvent + OnDeselect;
-      headerViews.Add(UnityEngine.Object.Instantiate<GameObject>(separatorPrefab, (Transform) layout.Content, false));
+      headerViews.Add(Instantiate(separatorPrefab, layout.Content, false));
       foreach (DifficultyGroupData group in externalDifficultySettings.Groups)
       {
-        StringView stringView = UnityEngine.Object.Instantiate<StringView>(headerViewPrefab, (Transform) layout.Content, false);
+        StringView stringView = Instantiate(headerViewPrefab, layout.Content, false);
         stringView.StringValue = "{UI.Menu.Main.Settings.Difficulty.Group." + group.Name + "}";
         headerViews.Add(stringView.gameObject);
         foreach (DifficultyGroupItemData difficultyGroupItemData in group.Items)
@@ -79,7 +80,7 @@ namespace Engine.Impl.UI.Menu.Main
           }
           if (difficultyItemData1 != null && difficultySettings.GetValueItem(difficultyGroupItemData.Name) != null)
           {
-            FloatSettingsValueView settingsValueView1 = UnityEngine.Object.Instantiate<FloatSettingsValueView>(floatValueViewPrefab, (Transform) layout.Content, false);
+            FloatSettingsValueView settingsValueView1 = Instantiate(floatValueViewPrefab, layout.Content, false);
             settingsValueView1.name = difficultyGroupItemData.Name;
             settingsValueView1.SetName("{UI.Menu.Main.Settings.Difficulty.Item." + difficultyGroupItemData.Name + "}");
             settingsValueView1.SetMinValue(difficultyItemData1.Min);
@@ -151,15 +152,15 @@ namespace Engine.Impl.UI.Menu.Main
     {
       if (selectedView != view)
         return;
-      this.SelectView<SettingsValueView<float>>((SettingsValueView<float>) null);
+      SelectView<SettingsValueView<float>>(null);
     }
 
     protected override void OnDisable()
     {
       base.OnDisable();
       difficultySettings.OnApply -= UpdateViews;
-      this.SelectView<SettingsValueView<float>>((SettingsValueView<float>) null);
-      if (!((UnityEngine.Object) confirmationInstance != (UnityEngine.Object) null))
+      SelectView<SettingsValueView<float>>(null);
+      if (!(confirmationInstance != null))
         return;
       confirmationInstance.Hide();
     }
@@ -172,10 +173,10 @@ namespace Engine.Impl.UI.Menu.Main
       }
       else
       {
-        this.SelectView<SettingsValueView<float>>((SettingsValueView<float>) null);
+        SelectView<SettingsValueView<float>>(null);
         view.RevertVisibleValue();
-        if ((UnityEngine.Object) confirmationInstance == (UnityEngine.Object) null)
-          confirmationInstance = UnityEngine.Object.Instantiate<ConfirmationWindow>(confirmationPrefab, this.transform, false);
+        if (confirmationInstance == null)
+          confirmationInstance = Instantiate(confirmationPrefab, transform, false);
         confirmationInstance.Show("{UI.Menu.Main.Settings.Difficulty.Confirmation}", DisableOriginalExperience, null);
       }
     }
@@ -191,7 +192,7 @@ namespace Engine.Impl.UI.Menu.Main
 
     private void OnSelect<T>(SettingsValueView<T> view)
     {
-      this.SelectView<SettingsValueView<T>>(view);
+      SelectView(view);
     }
 
     private void SelectView<T>(T view) where T : MonoBehaviour, ISelectable
@@ -201,7 +202,7 @@ namespace Engine.Impl.UI.Menu.Main
       if (selectedView != null)
         selectedView.Selected = false;
       selectedView = view;
-      if ((UnityEngine.Object) view != (UnityEngine.Object) null)
+      if (view != null)
       {
         view.Selected = true;
         tooltipView.StringValue = "{UI.Menu.Main.Settings.Difficulty.Tooltip." + view.name + "}";

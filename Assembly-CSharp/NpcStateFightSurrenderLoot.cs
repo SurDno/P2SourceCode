@@ -6,6 +6,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateFightSurrenderLoot : INpcState
 {
@@ -36,10 +38,10 @@ public class NpcStateFightSurrenderLoot : INpcState
     agent = pivot.GetAgent();
     animator = pivot.GetAnimator();
     weaponService = pivot.GetNpcWeaponService();
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
@@ -83,7 +85,7 @@ public class NpcStateFightSurrenderLoot : INpcState
     LocationItemComponent component = (LocationItemComponent) npcState.Owner.GetComponent<ILocationItemComponent>();
     if (component == null)
     {
-      Debug.LogWarning((object) (GameObject.name + ": location component not found"));
+      Debug.LogWarning(GameObject.name + ": location component not found");
       Status = NpcStateStatusEnum.Failed;
     }
     else
@@ -100,7 +102,7 @@ public class NpcStateFightSurrenderLoot : INpcState
         }
         else
         {
-          Debug.Log((object) "Can't sample navmesh", (UnityEngine.Object) GameObject);
+          Debug.Log("Can't sample navmesh", GameObject);
           Status = NpcStateStatusEnum.Failed;
           return;
         }
@@ -111,7 +113,7 @@ public class NpcStateFightSurrenderLoot : INpcState
       animatorState.SetTrigger("Fight.Triggers/CancelStagger");
       animatorState.SetTrigger("Fight.Triggers/TakeMyMoney");
       SetSurrenderValue(true);
-      if ((UnityEngine.Object) enemy.Enemy != (UnityEngine.Object) null)
+      if (enemy.Enemy != null)
         enemy.RotationTarget = enemy.Enemy.transform;
       enemy.RotateByPath = false;
       enemy.RetreatAngle = new float?();
@@ -149,7 +151,7 @@ public class NpcStateFightSurrenderLoot : INpcState
   {
     if (failed || InstanceByRequest<EngineApplication>.Instance.IsPaused || Status != 0)
       return;
-    if ((UnityEngine.Object) enemy == (UnityEngine.Object) null || (UnityEngine.Object) enemy.Enemy == (UnityEngine.Object) null)
+    if (enemy == null || enemy.Enemy == null)
     {
       Status = NpcStateStatusEnum.Failed;
     }

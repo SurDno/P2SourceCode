@@ -4,6 +4,8 @@ using Engine.Source.Commons;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
+using UnityEngine.Audio;
 
 namespace Engine.Source.Blueprints.Sounds
 {
@@ -34,14 +36,14 @@ namespace Engine.Source.Blueprints.Sounds
 
     private void ComputeDestroy(float deltaTime)
     {
-      if (!((Object) source != (Object) null))
+      if (!(source != null))
         return;
       sleep += deltaTime;
       if (sleep > 10.0)
       {
         sleep = 0.0f;
-        Object.Destroy((Object) source.gameObject);
-        source = (AudioSource) null;
+        Object.Destroy(source.gameObject);
+        source = null;
       }
     }
 
@@ -49,7 +51,7 @@ namespace Engine.Source.Blueprints.Sounds
 
     public void Reset()
     {
-      if ((Object) source == (Object) null || !Complete)
+      if (source == null || !Complete)
         return;
       Complete = false;
       progress = 0.0f;
@@ -66,10 +68,10 @@ namespace Engine.Source.Blueprints.Sounds
     {
       InstanceByRequest<UpdateService>.Instance.BlueprintSoundsUpdater.RemoveUpdatable(this);
       base.OnGraphStoped();
-      if (!((Object) source != (Object) null))
+      if (!(source != null))
         return;
-      Object.Destroy((Object) source.gameObject);
-      source = (AudioSource) null;
+      Object.Destroy(source.gameObject);
+      source = null;
     }
 
     public void ComputeUpdate()
@@ -89,20 +91,20 @@ namespace Engine.Source.Blueprints.Sounds
       {
         bool loop = loopInput.value;
         float fade = fadeTimeInput.value;
-        if (Play && (Object) source == (Object) null)
+        if (Play && source == null)
         {
           AudioClip clip = clipInput.value;
-          if ((Object) clip == (Object) null)
+          if (clip == null)
             return;
           AudioMixerGroup mixer = mixerInput.value;
-          if ((Object) mixer == (Object) null)
+          if (mixer == null)
             return;
           currentVolume = 0.0f;
           source = CreateAudioSource(clip, mixer, 0.0f, loop);
           source.PlayAndCheck();
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , context : ").Append("(blueprint) ").Append(graph.agent.name));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("[Sounds]").Append(" Play sound, name : ").Append(clip.name).Append(" , context : ").Append("(blueprint) ").Append(graph.agent.name));
         }
-        if ((Object) source == (Object) null)
+        if (source == null)
           return;
         if (run)
         {

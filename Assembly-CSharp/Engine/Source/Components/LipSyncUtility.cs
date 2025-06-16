@@ -5,6 +5,7 @@ using Engine.Common.Commons;
 using Engine.Common.Services;
 using Engine.Impl.Services;
 using Engine.Source.Commons;
+using Random = UnityEngine.Random;
 
 namespace Engine.Source.Components
 {
@@ -31,7 +32,7 @@ namespace Engine.Source.Components
       }
       if (max == 0)
         return null;
-      int num = UnityEngine.Random.Range(0, max);
+      int num = Random.Range(0, max);
       foreach (ILipSyncObject lipSync in lipSyncs)
       {
         LipSyncLanguage lipSyncLanguage = ((LipSyncObject) lipSync).Languages.FirstOrDefault(o => o.Language == language);
@@ -66,7 +67,7 @@ namespace Engine.Source.Components
         return lipSyncLanguage.LipSyncs[0];
       }
       int count = lipSyncLanguage.LipSyncs.Count;
-      newIndex = (lastIndex + UnityEngine.Random.Range(1, count)) % count;
+      newIndex = (lastIndex + Random.Range(1, count)) % count;
       return lipSyncLanguage.LipSyncs[newIndex];
     }
   }

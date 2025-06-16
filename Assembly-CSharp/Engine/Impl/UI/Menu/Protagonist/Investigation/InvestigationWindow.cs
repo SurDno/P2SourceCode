@@ -12,6 +12,9 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using Engine.Source.Utility;
 using InputServices;
+using UnityEngine;
+using UnityEngine.Serialization;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Investigation
 {
@@ -36,7 +39,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Investigation
 
     private void Clear()
     {
-      image.sprite = (Sprite) null;
+      image.sprite = null;
       textTitle.StringValue = null;
       textInformation.StringValue = null;
     }
@@ -57,7 +60,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Investigation
       service.GetText(Target.Title);
       textTitle.StringValue = service.GetText(Target.Title);
       textInformation.StringValue = service.GetText(Target.Description);
-      Sprite sprite = (Sprite) null;
+      Sprite sprite = null;
       if (((StorableComponent) Target).Placeholder != null)
         sprite = ((StorableComponent) Target).Placeholder.ImageInformation.Value;
       image.sprite = sprite;
@@ -76,7 +79,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Investigation
 
     public override void Initialize()
     {
-      RegisterLayer((IInvestigationWindow) this);
+      RegisterLayer<IInvestigationWindow>(this);
       base.Initialize();
     }
 

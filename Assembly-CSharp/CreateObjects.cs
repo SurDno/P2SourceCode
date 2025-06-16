@@ -7,6 +7,8 @@ using Engine.Common.Services;
 using Engine.Source.Connections;
 using Engine.Source.Services.Templates;
 using Engine.Source.Test;
+using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 public class CreateObjects : MonoBehaviour
 {
@@ -18,9 +20,9 @@ public class CreateObjects : MonoBehaviour
 
   private IEnumerator Start()
   {
-    yield return (object) new WaitForSeconds(1f);
+    yield return new WaitForSeconds(1f);
     Test();
-    yield return (object) new WaitForSeconds(1f);
+    yield return new WaitForSeconds(1f);
   }
 
   private void Test()
@@ -30,7 +32,7 @@ public class CreateObjects : MonoBehaviour
     IEntity template = this.template.Value;
     if (template == null)
     {
-      UnityEngine.Debug.LogError((object) ("Template not found, id : " + this.template.Id));
+      Debug.LogError("Template not found, id : " + this.template.Id);
     }
     else
     {
@@ -44,7 +46,7 @@ public class CreateObjects : MonoBehaviour
         instances.Add(target);
       }
       stopwatch.Stop();
-      UnityEngine.Debug.LogError((object) ("Complete, count : " + count + " , elapsed : " + stopwatch.Elapsed));
+      Debug.LogError("Complete, count : " + count + " , elapsed : " + stopwatch.Elapsed);
     }
   }
 }

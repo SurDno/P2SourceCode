@@ -1,4 +1,6 @@
-﻿namespace Engine.Drawing.Gradient
+﻿using UnityEngine;
+
+namespace Engine.Drawing.Gradient
 {
   public static class GradientUtility
   {

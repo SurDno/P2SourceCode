@@ -1,10 +1,11 @@
 ﻿using System;
 using Cofe.Utility;
 using Inspectors;
+using Object = UnityEngine.Object;
 
 namespace Engine.Source.Connections
 {
-  public struct UnitySubAsset<T> : IUnityAsset where T : UnityEngine.Object
+  public struct UnitySubAsset<T> : IUnityAsset where T : Object
   {
     private Guid id;
     private string name;

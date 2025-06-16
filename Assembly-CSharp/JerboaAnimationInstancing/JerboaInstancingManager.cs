@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using UnityEngine;
+using UnityEngine.Profiling;
+using UnityEngine.Rendering;
+using Object = UnityEngine.Object;
 
 namespace JerboaAnimationInstancing
 {
@@ -39,7 +43,7 @@ namespace JerboaAnimationInstancing
     {
       ReleaseBuffer();
       cullingGroup.Dispose();
-      cullingGroup = (CullingGroup) null;
+      cullingGroup = null;
     }
 
     private void OnApplicationFocus(bool focus)
@@ -57,7 +61,7 @@ namespace JerboaAnimationInstancing
     {
       cullingGroup = new CullingGroup();
       cullingGroup.targetCamera = Camera.main;
-      cullingGroup.onStateChanged = new CullingGroup.StateChanged(CullingStateChanged);
+      cullingGroup.onStateChanged = CullingStateChanged;
       cullingGroup.SetBoundingSpheres(boundingSphere);
       usedBoundingSphereCount = 0;
       cullingGroup.SetBoundingSphereCount(usedBoundingSphereCount);
@@ -383,7 +387,7 @@ namespace JerboaAnimationInstancing
         for (int index2 = 0; index2 != lodInfo1.skinnedMeshRenderer.Length; ++index2)
         {
           Mesh sharedMesh = lodInfo1.skinnedMeshRenderer[index2].sharedMesh;
-          if (!((UnityEngine.Object) sharedMesh == (UnityEngine.Object) null))
+          if (!(sharedMesh == null))
           {
             int hashCode = lodInfo1.skinnedMeshRenderer[index2].name.GetHashCode();
             int identify = GetIdentify(lodInfo1.skinnedMeshRenderer[index2].sharedMaterials);
@@ -416,7 +420,7 @@ namespace JerboaAnimationInstancing
         while (index3 != lodInfo1.meshRenderer.Length)
         {
           Mesh sharedMesh = lodInfo1.meshFilter[index3].sharedMesh;
-          if (!((UnityEngine.Object) sharedMesh == (UnityEngine.Object) null))
+          if (!(sharedMesh == null))
           {
             int hashCode1 = lodInfo1.meshRenderer[index3].name.GetHashCode();
             int hashCode2 = alias != null ? alias.GetHashCode() : 0;
@@ -559,15 +563,15 @@ namespace JerboaAnimationInstancing
       for (int index = 0; index != sharedMesh.vertexCount; ++index)
       {
         vertexCache.weight[index].x = boneWeights[index].weight0;
-        Debug.Assert((double) vertexCache.weight[index].x > 0.0);
+        Debug.Assert(vertexCache.weight[index].x > 0.0);
         vertexCache.weight[index].y = boneWeights[index].weight1;
         vertexCache.weight[index].z = boneWeights[index].weight2;
         vertexCache.weight[index].w = boneWeights[index].weight3;
-        vertexCache.boneIndex[index].x = numArray == null ? (float) boneWeights[index].boneIndex0 : numArray[boneWeights[index].boneIndex0];
-        vertexCache.boneIndex[index].y = numArray == null ? (float) boneWeights[index].boneIndex1 : numArray[boneWeights[index].boneIndex1];
-        vertexCache.boneIndex[index].z = numArray == null ? (float) boneWeights[index].boneIndex2 : numArray[boneWeights[index].boneIndex2];
-        vertexCache.boneIndex[index].w = numArray == null ? (float) boneWeights[index].boneIndex3 : numArray[boneWeights[index].boneIndex3];
-        Debug.Assert((double) vertexCache.boneIndex[index].x >= 0.0);
+        vertexCache.boneIndex[index].x = numArray == null ? boneWeights[index].boneIndex0 : (float) numArray[boneWeights[index].boneIndex0];
+        vertexCache.boneIndex[index].y = numArray == null ? boneWeights[index].boneIndex1 : (float) numArray[boneWeights[index].boneIndex1];
+        vertexCache.boneIndex[index].z = numArray == null ? boneWeights[index].boneIndex2 : (float) numArray[boneWeights[index].boneIndex2];
+        vertexCache.boneIndex[index].w = numArray == null ? boneWeights[index].boneIndex3 : (float) numArray[boneWeights[index].boneIndex3];
+        Debug.Assert(vertexCache.boneIndex[index].x >= 0.0);
         switch (bonePerVertex)
         {
           case 1:
@@ -577,14 +581,14 @@ namespace JerboaAnimationInstancing
             vertexCache.weight[index].w = -0.1f;
             break;
           case 2:
-            float num1 = (float) (1.0 / ((double) vertexCache.weight[index].x + (double) vertexCache.weight[index].y));
+            float num1 = (float) (1.0 / (vertexCache.weight[index].x + (double) vertexCache.weight[index].y));
             vertexCache.weight[index].x *= num1;
             vertexCache.weight[index].y *= num1;
             vertexCache.weight[index].z = -0.1f;
             vertexCache.weight[index].w = -0.1f;
             break;
           case 3:
-            float num2 = (float) (1.0 / ((double) vertexCache.weight[index].x + (double) vertexCache.weight[index].y + (double) vertexCache.weight[index].z));
+            float num2 = (float) (1.0 / (vertexCache.weight[index].x + (double) vertexCache.weight[index].y + vertexCache.weight[index].z));
             vertexCache.weight[index].x *= num2;
             vertexCache.weight[index].y *= num2;
             vertexCache.weight[index].z *= num2;
@@ -666,7 +670,7 @@ namespace JerboaAnimationInstancing
       for (int index = 0; index != package.subMeshCount; ++index)
       {
         AnimationTexture animationTexture = animationTextureList[vertexCache.boneTextureIndex];
-        package.material[index].SetTexture("_boneTexture", (Texture) animationTexture.boneTexture[aniTextureIndex]);
+        package.material[index].SetTexture("_boneTexture", animationTexture.boneTexture[aniTextureIndex]);
         package.material[index].SetInt("_boneTextureWidth", animationTexture.boneTexture[aniTextureIndex].width);
         package.material[index].SetInt("_boneTextureHeight", animationTexture.boneTexture[aniTextureIndex].height);
         package.material[index].SetInt("_boneTextureBlockWidth", animationTexture.blockWidth);
@@ -703,8 +707,8 @@ namespace JerboaAnimationInstancing
       int boneIndex)
     {
       Matrix4x4 inverse = parentCache.bindPose[boneIndex].inverse;
-      attachmentCache.mesh = UnityEngine.Object.Instantiate<Mesh>(sharedMesh);
-      Vector3 column = (Vector3) inverse.GetColumn(3);
+      attachmentCache.mesh = Object.Instantiate(sharedMesh);
+      Vector3 column = inverse.GetColumn(3);
       Quaternion quaternion = RuntimeHelper.QuaternionFromMatrix(inverse);
       Vector3[] vertices = attachmentCache.mesh.vertices;
       for (int index = 0; index != attachmentCache.mesh.vertexCount; ++index)
@@ -719,7 +723,7 @@ namespace JerboaAnimationInstancing
         attachmentCache.weight[index].y = -0.1f;
         attachmentCache.weight[index].z = -0.1f;
         attachmentCache.weight[index].w = -0.1f;
-        attachmentCache.boneIndex[index].x = (float) boneIndex;
+        attachmentCache.boneIndex[index].x = boneIndex;
       }
     }
 
@@ -751,11 +755,11 @@ namespace JerboaAnimationInstancing
     public class VertexCache
     {
       public int nameCode;
-      public Mesh mesh = (Mesh) null;
+      public Mesh mesh;
       public Dictionary<int, MaterialBlock> instanceBlockList;
       public Vector4[] weight;
       public Vector4[] boneIndex;
-      public Material[] materials = (Material[]) null;
+      public Material[] materials;
       public Matrix4x4[] bindPose;
       public Transform[] bonePose;
       public int boneTextureIndex = -1;

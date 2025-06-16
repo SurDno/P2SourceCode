@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class AnchorGameActionView : GameActionViewBase
   {
@@ -8,9 +10,9 @@
 
     private void Awake()
     {
-      if (!((Object) prefab != (Object) null) || GetValue() == 0)
+      if (!(prefab != null) || GetValue() == 0)
         return;
-      instance = Object.Instantiate<GameActionView>(prefab, this.transform, false);
+      instance = Instantiate(prefab, transform, false);
       instance.SetValue(GetValue(), true);
     }
 

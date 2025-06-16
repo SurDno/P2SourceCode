@@ -13,7 +13,7 @@ namespace FlowCanvas.Nodes
       ValueInput<float> c = AddValueInput<float>("Percentage");
       AddFlowInput("In", () =>
       {
-        if ((double) UnityEngine.Random.Range(0.0f, 1f) >= c.value)
+        if (UnityEngine.Random.Range(0.0f, 1f) >= (double) c.value)
           return;
         o.Call();
       });

@@ -1,4 +1,6 @@
-﻿public abstract class PlagueWeb : MonoBehaviour
+﻿using UnityEngine;
+
+public abstract class PlagueWeb : MonoBehaviour
 {
   public static PlagueWeb Instance { get; private set; }
 

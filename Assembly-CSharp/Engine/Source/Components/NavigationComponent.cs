@@ -14,6 +14,8 @@ using Engine.Source.Components.Regions;
 using Engine.Source.Components.Saves;
 using Engine.Source.Services;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace Engine.Source.Components
 {
@@ -134,7 +136,7 @@ namespace Engine.Source.Components
           return;
         if (value == null)
         {
-          Debug.LogError((object) "Region position == null");
+          Debug.LogError("Region position == null");
         }
         else
         {
@@ -209,7 +211,7 @@ namespace Engine.Source.Components
 
     public void TeleportTo(IEntity targetEntity)
     {
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to entity, owner : ").GetInfo(Owner).Append(" , target : ").GetInfo(targetEntity));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to entity, owner : ").GetInfo(Owner).Append(" , target : ").GetInfo(targetEntity));
       if (targetEntity == null)
         throw new Exception("targetEntity == null : " + Owner.GetInfo());
       if (IsDisposed)
@@ -234,7 +236,7 @@ namespace Engine.Source.Components
         throw new Exception("IsDisposed : " + Owner.GetInfo());
       if (!((Entity) Owner).IsAdded)
         throw new Exception("!((Entity)Owner).IsAdded : " + Owner.GetInfo());
-      Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to location, owner : ").GetInfo(Owner).Append(" , location : ").GetInfo(location.Owner).Append(" , position : ").Append((object) position));
+      Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport to location, owner : ").GetInfo(Owner).Append(" , location : ").GetInfo(location.Owner).Append(" , position : ").Append(position));
       setupPoint = location.Owner;
       forceInvalidate = true;
       TargetTeleport = null;
@@ -306,7 +308,7 @@ namespace Engine.Source.Components
           IEntity targetTeleport = TargetTeleport;
           TargetTeleport = null;
           IEntityView entityView = (IEntityView) targetTeleport;
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo(Owner).Append(" , teleport point : ").GetInfo(targetTeleport).Append(" , position : ").Append(entityView));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo(Owner).Append(" , teleport point : ").GetInfo(targetTeleport).Append(" , position : ").Append(entityView));
           Action<INavigationComponent, IEntity> onPreTeleport = OnPreTeleport;
           if (onPreTeleport != null)
             onPreTeleport(this, targetTeleport);
@@ -319,7 +321,7 @@ namespace Engine.Source.Components
         }
         else
         {
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo(Owner).Append(" , position : ").Append((object) targetPosition));
+          Debug.Log(ObjectInfoUtility.GetStream().Append("[Navigation]").Append("  teleport owner: ").GetInfo(Owner).Append(" , position : ").Append(targetPosition));
           Action<INavigationComponent, IEntity> onPreTeleport = OnPreTeleport;
           if (onPreTeleport != null)
             onPreTeleport(this, null);
@@ -372,7 +374,7 @@ namespace Engine.Source.Components
           Vector3 vector3 = WaitTeleport ? targetPosition : ((IEntityView) Owner).Position;
           Quaternion quaternion = WaitTeleport ? targetRotation : ((IEntityView) Owner).Rotation;
           if (vector3 == Vector3.zero)
-            Debug.LogError((object) ("Position is zero, owner : " + Owner.GetInfo()));
+            Debug.LogError("Position is zero, owner : " + Owner.GetInfo());
           TeleportData teleportData = ProxyFactory.Create<TeleportData>();
           teleportData.Location = locationItem.Location;
           teleportData.Target = null;
@@ -380,7 +382,7 @@ namespace Engine.Source.Components
           teleportData.Rotation = quaternion;
           return teleportData;
         }
-        Debug.LogError((object) ("Target and Location not found, owner : " + Owner.GetInfo()));
+        Debug.LogError("Target and Location not found, owner : " + Owner.GetInfo());
         return ProxyFactory.Create<TeleportData>();
       }
       set => storedTeleportData = value;
@@ -400,10 +402,10 @@ namespace Engine.Source.Components
         else if (storedTeleportData.Location != null)
           TeleportTo(storedTeleportData.Location, storedTeleportData.Position, storedTeleportData.Rotation);
         else
-          Debug.LogError((object) ("Target and Location not found , owner" + Owner.GetInfo()));
+          Debug.LogError("Target and Location not found , owner" + Owner.GetInfo());
       }
       else
-        Debug.LogError((object) ("StoredTeleportData == null , owner" + Owner.GetInfo()));
+        Debug.LogError("StoredTeleportData == null , owner" + Owner.GetInfo());
       this.setupPoint = setupPoint;
     }
 

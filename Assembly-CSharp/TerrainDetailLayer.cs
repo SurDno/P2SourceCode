@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using Engine.Source.Settings.External;
+using UnityEngine;
+using UnityEngine.Profiling;
+using UnityEngine.Serialization;
 
 [ExecuteInEditMode]
 public class TerrainDetailLayer : MonoBehaviour
@@ -18,10 +21,10 @@ public class TerrainDetailLayer : MonoBehaviour
   private TerrainDetailChunk chunkPrefab;
   [SerializeField]
   [FormerlySerializedAs("LayerIndex")]
-  private int layerIndex = 0;
+  private int layerIndex;
   [SerializeField]
   [FormerlySerializedAs("CastShadows")]
-  private bool castShadows = false;
+  private bool castShadows;
   [SerializeField]
   private BendingCalculation bendingCalculation = BendingCalculation.Off;
   private TerrainDetailChunk[,] chunks;
@@ -53,7 +56,7 @@ public class TerrainDetailLayer : MonoBehaviour
 
   private IEnumerator Preload()
   {
-    if ((Object) chunkPrefab != (Object) null)
+    if (chunkPrefab != null)
     {
       int iLength = chunks.GetLength(0);
       int jLength = chunks.GetLength(1);
@@ -62,7 +65,7 @@ public class TerrainDetailLayer : MonoBehaviour
         for (int j = 0; j < jLength; ++j)
         {
           TerrainDetailChunk chunk = chunks[i, j];
-          if ((Object) chunk == (Object) null)
+          if (chunk == null)
           {
             chunk = TerrainDetailChunk.Create(chunkPrefab, this, i, j);
             chunks[i, j] = chunk;
@@ -73,7 +76,7 @@ public class TerrainDetailLayer : MonoBehaviour
         yield return null;
       }
     }
-    preloading = (Coroutine) null;
+    preloading = null;
   }
 
   private Mesh CreateMesh(int capacity)
@@ -139,27 +142,27 @@ public class TerrainDetailLayer : MonoBehaviour
     if (num % MaxChunkCapacity > 0)
       ++index;
     capacity = (index + 1) * MaxChunkCapacity / 8;
-    if ((Object) chunkMeshes[index] == (Object) null)
+    if (chunkMeshes[index] == null)
       chunkMeshes[index] = CreateMesh(capacity);
     return chunkMeshes[index];
   }
 
   private void OnEnable()
   {
-    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
-    Camera.onPreCull += new Camera.CameraCallback(OnPreCullEvent);
+    Camera.onPreCull -= OnPreCullEvent;
+    Camera.onPreCull += OnPreCullEvent;
   }
 
   private void OnDisable()
   {
     if (preloading != null)
     {
-      this.StopCoroutine(preloading);
-      preloading = (Coroutine) null;
+      StopCoroutine(preloading);
+      preloading = null;
     }
     preloaded = false;
-    Camera.onPreCull -= new Camera.CameraCallback(OnPreCullEvent);
-    TerrainData = (TerrainData) null;
+    Camera.onPreCull -= OnPreCullEvent;
+    TerrainData = null;
     if (chunks != null)
     {
       int length1 = chunks.GetLength(0);
@@ -168,9 +171,9 @@ public class TerrainDetailLayer : MonoBehaviour
       {
         for (int index2 = 0; index2 < length2; ++index2)
         {
-          if ((Object) chunks[index1, index2] != (Object) null)
+          if (chunks[index1, index2] != null)
           {
-            Object.Destroy((Object) chunks[index1, index2].gameObject);
+            Destroy(chunks[index1, index2].gameObject);
             chunks[index1, index2] = null;
           }
         }
@@ -181,10 +184,10 @@ public class TerrainDetailLayer : MonoBehaviour
     {
       for (int index = 0; index < chunkMeshes.Length; ++index)
       {
-        Object.Destroy((Object) chunkMeshes[index]);
-        chunkMeshes[index] = (Mesh) null;
+        Destroy(chunkMeshes[index]);
+        chunkMeshes[index] = null;
       }
-      chunkMeshes = (Mesh[]) null;
+      chunkMeshes = null;
     }
     prototypeBuffers = null;
   }
@@ -201,12 +204,12 @@ public class TerrainDetailLayer : MonoBehaviour
 
   private void OnPreCullEvent2(Camera camera)
   {
-    if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableGrass || (Object) prototypeMesh == (Object) null || (Object) material == (Object) null || (Object) Terrain == (Object) null || (Object) chunkPrefab == (Object) null || (Object) camera == (Object) null || (camera.cullingMask & 1 << this.gameObject.layer) == 0)
+    if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableGrass || prototypeMesh == null || material == null || Terrain == null || chunkPrefab == null || camera == null || (camera.cullingMask & 1 << gameObject.layer) == 0)
       return;
     if (chunks == null)
     {
       TerrainData = Terrain.terrainData;
-      DetailTexelSize = new Vector2(TerrainData.size.x / (float) TerrainData.detailWidth, TerrainData.size.z / (float) TerrainData.detailHeight);
+      DetailTexelSize = new Vector2(TerrainData.size.x / TerrainData.detailWidth, TerrainData.size.z / TerrainData.detailHeight);
       chunkWorldSize = DetailTexelSize * 104f;
       int length1 = TerrainData.detailWidth / 104;
       if (TerrainData.detailWidth % 104 > 0)
@@ -241,7 +244,7 @@ public class TerrainDetailLayer : MonoBehaviour
         {
           Color32 color32 = color32Array[index];
           float num2 = !flag ? vertices[index].magnitude : vertices[index].y;
-          color32.a = (byte) ((double) Mathf.Clamp01(num2 / num1) * byte.MaxValue + 0.44999998807907104);
+          color32.a = (byte) (Mathf.Clamp01(num2 / num1) * (double) byte.MaxValue + 0.44999998807907104);
           color32Array[index] = color32;
         }
       }
@@ -249,7 +252,7 @@ public class TerrainDetailLayer : MonoBehaviour
     if (!preloaded && Application.isPlaying && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadGrass)
     {
       preloaded = true;
-      preloading = this.StartCoroutine(Preload());
+      preloading = StartCoroutine(Preload());
     }
     Vector4 vector = material.GetVector("_DrawDistance");
     float drawDistance = vector.x + vector.y;
@@ -286,30 +289,30 @@ public class TerrainDetailLayer : MonoBehaviour
       {
         if (chunkX < 0 || chunkX > upperBound1 || chunkY < 0 || chunkY > upperBound2)
         {
-          Debug.LogError((object) ("TerrainDetailLayer : Chunk [" + chunkX + ", " + chunkY + "] is out of bounds [" + upperBound1 + ", " + upperBound2 + "]."));
+          Debug.LogError("TerrainDetailLayer : Chunk [" + chunkX + ", " + chunkY + "] is out of bounds [" + upperBound1 + ", " + upperBound2 + "].");
         }
         else
         {
-          Vector3 vector3_2 = new Vector3((float) chunkX * chunkWorldSize.x - PrototypeExtents.x, -PrototypeExtents.z, (float) chunkY * chunkWorldSize.y - PrototypeExtents.x);
-          Vector3 vector3_3 = new Vector3((float) (chunkX + 1) * chunkWorldSize.x + PrototypeExtents.x, TerrainData.size.y + PrototypeExtents.y, (float) (chunkY + 1) * chunkWorldSize.y + PrototypeExtents.x);
+          Vector3 vector3_2 = new Vector3(chunkX * chunkWorldSize.x - PrototypeExtents.x, -PrototypeExtents.z, chunkY * chunkWorldSize.y - PrototypeExtents.x);
+          Vector3 vector3_3 = new Vector3((chunkX + 1) * chunkWorldSize.x + PrototypeExtents.x, TerrainData.size.y + PrototypeExtents.y, (chunkY + 1) * chunkWorldSize.y + PrototypeExtents.x);
           Vector3 b = vector3_1;
-          if ((double) b.x < (double) vector3_2.x)
+          if (b.x < (double) vector3_2.x)
             b.x = vector3_2.x;
-          if ((double) b.y < (double) vector3_2.y)
+          if (b.y < (double) vector3_2.y)
             b.y = vector3_2.y;
-          if ((double) b.z < (double) vector3_2.z)
+          if (b.z < (double) vector3_2.z)
             b.z = vector3_2.z;
-          if ((double) b.x > (double) vector3_3.x)
+          if (b.x > (double) vector3_3.x)
             b.x = vector3_3.x;
-          if ((double) b.y > (double) vector3_3.y)
+          if (b.y > (double) vector3_3.y)
             b.y = vector3_3.y;
-          if ((double) b.z > (double) vector3_3.z)
+          if (b.z > (double) vector3_3.z)
             b.z = vector3_3.z;
           float num7 = Vector3.Distance(vector3_1, b);
           bool flag = num7 < (double) drawDistance;
           if (flag)
           {
-            if ((Object) chunks[chunkX, chunkY] == (Object) null)
+            if (chunks[chunkX, chunkY] == null)
             {
               if (frame != Time.frameCount)
               {
@@ -328,7 +331,7 @@ public class TerrainDetailLayer : MonoBehaviour
             else
               flag = chunks[chunkX, chunkY].UpdateVisibility(vector3_1, drawDistance);
           }
-          else if ((Object) chunks[chunkX, chunkY] != (Object) null)
+          else if (chunks[chunkX, chunkY] != null)
             flag = chunks[chunkX, chunkY].HideAll();
           if (flag)
           {

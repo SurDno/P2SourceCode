@@ -1,4 +1,5 @@
 ﻿using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 namespace Engine.Source.UI.Controls.BoolViews
 {
@@ -6,10 +7,10 @@ namespace Engine.Source.UI.Controls.BoolViews
   {
     public static void SetVisible(GameObject gameObject, bool value)
     {
-      if ((Object) gameObject == (Object) null)
+      if (gameObject == null)
         return;
       HideableView component = gameObject.GetComponent<HideableView>();
-      if ((Object) component != (Object) null)
+      if (component != null)
         component.Visible = value;
       else
         gameObject.SetActive(value);

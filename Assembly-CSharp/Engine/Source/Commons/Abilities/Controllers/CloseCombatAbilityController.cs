@@ -7,6 +7,7 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Engine.Source.Effects.Values;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Commons.Abilities.Controllers
 {
@@ -60,21 +61,21 @@ namespace Engine.Source.Commons.Abilities.Controllers
         return;
       ((IEntityView) itemOwner).OnGameObjectChangedEvent += OnGameObjectChanged;
       GameObject gameObject = ((IEntityView) itemOwner).GameObject;
-      if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+      if (gameObject == null)
         return;
       AbilityCache abilityCache = abilityItem.Ability.AbilityCache;
-      if ((UnityEngine.Object) abilityCache.EnemyBase != (UnityEngine.Object) null && (UnityEngine.Object) abilityCache.EnemyBase.gameObject == (UnityEngine.Object) gameObject)
+      if (abilityCache.EnemyBase != null && abilityCache.EnemyBase.gameObject == gameObject)
         attacker = abilityCache.EnemyBase;
       else
         abilityCache.EnemyBase = attacker = gameObject.GetComponentNonAlloc<EnemyBase>();
-      if ((UnityEngine.Object) attacker == (UnityEngine.Object) null)
+      if (attacker == null)
         return;
       attacker.PunchEvent += OnPunchEvent;
     }
 
     private void Unsubscribe()
     {
-      if ((UnityEngine.Object) attacker != (UnityEngine.Object) null)
+      if (attacker != null)
       {
         attacker.PunchEvent -= OnPunchEvent;
         attacker = null;
@@ -120,7 +121,7 @@ namespace Engine.Source.Commons.Abilities.Controllers
     {
       values.Clear();
       NPCWeaponService component = ((IEntityView) itemOwner).GameObject.GetComponent<NPCWeaponService>();
-      if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+      if (component == null)
         return;
       Vector3 knifeSpeed = component.KnifeSpeed;
       Vector3 knifePosition = component.KnifePosition;
@@ -129,13 +130,13 @@ namespace Engine.Source.Commons.Abilities.Controllers
       float magnitude = vector3.magnitude;
       float num1 = Mathf.Atan2(vector3.y, vector3.x) * 57.29578f;
       Vector3 viewportPoint = camera.WorldToViewportPoint(knifePosition);
-      if ((double) viewportPoint.z < 0.0)
+      if (viewportPoint.z < 0.0)
         viewportPoint *= -1f;
       float num2 = Mathf.Clamp01(viewportPoint.x) - 0.5f;
       float num3 = Mathf.Clamp01(viewportPoint.y) - 0.5f;
       float max = 0.4f;
       Vector2 vector2 = new Vector2(Mathf.Clamp(num2, -max, max), Mathf.Clamp(num3, -max, max));
-      values.Add(AbilityValueNameEnum.ScarPosition, (IAbilityValue) new AbilityValue<Vector2> {
+      values.Add(AbilityValueNameEnum.ScarPosition, new AbilityValue<Vector2> {
         Value = vector2
       });
       values.Add(AbilityValueNameEnum.ScarAngle, new AbilityValue<float> {

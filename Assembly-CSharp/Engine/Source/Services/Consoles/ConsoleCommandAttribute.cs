@@ -2,6 +2,7 @@
 using System.Reflection;
 using Cofe.Meta;
 using Cofe.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Services.Consoles
 {
@@ -21,7 +22,7 @@ namespace Engine.Source.Services.Consoles
         return;
       ParameterInfo[] parameters = method.GetParameters();
       if (method.ReturnType != typeof (string) || parameters.Length != 2 || parameters[0].ParameterType != typeof (string) || parameters[1].ParameterType != typeof (ConsoleParameter[]))
-        Debug.LogError((object) ("Console command wrong parameters : " + name));
+        Debug.LogError("Console command wrong parameters : " + name);
       else
         container.GetHandler(Id).AddHandle((target, data) => ConsoleService.RegisterCommand(name, (command, parameters2) =>
         {

@@ -2,6 +2,7 @@
 using Engine.Common.Generator;
 using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -41,7 +42,7 @@ namespace FlowCanvas.Nodes
       AddFlowInput("In", () =>
       {
         outs[current].Call();
-        current = (int) Mathf.Repeat((float) (current + 1), (float) portCount);
+        current = (int) Mathf.Repeat(current + 1, portCount);
       });
       AddFlowInput("Reset", () => current = 0);
       AddValueOutput("Current", () => current);

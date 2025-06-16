@@ -4,6 +4,7 @@ using Engine.Common.Blenders;
 using Engine.Common.Generator;
 using Engine.Source.Blenders;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Drawing.Gradient
 {

@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using Object = UnityEngine.Object;
 
 public static class GameObjectUtility2
 {
   private static List<Component> tmp = new List<Component>();
 
-  public static T FindObjectOfType<T>() where T : UnityEngine.Object
+  public static T FindObjectOfType<T>() where T : Object
   {
     for (int index = 0; index < SceneManager.sceneCount; ++index)
     {
@@ -15,7 +18,7 @@ public static class GameObjectUtility2
         foreach (GameObject rootGameObject in sceneAt.GetRootGameObjects())
         {
           T componentInChildren = rootGameObject.GetComponentInChildren<T>(true);
-          if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
+          if (componentInChildren != null)
             return componentInChildren;
         }
       }
@@ -43,9 +46,9 @@ public static class GameObjectUtility2
   {
     string[] paths = path.Split(new char[1]{ '/' }, StringSplitOptions.RemoveEmptyEntries);
     if (paths.Length < 2)
-      return (GameObject) null;
+      return null;
     Scene sceneByName = SceneManager.GetSceneByName(paths[0]);
-    return !sceneByName.IsValid() ? (GameObject) null : GetChildGameObject((IEnumerable<GameObject>) sceneByName.GetRootGameObjects(), paths, 1);
+    return !sceneByName.IsValid() ? null : GetChildGameObject(sceneByName.GetRootGameObjects(), paths, 1);
   }
 
   private static GameObject GetChildGameObject(
@@ -59,18 +62,18 @@ public static class GameObjectUtility2
       if (go.name == path)
         return pathIndex == paths.Length - 1 ? go : GetChildGameObject(go.GetChilds(), paths, pathIndex + 1);
     }
-    return (GameObject) null;
+    return null;
   }
 
   public static IEnumerable<GameObject> GetChilds(this GameObject go)
   {
-    if ((UnityEngine.Object) go != (UnityEngine.Object) null)
+    if (go != null)
     {
       for (int index = 0; index < go.transform.childCount; ++index)
       {
         Transform child = go.transform.GetChild(index);
         yield return child.gameObject;
-        child = (Transform) null;
+        child = null;
       }
     }
   }
@@ -90,7 +93,7 @@ public static class GameObjectUtility2
       yield return child;
       foreach (GameObject child2 in GetAllChildren(child))
         yield return child2;
-      child = (GameObject) null;
+      child = null;
     }
   }
 }

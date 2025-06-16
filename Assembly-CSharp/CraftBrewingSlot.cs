@@ -8,6 +8,9 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class CraftBrewingSlot : MonoBehaviour
 {
@@ -38,7 +41,7 @@ public class CraftBrewingSlot : MonoBehaviour
   private IStorableComponent craftedItem = null;
   private bool _IsItemCrafted;
   private bool _CanTakeCraft;
-  private ItemCraftTimeView craftTime = null;
+  private ItemCraftTimeView craftTime;
 
   public event Action<IInventoryComponent> CraftEvent;
 
@@ -77,11 +80,11 @@ public class CraftBrewingSlot : MonoBehaviour
   {
     durabilityRangeCheck.HiddenRange = new Vector2(0.0f, durabilityThreshold);
     containerView.ItemInteractEvent += FireTakeEvent;
-    button.onClick.AddListener(new UnityAction(FireCraftEvent));
+    button.onClick.AddListener(FireCraftEvent);
     IsItemCrafted = false;
     SetSelected(false);
-    craftTime = this.GetComponentInChildren<ItemCraftTimeView>();
-    if (!((UnityEngine.Object) craftTime != (UnityEngine.Object) null))
+    craftTime = GetComponentInChildren<ItemCraftTimeView>();
+    if (!(craftTime != null))
       return;
     craftTime.OnItemReady += OnItemReady;
   }
@@ -106,12 +109,12 @@ public class CraftBrewingSlot : MonoBehaviour
     {
       InputService.Instance.onJoystickUsedChanged += OnJoystick;
       brewingTextBuffer = brewingTextObject.text;
-      if ((UnityEngine.Object) raycaster == (UnityEngine.Object) null)
+      if (raycaster == null)
       {
-        raycaster = this.GetComponentInParent<GraphicRaycaster>();
+        raycaster = GetComponentInParent<GraphicRaycaster>();
         pointerData = new PointerEventData(EventSystem.current)
         {
-          position = (Vector2) button.transform.position
+          position = button.transform.position
         };
       }
     }
@@ -127,7 +130,7 @@ public class CraftBrewingSlot : MonoBehaviour
     takeConsoleTooltip.SetActive(true);
   }
 
-  public bool IsVisible => this.GetComponent<HideableCouple>().Visible;
+  public bool IsVisible => GetComponent<HideableCouple>().Visible;
 
   public bool IsSelected
   {
@@ -150,8 +153,8 @@ public class CraftBrewingSlot : MonoBehaviour
     {
       if (!_IsItemCrafted)
       {
-        SwitchingItemView componentInChildren = this.GetComponentInChildren<SwitchingItemView>();
-        if ((UnityEngine.Object) componentInChildren != (UnityEngine.Object) null)
+        SwitchingItemView componentInChildren = GetComponentInChildren<SwitchingItemView>();
+        if (componentInChildren != null)
           IsItemCrafted = componentInChildren.Storable != null;
       }
       return _IsItemCrafted;
@@ -164,12 +167,12 @@ public class CraftBrewingSlot : MonoBehaviour
     if (!InputService.Instance.JoystickUsed || IsItemCrafted && !CanTakeCraft || !down)
       return false;
     List<RaycastResult> source = new List<RaycastResult>();
-    if (pointerData == null || (UnityEngine.Object) raycaster == (UnityEngine.Object) null)
+    if (pointerData == null || raycaster == null)
     {
-      raycaster = this.GetComponentInParent<GraphicRaycaster>();
+      raycaster = GetComponentInParent<GraphicRaycaster>();
       pointerData = new PointerEventData(EventSystem.current)
       {
-        position = (Vector2) button.transform.position
+        position = button.transform.position
       };
     }
     if (pointerData == null)
@@ -178,11 +181,11 @@ public class CraftBrewingSlot : MonoBehaviour
     if (source.Count != 0)
     {
       GameObject gameObject = source.First().gameObject;
-      if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+      if (gameObject != null)
       {
         pointerData = new PointerEventData(EventSystem.current)
         {
-          position = (Vector2) button.transform.position
+          position = button.transform.position
         };
         EmulateClickOnConsole(source.First(), gameObject);
         return true;
@@ -200,16 +203,16 @@ public class CraftBrewingSlot : MonoBehaviour
     pointerData.pressPosition = pointerData.position;
     pointerData.pointerCurrentRaycast = raycastResult;
     pointerData.pointerPressRaycast = pointerData.pointerCurrentRaycast;
-    GameObject gameObject = ExecuteEvents.ExecuteHierarchy<IPointerDownHandler>(currentOverGo, (BaseEventData) pointerData, ExecuteEvents.pointerDownHandler);
-    if ((UnityEngine.Object) gameObject == (UnityEngine.Object) null)
+    GameObject gameObject = ExecuteEvents.ExecuteHierarchy(currentOverGo, pointerData, ExecuteEvents.pointerDownHandler);
+    if (gameObject == null)
       gameObject = ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo);
     pointerData.clickCount = 1;
     pointerData.pointerPress = gameObject;
     pointerData.rawPointerPress = currentOverGo;
-    ExecuteEvents.Execute<IPointerUpHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerUpHandler);
-    if (!((UnityEngine.Object) pointerData.pointerPress == (UnityEngine.Object) ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !pointerData.eligibleForClick)
+    ExecuteEvents.Execute(pointerData.pointerPress, pointerData, ExecuteEvents.pointerUpHandler);
+    if (!(pointerData.pointerPress == ExecuteEvents.GetEventHandler<IPointerClickHandler>(currentOverGo)) || !pointerData.eligibleForClick)
       return;
-    ExecuteEvents.Execute<IPointerClickHandler>(pointerData.pointerPress, (BaseEventData) pointerData, ExecuteEvents.pointerClickHandler);
+    ExecuteEvents.Execute(pointerData.pointerPress, pointerData, ExecuteEvents.pointerClickHandler);
   }
 
   public bool IsEnabled { get; set; }
@@ -220,9 +223,9 @@ public class CraftBrewingSlot : MonoBehaviour
   {
     get
     {
-      if ((UnityEngine.Object) craftTime == (UnityEngine.Object) null)
-        craftTime = this.GetComponentInChildren<ItemCraftTimeView>();
-      return (UnityEngine.Object) craftTime != (UnityEngine.Object) null && craftTime.IsItemReady;
+      if (craftTime == null)
+        craftTime = GetComponentInChildren<ItemCraftTimeView>();
+      return craftTime != null && craftTime.IsItemReady;
     }
     private set => _CanTakeCraft = value;
   }
@@ -259,7 +262,7 @@ public class CraftBrewingSlot : MonoBehaviour
   {
     InputService.Instance.onJoystickUsedChanged -= OnJoystick;
     SetSelected(false);
-    if (!((UnityEngine.Object) craftTime != (UnityEngine.Object) null))
+    if (!(craftTime != null))
       return;
     craftTime.OnItemReady -= OnItemReady;
   }

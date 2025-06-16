@@ -5,6 +5,7 @@ using Cofe.Serializations.Data.Xml;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Comparers;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime
 {
@@ -31,11 +32,11 @@ namespace BehaviorDesigner.Runtime
       }
       catch (Exception ex)
       {
-        Debug.LogError((object) ("Exception : " + ex + "\r\ncontext : " + context));
+        Debug.LogError("Exception : " + ex + "\r\ncontext : " + context);
       }
       BehaviorTreeDataContext.Tasks = null;
       BehaviorTreeDataContext.Variables = null;
-      BehaviorTreeDataContext.ContextUnityObjects = (List<UnityEngine.Object>) null;
+      BehaviorTreeDataContext.ContextUnityObjects = null;
     }
   }
 }

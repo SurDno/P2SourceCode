@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Engine
 {
@@ -12,7 +13,7 @@ namespace Engine
       Action<UnityEngine.Camera, RenderTexture, RenderTexture> renderEvent = RenderEvent;
       if (renderEvent == null)
         return;
-      renderEvent(this.gameObject.GetComponent<UnityEngine.Camera>(), source, destination);
+      renderEvent(gameObject.GetComponent<UnityEngine.Camera>(), source, destination);
     }
   }
 }

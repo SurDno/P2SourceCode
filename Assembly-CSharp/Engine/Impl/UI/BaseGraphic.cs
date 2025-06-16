@@ -1,4 +1,6 @@
 ﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI
 {
@@ -27,10 +29,10 @@ namespace Engine.Impl.UI
       get => transform2.parent.GetComponent<BaseGraphic>();
       set
       {
-        if ((UnityEngine.Object) value == (UnityEngine.Object) null)
-          transform2.SetParent((UnityEngine.Transform) null);
+        if (value == null)
+          transform2.SetParent(null);
         else
-          transform2.SetParent((UnityEngine.Transform) value.transform2, false);
+          transform2.SetParent(value.transform2, false);
       }
     }
 
@@ -58,14 +60,14 @@ namespace Engine.Impl.UI
 
     public Vector2 Position
     {
-      get => (Vector2) transform2.position;
-      set => transform2.position = (Vector3) value;
+      get => transform2.position;
+      set => transform2.position = value;
     }
 
     public Vector2 LocalPosition
     {
-      get => (Vector2) transform2.localPosition;
-      set => transform2.localPosition = (Vector3) value;
+      get => transform2.localPosition;
+      set => transform2.localPosition = value;
     }
 
     public Rect Rectangle => transform2.rect;
@@ -94,10 +96,10 @@ namespace Engine.Impl.UI
 
     public void Dispose()
     {
-      if (isDisposed || (UnityEngine.Object) this == (UnityEngine.Object) null)
+      if (isDisposed || this == null)
         return;
       isDisposed = true;
-      UnityEngine.Object.Destroy((UnityEngine.Object) this.gameObject);
+      Destroy(gameObject);
     }
 
     [field: NonSerialized]
@@ -108,8 +110,8 @@ namespace Engine.Impl.UI
 
     protected override void Awake()
     {
-      gameObject2 = this.gameObject;
-      transform2 = this.gameObject.GetComponent<RectTransform>();
+      gameObject2 = gameObject;
+      transform2 = gameObject.GetComponent<RectTransform>();
     }
   }
 }

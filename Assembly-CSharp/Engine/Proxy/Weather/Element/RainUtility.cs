@@ -7,7 +7,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyTo(Impl.Weather.Element.Rain rain)
     {
       RainManager instance = RainManager.Instance;
-      if ((Object) instance == (Object) null)
+      if (instance == null)
         return;
       rain.Intensity = instance.rainIntensity;
       rain.TerrainDryTime = instance.terrainDryTime;
@@ -20,7 +20,7 @@ namespace Engine.Proxy.Weather.Element
     public static void CopyFrom(Impl.Weather.Element.Rain rain)
     {
       RainManager instance = RainManager.Instance;
-      if ((Object) instance == (Object) null)
+      if (instance == null)
         return;
       instance.rainIntensity = rain.Intensity;
       instance.terrainDryTime = rain.TerrainDryTime;

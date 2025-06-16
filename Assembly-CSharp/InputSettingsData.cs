@@ -1,5 +1,6 @@
 ﻿using Cofe.Meta;
 using Engine.Source.Services.Consoles;
+using UnityEngine;
 
 [Initialisable]
 public class InputSettingsData : ScriptableObjectInstance<InputSettingsData>

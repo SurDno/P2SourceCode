@@ -1,4 +1,5 @@
 ﻿using InputServices;
+using UnityEngine;
 
 public class GlyphSelectable : MonoBehaviour
 {
@@ -14,8 +15,8 @@ public class GlyphSelectable : MonoBehaviour
     _selectedFrame.SetActive(selected);
     if (selected)
     {
-      _selectedFrame.transform.position = this.transform.position;
-      imageRect.sizeDelta = (double) objectRect.sizeDelta.x > 100.0 ? new Vector2(120f, 120f) : new Vector2(110f, 100f);
+      _selectedFrame.transform.position = transform.position;
+      imageRect.sizeDelta = objectRect.sizeDelta.x > 100.0 ? new Vector2(120f, 120f) : new Vector2(110f, 100f);
     }
     IsSelected = selected;
   }
@@ -23,8 +24,8 @@ public class GlyphSelectable : MonoBehaviour
   private void OnEnable()
   {
     InputService.Instance.onJoystickUsedChanged += OnJoystick;
-    objectRect = this.GetComponent<RectTransform>();
-    imageRect = this.GetComponent<RectTransform>();
+    objectRect = GetComponent<RectTransform>();
+    imageRect = GetComponent<RectTransform>();
     SetSelected(false);
   }
 

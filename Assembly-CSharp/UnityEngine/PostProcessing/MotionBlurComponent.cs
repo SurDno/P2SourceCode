@@ -1,4 +1,6 @@
-﻿namespace UnityEngine.PostProcessing
+﻿using UnityEngine.Rendering;
+
+namespace UnityEngine.PostProcessing
 {
   public sealed class MotionBlurComponent : PostProcessingComponentCommandBuffer<MotionBlurModel>
   {
@@ -70,22 +72,22 @@
         cb.GetTemporaryRT(tempRt, context.width, context.height, 0, FilterMode.Point, format);
         if (settings.shutterAngle > 0.0 && settings.frameBlending > 0.0)
         {
-          reconstructionFilter.ProcessImage(context, cb, ref settings, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) tempRt, material);
-          frameBlendingFilter.BlendFrames(cb, settings.frameBlending, (RenderTargetIdentifier) tempRt, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, material);
-          frameBlendingFilter.PushFrame(cb, (RenderTargetIdentifier) tempRt, context.width, context.height, material);
+          reconstructionFilter.ProcessImage(context, cb, ref settings, BuiltinRenderTextureType.CameraTarget, tempRt, material);
+          frameBlendingFilter.BlendFrames(cb, settings.frameBlending, tempRt, BuiltinRenderTextureType.CameraTarget, material);
+          frameBlendingFilter.PushFrame(cb, tempRt, context.width, context.height, material);
         }
         else if (settings.shutterAngle > 0.0)
         {
-          cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
-          cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) tempRt, mat, 0);
-          reconstructionFilter.ProcessImage(context, cb, ref settings, (RenderTargetIdentifier) tempRt, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, material);
+          cb.SetGlobalTexture(Uniforms._MainTex, BuiltinRenderTextureType.CameraTarget);
+          cb.Blit(BuiltinRenderTextureType.CameraTarget, tempRt, mat, 0);
+          reconstructionFilter.ProcessImage(context, cb, ref settings, tempRt, BuiltinRenderTextureType.CameraTarget, material);
         }
         else if (settings.frameBlending > 0.0)
         {
-          cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget);
-          cb.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, (RenderTargetIdentifier) tempRt, mat, 0);
-          frameBlendingFilter.BlendFrames(cb, settings.frameBlending, (RenderTargetIdentifier) tempRt, (RenderTargetIdentifier) BuiltinRenderTextureType.CameraTarget, material);
-          frameBlendingFilter.PushFrame(cb, (RenderTargetIdentifier) tempRt, context.width, context.height, material);
+          cb.SetGlobalTexture(Uniforms._MainTex, BuiltinRenderTextureType.CameraTarget);
+          cb.Blit(BuiltinRenderTextureType.CameraTarget, tempRt, mat, 0);
+          frameBlendingFilter.BlendFrames(cb, settings.frameBlending, tempRt, BuiltinRenderTextureType.CameraTarget, material);
+          frameBlendingFilter.PushFrame(cb, tempRt, context.width, context.height, material);
         }
         cb.ReleaseTemporaryRT(tempRt);
       }
@@ -167,43 +169,43 @@
       {
         int num1 = (int) (5.0 * context.height / 100.0);
         int num2 = ((num1 - 1) / 8 + 1) * 8;
-        float num3 = (float) (settings.shutterAngle / 360.0 / ((double) Time.deltaTime * 30.0));
+        float num3 = (float) (settings.shutterAngle / 360.0 / (Time.deltaTime * 30.0));
         cb.SetGlobalFloat(Uniforms._VelocityScale, num3);
-        cb.SetGlobalFloat(Uniforms._MaxBlurRadius, (float) num1);
+        cb.SetGlobalFloat(Uniforms._MaxBlurRadius, num1);
         cb.SetGlobalFloat(Uniforms._RcpMaxBlurRadius, 1f / num1);
         int velocityTex = Uniforms._VelocityTex;
         cb.GetTemporaryRT(velocityTex, context.width, context.height, 0, FilterMode.Point, m_PackedRTFormat, RenderTextureReadWrite.Linear);
-        cb.Blit((Texture) null, (RenderTargetIdentifier) velocityTex, material, 0);
+        cb.Blit(null, velocityTex, material, 0);
         int tile2Rt = Uniforms._Tile2RT;
         cb.GetTemporaryRT(tile2Rt, context.width / 2, context.height / 2, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
-        cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) velocityTex);
-        cb.Blit((RenderTargetIdentifier) velocityTex, (RenderTargetIdentifier) tile2Rt, material, 1);
+        cb.SetGlobalTexture(Uniforms._MainTex, velocityTex);
+        cb.Blit(velocityTex, tile2Rt, material, 1);
         int tile4Rt = Uniforms._Tile4RT;
         cb.GetTemporaryRT(tile4Rt, context.width / 4, context.height / 4, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
-        cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) tile2Rt);
-        cb.Blit((RenderTargetIdentifier) tile2Rt, (RenderTargetIdentifier) tile4Rt, material, 2);
+        cb.SetGlobalTexture(Uniforms._MainTex, tile2Rt);
+        cb.Blit(tile2Rt, tile4Rt, material, 2);
         cb.ReleaseTemporaryRT(tile2Rt);
         int tile8Rt = Uniforms._Tile8RT;
         cb.GetTemporaryRT(tile8Rt, context.width / 8, context.height / 8, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
-        cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) tile4Rt);
-        cb.Blit((RenderTargetIdentifier) tile4Rt, (RenderTargetIdentifier) tile8Rt, material, 2);
+        cb.SetGlobalTexture(Uniforms._MainTex, tile4Rt);
+        cb.Blit(tile4Rt, tile8Rt, material, 2);
         cb.ReleaseTemporaryRT(tile4Rt);
         Vector2 vector2 = Vector2.one * (float) (num2 / 8.0 - 1.0) * -0.5f;
-        cb.SetGlobalVector(Uniforms._TileMaxOffs, (Vector4) vector2);
-        cb.SetGlobalFloat(Uniforms._TileMaxLoop, (float) (int) (num2 / 8.0));
+        cb.SetGlobalVector(Uniforms._TileMaxOffs, vector2);
+        cb.SetGlobalFloat(Uniforms._TileMaxLoop, (int) (num2 / 8.0));
         int tileVrt = Uniforms._TileVRT;
         cb.GetTemporaryRT(tileVrt, context.width / num2, context.height / num2, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
-        cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) tile8Rt);
-        cb.Blit((RenderTargetIdentifier) tile8Rt, (RenderTargetIdentifier) tileVrt, material, 3);
+        cb.SetGlobalTexture(Uniforms._MainTex, tile8Rt);
+        cb.Blit(tile8Rt, tileVrt, material, 3);
         cb.ReleaseTemporaryRT(tile8Rt);
         int neighborMaxTex = Uniforms._NeighborMaxTex;
         int width = context.width / num2;
         int height = context.height / num2;
         cb.GetTemporaryRT(neighborMaxTex, width, height, 0, FilterMode.Point, m_VectorRTFormat, RenderTextureReadWrite.Linear);
-        cb.SetGlobalTexture(Uniforms._MainTex, (RenderTargetIdentifier) tileVrt);
-        cb.Blit((RenderTargetIdentifier) tileVrt, (RenderTargetIdentifier) neighborMaxTex, material, 4);
+        cb.SetGlobalTexture(Uniforms._MainTex, tileVrt);
+        cb.Blit(tileVrt, neighborMaxTex, material, 4);
         cb.ReleaseTemporaryRT(tileVrt);
-        cb.SetGlobalFloat(Uniforms._LoopCount, (float) Mathf.Clamp(settings.sampleCount / 2, 1, 64));
+        cb.SetGlobalFloat(Uniforms._LoopCount, Mathf.Clamp(settings.sampleCount / 2, 1, 64));
         cb.SetGlobalTexture(Uniforms._MainTex, source);
         cb.Blit(source, destination, material, 5);
         cb.ReleaseTemporaryRT(velocityTex);
@@ -320,12 +322,12 @@
 
         public void Release()
         {
-          if ((Object) lumaTexture != (Object) null)
+          if (lumaTexture != null)
             RenderTexture.ReleaseTemporary(lumaTexture);
-          if ((Object) chromaTexture != (Object) null)
+          if (chromaTexture != null)
             RenderTexture.ReleaseTemporary(chromaTexture);
-          lumaTexture = (RenderTexture) null;
-          chromaTexture = (RenderTexture) null;
+          lumaTexture = null;
+          chromaTexture = null;
         }
 
         public void MakeRecord(

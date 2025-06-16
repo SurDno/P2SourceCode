@@ -9,6 +9,7 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
 
 [TaskDescription("Target is outdoor")]
 [TaskCategory("Pathologic")]
@@ -30,7 +31,7 @@ public class IsOutdoor : Conditional, IStub, ISerializeDataWrite, ISerializeData
 
   public override TaskStatus OnUpdate()
   {
-    return (!((UnityEngine.Object) Target.Value == (UnityEngine.Object) null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject))?.GetComponent<LocationItemComponent>().IsIndoor != Outdoor.Value ? TaskStatus.Success : TaskStatus.Failure;
+    return (!(Target.Value == null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject))?.GetComponent<LocationItemComponent>().IsIndoor != Outdoor.Value ? TaskStatus.Success : TaskStatus.Failure;
   }
 
   public void DataWrite(IDataWriter writer)

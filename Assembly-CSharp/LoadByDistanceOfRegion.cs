@@ -4,6 +4,7 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Inspectors;
 using Scripts.Behaviours.LoadControllers;
+using UnityEngine;
 
 public class LoadByDistanceOfRegion : BaseLoadByDistance, IEntityAttachable
 {
@@ -24,12 +25,12 @@ public class LoadByDistanceOfRegion : BaseLoadByDistance, IEntityAttachable
 
   private bool IsLoadCondition(Vector3 position)
   {
-    return (double) (position - region.RegionMesh.Center).magnitude < loadDistance + region.RegionMesh.Radius;
+    return (position - region.RegionMesh.Center).magnitude < (double) (loadDistance + region.RegionMesh.Radius);
   }
 
   private bool IsUnloadCondition(Vector3 position)
   {
-    return (double) (position - region.RegionMesh.Center).magnitude > unloadDistance + region.RegionMesh.Radius;
+    return (position - region.RegionMesh.Center).magnitude > (double) (unloadDistance + region.RegionMesh.Radius);
   }
 
   public void Attach(IEntity owner)
@@ -48,7 +49,7 @@ public class LoadByDistanceOfRegion : BaseLoadByDistance, IEntityAttachable
 
   private void Update()
   {
-    if (region == null || (Object) region.RegionMesh == (Object) null || model == null)
+    if (region == null || region.RegionMesh == null || model == null)
       return;
     IEntity player = ServiceLocator.GetService<ISimulation>().Player;
     if (player == null || !player.IsEnabledInHierarchy || player.GetComponent<NavigationComponent>().WaitTeleport)

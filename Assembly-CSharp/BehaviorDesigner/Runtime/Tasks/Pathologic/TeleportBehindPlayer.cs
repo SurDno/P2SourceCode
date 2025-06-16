@@ -13,6 +13,10 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using Engine.Source.Settings;
 using Scripts.Tools.Serializations.Converters;
+using UnityEngine;
+using UnityEngine.AI;
+using Object = UnityEngine.Object;
+using Random = UnityEngine.Random;
 
 namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 {
@@ -59,7 +63,7 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
       triesMade = 0;
       lastTryTime = Time.time;
       npcState = gameObject.GetComponent<NpcState>();
-      if (!(bool) (UnityEngine.Object) npcState)
+      if (!(bool) (Object) npcState)
         return;
       wasRestartBehaviourAfterTeleport = npcState.RestartBehaviourAfterTeleport;
       npcState.RestartBehaviourAfterTeleport = false;
@@ -67,16 +71,16 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
 
     public override void OnEnd()
     {
-      if ((bool) (UnityEngine.Object) npcState)
+      if ((bool) (Object) npcState)
         npcState.RestartBehaviourAfterTeleport = wasRestartBehaviourAfterTeleport;
       triesMade = 0;
     }
 
     public override TaskStatus OnUpdate()
     {
-      if (entity == null || player == null || (UnityEngine.Object) ((IEntityView) player).GameObject == (UnityEngine.Object) null)
+      if (entity == null || player == null || ((IEntityView) player).GameObject == null)
         return TaskStatus.Failure;
-      if ((double) Time.time >= lastTryTime + (double) timeBetweenTries)
+      if (Time.time >= lastTryTime + (double) timeBetweenTries)
       {
         Vector3 vector3 = CountRandomPoint(((IEntityView) player).GameObject);
         if (TryPoint(vector3, ((IEntityView) player).GameObject.transform.position))
@@ -96,9 +100,9 @@ namespace BehaviorDesigner.Runtime.Tasks.Pathologic
     private Vector3 CountRandomPoint(GameObject player)
     {
       float num1 = UsePlayerVisionAngle.Value ? InstanceByRequest<GraphicsGameSettings>.Instance.FieldOfView.Value : 0.0f;
-      float num2 = UnityEngine.Random.Range(num1 - 180f, 180f - num1);
+      float num2 = Random.Range(num1 - 180f, 180f - num1);
       float y = player.transform.rotation.eulerAngles.y + num2;
-      float num3 = UnityEngine.Random.Range(MinSearchDistance.Value, MaxSearchDistance.Value);
+      float num3 = Random.Range(MinSearchDistance.Value, MaxSearchDistance.Value);
       return player.transform.position + Quaternion.Euler(0.0f, y, 0.0f) * Vector3.back * num3;
     }
 

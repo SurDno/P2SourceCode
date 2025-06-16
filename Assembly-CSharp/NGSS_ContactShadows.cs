@@ -1,11 +1,14 @@
-﻿[ImageEffectAllowedInSceneView]
+﻿using UnityEngine;
+using UnityEngine.Rendering;
+
+[ImageEffectAllowedInSceneView]
 [ExecuteInEditMode]
 public class NGSS_ContactShadows : MonoBehaviour
 {
   public Shader contactShadowsShader;
   [Header("SHADOWS SETTINGS")]
   [Tooltip("Poisson Noise. Randomize samples to remove repeated patterns.")]
-  public bool m_noiseFilter = false;
+  public bool m_noiseFilter;
   [Tooltip("Tweak this value to remove soft-shadows leaking around edges.")]
   [Range(0.01f, 1f)]
   public float m_shadowsEdgeTolerance = 0.25f;
@@ -41,13 +44,13 @@ public class NGSS_ContactShadows : MonoBehaviour
   {
     get
     {
-      if ((Object) _mCamera == (Object) null)
+      if (_mCamera == null)
       {
-        _mCamera = this.GetComponent<Camera>();
-        if ((Object) _mCamera == (Object) null)
+        _mCamera = GetComponent<Camera>();
+        if (_mCamera == null)
           _mCamera = Camera.main;
-        if ((Object) _mCamera == (Object) null)
-          Debug.LogError((object) "NGSS Error: No MainCamera found, please provide one.", (Object) this);
+        if (_mCamera == null)
+          Debug.LogError("NGSS Error: No MainCamera found, please provide one.", this);
         else
           _mCamera.depthTextureMode |= DepthTextureMode.Depth;
       }
@@ -59,15 +62,15 @@ public class NGSS_ContactShadows : MonoBehaviour
   {
     get
     {
-      if ((Object) _mMaterial == (Object) null)
+      if (_mMaterial == null)
       {
-        if ((Object) contactShadowsShader != (Object) null)
+        if (contactShadowsShader != null)
           _mMaterial = new Material(contactShadowsShader);
-        if ((Object) _mMaterial == (Object) null)
+        if (_mMaterial == null)
         {
-          Debug.LogWarning((object) "NGSS Warning: can't find NGSS_ContactShadows shader, make sure it's on your project.", (Object) this);
-          this.enabled = false;
-          return (Material) null;
+          Debug.LogWarning("NGSS Warning: can't find NGSS_ContactShadows shader, make sure it's on your project.", this);
+          enabled = false;
+          return null;
         }
       }
       return _mMaterial;
@@ -107,7 +110,7 @@ public class NGSS_ContactShadows : MonoBehaviour
   {
     if (!isInitialized)
       return;
-    _mMaterial = (Material) null;
+    _mMaterial = null;
     bool flag = mCamera.actualRenderingPath == RenderingPath.Forward;
     if ((bool) (Object) mCamera)
       mCamera.RemoveCommandBuffer(flag ? CameraEvent.AfterDepthTexture : CameraEvent.BeforeLighting, computeShadowsCB);
@@ -122,12 +125,12 @@ public class NGSS_ContactShadows : MonoBehaviour
     if (isInitialized)
       return;
     Light light = MonoBehaviourInstance<NGSS_ContactShadowsSource>.Instance?.Light;
-    if ((Object) light == (Object) null || !light.isActiveAndEnabled)
+    if (light == null || !light.isActiveAndEnabled)
       return;
     if (mCamera.actualRenderingPath == RenderingPath.VertexLit)
     {
-      Debug.LogWarning((object) "Vertex Lit Rendering Path is not supported by NGSS Contact Shadows. Please set the Rendering Path in your game camera or Graphics Settings to something else than Vertex Lit.", (Object) this);
-      this.enabled = false;
+      Debug.LogWarning("Vertex Lit Rendering Path is not supported by NGSS Contact Shadows. Please set the Rendering Path in your game camera or Graphics Settings to something else than Vertex Lit.", this);
+      enabled = false;
     }
     else
     {
@@ -138,18 +141,18 @@ public class NGSS_ContactShadows : MonoBehaviour
       computeShadowsCB.GetTemporaryRT(id1, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.R8);
       computeShadowsCB.GetTemporaryRT(id2, -1, -1, 0, FilterMode.Bilinear, RenderTextureFormat.R8);
       computeShadowsCB.GetTemporaryRT(id3, -1, -1, 0, FilterMode.Point, RenderTextureFormat.RFloat);
-      computeShadowsCB.Blit((RenderTargetIdentifier) id1, (RenderTargetIdentifier) id3, mMaterial, 0);
-      computeShadowsCB.Blit((RenderTargetIdentifier) id3, (RenderTargetIdentifier) id1, mMaterial, 1);
-      computeShadowsCB.SetGlobalVector("ShadowsKernel", (Vector4) new Vector2(0.0f, 1f));
-      computeShadowsCB.Blit((RenderTargetIdentifier) id1, (RenderTargetIdentifier) id2, mMaterial, 2);
-      computeShadowsCB.SetGlobalVector("ShadowsKernel", (Vector4) new Vector2(1f, 0.0f));
-      computeShadowsCB.Blit((RenderTargetIdentifier) id2, (RenderTargetIdentifier) id1, mMaterial, 2);
-      computeShadowsCB.SetGlobalVector("ShadowsKernel", (Vector4) new Vector2(0.0f, 2f));
-      computeShadowsCB.Blit((RenderTargetIdentifier) id1, (RenderTargetIdentifier) id2, mMaterial, 2);
-      computeShadowsCB.SetGlobalVector("ShadowsKernel", (Vector4) new Vector2(2f, 0.0f));
-      computeShadowsCB.Blit((RenderTargetIdentifier) id2, (RenderTargetIdentifier) id1, mMaterial, 2);
-      computeShadowsCB.SetGlobalTexture("NGSS_ContactShadowsTexture", (RenderTargetIdentifier) id1);
-      blendShadowsCB.Blit((RenderTargetIdentifier) BuiltinRenderTextureType.CurrentActive, (RenderTargetIdentifier) BuiltinRenderTextureType.CurrentActive, mMaterial, 3);
+      computeShadowsCB.Blit(id1, id3, mMaterial, 0);
+      computeShadowsCB.Blit(id3, id1, mMaterial, 1);
+      computeShadowsCB.SetGlobalVector("ShadowsKernel", new Vector2(0.0f, 1f));
+      computeShadowsCB.Blit(id1, id2, mMaterial, 2);
+      computeShadowsCB.SetGlobalVector("ShadowsKernel", new Vector2(1f, 0.0f));
+      computeShadowsCB.Blit(id2, id1, mMaterial, 2);
+      computeShadowsCB.SetGlobalVector("ShadowsKernel", new Vector2(0.0f, 2f));
+      computeShadowsCB.Blit(id1, id2, mMaterial, 2);
+      computeShadowsCB.SetGlobalVector("ShadowsKernel", new Vector2(2f, 0.0f));
+      computeShadowsCB.Blit(id2, id1, mMaterial, 2);
+      computeShadowsCB.SetGlobalTexture("NGSS_ContactShadowsTexture", id1);
+      blendShadowsCB.Blit(BuiltinRenderTextureType.CurrentActive, BuiltinRenderTextureType.CurrentActive, mMaterial, 3);
       isInitialized = true;
     }
   }
@@ -163,8 +166,8 @@ public class NGSS_ContactShadows : MonoBehaviour
   {
     if (IsNotSupported())
     {
-      Debug.LogWarning((object) "Unsupported graphics API, NGSS requires at least SM3.0 or higher and DX9 is not supported.", (Object) this);
-      this.enabled = false;
+      Debug.LogWarning("Unsupported graphics API, NGSS requires at least SM3.0 or higher and DX9 is not supported.", this);
+      enabled = false;
     }
     else
       Initialize();
@@ -179,7 +182,7 @@ public class NGSS_ContactShadows : MonoBehaviour
     Light light = MonoBehaviourInstance<NGSS_ContactShadowsSource>.Instance?.Light;
     if (isInitialized)
     {
-      if ((Object) light == (Object) null || !light.isActiveAndEnabled)
+      if (light == null || !light.isActiveAndEnabled)
       {
         Deinitialize();
         return;
@@ -191,7 +194,7 @@ public class NGSS_ContactShadows : MonoBehaviour
       if (!isInitialized)
         return;
     }
-    mMaterial.SetVector("LightDir", (Vector4) mCamera.transform.InverseTransformDirection(light.transform.forward));
+    mMaterial.SetVector("LightDir", mCamera.transform.InverseTransformDirection(light.transform.forward));
     mMaterial.SetFloat("ShadowsOpacity", 1f - light.shadowStrength);
     mMaterial.SetFloat("ShadowsEdgeTolerance", m_shadowsEdgeTolerance * 0.075f);
     mMaterial.SetFloat("ShadowsSoftness", m_shadowsSoftness * 4f);
@@ -199,7 +202,7 @@ public class NGSS_ContactShadows : MonoBehaviour
     mMaterial.SetFloat("ShadowsFade", m_shadowsFade);
     mMaterial.SetFloat("ShadowsBias", m_shadowsOffset * 0.02f);
     mMaterial.SetFloat("RayWidth", m_rayWidth);
-    mMaterial.SetFloat("RaySamples", (float) m_raySamples);
+    mMaterial.SetFloat("RaySamples", m_raySamples);
     mMaterial.SetFloat("RaySamplesScale", m_raySamplesScale);
     if (m_noiseFilter)
       mMaterial.EnableKeyword("NGSS_CONTACT_SHADOWS_USE_NOISE");

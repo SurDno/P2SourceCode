@@ -1,5 +1,6 @@
 ﻿using Engine.Source.Audio;
 using Externals.LipSync;
+using UnityEngine;
 
 public class Lipsync : MonoBehaviour
 {
@@ -82,7 +83,7 @@ public class Lipsync : MonoBehaviour
     if (annoReader != null)
     {
       if (audioState != null && !audioState.Complete)
-        UpdateLipsync((int) ((double) audioState.AudioSource.time * 1000.0));
+        UpdateLipsync((int) (audioState.AudioSource.time * 1000.0));
       else
         Stop();
     }

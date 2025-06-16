@@ -6,6 +6,7 @@ using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 using IUpdatable = NodeCanvas.Framework.IUpdatable;
 
 namespace Assets.Engine.Source.Blueprints

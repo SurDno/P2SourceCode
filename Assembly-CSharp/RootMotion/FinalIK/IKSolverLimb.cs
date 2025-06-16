@@ -1,4 +1,5 @@
 ﻿using System;
+using UnityEngine;
 
 namespace RootMotion.FinalIK
 {
@@ -43,9 +44,9 @@ namespace RootMotion.FinalIK
     protected override void OnInitiateVirtual()
     {
       defaultRootRotation = root.rotation;
-      if ((UnityEngine.Object) bone1.transform.parent != (UnityEngine.Object) null)
+      if (bone1.transform.parent != null)
         parentDefaultRotation = Quaternion.Inverse(defaultRootRotation) * bone1.transform.parent.rotation;
-      if ((UnityEngine.Object) bone3.rotationLimit != (UnityEngine.Object) null)
+      if (bone3.rotationLimit != null)
         bone3.rotationLimit.Disable();
       bone3DefaultRotation = bone3.transform.rotation;
       Vector3 vector3 = Vector3.Cross(bone2.transform.position - bone1.transform.position, bone3.transform.position - bone2.transform.position);
@@ -117,9 +118,9 @@ namespace RootMotion.FinalIK
         case BendModifier.Target:
           return Quaternion.Slerp(Quaternion.identity, IKRotation * Quaternion.Inverse(bone3DefaultRotation), bendModifierWeight) * bendNormal;
         case BendModifier.Parent:
-          return (UnityEngine.Object) bone1.transform.parent == (UnityEngine.Object) null ? bendNormal : Quaternion.Slerp(Quaternion.identity, bone1.transform.parent.rotation * Quaternion.Inverse(parentDefaultRotation) * Quaternion.Inverse(defaultRootRotation), bendModifierWeight) * bendNormal;
+          return bone1.transform.parent == null ? bendNormal : Quaternion.Slerp(Quaternion.identity, bone1.transform.parent.rotation * Quaternion.Inverse(parentDefaultRotation) * Quaternion.Inverse(defaultRootRotation), bendModifierWeight) * bendNormal;
         case BendModifier.Arm:
-          if ((UnityEngine.Object) bone1.transform.parent == (UnityEngine.Object) null)
+          if (bone1.transform.parent == null)
             return bendNormal;
           if (goal == AvatarIKGoal.LeftFoot || goal == AvatarIKGoal.RightFoot)
           {
@@ -147,7 +148,7 @@ namespace RootMotion.FinalIK
           Vector3 b1 = bone1.transform.parent.rotation * Quaternion.Inverse(parentDefaultRotation) * a;
           return bendModifierWeight >= 1.0 ? b1 : Vector3.Lerp(bendNormal, b1, bendModifierWeight);
         case BendModifier.Goal:
-          if ((UnityEngine.Object) bendGoal == (UnityEngine.Object) null)
+          if (bendGoal == null)
           {
             if (!Warning.logged)
               LogWarning("Trying to use the 'Goal' Bend Modifier, but the Bend Goal is unassigned.");

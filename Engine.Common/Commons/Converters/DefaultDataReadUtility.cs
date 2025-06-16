@@ -1,9 +1,9 @@
-﻿using Cofe.Loggers;
+﻿using System;
+using System.Collections.Generic;
+using Cofe.Loggers;
 using Cofe.Proxies;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
-using System;
-using System.Collections.Generic;
 
 namespace Engine.Common.Commons.Converters
 {
@@ -74,7 +74,7 @@ namespace Engine.Common.Commons.Converters
       return DefaultConverter.ParseGuid(reader.ReadSimple(name));
     }
 
-    public static DateTime Read(IDataReader reader, string name, DateTime value)
+    public static System.DateTime Read(IDataReader reader, string name, System.DateTime value)
     {
       return DefaultConverter.ParseDateTime(reader.ReadSimple(name));
     }
@@ -92,13 +92,13 @@ namespace Engine.Common.Commons.Converters
     public static byte[] Read(IDataReader reader, string name, byte[] value)
     {
       IDataReader child = reader.GetChild(name);
-      return child != null ? Convert.FromBase64String(child.Read()) : (byte[]) null;
+      return child != null ? Convert.FromBase64String(child.Read()) : null;
     }
 
     public static T ReadEnum<T>(IDataReader reader, string name) where T : struct, IComparable, IConvertible, IFormattable
     {
       T result;
-      DefaultConverter.TryParseEnum<T>(reader.ReadSimple(name), out result);
+      DefaultConverter.TryParseEnum(reader.ReadSimple(name), out result);
       return result;
     }
 
@@ -108,7 +108,7 @@ namespace Engine.Common.Commons.Converters
       T obj = (T) ProxyFactory.Create(realType);
       if (!(obj is ISerializeDataRead serializeDataRead))
       {
-        Logger.AddError("Type : " + obj.GetType().Name + " is not " + (object) typeof (ISerializeDataRead));
+        Logger.AddError("Type : " + obj.GetType().Name + " is not " + typeof (ISerializeDataRead));
         return default (T);
       }
       serializeDataRead.DataRead(reader, realType);
@@ -118,7 +118,7 @@ namespace Engine.Common.Commons.Converters
     public static T ReadSerialize<T>(IDataReader reader, string name) where T : class
     {
       IDataReader child = reader.GetChild(name);
-      return child == null ? default (T) : DefaultDataReadUtility.ReadSerialize<T>(child);
+      return child == null ? default (T) : ReadSerialize<T>(child);
     }
 
     public static List<double> ReadList(IDataReader reader, string name, List<double> value)
@@ -167,7 +167,7 @@ namespace Engine.Common.Commons.Converters
         T obj = (T) ProxyFactory.Create(realType);
         if (!(obj is ISerializeDataRead serializeDataRead))
         {
-          Logger.AddError("Type : " + obj.GetType().Name + " is not " + (object) typeof (ISerializeDataRead));
+          Logger.AddError("Type : " + obj.GetType().Name + " is not " + typeof (ISerializeDataRead));
         }
         else
         {
@@ -190,7 +190,7 @@ namespace Engine.Common.Commons.Converters
       foreach (IDataReader child2 in child1.GetChilds())
       {
         T result;
-        DefaultConverter.TryParseEnum<T>(child2.Read(), out result);
+        DefaultConverter.TryParseEnum(child2.Read(), out result);
         value.Add(result);
       }
       return value;

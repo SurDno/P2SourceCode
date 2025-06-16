@@ -1,4 +1,6 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+
+namespace Engine.Impl.UI.Controls
 {
   public class TooltipStringView : StringView
   {
@@ -11,7 +13,7 @@
 
     protected override void ApplyStringValue()
     {
-      if (!((Object) tooltip != (Object) null))
+      if (!(tooltip != null))
         return;
       tooltip.Text = StringValue;
     }

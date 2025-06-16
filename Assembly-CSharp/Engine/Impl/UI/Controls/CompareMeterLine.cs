@@ -1,15 +1,18 @@
-﻿namespace Engine.Impl.UI.Controls
+﻿using UnityEngine;
+using UnityEngine.UI;
+
+namespace Engine.Impl.UI.Controls
 {
   public class CompareMeterLine : MonoBehaviour
   {
     [SerializeField]
-    private Transform Arrow = (Transform) null;
+    private Transform Arrow;
     [SerializeField]
-    private RectTransform Bar = (RectTransform) null;
+    private RectTransform Bar;
     [SerializeField]
-    private RectTransform leftBorder = (RectTransform) null;
+    private RectTransform leftBorder;
     [SerializeField]
-    private RectTransform rightBorder = (RectTransform) null;
+    private RectTransform rightBorder;
     [SerializeField]
     private GameObject priceItem;
     [SerializeField]
@@ -118,11 +121,11 @@
       leftArrow.SetActive(currentValue < (double) targetValue);
       rightArrow.SetActive(currentValue > (double) targetValue);
       if (barterMode)
-        priceText.text = " " + Mathf.Abs(currentValue - targetValue).ToString() + " ";
+        priceText.text = " " + Mathf.Abs(currentValue - targetValue) + " ";
       else if (currentValue - (double) targetValue > marketCoins)
-        priceText.text = " " + marketCoins + " / " + Mathf.Abs(currentValue - targetValue).ToString() + " ";
+        priceText.text = " " + marketCoins + " / " + Mathf.Abs(currentValue - targetValue) + " ";
       else
-        priceText.text = " " + Mathf.Abs(currentValue - targetValue).ToString() + " ";
+        priceText.text = " " + Mathf.Abs(currentValue - targetValue) + " ";
       priceText.color = storedCoins >= targetValue - (double) currentValue ? priceColorEnabled : priceColorDisabled;
     }
 
@@ -150,8 +153,8 @@
         current1 = Vector2.MoveTowards(current2, vector2_4, Mathf.Abs(f));
         vector2_5 = current1;
       }
-      Arrow.localPosition = (Vector3) vector2_5;
-      Bar.localPosition = (Vector3) new Vector2(current2.x, Bar.localPosition.y);
+      Arrow.localPosition = vector2_5;
+      Bar.localPosition = new Vector2(current2.x, Bar.localPosition.y);
       Bar.sizeDelta = new Vector2((current1 - current2).x, Bar.rect.height);
     }
   }

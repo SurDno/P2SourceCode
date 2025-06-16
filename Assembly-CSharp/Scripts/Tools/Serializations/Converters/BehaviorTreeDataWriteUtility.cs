@@ -6,6 +6,8 @@ using Cofe.Proxies;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Converters;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -33,7 +35,7 @@ namespace Scripts.Tools.Serializations.Converters
         }
       }
       else
-        Debug.LogError((object) ("Type : " + value.GetType().Name + " is not " + typeof (ISerializeDataWrite).Name));
+        Debug.LogError("Type : " + value.GetType().Name + " is not " + typeof (ISerializeDataWrite).Name);
     }
 
     public static void WriteCommonSharedList<T>(IDataWriter writer, string name, List<T> value) where T : SharedVariable
@@ -78,7 +80,7 @@ namespace Scripts.Tools.Serializations.Converters
       if (value != null)
       {
         if (value.Id == -1)
-          Debug.LogError((object) ("Node is not deserialized, name : " + name));
+          Debug.LogError("Node is not deserialized, name : " + name);
         writer.Begin(name, value.GetType(), false);
         writer.Write(DefaultConverter.ToString(value.Id));
         writer.End(name, false);
@@ -102,11 +104,11 @@ namespace Scripts.Tools.Serializations.Converters
       writer.End(name, true);
     }
 
-    public static void WriteUnity<T>(IDataWriter writer, string name, T value) where T : UnityEngine.Object
+    public static void WriteUnity<T>(IDataWriter writer, string name, T value) where T : Object
     {
-      if ((UnityEngine.Object) value != (UnityEngine.Object) null)
+      if (value != null)
       {
-        int objectIndex = BehaviorTreeDataContext.GetObjectIndex((UnityEngine.Object) value, BehaviorTreeDataContext.ContextUnityObjects);
+        int objectIndex = BehaviorTreeDataContext.GetObjectIndex(value, BehaviorTreeDataContext.ContextUnityObjects);
         DefaultDataWriteUtility.Write(writer, name, objectIndex);
       }
       else
@@ -133,7 +135,7 @@ namespace Scripts.Tools.Serializations.Converters
       UnityDataWriteUtility.Write(writer, name, value);
     }
 
-    public static void WriteUnityList<T>(IDataWriter writer, string name, List<T> value) where T : UnityEngine.Object
+    public static void WriteUnityList<T>(IDataWriter writer, string name, List<T> value) where T : Object
     {
       if (value == null)
         return;
@@ -144,7 +146,7 @@ namespace Scripts.Tools.Serializations.Converters
       writer.End(name, true);
     }
 
-    public static void WriteUnityArray<T>(IDataWriter writer, string name, T[] value) where T : UnityEngine.Object
+    public static void WriteUnityArray<T>(IDataWriter writer, string name, T[] value) where T : Object
     {
       if (value == null)
         return;

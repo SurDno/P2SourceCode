@@ -3,6 +3,7 @@ using Engine.Impl.Services;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Components.Repairing;
+using UnityEngine;
 
 public class RepairableVerbEntityView : EntityViewBase
 {
@@ -13,7 +14,7 @@ public class RepairableVerbEntityView : EntityViewBase
 
   protected override void ApplyValue()
   {
-    if ((Object) view == (Object) null)
+    if (view == null)
       return;
     if (Value == null)
     {

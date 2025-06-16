@@ -6,6 +6,7 @@ using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
 using Engine.Source.Commons;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Behaviours.Engines.Services
 {
@@ -77,7 +78,7 @@ namespace Engine.Behaviours.Engines.Services
       set
       {
         isPaused = value;
-        if (!((UnityEngine.Object) animator != (UnityEngine.Object) null))
+        if (!(animator != null))
           return;
         if (isPaused)
           animator.SetFloat("Mecanim.Speed", 0.0f);
@@ -88,10 +89,10 @@ namespace Engine.Behaviours.Engines.Services
 
     private void Awake()
     {
-      animator = this.gameObject.GetComponent<Animator>();
-      if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+      animator = gameObject.GetComponent<Animator>();
+      if (animator == null)
       {
-        Debug.LogError((object) string.Format("{0} has no animator", (object) this.gameObject));
+        Debug.LogError(string.Format("{0} has no animator", gameObject));
       }
       else
       {
@@ -267,7 +268,7 @@ namespace Engine.Behaviours.Engines.Services
             return;
           weaponShootEvent(controller.Key, weapon, shotType, reactionType, shotSubtype);
         };
-        controller.Value.Initialise(entity, this.gameObject, this.animator);
+        controller.Value.Initialise(entity, gameObject, this.animator);
       }
       currentWeaponController = controllers[WeaponKind.Unknown];
       currentWeaponController.GeometryVisible = true;

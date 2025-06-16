@@ -6,6 +6,7 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -40,16 +41,16 @@ namespace BehaviorDesigner.Runtime.Tasks
     {
       if (!initialized)
       {
-        Pivot component = this.GetComponent<Pivot>();
-        if ((UnityEngine.Object) component == (UnityEngine.Object) null)
+        Pivot component = GetComponent<Pivot>();
+        if (component == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component", gameObject);
           return;
         }
         owner = component.GetNpcEnemy();
-        if ((UnityEngine.Object) owner == (UnityEngine.Object) null)
+        if (owner == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component", gameObject);
           return;
         }
         initialized = true;
@@ -59,7 +60,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if (!initialized || (UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (!initialized || owner.Enemy == null)
         return TaskStatus.Failure;
       float deltaTime = Time.time - lastTime;
       lastTime = Time.time;

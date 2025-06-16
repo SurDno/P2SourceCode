@@ -1,4 +1,6 @@
-﻿namespace RootMotion.FinalIK
+﻿using UnityEngine;
+
+namespace RootMotion.FinalIK
 {
   [HelpURL("http://www.root-motion.com/finalikdox/html/page11.html")]
   [AddComponentMenu("Scripts/RootMotion.FinalIK/Grounder/Grounder Biped")]
@@ -37,7 +39,7 @@
 
     private bool IsReadyToInitiate()
     {
-      return !((Object) ik == (Object) null) && ik.solvers.leftFoot.initiated && ik.solvers.rightFoot.initiated;
+      return !(ik == null) && ik.solvers.leftFoot.initiated && ik.solvers.rightFoot.initiated;
     }
 
     private void Update()
@@ -75,7 +77,7 @@
 
     private void OnSolverUpdate()
     {
-      if (!this.enabled)
+      if (!enabled)
         return;
       if (weight <= 0.0)
       {
@@ -119,7 +121,7 @@
 
     private void OnPostSolverUpdate()
     {
-      if (weight <= 0.0 || !this.enabled)
+      if (weight <= 0.0 || !enabled)
         return;
       for (int index = 0; index < feet.Length; ++index)
         feet[index].rotation = Quaternion.Slerp(Quaternion.identity, solver.legs[index].rotationOffset, weight) * footRotations[index];
@@ -128,7 +130,7 @@
 
     private void OnDestroy()
     {
-      if (!initiated || !((Object) ik != (Object) null))
+      if (!initiated || !(ik != null))
         return;
       IKSolverFABRIK spine = ik.solvers.spine;
       spine.OnPreUpdate = spine.OnPreUpdate - OnSolverUpdate;

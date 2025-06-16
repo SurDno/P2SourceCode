@@ -1,4 +1,6 @@
-﻿namespace Scripts.Utility
+﻿using UnityEngine;
+
+namespace Scripts.Utility
 {
   public static class EasyUtility
   {
@@ -142,7 +144,7 @@
 
     public static float SineEaseInOut(float p)
     {
-      return (float) (0.5 * (1.0 - (double) Mathf.Cos(p * 3.14159274f)));
+      return (float) (0.5 * (1.0 - Mathf.Cos(p * 3.14159274f)));
     }
 
     public static float CircularEaseIn(float p)
@@ -154,7 +156,7 @@
 
     public static float CircularEaseInOut(float p)
     {
-      return p < 0.5 ? (float) (0.5 * (1.0 - (double) Mathf.Sqrt((float) (1.0 - 4.0 * (p * (double) p))))) : (float) (0.5 * ((double) Mathf.Sqrt((float) (-(2.0 * p - 3.0) * (2.0 * p - 1.0))) + 1.0));
+      return p < 0.5 ? (float) (0.5 * (1.0 - Mathf.Sqrt((float) (1.0 - 4.0 * (p * (double) p))))) : (float) (0.5 * (Mathf.Sqrt((float) (-(2.0 * p - 3.0) * (2.0 * p - 1.0))) + 1.0));
     }
 
     public static float ExponentialEaseIn(float p)
@@ -171,7 +173,7 @@
     {
       if (p == 0.0 || p == 1.0)
         return p;
-      return p < 0.5 ? 0.5f * Mathf.Pow(2f, (float) (20.0 * p - 10.0)) : (float) (-0.5 * (double) Mathf.Pow(2f, (float) (-20.0 * p + 10.0)) + 1.0);
+      return p < 0.5 ? 0.5f * Mathf.Pow(2f, (float) (20.0 * p - 10.0)) : (float) (-0.5 * Mathf.Pow(2f, (float) (-20.0 * p + 10.0)) + 1.0);
     }
 
     public static float ElasticEaseIn(float p)
@@ -181,12 +183,12 @@
 
     public static float ElasticEaseOut(float p)
     {
-      return (float) ((double) Mathf.Sin((float) (-20.420352935791016 * (p + 1.0))) * (double) Mathf.Pow(2f, -10f * p) + 1.0);
+      return (float) (Mathf.Sin((float) (-20.420352935791016 * (p + 1.0))) * (double) Mathf.Pow(2f, -10f * p) + 1.0);
     }
 
     public static float ElasticEaseInOut(float p)
     {
-      return p < 0.5 ? 0.5f * Mathf.Sin((float) (20.420352935791016 * (2.0 * p))) * Mathf.Pow(2f, (float) (10.0 * (2.0 * p - 1.0))) : (float) (0.5 * ((double) Mathf.Sin((float) (-20.420352935791016 * (2.0 * p - 1.0 + 1.0))) * (double) Mathf.Pow(2f, (float) (-10.0 * (2.0 * p - 1.0))) + 2.0));
+      return p < 0.5 ? 0.5f * Mathf.Sin((float) (20.420352935791016 * (2.0 * p))) * Mathf.Pow(2f, (float) (10.0 * (2.0 * p - 1.0))) : (float) (0.5 * (Mathf.Sin((float) (-20.420352935791016 * (2.0 * p - 1.0 + 1.0))) * (double) Mathf.Pow(2f, (float) (-10.0 * (2.0 * p - 1.0))) + 2.0));
     }
 
     public static float BackEaseIn(float p)

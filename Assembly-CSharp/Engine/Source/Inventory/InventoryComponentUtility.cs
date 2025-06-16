@@ -3,6 +3,7 @@ using Engine.Common.Components;
 using Engine.Common.Components.Storable;
 using Engine.Common.Types;
 using Engine.Source.Components;
+using UnityEngine;
 
 namespace Engine.Source.Inventory
 {

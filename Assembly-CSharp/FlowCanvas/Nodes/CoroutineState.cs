@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace FlowCanvas.Nodes
 {
@@ -9,7 +10,7 @@ namespace FlowCanvas.Nodes
   public class CoroutineState : FlowControlNode
   {
     private bool activated;
-    private Coroutine coroutine = (Coroutine) null;
+    private Coroutine coroutine;
 
     public override void OnGraphStoped()
     {

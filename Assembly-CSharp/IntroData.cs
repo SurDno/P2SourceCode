@@ -1,4 +1,5 @@
 ﻿using BehaviorDesigner.Runtime;
+using UnityEngine;
 
 public class IntroData : ScriptableObjectInstance<IntroData>
 {

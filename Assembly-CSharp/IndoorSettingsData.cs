@@ -1,4 +1,5 @@
 ﻿using Engine.Common.Components.Regions;
+using UnityEngine;
 
 public class IndoorSettingsData : ScriptableObjectInstance<IndoorSettingsData>
 {

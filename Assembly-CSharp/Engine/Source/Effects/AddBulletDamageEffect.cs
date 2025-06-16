@@ -9,6 +9,7 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Engine.Source.Difficulties;
 using Inspectors;
+using UnityEngine;
 
 namespace Engine.Source.Effects
 {
@@ -108,7 +109,7 @@ namespace Engine.Source.Effects
           byName.Value += headDamage * num;
       }
       else
-        Debug.LogError((object) ("projectile for " + typeof (AddBulletDamageEffect) + " must be " + typeof (RaycastAbilityProjectile)));
+        Debug.LogError("projectile for " + typeof (AddBulletDamageEffect) + " must be " + typeof (RaycastAbilityProjectile));
       return false;
     }
 

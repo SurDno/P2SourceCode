@@ -7,6 +7,8 @@ using Engine.Common.Commons;
 using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
+using UnityEngine;
+using UnityEngine.AI;
 
 namespace BehaviorDesigner.Runtime.Tasks
 {
@@ -48,12 +50,12 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override void OnStart()
     {
-      if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+      if (pivot == null)
       {
-        pivot = this.GetComponent<Pivot>();
-        if ((UnityEngine.Object) pivot == (UnityEngine.Object) null)
+        pivot = GetComponent<Pivot>();
+        if (pivot == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component", gameObject);
           return;
         }
         owner = gameObject.GetComponent<EnemyBase>();
@@ -62,9 +64,9 @@ namespace BehaviorDesigner.Runtime.Tasks
         fightAnimatorState = FightAnimatorBehavior.GetAnimatorState(animator);
         animatorState = AnimatorState45.GetAnimatorState(animator);
         npcState = gameObject.GetComponent<NpcState>();
-        if ((UnityEngine.Object) npcState == (UnityEngine.Object) null)
+        if (npcState == null)
         {
-          Debug.LogWarning((object) (gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component"), (UnityEngine.Object) gameObject);
+          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component", gameObject);
           return;
         }
       }
@@ -73,7 +75,7 @@ namespace BehaviorDesigner.Runtime.Tasks
 
     public override TaskStatus OnUpdate()
     {
-      if ((UnityEngine.Object) owner.Enemy == (UnityEngine.Object) null)
+      if (owner.Enemy == null)
         return TaskStatus.Failure;
       float deltaTime = Time.time - lastTime;
       lastTime = Time.time;

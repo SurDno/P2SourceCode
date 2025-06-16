@@ -1,4 +1,6 @@
-﻿public abstract class PlagueWebLink : MonoBehaviour
+﻿using UnityEngine;
+
+public abstract class PlagueWebLink : MonoBehaviour
 {
   public abstract void BeginAnimation(
     PlagueWeb1 manager,

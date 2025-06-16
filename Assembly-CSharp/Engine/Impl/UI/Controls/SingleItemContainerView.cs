@@ -4,6 +4,7 @@ using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
 using Engine.Source.Components;
 using Engine.Source.UI.Controls;
+using UnityEngine;
 
 namespace Engine.Impl.UI.Controls
 {
@@ -22,14 +23,14 @@ namespace Engine.Impl.UI.Controls
 
     private void Awake()
     {
-      if ((UnityEngine.Object) buttonClosed != (UnityEngine.Object) null)
+      if (buttonClosed != null)
       {
         buttonClosed.SelectEvent += new Action(((ContainerView) this).FireSelectEvent);
         buttonClosed.DeselectEvent += new Action(((ContainerView) this).FireDeselectEvent);
         buttonClosed.OpenBeginEvent += new Action(((ContainerView) this).FireOpenBeginEvent);
         buttonClosed.OpenEndEvent += new Action<bool>(((ContainerView) this).FireOpenEndEvent);
       }
-      if (!((UnityEngine.Object) storableView != (UnityEngine.Object) null))
+      if (!(storableView != null))
         return;
       storableView.SelectEvent += new Action<IStorableComponent>(((ContainerView) this).FireItemSelectEventEvent);
       storableView.DeselectEvent += new Action<IStorableComponent>(((ContainerView) this).FireItemDeselectEventEvent);
@@ -57,12 +58,12 @@ namespace Engine.Impl.UI.Controls
     private void UpdateState()
     {
       bool flag = Container != null;
-      if ((UnityEngine.Object) hideableView != (UnityEngine.Object) null)
+      if (hideableView != null)
         hideableView.Visible = flag;
       IParameter<ContainerOpenStateEnum> openState = Container?.OpenState;
-      if ((UnityEngine.Object) hideableViewOpen != (UnityEngine.Object) null)
+      if (hideableViewOpen != null)
         hideableViewOpen.Visible = flag && (openState == null || openState.Value == ContainerOpenStateEnum.Open);
-      if (!((UnityEngine.Object) hideableViewClosed != (UnityEngine.Object) null))
+      if (!(hideableViewClosed != null))
         return;
       hideableViewClosed.Visible = openState != null && openState.Value != ContainerOpenStateEnum.Open;
     }
@@ -104,7 +105,7 @@ namespace Engine.Impl.UI.Controls
 
     public override void SetCanOpen(bool canOpen)
     {
-      if (!((UnityEngine.Object) buttonClosed != (UnityEngine.Object) null))
+      if (!(buttonClosed != null))
         return;
       buttonClosed.interactable = canOpen;
     }

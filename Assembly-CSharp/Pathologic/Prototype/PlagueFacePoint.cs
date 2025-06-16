@@ -1,4 +1,6 @@
-﻿namespace Pathologic.Prototype
+﻿using UnityEngine;
+
+namespace Pathologic.Prototype
 {
   [ExecuteInEditMode]
   public class PlagueFacePoint : MonoBehaviour
@@ -9,7 +11,7 @@
 
     private void OnDrawGizmos()
     {
-      Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+      Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
       Gizmos.color = roamable ? Color.green : Color.yellow;
       Gizmos.DrawSphere(localToWorldMatrix.MultiplyPoint(new Vector3(0.0f, 0.0f, 0.1f)), 0.1f);
       if (neighbors == null || neighbors.Length == 0)
@@ -18,7 +20,7 @@
       Vector3 vector3_1 = from * 0.5f;
       for (int index = 0; index < neighbors.Length; ++index)
       {
-        if (!((Object) neighbors[index] == (Object) null))
+        if (!(neighbors[index] == null))
         {
           Vector3 vector3_2 = neighbors[index].transform.localToWorldMatrix.MultiplyPoint(new Vector3(0.0f, 0.0f, 0.1f));
           Gizmos.DrawLine(from, vector3_1 + vector3_2 * 0.5f);
@@ -28,7 +30,7 @@
 
     private void OnDrawGizmosSelected()
     {
-      Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+      Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
       Gizmos.color = roamable ? Color.green : Color.yellow;
       float num = 1f;
       Vector3 vector3_1 = localToWorldMatrix.MultiplyPoint(new Vector3(num, 0.0f, 0.0f));

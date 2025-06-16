@@ -7,6 +7,8 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using Engine.Source.Settings.External;
 using Inspectors;
+using UnityEngine;
+using UnityEngine.AI;
 
 public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
 {
@@ -55,17 +57,17 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
     weaponService = pivot.GetNpcWeaponService();
     animator = pivot.GetAnimator();
     enemy = pivot.GetNpcEnemy();
-    if ((UnityEngine.Object) animator == (UnityEngine.Object) null)
+    if (animator == null)
     {
-      Debug.LogError((object) ("Null animator " + GameObject.name), (UnityEngine.Object) GameObject);
-      Debug.LogError((object) ("Null animator " + GameObject.GetFullName()));
+      Debug.LogError("Null animator " + GameObject.name, GameObject);
+      Debug.LogError("Null animator " + GameObject.GetFullName());
       failed = true;
       return false;
     }
     animatorState = AnimatorState45.GetAnimatorState(animator);
-    if ((UnityEngine.Object) poiSetup == (UnityEngine.Object) null)
+    if (poiSetup == null)
     {
-      Debug.LogError((object) ("No PoiSetup " + GameObject.name), (UnityEngine.Object) GameObject);
+      Debug.LogError("No PoiSetup " + GameObject.name, GameObject);
       failed = true;
       return false;
     }
@@ -85,12 +87,12 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
   {
     if (!TryInit())
       return;
-    if ((bool) (UnityEngine.Object) rigidbody)
+    if ((bool) (Object) rigidbody)
     {
       initiallyKinematic = rigidbody.isKinematic;
       rigidbody.isKinematic = true;
     }
-    if ((UnityEngine.Object) agent != (UnityEngine.Object) null)
+    if (agent != null)
     {
       initiallyNavmesh = agent.isActiveAndEnabled;
       agent.enabled = false;
@@ -98,13 +100,13 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
     setupPoint = npcState.Owner.GetComponent<NavigationComponent>().SetupPoint;
     if (setupPoint == null)
       return;
-    if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+    if (weaponService != null)
       weaponService.Weapon = WeaponEnum.Unknown;
-    if ((UnityEngine.Object) enemy != (UnityEngine.Object) null)
+    if (enemy != null)
       couldPlayReactionAnimation = enemy.CanPlayReactionAnimation;
     neededExtraExitPOI = npcState.NeedExtraExitPOI;
     npcState.NeedExtraExitPOI = false;
-    if ((UnityEngine.Object) ((IEntityView) setupPoint).GameObject == (UnityEngine.Object) null)
+    if (((IEntityView) setupPoint).GameObject == null)
     {
       ((IEntityView) setupPoint).OnGameObjectChangedEvent -= OnSetupPointViewChanged;
       ((IEntityView) setupPoint).OnGameObjectChangedEvent += OnSetupPointViewChanged;
@@ -124,7 +126,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
       {
         sayReplics = byName.Value;
         if (sayReplics)
-          timeToNextReplic = UnityEngine.Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
+          timeToNextReplic = Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
       }
     }
   }
@@ -133,7 +135,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
   {
     agent.enabled = false;
     NavMeshObstacle obstacle = pivot.GetObstacle();
-    if (!((UnityEngine.Object) obstacle != (UnityEngine.Object) null))
+    if (!(obstacle != null))
       return;
     obstacle.enabled = true;
     obstacle.carving = true;
@@ -143,7 +145,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
   private void OnSetupPointViewChanged()
   {
     combatIdle = false;
-    if (setupPoint == null || (UnityEngine.Object) ((IEntityView) setupPoint).GameObject == (UnityEngine.Object) null)
+    if (setupPoint == null || ((IEntityView) setupPoint).GameObject == null)
       return;
     preset = ((IEntityView) setupPoint).GameObject.GetComponent<IdlePresetObject>();
     SetIdle();
@@ -152,10 +154,10 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
 
   protected void SetIdle()
   {
-    if ((UnityEngine.Object) preset == (UnityEngine.Object) null)
+    if (preset == null)
     {
       GameObject gameObject = ((IEntityView) setupPoint).GameObject;
-      if (!((UnityEngine.Object) gameObject != (UnityEngine.Object) null))
+      if (!(gameObject != null))
         return;
       animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
       GameObject.transform.position = gameObject.transform.position;
@@ -167,7 +169,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
       {
         combatIdle = true;
         animatorState.ResetTrigger("Fight.Triggers/CancelWalk");
-        if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+        if (weaponService != null)
         {
           weaponService.Weapon = WeaponEnum.Hands;
           weaponService.SwitchWeaponOnImmediate();
@@ -178,7 +180,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
       }
       else
       {
-        if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+        if (weaponService != null)
           weaponService.SwitchWeaponOffImmediate();
         POIAnimationEnum poiAnimationEnum = preset.GetPOIAnimationEnum();
         if (poiAnimationEnum == POIAnimationEnum.Unknown)
@@ -190,7 +192,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
           POIAnimationSetupBase animationSetup = poiSetup.GetAnimationSetup(poiAnimationEnum);
           if (animationSetup != null)
           {
-            animationIndex = !preset.RandomAnimationIndex ? preset.AnimationIndex : UnityEngine.Random.Range(0, animationSetup.Elements.Count);
+            animationIndex = !preset.RandomAnimationIndex ? preset.AnimationIndex : Random.Range(0, animationSetup.Elements.Count);
             animationsCount = 1;
             if (animationSetup.Elements.Count > animationIndex && animationSetup.Elements[animationIndex] is POIAnimationSetupElementSlow)
               animationsCount = (animationSetup.Elements[animationIndex] as POIAnimationSetupElementSlow).MiddleAnimationClips.Count;
@@ -205,7 +207,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
                 break;
               case POIAnimationEnum.S_SitOnBench:
                 animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitOnBench;
-                if ((UnityEngine.Object) enemy != (UnityEngine.Object) null)
+                if (enemy != null)
                   enemy.CanPlayReactionAnimation = false;
                 npcState.NeedExtraExitPOI = true;
                 break;
@@ -217,7 +219,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
                 break;
               case POIAnimationEnum.S_SitNearWall:
                 animatorState.ControlPOIState = MecanimKinds.MovablePOIStateKind.S_SitNearWall;
-                if ((UnityEngine.Object) enemy != (UnityEngine.Object) null)
+                if (enemy != null)
                   enemy.CanPlayReactionAnimation = false;
                 npcState.NeedExtraExitPOI = true;
                 break;
@@ -288,7 +290,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
   {
     if (failed)
       return;
-    if ((UnityEngine.Object) agent != (UnityEngine.Object) null)
+    if (agent != null)
       agent.nextPosition = animator.rootPosition;
     GameObject.transform.position = animator.rootPosition;
     GameObject.transform.rotation = animator.rootRotation;
@@ -300,19 +302,19 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
       return;
     if (combatIdle)
       animatorState.SetTrigger("Fight.Triggers/CancelWalk");
-    if ((bool) (UnityEngine.Object) rigidbody)
+    if ((bool) (Object) rigidbody)
       rigidbody.isKinematic = initiallyKinematic;
-    if ((UnityEngine.Object) agent != (UnityEngine.Object) null)
+    if (agent != null)
       agent.enabled = initiallyNavmesh;
     if (setupPoint != null)
       ((IEntityView) setupPoint).OnGameObjectChangedEvent -= OnSetupPointViewChanged;
     NavMeshObstacle obstacle = pivot.GetObstacle();
-    if ((UnityEngine.Object) obstacle != (UnityEngine.Object) null)
+    if (obstacle != null)
       obstacle.enabled = false;
     animator.updateMode = initialAnimatorUpdateMode;
-    if ((UnityEngine.Object) weaponService != (UnityEngine.Object) null)
+    if (weaponService != null)
       weaponService.Weapon = npcState.Weapon;
-    if ((UnityEngine.Object) enemy != (UnityEngine.Object) null)
+    if (enemy != null)
       enemy.CanPlayReactionAnimation = couldPlayReactionAnimation;
     npcState.NeedExtraExitPOI = neededExtraExitPOI;
   }
@@ -343,21 +345,21 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
     timeToNextReplic -= Time.deltaTime;
     if (timeToNextReplic <= 0.0)
     {
-      timeToNextReplic = UnityEngine.Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
+      timeToNextReplic = Random.Range(ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMin, ExternalSettingsInstance<ExternalCommonSettings>.Instance.IdleReplicsFrequencyMax);
       NPCStateHelper.SayIdleReplic(npcState.Owner);
     }
   }
 
   private void SetPositions()
   {
-    if (!((UnityEngine.Object) preset != (UnityEngine.Object) null))
+    if (!(preset != null))
       return;
-    if ((UnityEngine.Object) GameObject != (UnityEngine.Object) null)
+    if (GameObject != null)
     {
       GameObject.transform.position = preset.transform.position;
       GameObject.transform.rotation = preset.transform.rotation;
     }
-    if ((UnityEngine.Object) animator != (UnityEngine.Object) null)
+    if (animator != null)
     {
       animator.rootPosition = preset.transform.position;
       animator.rootRotation = preset.transform.rotation;
@@ -366,7 +368,7 @@ public class NpcStateIdlePreset : INpcState, INpcStateNeedSyncBack
 
   private void SetRandomNextAnimation()
   {
-    animator.SetInteger("Movable.POI.AnimationIndex2", UnityEngine.Random.Range(0, animator.GetInteger("Movable.POI.MiddleAnimationsCount")));
+    animator.SetInteger("Movable.POI.AnimationIndex2", Random.Range(0, animator.GetInteger("Movable.POI.MiddleAnimationsCount")));
   }
 
   public Vector3 GetSyncBackPosition() => GameObject.transform.position;

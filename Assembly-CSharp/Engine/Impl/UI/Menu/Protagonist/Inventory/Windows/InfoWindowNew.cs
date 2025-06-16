@@ -7,6 +7,8 @@ using Engine.Source.Components;
 using Engine.Source.Inventory;
 using Engine.Source.Services.Inputs;
 using InputServices;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 {
@@ -16,13 +18,13 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     private IStorableComponent target;
     private float price;
     [SerializeField]
-    private Image unityImage = (Image) null;
+    private Image unityImage;
     [SerializeField]
-    private bool useBigPicture = false;
+    private bool useBigPicture;
     [SerializeField]
-    private Text unityInformation = (Text) null;
+    private Text unityInformation;
     [SerializeField]
-    private Text unityName = (Text) null;
+    private Text unityName;
     [SerializeField]
     private GameObject priceItem;
     [SerializeField]
@@ -43,7 +45,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
     private GameObject keyCodeLinePrefab;
     [SerializeField]
     private GameObject keyCodePrefab;
-    private List<UnityEngine.Transform> keyCodeLines;
+    private List<Transform> keyCodeLines;
 
     public IStorableComponent Target
     {
@@ -57,10 +59,10 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
         this.target = value;
         if (this.target == null)
         {
-          unityName.text = (string) null;
-          unityInformation.text = (string) null;
+          unityName.text = null;
+          unityInformation.text = null;
           durabilityView.Value = null;
-          unityImage.sprite = (Sprite) null;
+          unityImage.sprite = null;
           unityImage.gameObject.SetActive(false);
         }
         else
@@ -71,14 +73,14 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
           durabilityView.Value = this.target.Owner;
           if (!(this.target is StorableComponent target))
           {
-            unityImage.sprite = (Sprite) null;
+            unityImage.sprite = null;
             unityImage.gameObject.SetActive(false);
           }
           else
           {
             InventoryPlaceholder placeholder = target.Placeholder;
             unityImage.sprite = useBigPicture ? placeholder?.ImageInformation.Value : placeholder?.ImageInventorySlotBig.Value;
-            unityImage.gameObject.SetActive((Object) unityImage.sprite != (Object) null);
+            unityImage.gameObject.SetActive(unityImage.sprite != null);
           }
         }
       }
@@ -106,24 +108,24 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
 
     public void AddActionTooltip(GameActionType gameAction, string text)
     {
-      if ((Object) keyCodeLinePrefab == (Object) null || (Object) keyCodePrefab == (Object) null)
+      if (keyCodeLinePrefab == null || keyCodePrefab == null)
         return;
-      UnityEngine.Transform parent = (UnityEngine.Transform) null;
+      Transform parent = null;
       if (keyCodeLines != null && keyCodeLines.Count > 0)
       {
-        UnityEngine.Transform keyCodeLine = keyCodeLines[keyCodeLines.Count - 1];
+        Transform keyCodeLine = keyCodeLines[keyCodeLines.Count - 1];
         if (keyCodeLine.childCount < 2)
           parent = keyCodeLine;
       }
-      if ((Object) parent == (Object) null)
+      if (parent == null)
       {
         if (keyCodeLines == null)
-          keyCodeLines = new List<UnityEngine.Transform>();
-        parent = Object.Instantiate<GameObject>(keyCodeLinePrefab, keyCodeSeparator.transform, false).transform;
+          keyCodeLines = new List<Transform>();
+        parent = Instantiate(keyCodeLinePrefab, keyCodeSeparator.transform, false).transform;
         keyCodeLines.Add(parent);
         keyCodeSeparator.SetActive(true);
       }
-      GameObject gameObject = Object.Instantiate<GameObject>(keyCodePrefab, parent, false);
+      GameObject gameObject = Instantiate(keyCodePrefab, parent, false);
       gameObject.GetComponent<GameActionView>().SetValue(gameAction, true);
       gameObject.GetComponent<StringView>().StringValue = text;
     }
@@ -139,24 +141,24 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       if (keyCodeLines == null)
         return;
       foreach (Component keyCodeLine in keyCodeLines)
-        Object.Destroy((Object) keyCodeLine.gameObject);
+        Destroy(keyCodeLine.gameObject);
       keyCodeLines.Clear();
       keyCodeSeparator.SetActive(false);
     }
 
     public static InfoWindowNew Instantiate(bool withPrice, GameObject prefab)
     {
-      GameObject gameObject = Object.Instantiate<GameObject>(prefab);
+      GameObject gameObject = Instantiate(prefab);
       gameObject.name = prefab.name;
       InfoWindowNew component = gameObject.GetComponent<InfoWindowNew>();
-      if ((Object) component.priceItem != (Object) null)
+      if (component.priceItem != null)
         component.priceItem.gameObject.SetActive(withPrice);
       return component;
     }
 
     public void ShowSimpliedWindow(bool simplified, bool showActionTooltips = true)
     {
-      bool flag = (Object) unityImage.sprite != (Object) null && !simplified;
+      bool flag = unityImage.sprite != null && !simplified;
       unityImage.gameObject.SetActive(flag);
       imageSeparator.SetActive(flag);
       if (InputService.Instance.JoystickUsed)
@@ -173,7 +175,7 @@ namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
       }
       else
         keyCodeSeparator.SetActive(false);
-      LayoutRebuilder.ForceRebuildLayoutImmediate(this.GetComponent<RectTransform>());
+      LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
     }
   }
 }

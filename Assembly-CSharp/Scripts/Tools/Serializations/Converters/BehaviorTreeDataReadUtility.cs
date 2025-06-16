@@ -5,6 +5,8 @@ using BehaviorDesigner.Runtime.Tasks;
 using Cofe.Proxies;
 using Cofe.Serializations.Converters;
 using Cofe.Serializations.Data;
+using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Scripts.Tools.Serializations.Converters
 {
@@ -18,7 +20,7 @@ namespace Scripts.Tools.Serializations.Converters
       T obj = (T) ProxyFactory.Create(realType);
       if (!(obj is ISerializeDataRead serializeDataRead))
       {
-        Debug.LogError((object) ("Type : " + obj.GetType().Name + " is not " + typeof (ISerializeDataRead)));
+        Debug.LogError("Type : " + obj.GetType().Name + " is not " + typeof (ISerializeDataRead));
         return default (T);
       }
       serializeDataRead.DataRead(reader, realType);
@@ -45,7 +47,7 @@ namespace Scripts.Tools.Serializations.Converters
         T variable = GetOrCreateVariable<T>(child2);
         if (!(variable is ISerializeDataRead serializeDataRead))
         {
-          Debug.LogError((object) ("Type : " + variable.GetType().Name + " is not " + typeof (ISerializeDataRead)));
+          Debug.LogError("Type : " + variable.GetType().Name + " is not " + typeof (ISerializeDataRead));
         }
         else
         {
@@ -139,7 +141,7 @@ namespace Scripts.Tools.Serializations.Converters
       T node = GetOrCreateNode<T>(realType, id);
       if (!(node is ISerializeDataRead serializeDataRead))
       {
-        Debug.LogError((object) ("Type : " + node.GetType().Name + " is not " + typeof (ISerializeDataRead)));
+        Debug.LogError("Type : " + node.GetType().Name + " is not " + typeof (ISerializeDataRead));
         return default (T);
       }
       serializeDataRead.DataRead(reader, realType);
@@ -160,35 +162,35 @@ namespace Scripts.Tools.Serializations.Converters
         object obj = ProxyFactory.Create(realType);
         if (obj == null)
         {
-          Debug.LogError((object) ("Instance is null, type : " + realType + " , id : " + id));
+          Debug.LogError("Instance is null, type : " + realType + " , id : " + id);
           return default (T);
         }
         task = obj as T;
         if (task == null)
         {
-          Debug.LogError((object) ("Error cast type : " + obj.GetType() + " , to type : " + typeof (T) + " , id : " + id));
+          Debug.LogError("Error cast type : " + obj.GetType() + " , to type : " + typeof (T) + " , id : " + id);
           return default (T);
         }
         BehaviorTreeDataContext.Tasks.Add(id, task);
       }
       if (task == null)
       {
-        Debug.LogError((object) ("Result is null, id : " + id));
+        Debug.LogError("Result is null, id : " + id);
         return default (T);
       }
       if (task is T node)
         return node;
-      Debug.LogError((object) ("Error cast type : " + task.GetType() + " , to type : " + typeof (T) + " , id : " + id));
+      Debug.LogError("Error cast type : " + task.GetType() + " , to type : " + typeof (T) + " , id : " + id);
       return default (T);
     }
 
-    public static T ReadUnity<T>(IDataReader reader, string name, T value) where T : UnityEngine.Object
+    public static T ReadUnity<T>(IDataReader reader, string name, T value) where T : Object
     {
       IDataReader child = reader.GetChild(name);
       return child == null ? default (T) : ReadUnity<T>(child);
     }
 
-    public static T ReadUnity<T>(IDataReader reader) where T : UnityEngine.Object
+    public static T ReadUnity<T>(IDataReader reader) where T : Object
     {
       string str = reader.Read();
       if (str == null)
@@ -198,13 +200,13 @@ namespace Scripts.Tools.Serializations.Converters
         return default (T);
       if (index < 0 || index >= BehaviorTreeDataContext.ContextUnityObjects.Count)
       {
-        Debug.LogError((object) ("Index not found : " + index));
+        Debug.LogError("Index not found : " + index);
         return default (T);
       }
-      UnityEngine.Object contextUnityObject = BehaviorTreeDataContext.ContextUnityObjects[index];
+      Object contextUnityObject = BehaviorTreeDataContext.ContextUnityObjects[index];
       T obj = contextUnityObject as T;
-      if ((UnityEngine.Object) obj == (UnityEngine.Object) null)
-        Debug.LogError((object) ("Error cast type : " + ((object) contextUnityObject).GetType().FullName + " , to type : " + typeof (T)));
+      if (obj == null)
+        Debug.LogError("Error cast type : " + contextUnityObject.GetType().FullName + " , to type : " + typeof (T));
       return obj;
     }
 
@@ -228,7 +230,7 @@ namespace Scripts.Tools.Serializations.Converters
       return UnityDataReadUtility.Read(reader, name, value);
     }
 
-    public static List<T> ReadUnityList<T>(IDataReader reader, string name, List<T> value) where T : UnityEngine.Object
+    public static List<T> ReadUnityList<T>(IDataReader reader, string name, List<T> value) where T : Object
     {
       if (value == null)
         value = new List<T>();
@@ -245,7 +247,7 @@ namespace Scripts.Tools.Serializations.Converters
       return value;
     }
 
-    public static T[] ReadUnityArray<T>(IDataReader reader, string name, T[] value) where T : UnityEngine.Object
+    public static T[] ReadUnityArray<T>(IDataReader reader, string name, T[] value) where T : Object
     {
       IDataReader child1 = reader.GetChild(name);
       if (child1 == null)

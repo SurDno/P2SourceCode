@@ -6,6 +6,7 @@ using Engine.Impl.Services.Simulations;
 using Engine.Impl.UI.Controls;
 using Engine.Source.Components;
 using Engine.Source.Services.Saves;
+using UnityEngine;
 
 public class ReputationGroupView : MonoBehaviour
 {
@@ -33,7 +34,7 @@ public class ReputationGroupView : MonoBehaviour
     views = new ReputationView[regions.Length];
     for (int index = 0; index < regions.Length; ++index)
     {
-      ReputationView reputationView = UnityEngine.Object.Instantiate<ReputationView>(reputationViewPrefab, this.transform);
+      ReputationView reputationView = Instantiate(reputationViewPrefab, transform);
       reputationView.Initialize(regions[index], currentLayout, otherLayout);
       reputationView.ReputationHighDownEvent += OnReputationDown;
       reputationView.ReputationHighUpEvent += OnReputationUp;

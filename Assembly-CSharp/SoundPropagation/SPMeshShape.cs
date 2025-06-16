@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SoundPropagation
 {
@@ -12,26 +13,26 @@ namespace SoundPropagation
 
     private Vector3 ClampToTriangle(Vector3 point)
     {
-      if ((double) point.x <= 0.0)
+      if (point.x <= 0.0)
       {
         point.x = 0.0f;
-        if ((double) point.y <= 0.0)
+        if (point.y <= 0.0)
           point.y = 0.0f;
-        else if ((double) point.y > 1.0)
+        else if (point.y > 1.0)
           point.y = 1f;
       }
-      else if ((double) point.y <= 0.0)
+      else if (point.y <= 0.0)
       {
         point.y = 0.0f;
-        if ((double) point.x > 1.0)
+        if (point.x > 1.0)
           point.x = 1f;
       }
-      else if ((double) point.y - 1.0 >= (double) point.x)
+      else if (point.y - 1.0 >= point.x)
       {
         point.y = 1f;
         point.x = 0.0f;
       }
-      else if ((double) point.x - 1.0 >= (double) point.y)
+      else if (point.x - 1.0 >= point.y)
       {
         point.y = 0.0f;
         point.x = 1f;
@@ -125,7 +126,7 @@ namespace SoundPropagation
       }
       else
       {
-        Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+        Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
         for (int index = 0; index < Vertices.Length; ++index)
           Vertices[index] = localToWorldMatrix.MultiplyPoint3x4(Vertices[index]);
         planes2worldMatrices = new Matrix4x4[Triangles.Length];
@@ -214,7 +215,7 @@ namespace SoundPropagation
       {
         if (Triangles == null || Triangles.Length == 0)
           return;
-        Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+        Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
         for (int index = 0; index < Triangles.Length; ++index)
         {
           Vector3 vector3_4 = localToWorldMatrix.MultiplyPoint3x4(GetVertex(Triangles[index].A));
@@ -232,7 +233,7 @@ namespace SoundPropagation
       int num = -1;
       for (int index = 0; index < list.Count; ++index)
       {
-        if ((double) Vector3.Distance(list[index], vertex) <= weldThreshold)
+        if (Vector3.Distance(list[index], vertex) <= (double) weldThreshold)
         {
           list[index] = (list[index] + vertex) * 0.5f;
           num = index;

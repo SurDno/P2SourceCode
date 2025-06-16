@@ -1,4 +1,6 @@
-﻿namespace RootMotion.Dynamics
+﻿using UnityEngine;
+
+namespace RootMotion.Dynamics
 {
   public class PressureSensor : MonoBehaviour
   {
@@ -18,8 +20,8 @@
 
     private void Awake()
     {
-      r = this.GetComponent<Rigidbody>();
-      center = this.transform.position;
+      r = GetComponent<Rigidbody>();
+      center = transform.position;
     }
 
     private void OnCollisionEnter(Collision c) => ProcessCollision(c);
@@ -42,7 +44,7 @@
       if (!fixedFrame)
         return;
       if (count > 0)
-        center = P / (float) count;
+        center = P / count;
       fixedFrame = false;
     }
 
@@ -53,7 +55,7 @@
       Vector3 zero = Vector3.zero;
       for (int index = 0; index < c.contacts.Length; ++index)
         zero += c.contacts[index].point;
-      P += zero / (float) c.contacts.Length;
+      P += zero / c.contacts.Length;
       ++count;
       inContact = true;
     }

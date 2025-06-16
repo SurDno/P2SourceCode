@@ -1,7 +1,7 @@
 ﻿public class Visemes12
 {
-  public string[] visNames = null;
-  public string[][] mapping = null;
+  public string[] visNames;
+  public string[][] mapping;
 
   public Visemes12()
   {

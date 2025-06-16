@@ -36,7 +36,7 @@ namespace Engine.Source.Effects
 
     public bool Prepare(float currentRealTime, float currentGameTime)
     {
-      if ((UnityEngine.Object) ((IEntityView) Target).GameObject == (UnityEngine.Object) null || (UnityEngine.Object) ((IEntityView) Target).GameObject.GetComponent<EnemyBase>() == (UnityEngine.Object) null)
+      if (((IEntityView) Target).GameObject == null || ((IEntityView) Target).GameObject.GetComponent<EnemyBase>() == null)
       {
         ((IEntityView) Target).OnGameObjectChangedEvent -= SetWeapon;
         ((IEntityView) Target).OnGameObjectChangedEvent += SetWeapon;
@@ -48,7 +48,7 @@ namespace Engine.Source.Effects
 
     private void SetWeapon()
     {
-      if (!((UnityEngine.Object) ((IEntityView) Target).GameObject != (UnityEngine.Object) null) || !((UnityEngine.Object) ((IEntityView) Target).GameObject.GetComponent<EnemyBase>() != (UnityEngine.Object) null))
+      if (!(((IEntityView) Target).GameObject != null) || !(((IEntityView) Target).GameObject.GetComponent<EnemyBase>() != null))
         return;
       ((IEntityView) Target).OnGameObjectChangedEvent -= SetWeapon;
       ((IEntityView) Target).GameObject.GetComponent<WeaponServiceBase>().Weapon = weapon;

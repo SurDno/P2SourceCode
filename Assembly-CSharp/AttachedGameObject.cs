@@ -1,4 +1,6 @@
-﻿public class AttachedGameObject : MonoBehaviour
+﻿using UnityEngine;
+
+public class AttachedGameObject : MonoBehaviour
 {
   [SerializeField]
   private GameObject attached;

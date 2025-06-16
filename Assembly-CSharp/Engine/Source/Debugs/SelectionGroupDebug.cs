@@ -9,6 +9,7 @@ using Engine.Source.Components;
 using Engine.Source.Services;
 using Engine.Source.Services.Gizmos;
 using Engine.Source.Utility;
+using UnityEngine;
 
 namespace Engine.Source.Debugs
 {
@@ -53,7 +54,7 @@ namespace Engine.Source.Debugs
       if (player != null)
       {
         GameObject gameObject = ((IEntityView) player).GameObject;
-        if ((UnityEngine.Object) gameObject != (UnityEngine.Object) null)
+        if (gameObject != null)
         {
           characterPosition = gameObject.transform.position;
           GizmoService service = ServiceLocator.GetService<GizmoService>();
@@ -91,7 +92,7 @@ namespace Engine.Source.Debugs
       PickingService service = ServiceLocator.GetService<PickingService>();
       if (service == null)
         return;
-      if ((UnityEngine.Object) service.TargetGameObject == (UnityEngine.Object) null)
+      if (service.TargetGameObject == null)
       {
         string text2 = "  Object not found";
         ServiceLocator.GetService<GizmoService>().DrawText(text2, falseColor);
@@ -145,15 +146,15 @@ namespace Engine.Source.Debugs
       if (targetEntity != null)
       {
         ServiceLocator.GetService<SelectionService>().SetSelection(index, targetEntity);
-        Debug.Log((object) ObjectInfoUtility.GetStream().Append("Store object : ").GetInfo(targetEntity).Append(" , index : ").Append(index).Append(" , type : ").Append(TypeUtility.GetTypeName(targetEntity.GetType())));
+        Debug.Log(ObjectInfoUtility.GetStream().Append("Store object : ").GetInfo(targetEntity).Append(" , index : ").Append(index).Append(" , type : ").Append(TypeUtility.GetTypeName(targetEntity.GetType())));
       }
       else
       {
         GameObject targetGameObject = service.TargetGameObject;
-        if ((UnityEngine.Object) targetGameObject != (UnityEngine.Object) null)
+        if (targetGameObject != null)
         {
-          ServiceLocator.GetService<SelectionService>().SetSelection(index, (object) targetGameObject);
-          Debug.Log((object) ObjectInfoUtility.GetStream().Append("Store object : ").GetFullName(targetGameObject).Append(" , index : ").Append(index).Append(" , type : ").Append(TypeUtility.GetTypeName(((object) targetGameObject).GetType())));
+          ServiceLocator.GetService<SelectionService>().SetSelection(index, targetGameObject);
+          Debug.Log(ObjectInfoUtility.GetStream().Append("Store object : ").GetFullName(targetGameObject).Append(" , index : ").Append(index).Append(" , type : ").Append(TypeUtility.GetTypeName(targetGameObject.GetType())));
         }
       }
     }
@@ -176,7 +177,7 @@ namespace Engine.Source.Debugs
         string text2;
         if (engineObject != null)
           text2 = str + "Name : " + engineObject.Name + " , Type : " + engineObject.GetType().Name;
-        else if ((UnityEngine.Object) go != (UnityEngine.Object) null)
+        else if (go != null)
         {
           text2 = str + "Name : " + go.name + " , Type : " + typeof (GameObject).Name;
         }
@@ -194,11 +195,11 @@ namespace Engine.Source.Debugs
     {
       string text1 = "\n[Gizmos]";
       ServiceLocator.GetService<GizmoService>().DrawText(text1, headerColor);
-      string text2 = "  Eye " + (eyeVisible ? "True" : (object) "False") + " [Control + " + (object) eyeKey + "]";
+      string text2 = "  Eye " + (eyeVisible ? "True" : (object) "False") + " [Control + " + eyeKey + "]";
       ServiceLocator.GetService<GizmoService>().DrawText(text2, eyeVisible ? trueColor : falseColor);
-      string text3 = "  Hearing " + (hearingVisible ? "True" : (object) "False") + " [Control + " + (object) hearingKey + "]";
+      string text3 = "  Hearing " + (hearingVisible ? "True" : (object) "False") + " [Control + " + hearingKey + "]";
       ServiceLocator.GetService<GizmoService>().DrawText(text3, hearingVisible ? trueColor : falseColor);
-      string text4 = "  Movable " + (movableVisible ? "True" : (object) "False") + " [Control + " + (object) movableKey + "]";
+      string text4 = "  Movable " + (movableVisible ? "True" : (object) "False") + " [Control + " + movableKey + "]";
       ServiceLocator.GetService<GizmoService>().DrawText(text4, movableVisible ? trueColor : falseColor);
     }
 
@@ -210,12 +211,12 @@ namespace Engine.Source.Debugs
     {
       IEntity entity = engineObject as IEntity;
       string name;
-      if ((UnityEngine.Object) go == (UnityEngine.Object) null)
+      if (go == null)
       {
         if (entity == null || entity.IsDisposed)
           return;
         go = ((IEntityView) entity).GameObject;
-        if ((UnityEngine.Object) go == (UnityEngine.Object) null)
+        if (go == null)
           return;
         name = " , Name : " + entity.Name + "\nId : " + entity.Id + "\nContext : " + (entity.Context ?? "null");
       }
@@ -259,7 +260,7 @@ namespace Engine.Source.Debugs
       Vector3 characterPosition)
     {
       ServiceLocator.GetService<GizmoService>().DrawBox(bounds.min, bounds.max, Color.green);
-      string text = "Slot : " + index + name + "\nPosition : " + (object) position + " , Distance : " + (characterPosition - position).magnitude.ToString("F2");
+      string text = "Slot : " + index + name + "\nPosition : " + position + " , Distance : " + (characterPosition - position).magnitude.ToString("F2");
       Vector3 position1 = ((bounds.max - bounds.min) / 2f + bounds.min) with
       {
         y = bounds.max.y

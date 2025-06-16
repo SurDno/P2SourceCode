@@ -6,6 +6,7 @@ using Engine.Source.Components;
 using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
+using UnityEngine;
 
 namespace Engine.Source.Blueprints
 {
@@ -16,7 +17,7 @@ namespace Engine.Source.Blueprints
     {
       base.RegisterPorts();
       FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", (FlowHandler) (() => StartCoroutine(WaitingLoading(output))));
+      AddFlowInput("In", () => StartCoroutine(WaitingLoading(output)));
     }
 
     private IEnumerator WaitingLoading(FlowOutput output)
@@ -25,7 +26,7 @@ namespace Engine.Source.Blueprints
       IEntity player = ServiceLocator.GetService<ISimulation>().Player;
       if (player == null)
       {
-        Debug.LogError((object) "player == null");
+        Debug.LogError("player == null");
         output.Call();
       }
       else
@@ -33,7 +34,7 @@ namespace Engine.Source.Blueprints
         LocationItemComponent locationItem = player.GetComponent<LocationItemComponent>();
         if (locationItem == null)
         {
-          Debug.LogError((object) "locationItem == null");
+          Debug.LogError("locationItem == null");
           output.Call();
         }
         else

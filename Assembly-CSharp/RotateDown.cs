@@ -1,15 +1,17 @@
-﻿public class RotateDown : MonoBehaviour
+﻿using UnityEngine;
+
+public class RotateDown : MonoBehaviour
 {
   [SerializeField]
   private float gravity = 30f;
   [SerializeField]
   private float drag = 1f;
   [SerializeField]
-  private bool limited = false;
+  private bool limited;
   [SerializeField]
-  private float minLimit = 0.0f;
+  private float minLimit;
   [SerializeField]
-  private float maxLimit = 0.0f;
+  private float maxLimit;
   private float rotation;
   private float velocity;
   private Vector3 forwardBeforeAnimation;
@@ -18,7 +20,7 @@
   private void UpdateRotation()
   {
     velocity += forwardBeforeAnimation.y * gravity * Time.deltaTime;
-    velocity *= Mathf.Max(0.0f, (float) (1.0 - (double) Time.deltaTime * drag));
+    velocity *= Mathf.Max(0.0f, (float) (1.0 - Time.deltaTime * (double) drag));
     rotation += velocity * Time.deltaTime;
     if (limited)
     {
@@ -53,7 +55,7 @@
       ResetRotation();
       wasEnabled = true;
     }
-    this.transform.localEulerAngles = new Vector3(rotation, 0.0f, 0.0f);
+    transform.localEulerAngles = new Vector3(rotation, 0.0f, 0.0f);
   }
 
   private void OnDisable() => wasEnabled = false;
@@ -61,8 +63,8 @@
   private void ResetRotation()
   {
     velocity = 0.0f;
-    rotation = Vector3.SignedAngle(this.transform.parent.up, Vector3.up, this.transform.parent.right);
+    rotation = Vector3.SignedAngle(transform.parent.up, Vector3.up, transform.parent.right);
   }
 
-  private void Update() => forwardBeforeAnimation = this.transform.forward;
+  private void Update() => forwardBeforeAnimation = transform.forward;
 }

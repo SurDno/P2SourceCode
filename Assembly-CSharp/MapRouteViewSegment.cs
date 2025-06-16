@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Engine.Common.Components.Regions;
 using Engine.Impl.UI.Controls;
+using UnityEngine;
 
 public class MapRouteViewSegment : MapRouteView
 {
@@ -13,7 +14,7 @@ public class MapRouteViewSegment : MapRouteView
 
   public override void SetRoute(IList<FastTravelPointEnum> route)
   {
-    if ((Object) view == (Object) null)
+    if (view == null)
       return;
     if (route == null || route.Count <= 1)
     {

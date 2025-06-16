@@ -1,4 +1,6 @@
-﻿namespace Cinemachine.Utility
+﻿using UnityEngine;
+
+namespace Cinemachine.Utility
 {
   internal class GaussianWindow1D_Vector3 : GaussianWindow1d<Vector3>
   {
