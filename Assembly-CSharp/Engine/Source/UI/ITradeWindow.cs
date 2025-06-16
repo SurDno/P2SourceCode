@@ -1,11 +1,9 @@
 ﻿using Engine.Common.Components;
 
-namespace Engine.Source.UI
-{
-  public interface ITradeWindow : IWindow
-  {
-    IStorageComponent Actor { get; set; }
+namespace Engine.Source.UI;
 
-    IMarketComponent Market { get; set; }
-  }
+public interface ITradeWindow : IWindow {
+	IStorageComponent Actor { get; set; }
+
+	IMarketComponent Market { get; set; }
 }

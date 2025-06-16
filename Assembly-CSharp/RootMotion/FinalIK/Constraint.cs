@@ -1,16 +1,14 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  [Serializable]
-  public abstract class Constraint
-  {
-    public Transform transform;
-    public float weight;
+namespace RootMotion.FinalIK;
 
-    public bool isValid => transform != null;
+[Serializable]
+public abstract class Constraint {
+	public Transform transform;
+	public float weight;
 
-    public abstract void UpdateConstraint();
-  }
+	public bool isValid => transform != null;
+
+	public abstract void UpdateConstraint();
 }

@@ -1,32 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Engine.Source.Achievements
-{
-  public class AchievementServiceStub : IAchievementServiceImpl
-  {
-    public IEnumerable<string> Ids => Array.Empty<string>();
+namespace Engine.Source.Achievements;
 
-    public void Initialise()
-    {
-    }
+public class AchievementServiceStub : IAchievementServiceImpl {
+	public IEnumerable<string> Ids => Array.Empty<string>();
 
-    public void Shutdown()
-    {
-    }
+	public void Initialise() { }
 
-    public void Update()
-    {
-    }
+	public void Shutdown() { }
 
-    public bool IsUnlocked(string id) => true;
+	public void Update() { }
 
-    public void Unlock(string id)
-    {
-    }
+	public bool IsUnlocked(string id) {
+		return true;
+	}
 
-    public void Reset(string id)
-    {
-    }
-  }
+	public void Unlock(string id) { }
+
+	public void Reset(string id) { }
 }

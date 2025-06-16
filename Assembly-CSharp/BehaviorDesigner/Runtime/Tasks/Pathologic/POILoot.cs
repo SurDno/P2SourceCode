@@ -13,119 +13,98 @@ using Engine.Source.Inventory;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks.Pathologic
-{
-  [TaskDescription("POI Idle")]
-  [TaskCategory("Pathologic")]
-  [TaskIcon("Pathologic_IdleIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (POILoot))]
-  public class POILoot : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedFloat InPOITime;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedTransform Target;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    private List<string> lootContainers;
-    private NpcState npcState;
+namespace BehaviorDesigner.Runtime.Tasks.Pathologic;
 
-    public override void OnAwake()
-    {
-      npcState = gameObject.GetComponent<NpcState>();
-      if (!(npcState == null))
-        return;
-      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
-    }
+[TaskDescription("POI Idle")]
+[TaskCategory("Pathologic")]
+[TaskIcon("Pathologic_IdleIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(POILoot))]
+public class POILoot : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedFloat InPOITime;
 
-    public override void OnStart()
-    {
-      if (npcState == null)
-        return;
-      npcState.Loot(InPOITime.Value, Target.Value.gameObject);
-      TakeItems();
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedTransform Target;
 
-    public override TaskStatus OnUpdate()
-    {
-      if (npcState.CurrentNpcState != NpcStateEnum.PointOfInterest)
-        return TaskStatus.Failure;
-      switch (npcState.Status)
-      {
-        case NpcStateStatusEnum.Success:
-          return TaskStatus.Success;
-        case NpcStateStatusEnum.Failed:
-          return TaskStatus.Failure;
-        default:
-          return TaskStatus.Running;
-      }
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	private List<string> lootContainers;
 
-    public override void OnEnd()
-    {
-    }
+	private NpcState npcState;
 
-    private void TakeItems()
-    {
-      StorageComponent component1 = Owner?.GetComponent<EngineGameObject>()?.Owner?.GetComponent<StorageComponent>();
-      StorageComponent component2 = Target.Value?.GetComponent<EngineGameObject>()?.Owner?.GetComponent<StorageComponent>();
-      if (component1 == null || component2 == null)
-        return;
-      List<IStorableComponent> all1 = new List<IStorableComponent>(component2.Items).FindAll(x => lootContainers.Exists(y => y == x.Container.Owner.Template.Name));
-      List<IInventoryComponent> all2 = new List<IInventoryComponent>(component1.Containers).FindAll(x => lootContainers.Exists(y => y == x.Owner.Template.Name));
-      foreach (IStorableComponent storableComponent in all1)
-      {
-        StorableComponent storable = (StorableComponent) storableComponent;
-        if (storable != null && storable.Owner != null && storable.Storage != null)
-        {
-          foreach (IInventoryComponent container in all2)
-          {
-            if (component1 != null && container != null)
-            {
-              Intersect intersect = StorageUtility.GetIntersect(component1, container, storable, null);
-              if (intersect.IsAllowed)
-              {
-                ((StorageComponent) storable.Storage).MoveItem(storableComponent, intersect.Storage, intersect.Container, intersect.Cell.To());
-                break;
-              }
-            }
-          }
-        }
-      }
-    }
+	public override void OnAwake() {
+		npcState = gameObject.GetComponent<NpcState>();
+		if (!(npcState == null))
+			return;
+		Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof(NpcState).Name + " engine component");
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "InPOITime", InPOITime);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
-      DefaultDataWriteUtility.WriteList(writer, "LootContainers", lootContainers);
-    }
+	public override void OnStart() {
+		if (npcState == null)
+			return;
+		npcState.Loot(InPOITime.Value, Target.Value.gameObject);
+		TakeItems();
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      InPOITime = BehaviorTreeDataReadUtility.ReadShared(reader, "InPOITime", InPOITime);
-      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
-      lootContainers = DefaultDataReadUtility.ReadList(reader, "LootContainers", lootContainers);
-    }
-  }
+	public override TaskStatus OnUpdate() {
+		if (npcState.CurrentNpcState != NpcStateEnum.PointOfInterest)
+			return TaskStatus.Failure;
+		switch (npcState.Status) {
+			case NpcStateStatusEnum.Success:
+				return TaskStatus.Success;
+			case NpcStateStatusEnum.Failed:
+				return TaskStatus.Failure;
+			default:
+				return TaskStatus.Running;
+		}
+	}
+
+	public override void OnEnd() { }
+
+	private void TakeItems() {
+		var component1 = Owner?.GetComponent<EngineGameObject>()?.Owner?.GetComponent<StorageComponent>();
+		var component2 = Target.Value?.GetComponent<EngineGameObject>()?.Owner?.GetComponent<StorageComponent>();
+		if (component1 == null || component2 == null)
+			return;
+		var all1 = new List<IStorableComponent>(component2.Items).FindAll(x =>
+			lootContainers.Exists(y => y == x.Container.Owner.Template.Name));
+		var all2 = new List<IInventoryComponent>(component1.Containers).FindAll(x =>
+			lootContainers.Exists(y => y == x.Owner.Template.Name));
+		foreach (var storableComponent in all1) {
+			var storable = (StorableComponent)storableComponent;
+			if (storable != null && storable.Owner != null && storable.Storage != null)
+				foreach (var container in all2)
+					if (component1 != null && container != null) {
+						var intersect = StorageUtility.GetIntersect(component1, container, storable, null);
+						if (intersect.IsAllowed) {
+							((StorageComponent)storable.Storage).MoveItem(storableComponent, intersect.Storage,
+								intersect.Container, intersect.Cell.To());
+							break;
+						}
+					}
+		}
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "InPOITime", InPOITime);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+		DefaultDataWriteUtility.WriteList(writer, "LootContainers", lootContainers);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		InPOITime = BehaviorTreeDataReadUtility.ReadShared(reader, "InPOITime", InPOITime);
+		Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+		lootContainers = DefaultDataReadUtility.ReadList(reader, "LootContainers", lootContainers);
+	}
 }

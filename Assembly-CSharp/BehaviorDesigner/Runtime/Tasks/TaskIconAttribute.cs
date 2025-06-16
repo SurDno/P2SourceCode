@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class TaskIconAttribute : Attribute
-  {
-    private readonly string mIconPath;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public string IconPath => mIconPath;
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public class TaskIconAttribute : Attribute {
+	private readonly string mIconPath;
 
-    public TaskIconAttribute(string iconPath) => mIconPath = iconPath;
-  }
+	public string IconPath => mIconPath;
+
+	public TaskIconAttribute(string iconPath) {
+		mIconPath = iconPath;
+	}
 }

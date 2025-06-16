@@ -1,13 +1,13 @@
 ﻿using System;
 
-namespace UnityEngine.PostProcessing
-{
-  [AttributeUsage(AttributeTargets.Field)]
-  public sealed class GetSetAttribute : PropertyAttribute
-  {
-    public readonly string name;
-    public bool dirty;
+namespace UnityEngine.PostProcessing;
 
-    public GetSetAttribute(string name) => this.name = name;
-  }
+[AttributeUsage(AttributeTargets.Field)]
+public sealed class GetSetAttribute : PropertyAttribute {
+	public readonly string name;
+	public bool dirty;
+
+	public GetSetAttribute(string name) {
+		this.name = name;
+	}
 }

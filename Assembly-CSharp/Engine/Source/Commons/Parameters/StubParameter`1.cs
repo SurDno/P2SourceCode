@@ -1,78 +1,52 @@
 ﻿using Engine.Common.Components.Parameters;
 using Inspectors;
 
-namespace Engine.Source.Commons.Parameters
-{
-  public class StubParameter<T> : IParameter<T>, IParameter, IComputeParameter where T : struct
-  {
-    private ParameterNameEnum name;
+namespace Engine.Source.Commons.Parameters;
 
-    [Inspected(Header = true)]
-    public ParameterNameEnum Name
-    {
-      get => name;
-      set => name = value;
-    }
+public class StubParameter<T> : IParameter<T>, IParameter, IComputeParameter where T : struct {
+	private ParameterNameEnum name;
 
-    [Inspected(Header = true)]
-    public T Value
-    {
-      get => default (T);
-      set
-      {
-      }
-    }
+	[Inspected(Header = true)]
+	public ParameterNameEnum Name {
+		get => name;
+		set => name = value;
+	}
 
-    [Inspected]
-    public T BaseValue
-    {
-      get => default (T);
-      set
-      {
-      }
-    }
+	[Inspected(Header = true)]
+	public T Value {
+		get => default;
+		set { }
+	}
 
-    [Inspected]
-    public T MinValue
-    {
-      get => default (T);
-      set
-      {
-      }
-    }
+	[Inspected]
+	public T BaseValue {
+		get => default;
+		set { }
+	}
 
-    [Inspected]
-    public T MaxValue
-    {
-      get => default (T);
-      set
-      {
-      }
-    }
+	[Inspected]
+	public T MinValue {
+		get => default;
+		set { }
+	}
 
-    [Inspected]
-    public bool Resetable => false;
+	[Inspected]
+	public T MaxValue {
+		get => default;
+		set { }
+	}
 
-    public object ValueData => Value;
+	[Inspected] public bool Resetable => false;
 
-    public void AddListener(IChangeParameterListener listener)
-    {
-    }
+	public object ValueData => Value;
 
-    public void RemoveListener(IChangeParameterListener listener)
-    {
-    }
+	public void AddListener(IChangeParameterListener listener) { }
 
-    void IComputeParameter.ResetResetable()
-    {
-    }
+	public void RemoveListener(IChangeParameterListener listener) { }
 
-    void IComputeParameter.CorrectValue()
-    {
-    }
+	void IComputeParameter.ResetResetable() { }
 
-    void IComputeParameter.ComputeEvent()
-    {
-    }
-  }
+	void IComputeParameter.CorrectValue() { }
+
+	void IComputeParameter.ComputeEvent() { }
 }

@@ -1,6 +1,4 @@
 ﻿using System;
 
 [Serializable]
-public class LoadWindowStringDataItem : LoadWindowDataItem<string>
-{
-}
+public class LoadWindowStringDataItem : LoadWindowDataItem<string> { }

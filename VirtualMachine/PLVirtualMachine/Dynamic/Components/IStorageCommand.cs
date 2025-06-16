@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Dynamic.Components
-{
-  public interface IStorageCommand
-  {
-    EStorageCommandType StorageCommandType { get; }
+﻿namespace PLVirtualMachine.Dynamic.Components;
 
-    void Clear();
-  }
+public interface IStorageCommand {
+	EStorageCommandType StorageCommandType { get; }
+
+	void Clear();
 }

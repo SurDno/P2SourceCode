@@ -4,18 +4,17 @@ using SRF;
 using SRF.Service;
 using UnityEngine;
 
-namespace SRDebugger.UI
-{
-  public class DebugPanelRoot : SRMonoBehaviour
-  {
-    public CanvasGroup CanvasGroup;
-    public DebuggerTabController TabController;
+namespace SRDebugger.UI;
 
-    public void Close() => SRServiceManager.GetService<IDebugService>().HideDebugPanel();
+public class DebugPanelRoot : SRMonoBehaviour {
+	public CanvasGroup CanvasGroup;
+	public DebuggerTabController TabController;
 
-    public void CloseAndDestroy()
-    {
-      SRServiceManager.GetService<IDebugService>().DestroyDebugPanel();
-    }
-  }
+	public void Close() {
+		SRServiceManager.GetService<IDebugService>().HideDebugPanel();
+	}
+
+	public void CloseAndDestroy() {
+		SRServiceManager.GetService<IDebugService>().DestroyDebugPanel();
+	}
 }

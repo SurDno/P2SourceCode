@@ -1,25 +1,20 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class ProgressAnchorsPosition : ProgressView
-  {
-    [SerializeField]
-    private Transform minAnchor;
-    [SerializeField]
-    private Transform maxAnchor;
+namespace Engine.Impl.UI.Controls;
 
-    public override void SkipAnimation()
-    {
-    }
+public class ProgressAnchorsPosition : ProgressView {
+	[SerializeField] private Transform minAnchor;
+	[SerializeField] private Transform maxAnchor;
 
-    protected override void ApplyProgress()
-    {
-      if (!(minAnchor != null) || !(maxAnchor != null))
-        return;
-      transform.position = Vector3.Lerp(minAnchor.position, maxAnchor.position, Progress);
-    }
+	public override void SkipAnimation() { }
 
-    private void LateUpdate() => ApplyProgress();
-  }
+	protected override void ApplyProgress() {
+		if (!(minAnchor != null) || !(maxAnchor != null))
+			return;
+		transform.position = Vector3.Lerp(minAnchor.position, maxAnchor.position, Progress);
+	}
+
+	private void LateUpdate() {
+		ApplyProgress();
+	}
 }

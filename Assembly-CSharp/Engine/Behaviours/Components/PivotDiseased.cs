@@ -2,51 +2,42 @@
 using Engine.Behaviours.Unity.Mecanim;
 using UnityEngine;
 
-namespace Engine.Behaviours.Components
-{
-  [RequireComponent(typeof (IKController))]
-  [DisallowMultipleComponent]
-  public class PivotDiseased : MonoBehaviour
-  {
-    private Animator animator;
-    private int stanceLayerIndex = -1;
-    private int reactionLayerIndex = -1;
-    private float stanceOnPoseWeigth;
+namespace Engine.Behaviours.Components;
 
-    public bool AttackStance { get; set; }
+[RequireComponent(typeof(IKController))]
+[DisallowMultipleComponent]
+public class PivotDiseased : MonoBehaviour {
+	private Animator animator;
+	private int stanceLayerIndex = -1;
+	private int reactionLayerIndex = -1;
+	private float stanceOnPoseWeigth;
 
-    private void Awake()
-    {
-      animator = GetComponent<Animator>();
-      if (animator == null)
-      {
-        Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", gameObject.name, typeof (Animator).Name);
-      }
-      else
-      {
-        stanceLayerIndex = animator.GetLayerIndex("Attack Stance Layer");
-        reactionLayerIndex = animator.GetLayerIndex("Reaction Layer");
-      }
-    }
+	public bool AttackStance { get; set; }
 
-    public void Push(GameObject whoPushes)
-    {
-      DiseasedAnimatorState animatorState = DiseasedAnimatorState.GetAnimatorState(animator);
-      animatorState.TriggerPlayerPush();
-      Vector3 vector3 = transform.InverseTransformDirection(-whoPushes.transform.forward);
-      float num = Mathf.Atan2(vector3.x, vector3.z) * 57.29578f;
-      animatorState.PlayerPushAngle = num;
-    }
+	private void Awake() {
+		animator = GetComponent<Animator>();
+		if (animator == null)
+			Debug.LogErrorFormat("{0} doesn't contain {1} unity component.", gameObject.name, typeof(Animator).Name);
+		else {
+			stanceLayerIndex = animator.GetLayerIndex("Attack Stance Layer");
+			reactionLayerIndex = animator.GetLayerIndex("Reaction Layer");
+		}
+	}
 
-    public void AttackPlayerFendOff(GameObject player)
-    {
-      DiseasedAnimatorState.GetAnimatorState(animator).TriggerPlayerFendOff();
-    }
+	public void Push(GameObject whoPushes) {
+		var animatorState = DiseasedAnimatorState.GetAnimatorState(animator);
+		animatorState.TriggerPlayerPush();
+		var vector3 = transform.InverseTransformDirection(-whoPushes.transform.forward);
+		var num = Mathf.Atan2(vector3.x, vector3.z) * 57.29578f;
+		animatorState.PlayerPushAngle = num;
+	}
 
-    private void Update()
-    {
-      stanceOnPoseWeigth = Mathf.Clamp01(stanceOnPoseWeigth + (AttackStance ? 1f : -1f) * Time.deltaTime);
-      animator.SetLayerWeight(stanceLayerIndex, stanceOnPoseWeigth);
-    }
-  }
+	public void AttackPlayerFendOff(GameObject player) {
+		DiseasedAnimatorState.GetAnimatorState(animator).TriggerPlayerFendOff();
+	}
+
+	private void Update() {
+		stanceOnPoseWeigth = Mathf.Clamp01(stanceOnPoseWeigth + (AttackStance ? 1f : -1f) * Time.deltaTime);
+		animator.SetLayerWeight(stanceLayerIndex, stanceOnPoseWeigth);
+	}
 }

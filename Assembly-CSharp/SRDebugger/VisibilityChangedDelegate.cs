@@ -1,4 +1,3 @@
-﻿namespace SRDebugger
-{
-  public delegate void VisibilityChangedDelegate(bool isVisible);
-}
+﻿namespace SRDebugger;
+
+public delegate void VisibilityChangedDelegate(bool isVisible);

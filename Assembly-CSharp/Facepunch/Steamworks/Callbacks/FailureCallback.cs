@@ -1,4 +1,3 @@
-﻿namespace Facepunch.Steamworks.Callbacks
-{
-  public delegate void FailureCallback(Result reason);
-}
+﻿namespace Facepunch.Steamworks.Callbacks;
+
+public delegate void FailureCallback(Result reason);

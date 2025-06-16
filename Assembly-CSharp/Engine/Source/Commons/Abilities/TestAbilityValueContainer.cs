@@ -8,33 +8,24 @@ using Engine.Source.Services;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons.Abilities
-{
-  [Factory(typeof (TestAbilityValueContainer))]
-  [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class TestAbilityValueContainer : EngineObject, IAbilityValueContainer
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy]
-    protected List<AbilityValueInfo> values = new List<AbilityValueInfo>();
-    [DataReadProxy]
-    [DataWriteProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    [CopyableProxy()]
-    protected UnityAsset<GameObject> blueprint;
+namespace Engine.Source.Commons.Abilities;
 
-    public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum name) where T : struct
-    {
-      AbilityValueInfo abilityValueInfo = values.FirstOrDefault(o => o.Name == name);
-      return abilityValueInfo != null ? abilityValueInfo.Value as IAbilityValue<T> : null;
-    }
+[Factory(typeof(TestAbilityValueContainer))]
+[GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class TestAbilityValueContainer : EngineObject, IAbilityValueContainer {
+	[DataReadProxy] [DataWriteProxy] [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)] [CopyableProxy]
+	protected List<AbilityValueInfo> values = new();
 
-    [Inspected]
-    private void CreateEffect()
-    {
-      BlueprintServiceUtility.Start(blueprint, this, null);
-    }
-  }
+	[DataReadProxy] [DataWriteProxy] [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)] [CopyableProxy()]
+	protected UnityAsset<GameObject> blueprint;
+
+	public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum name) where T : struct {
+		var abilityValueInfo = values.FirstOrDefault(o => o.Name == name);
+		return abilityValueInfo != null ? abilityValueInfo.Value as IAbilityValue<T> : null;
+	}
+
+	[Inspected]
+	private void CreateEffect() {
+		BlueprintServiceUtility.Start(blueprint, this, null);
+	}
 }

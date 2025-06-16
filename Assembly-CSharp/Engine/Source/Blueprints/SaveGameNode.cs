@@ -7,26 +7,24 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class SaveGameNode : FlowControlNode
-  {
-    [Port("Out")]
-    private FlowOutput output;
+namespace Engine.Source.Blueprints;
 
-    [Port("In")]
-    private void In() => CoroutineService.Instance.Route(Save(output));
+[Category("Engine")]
+public class SaveGameNode : FlowControlNode {
+	[Port("Out")] private FlowOutput output;
 
-    private IEnumerator Save(FlowOutput output)
-    {
-      yield return new WaitForEndOfFrame();
-      SavesService saves = ServiceLocator.GetService<SavesService>();
-      ProfilesService profiles = ServiceLocator.GetService<ProfilesService>();
-      profiles.GenerateSaveName();
-      string saveName = profiles.GetLastSaveName();
-      saves.Save(saveName);
-      output.Call();
-    }
-  }
+	[Port("In")]
+	private void In() {
+		CoroutineService.Instance.Route(Save(output));
+	}
+
+	private IEnumerator Save(FlowOutput output) {
+		yield return new WaitForEndOfFrame();
+		var saves = ServiceLocator.GetService<SavesService>();
+		var profiles = ServiceLocator.GetService<ProfilesService>();
+		profiles.GenerateSaveName();
+		var saveName = profiles.GetLastSaveName();
+		saves.Save(saveName);
+		output.Call();
+	}
 }

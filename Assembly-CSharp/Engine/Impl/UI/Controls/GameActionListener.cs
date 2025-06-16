@@ -2,31 +2,24 @@
 using Engine.Source.Services.Inputs;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class GameActionListener : MonoBehaviour
-  {
-    [SerializeField]
-    private EventView view;
-    [SerializeField]
-    private GameActionType action;
+namespace Engine.Impl.UI.Controls;
 
-    private void OnDisable()
-    {
-      ServiceLocator.GetService<GameActionService>().RemoveListener(action, OnGameAction);
-    }
+public class GameActionListener : MonoBehaviour {
+	[SerializeField] private EventView view;
+	[SerializeField] private GameActionType action;
 
-    private void OnEnable()
-    {
-      ServiceLocator.GetService<GameActionService>().AddListener(action, OnGameAction);
-    }
+	private void OnDisable() {
+		ServiceLocator.GetService<GameActionService>().RemoveListener(action, OnGameAction);
+	}
 
-    private bool OnGameAction(GameActionType type, bool down)
-    {
-      if (!down || view == null)
-        return false;
-      view.Invoke();
-      return true;
-    }
-  }
+	private void OnEnable() {
+		ServiceLocator.GetService<GameActionService>().AddListener(action, OnGameAction);
+	}
+
+	private bool OnGameAction(GameActionType type, bool down) {
+		if (!down || view == null)
+			return false;
+		view.Invoke();
+		return true;
+	}
 }

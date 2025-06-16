@@ -10,92 +10,80 @@ using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
 
-namespace PLVirtualMachine.Objects
-{
-  [TypeData(EDataType.TGameMode)]
-  [DataFactory("GameMode")]
-  public class VMGameMode : 
-    VMBaseObject,
-    IStub,
-    IEditorDataReader,
-    IGameMode,
-    IObject,
-    IEditorBaseTemplate
-  {
-    [FieldData("IsMain")]
-    private bool isMain;
-    [FieldData("StartGameTime")]
-    private GameTime startGameTime;
-    [FieldData("StartSolarTime")]
-    private GameTime startSolarTime;
-    [FieldData("GameTimeSpeed")]
-    private float gameTimeSpeed;
-    [FieldData("SolarTimeSpeed")]
-    private float solarTimeSpeed;
-    [FieldData("PlayerRef")]
-    private CommonVariable playerRef;
+namespace PLVirtualMachine.Objects;
 
-    public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
-    {
-      while (xml.Read()) {
-        if (xml.NodeType == XmlNodeType.Element)
-        {
-          switch (xml.Name)
-          {
-            case "GameTimeSpeed":
-              gameTimeSpeed = EditorDataReadUtility.ReadValue(xml, gameTimeSpeed);
-              continue;
-            case "IsMain":
-              isMain = EditorDataReadUtility.ReadValue(xml, isMain);
-              continue;
-            case "Name":
-              name = EditorDataReadUtility.ReadValue(xml, name);
-              continue;
-            case "Parent":
-              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
-              continue;
-            case "PlayerRef":
-              playerRef = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
-              continue;
-            case "SolarTimeSpeed":
-              solarTimeSpeed = EditorDataReadUtility.ReadValue(xml, solarTimeSpeed);
-              continue;
-            case "StartGameTime":
-              startGameTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
-              continue;
-            case "StartSolarTime":
-              startSolarTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
-              continue;
-            default:
-              if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
-                Logger.AddError(typeContext + " : " + xml.Name);
-              XmlReaderUtility.SkipNode(xml);
-              continue;
-          }
-        }
+[TypeData(EDataType.TGameMode)]
+[DataFactory("GameMode")]
+public class VMGameMode :
+	VMBaseObject,
+	IStub,
+	IEditorDataReader,
+	IGameMode,
+	IObject,
+	IEditorBaseTemplate {
+	[FieldData("IsMain")] private bool isMain;
+	[FieldData("StartGameTime")] private GameTime startGameTime;
+	[FieldData("StartSolarTime")] private GameTime startSolarTime;
+	[FieldData("GameTimeSpeed")] private float gameTimeSpeed;
+	[FieldData("SolarTimeSpeed")] private float solarTimeSpeed;
+	[FieldData("PlayerRef")] private CommonVariable playerRef;
 
-        if (xml.NodeType == XmlNodeType.EndElement)
-          break;
-      }
-    }
+	public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext) {
+		while (xml.Read()) {
+			if (xml.NodeType == XmlNodeType.Element)
+				switch (xml.Name) {
+					case "GameTimeSpeed":
+						gameTimeSpeed = EditorDataReadUtility.ReadValue(xml, gameTimeSpeed);
+						continue;
+					case "IsMain":
+						isMain = EditorDataReadUtility.ReadValue(xml, isMain);
+						continue;
+					case "Name":
+						name = EditorDataReadUtility.ReadValue(xml, name);
+						continue;
+					case "Parent":
+						parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+						continue;
+					case "PlayerRef":
+						playerRef = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+						continue;
+					case "SolarTimeSpeed":
+						solarTimeSpeed = EditorDataReadUtility.ReadValue(xml, solarTimeSpeed);
+						continue;
+					case "StartGameTime":
+						startGameTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
+						continue;
+					case "StartSolarTime":
+						startSolarTime = EditorDataReadUtility.ReadSerializable<GameTime>(xml);
+						continue;
+					default:
+						if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
+							Logger.AddError(typeContext + " : " + xml.Name);
+						XmlReaderUtility.SkipNode(xml);
+						continue;
+				}
 
-    public VMGameMode(ulong guid)
-      : base(guid)
-    {
-    }
+			if (xml.NodeType == XmlNodeType.EndElement)
+				break;
+		}
+	}
 
-    public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GAME_MODE;
+	public VMGameMode(ulong guid)
+		: base(guid) { }
 
-    public bool IsMain => isMain;
+	public override EObjectCategory GetCategory() {
+		return EObjectCategory.OBJECT_CATEGORY_GAME_MODE;
+	}
 
-    public GameTime StartGameTime => startGameTime;
+	public bool IsMain => isMain;
 
-    public float GameTimeSpeed => gameTimeSpeed;
+	public GameTime StartGameTime => startGameTime;
 
-    public GameTime StartSolarTime => startSolarTime;
+	public float GameTimeSpeed => gameTimeSpeed;
 
-    public float SolarTimeSpeed => solarTimeSpeed;
+	public GameTime StartSolarTime => startSolarTime;
 
-    public CommonVariable PlayCharacterVariable => playerRef;
-  }
+	public float SolarTimeSpeed => solarTimeSpeed;
+
+	public CommonVariable PlayCharacterVariable => playerRef;
 }

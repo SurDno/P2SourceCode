@@ -1,14 +1,13 @@
-﻿namespace SteamNative
-{
-  internal struct HAuthTicket
-  {
-    public uint Value;
+﻿namespace SteamNative;
 
-    public static implicit operator HAuthTicket(uint value)
-    {
-      return new HAuthTicket { Value = value };
-    }
+internal struct HAuthTicket {
+	public uint Value;
 
-    public static implicit operator uint(HAuthTicket value) => value.Value;
-  }
+	public static implicit operator HAuthTicket(uint value) {
+		return new HAuthTicket { Value = value };
+	}
+
+	public static implicit operator uint(HAuthTicket value) {
+		return value.Value;
+	}
 }

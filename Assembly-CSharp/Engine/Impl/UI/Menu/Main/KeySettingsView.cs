@@ -7,161 +7,141 @@ using InputServices;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Menu.Main
-{
-  public class KeySettingsView : SettingsView
-  {
-    [SerializeField]
-    private KeySettingsItemView selectableViewPrefab;
-    [SerializeField]
-    private Button buttonCancel;
-    [SerializeField]
-    private Button buttonBack;
-    private GameActionService gameActionService;
-    private NamedIntSettingsValueView joystickLayout;
-    private List<KeySettingsItemView> items = new List<KeySettingsItemView>();
-    private SelectableSettingsItemView listeningItem;
+namespace Engine.Impl.UI.Menu.Main;
 
-    protected override void Awake()
-    {
-      gameActionService = ServiceLocator.GetService<GameActionService>();
-      layout = Instantiate(listLayoutPrefab, transform, false);
-      joystickLayout = Instantiate(namedIntValueViewPrefab, layout.Content, false);
-      joystickLayout.SetName("{UI.Pingle.KeyMaps.ChangeKeyMap}");
-      joystickLayout.SetValueNames(new string[3]
-      {
-        "{UI.Pingle.PresetA}",
-        "{UI.Pingle.PresetB}",
-        "{UI.Pingle.PresetC}"
-      });
-      joystickLayout.SetSetting(InstanceByRequest<InputGameSetting>.Instance.JoystickLayout);
-      buttonCancel.onClick.AddListener(CancelSelection);
-      base.Awake();
-    }
+public class KeySettingsView : SettingsView {
+	[SerializeField] private KeySettingsItemView selectableViewPrefab;
+	[SerializeField] private Button buttonCancel;
+	[SerializeField] private Button buttonBack;
+	private GameActionService gameActionService;
+	private NamedIntSettingsValueView joystickLayout;
+	private List<KeySettingsItemView> items = new();
+	private SelectableSettingsItemView listeningItem;
 
-    protected override void OnDisable()
-    {
-      base.OnDisable();
-      gameActionService.RemoveListener(GameActionType.Cancel, OnCancelPressed);
-      gameActionService.OnKeyPressed -= OnKeyPressed;
-      Clear();
-      gameActionService.OnBindsChange -= OnBindsChange;
-      NamedIntSettingsValueView joystickLayout = this.joystickLayout;
-      joystickLayout.VisibleValueChangeEvent = joystickLayout.VisibleValueChangeEvent - JoystickLayoutSwitcher.Instance.OnAutoJoystickValueChange;
-    }
+	protected override void Awake() {
+		gameActionService = ServiceLocator.GetService<GameActionService>();
+		layout = Instantiate(listLayoutPrefab, transform, false);
+		joystickLayout = Instantiate(namedIntValueViewPrefab, layout.Content, false);
+		joystickLayout.SetName("{UI.Pingle.KeyMaps.ChangeKeyMap}");
+		joystickLayout.SetValueNames(new string[3] {
+			"{UI.Pingle.PresetA}",
+			"{UI.Pingle.PresetB}",
+			"{UI.Pingle.PresetC}"
+		});
+		joystickLayout.SetSetting(InstanceByRequest<InputGameSetting>.Instance.JoystickLayout);
+		buttonCancel.onClick.AddListener(CancelSelection);
+		base.Awake();
+	}
 
-    protected override void OnJoystick(bool isUsed)
-    {
-      base.OnJoystick(isUsed);
-      joystickLayout.gameObject.SetActive(isUsed);
-      if (isUsed)
-      {
-        CancelSelection();
-        SelectItem(0);
-        gameActionService.OnKeyPressed -= OnKeyPressed;
-      }
-      else
-        gameActionService.OnKeyPressed += OnKeyPressed;
-    }
+	protected override void OnDisable() {
+		base.OnDisable();
+		gameActionService.RemoveListener(GameActionType.Cancel, OnCancelPressed);
+		gameActionService.OnKeyPressed -= OnKeyPressed;
+		Clear();
+		gameActionService.OnBindsChange -= OnBindsChange;
+		var joystickLayout = this.joystickLayout;
+		joystickLayout.VisibleValueChangeEvent = joystickLayout.VisibleValueChangeEvent -
+		                                         JoystickLayoutSwitcher.Instance.OnAutoJoystickValueChange;
+	}
 
-    protected override void OnEnable()
-    {
-      Fill();
-      gameActionService.AddListener(GameActionType.Cancel, OnCancelPressed);
-      base.OnEnable();
-      gameActionService.OnBindsChange += OnBindsChange;
-      NamedIntSettingsValueView joystickLayout = this.joystickLayout;
-      joystickLayout.VisibleValueChangeEvent = joystickLayout.VisibleValueChangeEvent + JoystickLayoutSwitcher.Instance.OnAutoJoystickValueChange;
-    }
+	protected override void OnJoystick(bool isUsed) {
+		base.OnJoystick(isUsed);
+		joystickLayout.gameObject.SetActive(isUsed);
+		if (isUsed) {
+			CancelSelection();
+			SelectItem(0);
+			gameActionService.OnKeyPressed -= OnKeyPressed;
+		} else
+			gameActionService.OnKeyPressed += OnKeyPressed;
+	}
 
-    private void OnBindsChange()
-    {
-      Clear();
-      Fill();
-      LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
-    }
+	protected override void OnEnable() {
+		Fill();
+		gameActionService.AddListener(GameActionType.Cancel, OnCancelPressed);
+		base.OnEnable();
+		gameActionService.OnBindsChange += OnBindsChange;
+		var joystickLayout = this.joystickLayout;
+		joystickLayout.VisibleValueChangeEvent = joystickLayout.VisibleValueChangeEvent +
+		                                         JoystickLayoutSwitcher.Instance.OnAutoJoystickValueChange;
+	}
 
-    public void Fill()
-    {
-      foreach (ActionGroup bind in gameActionService.GetBinds())
-      {
-        if (!bind.Hide)
-        {
-          KeySettingsItemView settingsItemView = Instantiate(selectableViewPrefab, layout.Content, false);
-          items.Add(settingsItemView);
-          settingsItemView.GameActionGroup = bind;
-          if (bind.IsChangeble)
-            settingsItemView.Selectable.ClickEvent += OnItemClicked;
-          InputService.Instance.onJoystickUsedChanged += settingsItemView.OnJoystickUsedChanged;
-        }
-      }
-      joystickLayout.RevertVisibleValue();
-    }
+	private void OnBindsChange() {
+		Clear();
+		Fill();
+		LayoutRebuilder.ForceRebuildLayoutImmediate(GetComponent<RectTransform>());
+	}
 
-    public void Clear()
-    {
-      SelectItem(null);
-      for (int index = 0; index < items.Count; ++index)
-      {
-        InputService.Instance.onJoystickUsedChanged -= items[index].OnJoystickUsedChanged;
-        items[index].Selectable.ClickEvent -= OnItemClicked;
-        Destroy(items[index].gameObject);
-      }
-      items.Clear();
-    }
+	public void Fill() {
+		foreach (var bind in gameActionService.GetBinds())
+			if (!bind.Hide) {
+				var settingsItemView = Instantiate(selectableViewPrefab, layout.Content, false);
+				items.Add(settingsItemView);
+				settingsItemView.GameActionGroup = bind;
+				if (bind.IsChangeble)
+					settingsItemView.Selectable.ClickEvent += OnItemClicked;
+				InputService.Instance.onJoystickUsedChanged += settingsItemView.OnJoystickUsedChanged;
+			}
 
-    protected override void OnButtonReset()
-    {
-      if (InputService.Instance.JoystickUsed)
-      {
-        InputGameSetting instance = InstanceByRequest<InputGameSetting>.Instance;
-        instance.JoystickLayout.Value = 0;
-        instance.Apply();
-        CoroutineService.Instance.WaitFrame(() => SelectItem(0));
-      }
-      else
-        gameActionService.ResetAllRebinds();
-    }
+		joystickLayout.RevertVisibleValue();
+	}
 
-    private void SelectItem(SelectableSettingsItemView item)
-    {
-      if (listeningItem == item)
-        return;
-      if (listeningItem != null)
-        listeningItem.Selected = false;
-      listeningItem = item;
-      if (listeningItem != null)
-      {
-        listeningItem.Selected = true;
-        buttonCancel.gameObject.SetActive(true);
-        buttonBack.gameObject.SetActive(false);
-      }
-      else
-      {
-        buttonCancel.gameObject.SetActive(false);
-        buttonBack.gameObject.SetActive(true);
-      }
-    }
+	public void Clear() {
+		SelectItem(null);
+		for (var index = 0; index < items.Count; ++index) {
+			InputService.Instance.onJoystickUsedChanged -= items[index].OnJoystickUsedChanged;
+			items[index].Selectable.ClickEvent -= OnItemClicked;
+			Destroy(items[index].gameObject);
+		}
 
-    private void OnItemClicked(SelectableSettingsItemView item) => SelectItem(item);
+		items.Clear();
+	}
 
-    private void OnKeyPressed(KeyCode code)
-    {
-      if (!IsWaiting)
-        return;
-      gameActionService.AddRebind(listeningItem.GetComponent<KeySettingsItemView>().GameActionGroup, code);
-    }
+	protected override void OnButtonReset() {
+		if (InputService.Instance.JoystickUsed) {
+			var instance = InstanceByRequest<InputGameSetting>.Instance;
+			instance.JoystickLayout.Value = 0;
+			instance.Apply();
+			CoroutineService.Instance.WaitFrame(() => SelectItem(0));
+		} else
+			gameActionService.ResetAllRebinds();
+	}
 
-    private bool OnCancelPressed(GameActionType type, bool down)
-    {
-      if (!down || !IsWaiting)
-        return false;
-      CancelSelection();
-      return true;
-    }
+	private void SelectItem(SelectableSettingsItemView item) {
+		if (listeningItem == item)
+			return;
+		if (listeningItem != null)
+			listeningItem.Selected = false;
+		listeningItem = item;
+		if (listeningItem != null) {
+			listeningItem.Selected = true;
+			buttonCancel.gameObject.SetActive(true);
+			buttonBack.gameObject.SetActive(false);
+		} else {
+			buttonCancel.gameObject.SetActive(false);
+			buttonBack.gameObject.SetActive(true);
+		}
+	}
 
-    private void CancelSelection() => SelectItem(null);
+	private void OnItemClicked(SelectableSettingsItemView item) {
+		SelectItem(item);
+	}
 
-    public bool IsWaiting => listeningItem != null;
-  }
+	private void OnKeyPressed(KeyCode code) {
+		if (!IsWaiting)
+			return;
+		gameActionService.AddRebind(listeningItem.GetComponent<KeySettingsItemView>().GameActionGroup, code);
+	}
+
+	private bool OnCancelPressed(GameActionType type, bool down) {
+		if (!down || !IsWaiting)
+			return false;
+		CancelSelection();
+		return true;
+	}
+
+	private void CancelSelection() {
+		SelectItem(null);
+	}
+
+	public bool IsWaiting => listeningItem != null;
 }

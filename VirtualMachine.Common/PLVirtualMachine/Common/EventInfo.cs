@@ -1,14 +1,11 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public class EventInfo
-  {
-    public readonly IEvent EventInstance;
-    public readonly CommonVariable EventOwner;
+﻿namespace PLVirtualMachine.Common;
 
-    public EventInfo(IEvent eventInstance, CommonVariable eventOwner)
-    {
-      EventInstance = eventInstance;
-      EventOwner = eventOwner;
-    }
-  }
+public class EventInfo {
+	public readonly IEvent EventInstance;
+	public readonly CommonVariable EventOwner;
+
+	public EventInfo(IEvent eventInstance, CommonVariable eventOwner) {
+		EventInstance = eventInstance;
+		EventOwner = eventOwner;
+	}
 }

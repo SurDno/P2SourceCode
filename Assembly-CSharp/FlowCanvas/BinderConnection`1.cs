@@ -1,24 +1,19 @@
-﻿namespace FlowCanvas
-{
-  public class BinderConnection<T> : BinderConnection
-  {
-    public override void Bind()
-    {
-      if (!isActive)
-        return;
-      DoNormalBinding(sourcePort, targetPort);
-    }
+﻿namespace FlowCanvas;
 
-    public override void UnBind()
-    {
-      if (!(targetPort is ValueInput))
-        return;
-      (targetPort as ValueInput).UnBind();
-    }
+public class BinderConnection<T> : BinderConnection {
+	public override void Bind() {
+		if (!isActive)
+			return;
+		DoNormalBinding(sourcePort, targetPort);
+	}
 
-    private void DoNormalBinding(Port source, Port target)
-    {
-      (target as ValueInput<T>).BindTo((ValueOutput) source);
-    }
-  }
+	public override void UnBind() {
+		if (!(targetPort is ValueInput))
+			return;
+		(targetPort as ValueInput).UnBind();
+	}
+
+	private void DoNormalBinding(Port source, Port target) {
+		(target as ValueInput<T>).BindTo((ValueOutput)source);
+	}
 }

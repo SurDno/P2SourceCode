@@ -1,5 +1,4 @@
-﻿public enum TOD_ReflectionType
-{
-  None,
-  Cubemap,
+﻿public enum TOD_ReflectionType {
+	None,
+	Cubemap
 }

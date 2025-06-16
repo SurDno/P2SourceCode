@@ -1,22 +1,21 @@
 ﻿using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("Combination")]
-  public class VMCombination : VMComponent
-  {
-    public const string ComponentName = "Combination";
-    private ObjectCombinationDataStruct combinationData;
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    public override void Initialize(VMBaseEntity parent) => base.Initialize(parent);
+[Info("Combination")]
+public class VMCombination : VMComponent {
+	public const string ComponentName = "Combination";
+	private ObjectCombinationDataStruct combinationData;
 
-    [Property("Storable spawn combination", "", true)]
-    [SpecialProperty(ESpecialPropertyName.SPN_COMBINATION_DATA)]
-    public ObjectCombinationDataStruct CombinationData
-    {
-      get => combinationData;
-      set => combinationData = value;
-    }
-  }
+	public override void Initialize(VMBaseEntity parent) {
+		base.Initialize(parent);
+	}
+
+	[Property("Storable spawn combination", "", true)]
+	[SpecialProperty(ESpecialPropertyName.SPN_COMBINATION_DATA)]
+	public ObjectCombinationDataStruct CombinationData {
+		get => combinationData;
+		set => combinationData = value;
+	}
 }

@@ -1,6 +1,5 @@
-﻿public enum TOD_StarQualityType
-{
-  Low,
-  Medium,
-  High,
+﻿public enum TOD_StarQualityType {
+	Low,
+	Medium,
+	High
 }

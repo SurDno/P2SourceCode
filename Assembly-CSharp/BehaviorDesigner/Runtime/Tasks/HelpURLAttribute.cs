@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class HelpURLAttribute : Attribute
-  {
-    private readonly string mURL;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public string URL => mURL;
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public class HelpURLAttribute : Attribute {
+	private readonly string mURL;
 
-    public HelpURLAttribute(string url) => mURL = url;
-  }
+	public string URL => mURL;
+
+	public HelpURLAttribute(string url) {
+		mURL = url;
+	}
 }

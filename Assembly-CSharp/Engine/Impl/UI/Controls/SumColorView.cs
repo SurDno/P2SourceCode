@@ -1,15 +1,11 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class SumColorView : BinaryColorView
-  {
-    [SerializeField]
-    private ColorViewHandle view;
+namespace Engine.Impl.UI.Controls;
 
-    protected override void ApplyValues(bool instant)
-    {
-      view.SetValue(GetValue(0) + GetValue(1), instant);
-    }
-  }
+public class SumColorView : BinaryColorView {
+	[SerializeField] private ColorViewHandle view;
+
+	protected override void ApplyValues(bool instant) {
+		view.SetValue(GetValue(0) + GetValue(1), instant);
+	}
 }

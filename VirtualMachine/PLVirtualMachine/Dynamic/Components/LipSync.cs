@@ -2,22 +2,19 @@
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  [FactoryProxy(typeof (VMLipSync))]
-  public class LipSync : VMLipSync, IInitialiseComponentFromHierarchy, IInitialiseEvents
-  {
-    public override string GetComponentTypeName() => nameof (LipSync);
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
-    {
-    }
+[FactoryProxy(typeof(VMLipSync))]
+public class LipSync : VMLipSync, IInitialiseComponentFromHierarchy, IInitialiseEvents {
+	public override string GetComponentTypeName() {
+		return nameof(LipSync);
+	}
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
-      if (!(target.Name == "PlayCompleteEvent"))
-        return;
-      PlayCompleteEvent += () => target.RaiseFromEngineImpl();
-    }
-  }
+	public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject) { }
+
+	public void InitialiseEvent(DynamicEvent target) {
+		if (!(target.Name == "PlayCompleteEvent"))
+			return;
+		PlayCompleteEvent += () => target.RaiseFromEngineImpl();
+	}
 }

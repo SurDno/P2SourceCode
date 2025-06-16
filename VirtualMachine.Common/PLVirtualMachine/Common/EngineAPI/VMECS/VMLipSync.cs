@@ -3,48 +3,45 @@ using Engine.Common.Commons;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("LipSync", typeof (ILipSyncComponent))]
-  public class VMLipSync : VMEngineComponent<ILipSyncComponent>
-  {
-    public const string ComponentName = "LipSync";
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    protected override void Init()
-    {
-      if (!InstanceValid)
-        return;
-      Component.PlayCompleteEvent += OnPlayCompleteEvent;
-    }
+[Info("LipSync", typeof(ILipSyncComponent))]
+public class VMLipSync : VMEngineComponent<ILipSyncComponent> {
+	public const string ComponentName = "LipSync";
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.PlayCompleteEvent -= OnPlayCompleteEvent;
-    }
+	protected override void Init() {
+		if (!InstanceValid)
+			return;
+		Component.PlayCompleteEvent += OnPlayCompleteEvent;
+	}
 
-    private void OnPlayCompleteEvent()
-    {
-      Action playCompleteEvent = PlayCompleteEvent;
-      if (playCompleteEvent == null)
-        return;
-      playCompleteEvent();
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.PlayCompleteEvent -= OnPlayCompleteEvent;
+	}
 
-    [Event("PlayComplete", "")]
-    public event Action PlayCompleteEvent;
+	private void OnPlayCompleteEvent() {
+		var playCompleteEvent = PlayCompleteEvent;
+		if (playCompleteEvent == null)
+			return;
+		playCompleteEvent();
+	}
 
-    [Method("Play", "lipsync object", "")]
-    public void Play(ILipSyncObject lipSync) => Component.Play(lipSync, true);
+	[Event("PlayComplete", "")] public event Action PlayCompleteEvent;
 
-    [Method("Play3D", "lipsync object", "")]
-    public void Play3D(ILipSyncObject lipSync) => Component.Play3D(lipSync, true);
+	[Method("Play", "lipsync object", "")]
+	public void Play(ILipSyncObject lipSync) {
+		Component.Play(lipSync, true);
+	}
 
-    [Method("Play3DWithParams", "lipsync object, minDistance, maxDistance", "")]
-    public void Play3DWithParams(ILipSyncObject lipSync, float minDistance, float maxDistance)
-    {
-      Component.Play3D(lipSync, minDistance, maxDistance, true);
-    }
-  }
+	[Method("Play3D", "lipsync object", "")]
+	public void Play3D(ILipSyncObject lipSync) {
+		Component.Play3D(lipSync, true);
+	}
+
+	[Method("Play3DWithParams", "lipsync object, minDistance, maxDistance", "")]
+	public void Play3DWithParams(ILipSyncObject lipSync, float minDistance, float maxDistance) {
+		Component.Play3D(lipSync, minDistance, maxDistance, true);
+	}
 }

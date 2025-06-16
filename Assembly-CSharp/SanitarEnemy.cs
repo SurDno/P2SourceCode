@@ -1,3 +1,1 @@
-﻿public class SanitarEnemy : NPCEnemy
-{
-}
+﻿public class SanitarEnemy : NPCEnemy { }

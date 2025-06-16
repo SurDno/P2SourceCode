@@ -5,33 +5,24 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class RanfomModelNode : FlowControlNode
-  {
-    [Port("DynamicModels")]
-    private ValueInput<IEnumerable<DynamicModelComponent>> componentsInput;
-    [Port("Out")]
-    private FlowOutput output;
+namespace Engine.Source.Blueprints;
 
-    [Port("In")]
-    private void In()
-    {
-      IEnumerable<DynamicModelComponent> dynamicModelComponents = componentsInput.value;
-      if (dynamicModelComponents != null)
-      {
-        foreach (DynamicModelComponent dynamicModelComponent in dynamicModelComponents)
-        {
-          if (dynamicModelComponent != null)
-          {
-            IModel model = dynamicModelComponent.Models.Random();
-            if (model != null)
-              dynamicModelComponent.Model = model;
-          }
-        }
-      }
-      output.Call();
-    }
-  }
+[Category("Engine")]
+public class RanfomModelNode : FlowControlNode {
+	[Port("DynamicModels")] private ValueInput<IEnumerable<DynamicModelComponent>> componentsInput;
+	[Port("Out")] private FlowOutput output;
+
+	[Port("In")]
+	private void In() {
+		var dynamicModelComponents = componentsInput.value;
+		if (dynamicModelComponents != null)
+			foreach (var dynamicModelComponent in dynamicModelComponents)
+				if (dynamicModelComponent != null) {
+					var model = dynamicModelComponent.Models.Random();
+					if (model != null)
+						dynamicModelComponent.Model = model;
+				}
+
+		output.Call();
+	}
 }

@@ -6,209 +6,196 @@ using Cofe.Serializations.Data;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
 
-namespace PLVirtualMachine.Common.EngineAPI
-{
-  [VMType("GameTime")]
-  public class GameTime : ISerializeStateSave, IDynamicLoadSerializable, IVMStringSerializable
-  {
-    protected double totalValue;
-    public static GameTime Zero = new GameTime();
-    private static readonly int DaySeconds = 86400;
-    private static readonly int HourSeconds = 3600;
-    private static readonly int MinuteSeconds = 60;
+namespace PLVirtualMachine.Common.EngineAPI;
 
-    public GameTime() => totalValue = 0.0;
+[VMType("GameTime")]
+public class GameTime : ISerializeStateSave, IDynamicLoadSerializable, IVMStringSerializable {
+	protected double totalValue;
+	public static GameTime Zero = new();
+	private static readonly int DaySeconds = 86400;
+	private static readonly int HourSeconds = 3600;
+	private static readonly int MinuteSeconds = 60;
 
-    public GameTime(ushort days, byte hours, byte minutes, byte seconds)
-    {
-      Init(days, hours, minutes, seconds);
-    }
+	public GameTime() {
+		totalValue = 0.0;
+	}
 
-    public GameTime(ulong totalSeconds) => totalValue = totalSeconds;
+	public GameTime(ushort days, byte hours, byte minutes, byte seconds) {
+		Init(days, hours, minutes, seconds);
+	}
 
-    public GameTime(ulong totalSeconds, double lastSecond)
-    {
-      totalValue = totalSeconds + lastSecond;
-    }
+	public GameTime(ulong totalSeconds) {
+		totalValue = totalSeconds;
+	}
 
-    public GameTime(GameTime copyGameTime)
-    {
-      if (copyGameTime == null)
-        Logger.AddError(string.Format("Invalid game time assignment at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
-      else
-        totalValue = copyGameTime.totalValue;
-    }
+	public GameTime(ulong totalSeconds, double lastSecond) {
+		totalValue = totalSeconds + lastSecond;
+	}
 
-    public void CopyFrom(object data) => totalValue = ((GameTime) data).totalValue;
+	public GameTime(GameTime copyGameTime) {
+		if (copyGameTime == null)
+			Logger.AddError(string.Format("Invalid game time assignment at {0}",
+				EngineAPIManager.Instance.CurrentFSMStateInfo));
+		else
+			totalValue = copyGameTime.totalValue;
+	}
 
-    public void Init() => totalValue = 0.0;
+	public void CopyFrom(object data) {
+		totalValue = ((GameTime)data).totalValue;
+	}
 
-    public void Init(ushort days, byte hours, byte minutes, byte seconds, double lastPart = 0.0)
-    {
-      totalValue = days * 24 * 3600 + hours * 3600 + minutes * 60 + seconds;
-    }
+	public void Init() {
+		totalValue = 0.0;
+	}
 
-    public void Process(double elapsedTimeVal) => totalValue += elapsedTimeVal;
+	public void Init(ushort days, byte hours, byte minutes, byte seconds, double lastPart = 0.0) {
+		totalValue = days * 24 * 3600 + hours * 3600 + minutes * 60 + seconds;
+	}
 
-    public ushort Days
-    {
-      get => (ushort) ((uint) (int) Math.Floor(totalValue) / (uint) DaySeconds);
-      set
-      {
-        byte hours = Hours;
-        byte minutes = Minutes;
-        byte seconds = Seconds;
-        double lastSecond = LastSecond;
-        Init(value, hours, minutes, seconds, lastSecond);
-      }
-    }
+	public void Process(double elapsedTimeVal) {
+		totalValue += elapsedTimeVal;
+	}
 
-    public byte Hours
-    {
-      get
-      {
-        return (byte) ((int) Math.Floor(totalValue) % DaySeconds / HourSeconds);
-      }
-      set
-      {
-        ushort days = Days;
-        byte minutes = Minutes;
-        byte seconds = Seconds;
-        double lastSecond = LastSecond;
-        Init(days, value, minutes, seconds, lastSecond);
-      }
-    }
+	public ushort Days {
+		get => (ushort)((uint)(int)Math.Floor(totalValue) / (uint)DaySeconds);
+		set {
+			var hours = Hours;
+			var minutes = Minutes;
+			var seconds = Seconds;
+			var lastSecond = LastSecond;
+			Init(value, hours, minutes, seconds, lastSecond);
+		}
+	}
 
-    public byte Minutes
-    {
-      get
-      {
-        return (byte) ((int) Math.Floor(totalValue) % HourSeconds / MinuteSeconds);
-      }
-      set
-      {
-        ushort days = Days;
-        byte hours = Hours;
-        byte seconds = Seconds;
-        double lastSecond = LastSecond;
-        Init(days, hours, value, seconds, lastSecond);
-      }
-    }
+	public byte Hours {
+		get => (byte)((int)Math.Floor(totalValue) % DaySeconds / HourSeconds);
+		set {
+			var days = Days;
+			var minutes = Minutes;
+			var seconds = Seconds;
+			var lastSecond = LastSecond;
+			Init(days, value, minutes, seconds, lastSecond);
+		}
+	}
 
-    public byte Seconds
-    {
-      get => (byte) ((uint) (int) Math.Floor(totalValue) % (uint) MinuteSeconds);
-      set
-      {
-        ushort days = Days;
-        byte hours = Hours;
-        byte minutes = Minutes;
-        double lastSecond = LastSecond;
-        Init(days, hours, minutes, value, lastSecond);
-      }
-    }
+	public byte Minutes {
+		get => (byte)((int)Math.Floor(totalValue) % HourSeconds / MinuteSeconds);
+		set {
+			var days = Days;
+			var hours = Hours;
+			var seconds = Seconds;
+			var lastSecond = LastSecond;
+			Init(days, hours, value, seconds, lastSecond);
+		}
+	}
 
-    public ulong TotalSeconds
-    {
-      get => (ulong) Math.Floor(totalValue);
-      set
-      {
-        double num = totalValue - Math.Floor(totalValue);
-        totalValue = value + num;
-      }
-    }
+	public byte Seconds {
+		get => (byte)((uint)(int)Math.Floor(totalValue) % (uint)MinuteSeconds);
+		set {
+			var days = Days;
+			var hours = Hours;
+			var minutes = Minutes;
+			var lastSecond = LastSecond;
+			Init(days, hours, minutes, value, lastSecond);
+		}
+	}
 
-    public double TotalValue => totalValue;
+	public ulong TotalSeconds {
+		get => (ulong)Math.Floor(totalValue);
+		set {
+			var num = totalValue - Math.Floor(totalValue);
+			totalValue = value + num;
+		}
+	}
 
-    public double LastSecond => totalValue - Math.Floor(totalValue);
+	public double TotalValue => totalValue;
 
-    public string Write()
-    {
-      Logger.AddError("Not allowed serialization data struct in virtual machine!");
-      return string.Empty;
-    }
+	public double LastSecond => totalValue - Math.Floor(totalValue);
 
-    public void Read(string data)
-    {
-      switch (data)
-      {
-        case null:
-          Logger.AddError(string.Format("Attempt to read null game time data at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
-          break;
-        case "":
-          break;
-        default:
-          string[] strArray = data.Split(':');
-          if (strArray.Length < 4)
-          {
-            Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-            break;
-          }
-          ushort result1 = 0;
-          byte result2 = 0;
-          byte result3 = 0;
-          byte result4 = 0;
-          double lastPart = 0.0;
-          if (!ushort.TryParse(strArray[0], NumberStyles.Number, CultureInfo.InvariantCulture, out result1))
-            Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-          if (!byte.TryParse(strArray[1], NumberStyles.Number, CultureInfo.InvariantCulture, out result2))
-            Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-          if (!byte.TryParse(strArray[2], NumberStyles.Number, CultureInfo.InvariantCulture, out result3))
-            Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-          if (!byte.TryParse(strArray[3], NumberStyles.Number, CultureInfo.InvariantCulture, out result4))
-            Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-          if (strArray.Length > 4)
-          {
-            uint result5 = 0;
-            if (!uint.TryParse(strArray[4], NumberStyles.Number, CultureInfo.InvariantCulture, out result5))
-              Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data, EngineAPIManager.Instance.CurrentFSMStateInfo));
-            lastPart = 9.9999999747524271E-07 * result5;
-          }
-          Init(result1, result2, result3, result4, lastPart);
-          break;
-      }
-    }
+	public string Write() {
+		Logger.AddError("Not allowed serialization data struct in virtual machine!");
+		return string.Empty;
+	}
 
-    public void StateSave(IDataWriter writer)
-    {
-      SaveManagerUtility.Save(writer, "Days", Days);
-      SaveManagerUtility.Save(writer, "Hours", Hours);
-      SaveManagerUtility.Save(writer, "Minutes", Minutes);
-      SaveManagerUtility.Save(writer, "Seconds", Seconds);
-      SaveManagerUtility.Save(writer, "LastMicroseconds", LastSecond);
-    }
+	public void Read(string data) {
+		switch (data) {
+			case null:
+				Logger.AddError(string.Format("Attempt to read null game time data at {0}",
+					EngineAPIManager.Instance.CurrentFSMStateInfo));
+				break;
+			case "":
+				break;
+			default:
+				var strArray = data.Split(':');
+				if (strArray.Length < 4) {
+					Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data,
+						EngineAPIManager.Instance.CurrentFSMStateInfo));
+					break;
+				}
 
-    public void LoadFromXML(XmlElement xmlNode)
-    {
-      ushort days = 0;
-      byte hours = 0;
-      byte minutes = 0;
-      byte seconds = 0;
-      double lastPart = 0.0;
-      foreach (XmlElement childNode in xmlNode.ChildNodes)
-      {
-        if (childNode.Name == "Days")
-          days = StringUtility.ToByte(childNode.InnerText);
-        else if (childNode.Name == "Hours")
-          hours = StringUtility.ToByte(childNode.InnerText);
-        else if (childNode.Name == "Minutes")
-          minutes = StringUtility.ToByte(childNode.InnerText);
-        else if (childNode.Name == "Seconds")
-          seconds = StringUtility.ToByte(childNode.InnerText);
-        else if (childNode.Name == "LastMicroseconds")
-          lastPart = StringUtility.ToDouble(childNode.InnerText);
-      }
-      Init(days, hours, minutes, seconds, lastPart);
-    }
+				ushort result1 = 0;
+				byte result2 = 0;
+				byte result3 = 0;
+				byte result4 = 0;
+				var lastPart = 0.0;
+				if (!ushort.TryParse(strArray[0], NumberStyles.Number, CultureInfo.InvariantCulture, out result1))
+					Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data,
+						EngineAPIManager.Instance.CurrentFSMStateInfo));
+				if (!byte.TryParse(strArray[1], NumberStyles.Number, CultureInfo.InvariantCulture, out result2))
+					Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data,
+						EngineAPIManager.Instance.CurrentFSMStateInfo));
+				if (!byte.TryParse(strArray[2], NumberStyles.Number, CultureInfo.InvariantCulture, out result3))
+					Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data,
+						EngineAPIManager.Instance.CurrentFSMStateInfo));
+				if (!byte.TryParse(strArray[3], NumberStyles.Number, CultureInfo.InvariantCulture, out result4))
+					Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data,
+						EngineAPIManager.Instance.CurrentFSMStateInfo));
+				if (strArray.Length > 4) {
+					uint result5 = 0;
+					if (!uint.TryParse(strArray[4], NumberStyles.Number, CultureInfo.InvariantCulture, out result5))
+						Logger.AddError(string.Format("Cannot convert {0} to GameTime at {1}", data,
+							EngineAPIManager.Instance.CurrentFSMStateInfo));
+					lastPart = 9.9999999747524271E-07 * result5;
+				}
 
-    public static implicit operator TimeSpan(GameTime time)
-    {
-      return TimeSpan.FromSeconds(time.TotalSeconds);
-    }
+				Init(result1, result2, result3, result4, lastPart);
+				break;
+		}
+	}
 
-    public static implicit operator GameTime(TimeSpan time)
-    {
-      return new GameTime((ulong) time.TotalSeconds);
-    }
-  }
+	public void StateSave(IDataWriter writer) {
+		SaveManagerUtility.Save(writer, "Days", Days);
+		SaveManagerUtility.Save(writer, "Hours", Hours);
+		SaveManagerUtility.Save(writer, "Minutes", Minutes);
+		SaveManagerUtility.Save(writer, "Seconds", Seconds);
+		SaveManagerUtility.Save(writer, "LastMicroseconds", LastSecond);
+	}
+
+	public void LoadFromXML(XmlElement xmlNode) {
+		ushort days = 0;
+		byte hours = 0;
+		byte minutes = 0;
+		byte seconds = 0;
+		var lastPart = 0.0;
+		foreach (XmlElement childNode in xmlNode.ChildNodes)
+			if (childNode.Name == "Days")
+				days = StringUtility.ToByte(childNode.InnerText);
+			else if (childNode.Name == "Hours")
+				hours = StringUtility.ToByte(childNode.InnerText);
+			else if (childNode.Name == "Minutes")
+				minutes = StringUtility.ToByte(childNode.InnerText);
+			else if (childNode.Name == "Seconds")
+				seconds = StringUtility.ToByte(childNode.InnerText);
+			else if (childNode.Name == "LastMicroseconds")
+				lastPart = StringUtility.ToDouble(childNode.InnerText);
+		Init(days, hours, minutes, seconds, lastPart);
+	}
+
+	public static implicit operator TimeSpan(GameTime time) {
+		return TimeSpan.FromSeconds(time.TotalSeconds);
+	}
+
+	public static implicit operator GameTime(TimeSpan time) {
+		return new GameTime((ulong)time.TotalSeconds);
+	}
 }

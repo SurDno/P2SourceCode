@@ -1,30 +1,33 @@
 ﻿using UnityEngine;
 
-namespace SRF.UI
-{
-  [ExecuteInEditMode]
-  [RequireComponent(typeof (RectTransform))]
-  public abstract class ResponsiveBase : SRMonoBehaviour
-  {
-    private bool _queueRefresh;
+namespace SRF.UI;
 
-    protected RectTransform RectTransform => (RectTransform) CachedTransform;
+[ExecuteInEditMode]
+[RequireComponent(typeof(RectTransform))]
+public abstract class ResponsiveBase : SRMonoBehaviour {
+	private bool _queueRefresh;
 
-    protected void OnEnable() => _queueRefresh = true;
+	protected RectTransform RectTransform => (RectTransform)CachedTransform;
 
-    protected void OnRectTransformDimensionsChange() => _queueRefresh = true;
+	protected void OnEnable() {
+		_queueRefresh = true;
+	}
 
-    protected void Update()
-    {
-      if (!_queueRefresh)
-        return;
-      Refresh();
-      _queueRefresh = false;
-    }
+	protected void OnRectTransformDimensionsChange() {
+		_queueRefresh = true;
+	}
 
-    protected abstract void Refresh();
+	protected void Update() {
+		if (!_queueRefresh)
+			return;
+		Refresh();
+		_queueRefresh = false;
+	}
 
-    [ContextMenu("Refresh")]
-    private void DoRefresh() => Refresh();
-  }
+	protected abstract void Refresh();
+
+	[ContextMenu("Refresh")]
+	private void DoRefresh() {
+		Refresh();
+	}
 }

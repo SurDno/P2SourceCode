@@ -1,22 +1,20 @@
 ﻿using Engine.Common;
 using Engine.Source.Commons.Abilities;
 
-namespace Engine.Source.Commons.Effects
-{
-  public interface IEffect
-  {
-    string Name { get; }
+namespace Engine.Source.Commons.Effects;
 
-    AbilityItem AbilityItem { get; set; }
+public interface IEffect {
+	string Name { get; }
 
-    IEntity Target { get; set; }
+	AbilityItem AbilityItem { get; set; }
 
-    ParameterEffectQueueEnum Queue { get; }
+	IEntity Target { get; set; }
 
-    bool Prepare(float currentRealTime, float currentGameTime);
+	ParameterEffectQueueEnum Queue { get; }
 
-    bool Compute(float currentRealTime, float currentGameTime);
+	bool Prepare(float currentRealTime, float currentGameTime);
 
-    void Cleanup();
-  }
+	bool Compute(float currentRealTime, float currentGameTime);
+
+	void Cleanup();
 }

@@ -1,19 +1,17 @@
-﻿namespace Engine.Common.Services
-{
-  public interface ILoadProgress
-  {
-    void OnBeforeLoadData();
+﻿namespace Engine.Common.Services;
 
-    void OnAfterLoadData();
+public interface ILoadProgress {
+	void OnBeforeLoadData();
 
-    void OnLoadDataComplete();
+	void OnAfterLoadData();
 
-    void OnBuildHierarchy();
+	void OnLoadDataComplete();
 
-    void OnBeforeCreateHierarchy();
+	void OnBuildHierarchy();
 
-    void OnAfterCreateHierarchy();
+	void OnBeforeCreateHierarchy();
 
-    void OnLoadComplete();
-  }
+	void OnAfterCreateHierarchy();
+
+	void OnLoadComplete();
 }

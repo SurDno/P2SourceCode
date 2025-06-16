@@ -3,97 +3,87 @@ using System.Collections.Generic;
 using System.Linq;
 using SteamNative;
 
-namespace Facepunch.Steamworks
-{
-  public class Achievements : IDisposable
-  {
-    internal Client client;
-    private List<Achievement> unlockedRecently = new List<Achievement>();
+namespace Facepunch.Steamworks;
 
-    public Achievement[] All { get; private set; }
+public class Achievements : IDisposable {
+	internal Client client;
+	private List<Achievement> unlockedRecently = new();
 
-    public event Action OnUpdated;
+	public Achievement[] All { get; private set; }
 
-    public event Action<Achievement> OnAchievementStateChanged;
+	public event Action OnUpdated;
 
-    internal Achievements(Client c)
-    {
-      client = c;
-      All = new Achievement[0];
-      UserStatsReceived_t.RegisterCallback(c, UserStatsReceived);
-      UserStatsStored_t.RegisterCallback(c, UserStatsStored);
-      Refresh();
-    }
+	public event Action<Achievement> OnAchievementStateChanged;
 
-    public void Refresh()
-    {
-      Achievement[] old = All;
-      All = Enumerable.Range(0, (int) client.native.userstats.GetNumAchievements()).Select(x =>
-      {
-        if (old != null)
-        {
-          string name = client.native.userstats.GetAchievementName((uint) x);
-          Achievement achievement = old.FirstOrDefault(y => y.Id == name);
-          if (achievement != null)
-          {
-            if (achievement.Refresh())
-              unlockedRecently.Add(achievement);
-            return achievement;
-          }
-        }
-        return new Achievement(client, x);
-      }).ToArray();
-      foreach (Achievement a in unlockedRecently)
-        OnUnlocked(a);
-      unlockedRecently.Clear();
-    }
+	internal Achievements(Client c) {
+		client = c;
+		All = new Achievement[0];
+		UserStatsReceived_t.RegisterCallback(c, UserStatsReceived);
+		UserStatsStored_t.RegisterCallback(c, UserStatsStored);
+		Refresh();
+	}
 
-    internal void OnUnlocked(Achievement a)
-    {
-      Action<Achievement> achievementStateChanged = OnAchievementStateChanged;
-      if (achievementStateChanged == null)
-        return;
-      achievementStateChanged(a);
-    }
+	public void Refresh() {
+		var old = All;
+		All = Enumerable.Range(0, (int)client.native.userstats.GetNumAchievements()).Select(x => {
+			if (old != null) {
+				var name = client.native.userstats.GetAchievementName((uint)x);
+				var achievement = old.FirstOrDefault(y => y.Id == name);
+				if (achievement != null) {
+					if (achievement.Refresh())
+						unlockedRecently.Add(achievement);
+					return achievement;
+				}
+			}
 
-    public void Dispose() => client = null;
+			return new Achievement(client, x);
+		}).ToArray();
+		foreach (var a in unlockedRecently)
+			OnUnlocked(a);
+		unlockedRecently.Clear();
+	}
 
-    public Achievement Find(string identifier)
-    {
-      return All.FirstOrDefault(x => x.Id == identifier);
-    }
+	internal void OnUnlocked(Achievement a) {
+		var achievementStateChanged = OnAchievementStateChanged;
+		if (achievementStateChanged == null)
+			return;
+		achievementStateChanged(a);
+	}
 
-    public bool Trigger(string identifier, bool apply = true)
-    {
-      Achievement achievement = Find(identifier);
-      return achievement != null && achievement.Trigger(apply);
-    }
+	public void Dispose() {
+		client = null;
+	}
 
-    public bool Reset(string identifier)
-    {
-      return client.native.userstats.ClearAchievement(identifier);
-    }
+	public Achievement Find(string identifier) {
+		return All.FirstOrDefault(x => x.Id == identifier);
+	}
 
-    private void UserStatsReceived(UserStatsReceived_t stats, bool isError)
-    {
-      if (isError || (long) stats.GameID != client.AppId)
-        return;
-      Refresh();
-      Action onUpdated = OnUpdated;
-      if (onUpdated == null)
-        return;
-      onUpdated();
-    }
+	public bool Trigger(string identifier, bool apply = true) {
+		var achievement = Find(identifier);
+		return achievement != null && achievement.Trigger(apply);
+	}
 
-    private void UserStatsStored(UserStatsStored_t stats, bool isError)
-    {
-      if (isError || (long) stats.GameID != client.AppId)
-        return;
-      Refresh();
-      Action onUpdated = OnUpdated;
-      if (onUpdated == null)
-        return;
-      onUpdated();
-    }
-  }
+	public bool Reset(string identifier) {
+		return client.native.userstats.ClearAchievement(identifier);
+	}
+
+	private void UserStatsReceived(UserStatsReceived_t stats, bool isError) {
+		if (isError || (long)stats.GameID != client.AppId)
+			return;
+		Refresh();
+		var onUpdated = OnUpdated;
+		if (onUpdated == null)
+			return;
+		onUpdated();
+	}
+
+	private void UserStatsStored(UserStatsStored_t stats, bool isError) {
+		if (isError || (long)stats.GameID != client.AppId)
+			return;
+		Refresh();
+		var onUpdated = OnUpdated;
+		if (onUpdated == null)
+			return;
+		onUpdated();
+	}
 }

@@ -16,113 +16,99 @@ using Engine.Source.Saves;
 using Engine.Source.Services.Saves;
 using Inspectors;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (MapService))]
-  [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class MapService : ISavesController
-  {
-    [Inspected]
-    private HashSet<IMapItem> items = new HashSet<IMapItem>();
-    [Inspected]
-    private HashSet<IMapItem> hudItems = new HashSet<IMapItem>();
+namespace Engine.Source.Services;
 
-    [Inspected]
-    public IEnumerable<IMapItem> VisibleItems
-    {
-      get
-      {
-        return items.Where(o => o.Resource != null && o.Text != LocalizedText.Empty || o.Nodes.Any() || o.TooltipResource != null);
-      }
-    }
+[GameService(typeof(MapService))]
+[GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
+public class MapService : ISavesController {
+	[Inspected] private HashSet<IMapItem> items = new();
+	[Inspected] private HashSet<IMapItem> hudItems = new();
 
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected(Mutable = true)]
-    public bool BullModeAvailable { get; set; }
+	[Inspected]
+	public IEnumerable<IMapItem> VisibleItems {
+		get {
+			return items.Where(o =>
+				(o.Resource != null && o.Text != LocalizedText.Empty) || o.Nodes.Any() || o.TooltipResource != null);
+		}
+	}
 
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected(Mutable = true)]
-    public bool BullModeForced { get; set; }
+	[StateSaveProxy]
+	[StateLoadProxy()]
+	[Inspected(Mutable = true)]
+	public bool BullModeAvailable { get; set; }
 
-    [Inspected]
-    public FastTravelComponent FastTravelOrigin { get; set; } = null;
+	[StateSaveProxy]
+	[StateLoadProxy()]
+	[Inspected(Mutable = true)]
+	public bool BullModeForced { get; set; }
 
-    [Inspected]
-    public IMapItem FocusedItem { get; set; } = null;
+	[Inspected] public FastTravelComponent FastTravelOrigin { get; set; } = null;
 
-    [Inspected]
-    public IMMNode FocusedNode { get; set; } = null;
+	[Inspected] public IMapItem FocusedItem { get; set; } = null;
 
-    public event Action<IMapItem> HUDItemAddEvent;
+	[Inspected] public IMMNode FocusedNode { get; set; } = null;
 
-    public event Action<IMapItem> HUDItemRemoveEvent;
+	public event Action<IMapItem> HUDItemAddEvent;
 
-    [Inspected]
-    public IEntity CustomMarker { get; set; }
+	public event Action<IMapItem> HUDItemRemoveEvent;
 
-    public IEnumerable<IMapItem> Items => items;
+	[Inspected] public IEntity CustomMarker { get; set; }
 
-    public IEnumerable<IMapItem> QuestItems => hudItems;
+	public IEnumerable<IMapItem> Items => items;
 
-    public IEntity Current { get; set; }
+	public IEnumerable<IMapItem> QuestItems => hudItems;
 
-    public void AddMapItem(IMapItem item) => items.Add(item);
+	public IEntity Current { get; set; }
 
-    public void RemoveMapItem(IMapItem item) => items.Remove(item);
+	public void AddMapItem(IMapItem item) {
+		items.Add(item);
+	}
 
-    public void AddHUDItem(IMapItem item)
-    {
-      if (hudItems.Contains(item))
-        return;
-      hudItems.Add(item);
-      Action<IMapItem> hudItemAddEvent = HUDItemAddEvent;
-      if (hudItemAddEvent == null)
-        return;
-      hudItemAddEvent(item);
-    }
+	public void RemoveMapItem(IMapItem item) {
+		items.Remove(item);
+	}
 
-    public void RemoveHUDItem(IMapItem item)
-    {
-      if (!hudItems.Contains(item))
-        return;
-      hudItems.Remove(item);
-      Action<IMapItem> hudItemRemoveEvent = HUDItemRemoveEvent;
-      if (hudItemRemoveEvent == null)
-        return;
-      hudItemRemoveEvent(item);
-    }
+	public void AddHUDItem(IMapItem item) {
+		if (hudItems.Contains(item))
+			return;
+		hudItems.Add(item);
+		var hudItemAddEvent = HUDItemAddEvent;
+		if (hudItemAddEvent == null)
+			return;
+		hudItemAddEvent(item);
+	}
 
-    public IEnumerator Load(IErrorLoadingHandler errorHandler)
-    {
-      yield break;
-    }
+	public void RemoveHUDItem(IMapItem item) {
+		if (!hudItems.Contains(item))
+			return;
+		hudItems.Remove(item);
+		var hudItemRemoveEvent = HUDItemRemoveEvent;
+		if (hudItemRemoveEvent == null)
+			return;
+		hudItemRemoveEvent(item);
+	}
 
-    public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
-    {
-      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
-      if (node == null)
-      {
-        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
-      }
-      else
-      {
-        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
-        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
-        yield break;
-      }
-    }
+	public IEnumerator Load(IErrorLoadingHandler errorHandler) {
+		yield break;
+	}
 
-    public void Unload()
-    {
-      BullModeAvailable = false;
-      BullModeForced = false;
-    }
+	public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler) {
+		var node = element[TypeUtility.GetTypeName(GetType())];
+		if (node == null)
+			errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
+		else {
+			var reader = new XmlNodeDataReader(node, context);
+			((ISerializeStateLoad)this).StateLoad(reader, GetType());
+			yield break;
+		}
+	}
 
-    public void Save(IDataWriter writer, string context)
-    {
-      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
-    }
-  }
+	public void Unload() {
+		BullModeAvailable = false;
+		BullModeForced = false;
+	}
+
+	public void Save(IDataWriter writer, string context) {
+		DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
+	}
 }

@@ -1,12 +1,9 @@
 ﻿using Engine.Impl.UI.Menu.Main;
 
-namespace Engine.Source.UI.Menu.Main
-{
-  public class GameKeySettingsWindow : SimpleWindow, IGameKeySettingsWindow, IWindow, IPauseMenu
-  {
-    protected override void RegisterLayer()
-    {
-      RegisterLayer<IGameKeySettingsWindow>(this);
-    }
-  }
+namespace Engine.Source.UI.Menu.Main;
+
+public class GameKeySettingsWindow : SimpleWindow, IGameKeySettingsWindow, IWindow, IPauseMenu {
+	protected override void RegisterLayer() {
+		RegisterLayer<IGameKeySettingsWindow>(this);
+	}
 }

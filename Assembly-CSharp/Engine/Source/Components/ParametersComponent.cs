@@ -9,92 +9,82 @@ using Engine.Source.Commons.Parameters;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class ParametersComponent : EngineComponent, INeedSave
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy(MemberEnum.CustomListParameter)]
-    [StateLoadProxy(MemberEnum.CustomListParameter)]
-    [CopyableProxy()]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<IParameter> parameters = new List<IParameter>();
-    private static List<IParameter> stubParameters = new List<IParameter>();
+namespace Engine.Source.Components;
 
-    [Inspected]
-    public List<IParameter> Parameters => parameters;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave |
+               TypeEnum.StateLoad)]
+public class ParametersComponent : EngineComponent, INeedSave {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy(MemberEnum.CustomListParameter)]
+	[StateLoadProxy(MemberEnum.CustomListParameter)]
+	[CopyableProxy()]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected List<IParameter> parameters = new();
 
-    public bool NeedSave
-    {
-      get
-      {
-        if (!(Owner.Template is IEntity template))
-        {
-          Debug.LogError("Template not found, owner : " + Owner.GetInfo());
-          return true;
-        }
-        ParametersComponent component = template.GetComponent<ParametersComponent>();
-        if (component == null)
-        {
-          Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
-          return true;
-        }
-        if (component.parameters.Count != parameters.Count)
-        {
-          Debug.LogError("Parameters count is not equal, owner : " + Owner.GetInfo());
-          return true;
-        }
-        for (int index = 0; index < parameters.Count; ++index)
-        {
-          if (parameters[index] is IComputeNeedSave parameter)
-            parameter.ComputeNeedSave(component.parameters[index]);
-        }
-        for (int index = 0; index < parameters.Count; ++index)
-        {
-          if (!(parameters[index] is INeedSave parameter) || parameter.NeedSave)
-            return true;
-        }
-        return false;
-      }
-    }
+	private static List<IParameter> stubParameters = new();
 
-    public IParameter<T> GetByName<T>(ParameterNameEnum name) where T : struct
-    {
-      return GetByName(name) as IParameter<T>;
-    }
+	[Inspected] public List<IParameter> Parameters => parameters;
 
-    public IParameter GetByName(ParameterNameEnum name)
-    {
-      for (int index = 0; index < parameters.Count; ++index)
-      {
-        IParameter parameter = parameters[index];
-        if (parameter.Name == name)
-          return parameter;
-      }
-      return null;
-    }
+	public bool NeedSave {
+		get {
+			if (!(Owner.Template is IEntity template)) {
+				Debug.LogError("Template not found, owner : " + Owner.GetInfo());
+				return true;
+			}
 
-    public IParameter<T> GetOrCreateByName<T>(ParameterNameEnum name) where T : struct
-    {
-      for (int index = 0; index < parameters.Count; ++index)
-      {
-        IParameter parameter = parameters[index];
-        if (parameter.Name == name)
-          return (IParameter<T>) parameter;
-      }
-      for (int index = 0; index < stubParameters.Count; ++index)
-      {
-        IParameter stubParameter = stubParameters[index];
-        if (stubParameter.Name == name)
-          return (IParameter<T>) stubParameter;
-      }
-      StubParameter<T> byName = new StubParameter<T>();
-      byName.Name = name;
-      stubParameters.Add(byName);
-      return byName;
-    }
-  }
+			var component = template.GetComponent<ParametersComponent>();
+			if (component == null) {
+				Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
+				return true;
+			}
+
+			if (component.parameters.Count != parameters.Count) {
+				Debug.LogError("Parameters count is not equal, owner : " + Owner.GetInfo());
+				return true;
+			}
+
+			for (var index = 0; index < parameters.Count; ++index)
+				if (parameters[index] is IComputeNeedSave parameter)
+					parameter.ComputeNeedSave(component.parameters[index]);
+			for (var index = 0; index < parameters.Count; ++index)
+				if (!(parameters[index] is INeedSave parameter) || parameter.NeedSave)
+					return true;
+			return false;
+		}
+	}
+
+	public IParameter<T> GetByName<T>(ParameterNameEnum name) where T : struct {
+		return GetByName(name) as IParameter<T>;
+	}
+
+	public IParameter GetByName(ParameterNameEnum name) {
+		for (var index = 0; index < parameters.Count; ++index) {
+			var parameter = parameters[index];
+			if (parameter.Name == name)
+				return parameter;
+		}
+
+		return null;
+	}
+
+	public IParameter<T> GetOrCreateByName<T>(ParameterNameEnum name) where T : struct {
+		for (var index = 0; index < parameters.Count; ++index) {
+			var parameter = parameters[index];
+			if (parameter.Name == name)
+				return (IParameter<T>)parameter;
+		}
+
+		for (var index = 0; index < stubParameters.Count; ++index) {
+			var stubParameter = stubParameters[index];
+			if (stubParameter.Name == name)
+				return (IParameter<T>)stubParameter;
+		}
+
+		var byName = new StubParameter<T>();
+		byName.Name = name;
+		stubParameters.Add(byName);
+		return byName;
+	}
 }

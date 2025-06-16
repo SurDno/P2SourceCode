@@ -4,33 +4,24 @@ using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 using Scripts.Expressions.Commons;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (RandomValue))]
-  public class RandomValue_Generated : 
-    RandomValue,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      RandomValue_Generated instance = Activator.CreateInstance<RandomValue_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-    }
+[FactoryProxy(typeof(RandomValue))]
+public class RandomValue_Generated :
+	RandomValue,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<RandomValue_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-    }
+	public void CopyTo(object target2) { }
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-    }
-  }
+	public void DataWrite(IDataWriter writer) { }
+
+	public void DataRead(IDataReader reader, Type type) { }
 }

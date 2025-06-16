@@ -3,62 +3,76 @@ using Engine.Common.Components;
 using Engine.Common.Components.AttackerPlayer;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("AttackerPlayer", typeof (IAttackerPlayerComponent))]
-  public class VMAttackerPlayer : VMEngineComponent<IAttackerPlayerComponent>
-  {
-    public const string ComponentName = "AttackerPlayer";
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    [Property("IsUnholstered", "", false, false)]
-    public bool IsUnholstered => Component.IsUnholstered;
+[Info("AttackerPlayer", typeof(IAttackerPlayerComponent))]
+public class VMAttackerPlayer : VMEngineComponent<IAttackerPlayerComponent> {
+	public const string ComponentName = "AttackerPlayer";
 
-    [Event("Hands holstered", "weapon type")]
-    public event Action<WeaponKind> HandsHolsteredEvent;
+	[Property("IsUnholstered", "", false, false)]
+	public bool IsUnholstered => Component.IsUnholstered;
 
-    [Event("Hands unholstered", "weapon type")]
-    public event Action<WeaponKind> HandsUnholsteredEvent;
+	[Event("Hands holstered", "weapon type")]
+	public event Action<WeaponKind> HandsHolsteredEvent;
 
-    [Method("Set weapon", "weapon type", "")]
-    public void SetWeapon(WeaponKind weaponKind) => Component.SetWeapon(weaponKind);
+	[Event("Hands unholstered", "weapon type")]
+	public event Action<WeaponKind> HandsUnholsteredEvent;
 
-    [Method("Hands unholster", "", "")]
-    public void HandsUnholster() => Component.HandsUnholster();
+	[Method("Set weapon", "weapon type", "")]
+	public void SetWeapon(WeaponKind weaponKind) {
+		Component.SetWeapon(weaponKind);
+	}
 
-    [Method("Hands holster", "", "")]
-    public void HandsHolster() => Component.HandsHolster();
+	[Method("Hands unholster", "", "")]
+	public void HandsUnholster() {
+		Component.HandsUnholster();
+	}
 
-    [Method("Weapon hands unholster", "", "")]
-    public void WeaponHandsUnholster() => Component.WeaponHandsUnholster();
+	[Method("Hands holster", "", "")]
+	public void HandsHolster() {
+		Component.HandsHolster();
+	}
 
-    [Method("Weapon firearm unholster", "", "")]
-    public void WeaponFirearmUnholster() => Component.WeaponFirearmUnholster();
+	[Method("Weapon hands unholster", "", "")]
+	public void WeaponHandsUnholster() {
+		Component.WeaponHandsUnholster();
+	}
 
-    [Method("Weapon melee unholster", "", "")]
-    public void WeaponMeleeUnholster() => Component.WeaponMeleeUnholster();
+	[Method("Weapon firearm unholster", "", "")]
+	public void WeaponFirearmUnholster() {
+		Component.WeaponFirearmUnholster();
+	}
 
-    [Method("Weapon lamp unholster", "", "")]
-    public void WeaponLampUnholsterWeapon() => Component.WeaponLampUnholster();
+	[Method("Weapon melee unholster", "", "")]
+	public void WeaponMeleeUnholster() {
+		Component.WeaponMeleeUnholster();
+	}
 
-    public void OnHandsHolstered(WeaponKind weaponKind) => HandsHolsteredEvent(weaponKind);
+	[Method("Weapon lamp unholster", "", "")]
+	public void WeaponLampUnholsterWeapon() {
+		Component.WeaponLampUnholster();
+	}
 
-    public void OnHandsUnHolstered(WeaponKind weaponKind) => HandsUnholsteredEvent(weaponKind);
+	public void OnHandsHolstered(WeaponKind weaponKind) {
+		HandsHolsteredEvent(weaponKind);
+	}
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.WeaponHolsterStartEvent -= OnHandsHolstered;
-      Component.WeaponUnholsterEndEvent -= OnHandsUnHolstered;
-      base.Clear();
-    }
+	public void OnHandsUnHolstered(WeaponKind weaponKind) {
+		HandsUnholsteredEvent(weaponKind);
+	}
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.WeaponHolsterStartEvent += OnHandsHolstered;
-      Component.WeaponUnholsterEndEvent += OnHandsUnHolstered;
-    }
-  }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.WeaponHolsterStartEvent -= OnHandsHolstered;
+		Component.WeaponUnholsterEndEvent -= OnHandsUnHolstered;
+		base.Clear();
+	}
+
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.WeaponHolsterStartEvent += OnHandsHolstered;
+		Component.WeaponUnholsterEndEvent += OnHandsUnHolstered;
+	}
 }

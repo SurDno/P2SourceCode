@@ -2,50 +2,44 @@
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace FlowCanvas.Nodes
-{
-  [Name("Coroutine")]
-  [Category("Flow Controllers/Repeaters")]
-  [Description("Start a Coroutine that will repeat until Break is signaled")]
-  public class CoroutineState : FlowControlNode
-  {
-    private bool activated;
-    private Coroutine coroutine;
+namespace FlowCanvas.Nodes;
 
-    public override void OnGraphStoped()
-    {
-      if (coroutine == null)
-        return;
-      StopCoroutine(coroutine);
-      activated = false;
-    }
+[Name("Coroutine")]
+[Category("Flow Controllers/Repeaters")]
+[Description("Start a Coroutine that will repeat until Break is signaled")]
+public class CoroutineState : FlowControlNode {
+	private bool activated;
+	private Coroutine coroutine;
 
-    protected override void RegisterPorts()
-    {
-      FlowOutput fStarted = AddFlowOutput("Start");
-      FlowOutput fUpdate = AddFlowOutput("Update");
-      FlowOutput fFinish = AddFlowOutput("Finish");
-      AddFlowInput("Start", () =>
-      {
-        if (activated)
-          return;
-        activated = true;
-        coroutine = StartCoroutine(DoRepeat(fStarted, fUpdate, fFinish));
-      });
-      AddFlowInput("Break", () => activated = false);
-    }
+	public override void OnGraphStoped() {
+		if (coroutine == null)
+			return;
+		StopCoroutine(coroutine);
+		activated = false;
+	}
 
-    private IEnumerator DoRepeat(FlowOutput fStarted, FlowOutput fUpdate, FlowOutput fFinish)
-    {
-      fStarted.Call();
-      while (activated)
-      {
-        while (graph.isPaused)
-          yield return null;
-        fUpdate.Call();
-        yield return null;
-      }
-      fFinish.Call();
-    }
-  }
+	protected override void RegisterPorts() {
+		var fStarted = AddFlowOutput("Start");
+		var fUpdate = AddFlowOutput("Update");
+		var fFinish = AddFlowOutput("Finish");
+		AddFlowInput("Start", () => {
+			if (activated)
+				return;
+			activated = true;
+			coroutine = StartCoroutine(DoRepeat(fStarted, fUpdate, fFinish));
+		});
+		AddFlowInput("Break", () => activated = false);
+	}
+
+	private IEnumerator DoRepeat(FlowOutput fStarted, FlowOutput fUpdate, FlowOutput fFinish) {
+		fStarted.Call();
+		while (activated) {
+			while (graph.isPaused)
+				yield return null;
+			fUpdate.Call();
+			yield return null;
+		}
+
+		fFinish.Call();
+	}
 }

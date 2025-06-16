@@ -1,16 +1,14 @@
 ﻿using Engine.Common.Blenders;
 using UnityEngine;
 
-namespace Engine.Source.Blenders
-{
-  public interface IBlendOperation : IPureBlendOperation
-  {
-    float Blend(float a, float b);
+namespace Engine.Source.Blenders;
 
-    int Blend(int a, int b);
+public interface IBlendOperation : IPureBlendOperation {
+	float Blend(float a, float b);
 
-    Color Blend(Color a, Color b);
+	int Blend(int a, int b);
 
-    Vector2 Blend(Vector2 a, Vector2 b);
-  }
+	Color Blend(Color a, Color b);
+
+	Vector2 Blend(Vector2 a, Vector2 b);
 }

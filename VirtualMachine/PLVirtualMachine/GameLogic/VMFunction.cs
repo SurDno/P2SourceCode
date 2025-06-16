@@ -6,90 +6,69 @@ using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Dynamic;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.GameLogic
-{
-  public class VMFunction : BaseFunction
-  {
-    private VMEntity entity;
-    private VMLogicObject staticObject;
-    private Type parentComponentAPIType;
-    private FunctionInfo functionInfo;
-    private static Dictionary<string, FunctionInfo> functionsInfoDict = new Dictionary<string, FunctionInfo>();
+namespace PLVirtualMachine.GameLogic;
 
-    public VMFunction(BaseFunction func, DynamicFSM dynFSM)
-      : base(func)
-    {
-      entity = dynFSM.Entity;
-      staticObject = dynFSM.FSMStaticObject;
-    }
+public class VMFunction : BaseFunction {
+	private VMEntity entity;
+	private VMLogicObject staticObject;
+	private Type parentComponentAPIType;
+	private FunctionInfo functionInfo;
+	private static Dictionary<string, FunctionInfo> functionsInfoDict = new();
 
-    public VMFunction(
-      APIMethodInfo methodInfo,
-      string componentName,
-      Type componentAPIType,
-      DynamicFSM dynFSM)
-      : base(methodInfo.MethodName, componentName)
-    {
-      entity = dynFSM.Entity;
-      staticObject = dynFSM.FSMStaticObject;
-      parentComponentAPIType = componentAPIType;
-      functionInfo = CreateFunctionInfo(componentName, methodInfo);
-    }
+	public VMFunction(BaseFunction func, DynamicFSM dynFSM)
+		: base(func) {
+		entity = dynFSM.Entity;
+		staticObject = dynFSM.FSMStaticObject;
+	}
 
-    public Type ParentComponentAPIType
-    {
-      get
-      {
-        return ParentComponent != null ? ((VMFunctionalComponent) ParentComponent).ComponentType : parentComponentAPIType;
-      }
-    }
+	public VMFunction(
+		APIMethodInfo methodInfo,
+		string componentName,
+		Type componentAPIType,
+		DynamicFSM dynFSM)
+		: base(methodInfo.MethodName, componentName) {
+		entity = dynFSM.Entity;
+		staticObject = dynFSM.FSMStaticObject;
+		parentComponentAPIType = componentAPIType;
+		functionInfo = CreateFunctionInfo(componentName, methodInfo);
+	}
 
-    public string ParentComponentAPIName
-    {
-      get
-      {
-        return ParentComponent != null ? ((VMBaseObject) ParentComponent).Name : parentComponentName;
-      }
-    }
+	public Type ParentComponentAPIType => ParentComponent != null
+		? ((VMFunctionalComponent)ParentComponent).ComponentType
+		: parentComponentAPIType;
 
-    public VMEntity Entity => entity;
+	public string ParentComponentAPIName =>
+		ParentComponent != null ? ((VMBaseObject)ParentComponent).Name : parentComponentName;
 
-    public override List<APIParamInfo> InputParams
-    {
-      get => functionInfo != null ? functionInfo.Params : base.InputParams;
-    }
+	public VMEntity Entity => entity;
 
-    public override APIParamInfo OutputParam
-    {
-      get => functionInfo != null ? functionInfo.OutputParam : base.OutputParam;
-    }
+	public override List<APIParamInfo> InputParams => functionInfo != null ? functionInfo.Params : base.InputParams;
 
-    public override void Clear()
-    {
-      base.Clear();
-      entity = null;
-      staticObject = null;
-      functionInfo = null;
-      if (functionsInfoDict == null || functionsInfoDict.Count <= 0)
-        return;
-      functionsInfoDict.Clear();
-    }
+	public override APIParamInfo OutputParam => functionInfo != null ? functionInfo.OutputParam : base.OutputParam;
 
-    private static FunctionInfo CreateFunctionInfo(string componentName, APIMethodInfo methodInfo)
-    {
-      string key = componentName + methodInfo.MethodName;
-      if (functionsInfoDict.ContainsKey(key))
-        return functionsInfoDict[key];
-      FunctionInfo functionInfo = new FunctionInfo();
-      for (int index = 0; index < methodInfo.InputParams.Count; ++index)
-      {
-        APIParamInfo inputParam = methodInfo.InputParams[index];
-        functionInfo.Params.Add(inputParam);
-      }
-      if (methodInfo.ReturnParam != null)
-        functionInfo.OutputParam = methodInfo.ReturnParam;
-      functionsInfoDict.Add(key, functionInfo);
-      return functionInfo;
-    }
-  }
+	public override void Clear() {
+		base.Clear();
+		entity = null;
+		staticObject = null;
+		functionInfo = null;
+		if (functionsInfoDict == null || functionsInfoDict.Count <= 0)
+			return;
+		functionsInfoDict.Clear();
+	}
+
+	private static FunctionInfo CreateFunctionInfo(string componentName, APIMethodInfo methodInfo) {
+		var key = componentName + methodInfo.MethodName;
+		if (functionsInfoDict.ContainsKey(key))
+			return functionsInfoDict[key];
+		var functionInfo = new FunctionInfo();
+		for (var index = 0; index < methodInfo.InputParams.Count; ++index) {
+			var inputParam = methodInfo.InputParams[index];
+			functionInfo.Params.Add(inputParam);
+		}
+
+		if (methodInfo.ReturnParam != null)
+			functionInfo.OutputParam = methodInfo.ReturnParam;
+		functionsInfoDict.Add(key, functionInfo);
+		return functionInfo;
+	}
 }

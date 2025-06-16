@@ -1,11 +1,9 @@
 ﻿using Engine.Common.Components;
 
-namespace Engine.Source.UI
-{
-  public interface IInvestigationWindow : IWindow, IPauseMenu
-  {
-    IStorageComponent Actor { get; set; }
+namespace Engine.Source.UI;
 
-    IStorableComponent Target { get; set; }
-  }
+public interface IInvestigationWindow : IWindow, IPauseMenu {
+	IStorageComponent Actor { get; set; }
+
+	IStorableComponent Target { get; set; }
 }

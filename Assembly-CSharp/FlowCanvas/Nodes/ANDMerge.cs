@@ -2,55 +2,44 @@
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace FlowCanvas.Nodes
-{
-  [Name("AND")]
-  [Category("Flow Controllers/Flow Merge")]
-  [Description("Calls Out when all inputs are called together in the same frame")]
-  public class ANDMerge : FlowControlNode, IMultiPortNode
-  {
-    [SerializeField]
-    private int _portCount = 2;
-    private FlowOutput fOut;
-    private bool[] calls;
+namespace FlowCanvas.Nodes;
 
-    public int portCount
-    {
-      get => _portCount;
-      set => _portCount = value;
-    }
+[Name("AND")]
+[Category("Flow Controllers/Flow Merge")]
+[Description("Calls Out when all inputs are called together in the same frame")]
+public class ANDMerge : FlowControlNode, IMultiPortNode {
+	[SerializeField] private int _portCount = 2;
+	private FlowOutput fOut;
+	private bool[] calls;
 
-    protected override void RegisterPorts()
-    {
-      calls = new bool[portCount];
-      fOut = AddFlowOutput("Out");
-      for (int index = 0; index < portCount; ++index)
-      {
-        int i = index;
-        AddFlowInput(i.ToString(), () =>
-        {
-          calls[i] = true;
-          Check();
-        });
-      }
-    }
+	public int portCount {
+		get => _portCount;
+		set => _portCount = value;
+	}
 
-    private void Check()
-    {
-      StartCoroutine(Reset());
-      for (int index = 0; index < calls.Length; ++index)
-      {
-        if (!calls[index])
-          return;
-      }
-      fOut.Call();
-    }
+	protected override void RegisterPorts() {
+		calls = new bool[portCount];
+		fOut = AddFlowOutput("Out");
+		for (var index = 0; index < portCount; ++index) {
+			var i = index;
+			AddFlowInput(i.ToString(), () => {
+				calls[i] = true;
+				Check();
+			});
+		}
+	}
 
-    private IEnumerator Reset()
-    {
-      yield return null;
-      for (int i = 0; i < calls.Length; ++i)
-        calls[i] = false;
-    }
-  }
+	private void Check() {
+		StartCoroutine(Reset());
+		for (var index = 0; index < calls.Length; ++index)
+			if (!calls[index])
+				return;
+		fOut.Call();
+	}
+
+	private IEnumerator Reset() {
+		yield return null;
+		for (var i = 0; i < calls.Length; ++i)
+			calls[i] = false;
+	}
 }

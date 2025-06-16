@@ -8,124 +8,110 @@ using Engine.Impl.Services.Factories;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons.Parameters
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad | TypeEnum.NeedSave)]
-  public class TimeSpanParameter : 
-    ParameterListener,
-    IParameter<TimeSpan>,
-    IParameter,
-    IComputeParameter
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [CopyableProxy]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterNameEnum name;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected TimeSpan value;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected TimeSpan minValue;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy()]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected TimeSpan maxValue;
-    private TimeSpan storedValue;
-    private bool mutableChecked;
+namespace Engine.Source.Commons.Parameters;
 
-    [Inspected(Header = true)]
-    public ParameterNameEnum Name => name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave |
+               TypeEnum.StateLoad | TypeEnum.NeedSave)]
+public class TimeSpanParameter :
+	ParameterListener,
+	IParameter<TimeSpan>,
+	IParameter,
+	IComputeParameter {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[CopyableProxy]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterNameEnum name;
 
-    [Inspected(Header = true, Mutable = true)]
-    public TimeSpan Value
-    {
-      get => value;
-      set
-      {
-        CheckMutable();
-        this.value = value;
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected TimeSpan value;
 
-    [Inspected]
-    public TimeSpan BaseValue
-    {
-      get => value;
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected TimeSpan minValue;
 
-    [Inspected]
-    public TimeSpan MinValue
-    {
-      get => minValue;
-      set
-      {
-        CheckMutable();
-        minValue = value;
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy()]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected TimeSpan maxValue;
 
-    [Inspected]
-    public TimeSpan MaxValue
-    {
-      get => maxValue;
-      set
-      {
-        CheckMutable();
-        maxValue = value;
-      }
-    }
+	private TimeSpan storedValue;
+	private bool mutableChecked;
 
-    [Inspected]
-    public bool Resetable => false;
+	[Inspected(Header = true)] public ParameterNameEnum Name => name;
 
-    public object ValueData => Value;
+	[Inspected(Header = true, Mutable = true)]
+	public TimeSpan Value {
+		get => value;
+		set {
+			CheckMutable();
+			this.value = value;
+		}
+	}
 
-    private void CheckMutable()
-    {
-      if (mutableChecked)
-        return;
-      mutableChecked = true;
-      storedValue = value;
-      ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
-    }
+	[Inspected]
+	public TimeSpan BaseValue {
+		get => value;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    void IComputeParameter.ResetResetable()
-    {
-    }
+	[Inspected]
+	public TimeSpan MinValue {
+		get => minValue;
+		set {
+			CheckMutable();
+			minValue = value;
+		}
+	}
 
-    void IComputeParameter.CorrectValue()
-    {
-    }
+	[Inspected]
+	public TimeSpan MaxValue {
+		get => maxValue;
+		set {
+			CheckMutable();
+			maxValue = value;
+		}
+	}
 
-    void IComputeParameter.ComputeEvent()
-    {
-      mutableChecked = false;
-      if (!(storedValue != value))
-        return;
-      ChangeParameterInvoke(this);
-    }
-  }
+	[Inspected] public bool Resetable => false;
+
+	public object ValueData => Value;
+
+	private void CheckMutable() {
+		if (mutableChecked)
+			return;
+		mutableChecked = true;
+		storedValue = value;
+		ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
+	}
+
+	void IComputeParameter.ResetResetable() { }
+
+	void IComputeParameter.CorrectValue() { }
+
+	void IComputeParameter.ComputeEvent() {
+		mutableChecked = false;
+		if (!(storedValue != value))
+			return;
+		ChangeParameterInvoke(this);
+	}
 }

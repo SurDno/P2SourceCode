@@ -2,44 +2,42 @@
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 
-namespace Engine.Common.Components
-{
-  public interface IPlayerControllerComponent : IComponent
-  {
-    event Action<CombatActionEnum, IEntity> CombatActionEvent;
+namespace Engine.Common.Components;
 
-    IParameterValue<bool> IsDead { get; }
+public interface IPlayerControllerComponent : IComponent {
+	event Action<CombatActionEnum, IEntity> CombatActionEvent;
 
-    IParameterValue<bool> IsImmortal { get; }
+	IParameterValue<bool> IsDead { get; }
 
-    IParameterValue<float> Health { get; }
+	IParameterValue<bool> IsImmortal { get; }
 
-    IParameterValue<float> Hunger { get; }
+	IParameterValue<float> Health { get; }
 
-    IParameterValue<float> Thirst { get; }
+	IParameterValue<float> Hunger { get; }
 
-    IParameterValue<float> Fatigue { get; }
+	IParameterValue<float> Thirst { get; }
 
-    IParameterValue<float> Reputation { get; }
+	IParameterValue<float> Fatigue { get; }
 
-    IParameterValue<float> PreInfection { get; }
+	IParameterValue<float> Reputation { get; }
 
-    IParameterValue<float> Infection { get; }
+	IParameterValue<float> PreInfection { get; }
 
-    IParameterValue<float> Immunity { get; }
+	IParameterValue<float> Infection { get; }
 
-    IParameterValue<bool> Sleep { get; }
+	IParameterValue<float> Immunity { get; }
 
-    IParameterValue<bool> CanTrade { get; }
+	IParameterValue<bool> Sleep { get; }
 
-    IParameterValue<FractionEnum> Fraction { get; }
+	IParameterValue<bool> CanTrade { get; }
 
-    IParameterValue<bool> FundEnabled { get; }
+	IParameterValue<FractionEnum> Fraction { get; }
 
-    IParameterValue<bool> FundFinished { get; }
+	IParameterValue<bool> FundEnabled { get; }
 
-    IParameterValue<float> FundPoints { get; }
+	IParameterValue<bool> FundFinished { get; }
 
-    IParameterValue<bool> CanReceiveMail { get; }
-  }
+	IParameterValue<float> FundPoints { get; }
+
+	IParameterValue<bool> CanReceiveMail { get; }
 }

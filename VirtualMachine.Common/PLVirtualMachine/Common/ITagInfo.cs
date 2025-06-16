@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface ITagInfo
-  {
-    int Percentage { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    string Tag { get; }
-  }
+public interface ITagInfo {
+	int Percentage { get; }
+
+	string Tag { get; }
 }

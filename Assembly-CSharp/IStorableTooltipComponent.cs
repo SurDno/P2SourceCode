@@ -1,8 +1,7 @@
 ﻿using Engine.Common;
 
-public interface IStorableTooltipComponent
-{
-  StorableTooltipInfo GetInfo(IEntity owner);
+public interface IStorableTooltipComponent {
+	StorableTooltipInfo GetInfo(IEntity owner);
 
-  bool IsEnabled { get; }
+	bool IsEnabled { get; }
 }

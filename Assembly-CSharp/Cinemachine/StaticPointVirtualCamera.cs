@@ -1,46 +1,43 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine
-{
-  internal class StaticPointVirtualCamera : ICinemachineCamera
-  {
-    public StaticPointVirtualCamera(CameraState state, string name)
-    {
-      State = state;
-      Name = name;
-    }
+namespace Cinemachine;
 
-    public void SetState(CameraState state) => State = state;
+internal class StaticPointVirtualCamera : ICinemachineCamera {
+	public StaticPointVirtualCamera(CameraState state, string name) {
+		State = state;
+		Name = name;
+	}
 
-    public string Name { get; private set; }
+	public void SetState(CameraState state) {
+		State = state;
+	}
 
-    public string Description => "";
+	public string Name { get; private set; }
 
-    public int Priority { get; set; }
+	public string Description => "";
 
-    public Transform LookAt { get; set; }
+	public int Priority { get; set; }
 
-    public Transform Follow { get; set; }
+	public Transform LookAt { get; set; }
 
-    public CameraState State { get; private set; }
+	public Transform Follow { get; set; }
 
-    public GameObject VirtualCameraGameObject => null;
+	public CameraState State { get; private set; }
 
-    public ICinemachineCamera LiveChildOrSelf => this;
+	public GameObject VirtualCameraGameObject => null;
 
-    public ICinemachineCamera ParentCamera => null;
+	public ICinemachineCamera LiveChildOrSelf => this;
 
-    public bool IsLiveChild(ICinemachineCamera vcam) => false;
+	public ICinemachineCamera ParentCamera => null;
 
-    public void UpdateCameraState(Vector3 worldUp, float deltaTime)
-    {
-    }
+	public bool IsLiveChild(ICinemachineCamera vcam) {
+		return false;
+	}
 
-    public void OnTransitionFromCamera(
-      ICinemachineCamera fromCam,
-      Vector3 worldUp,
-      float deltaTime)
-    {
-    }
-  }
+	public void UpdateCameraState(Vector3 worldUp, float deltaTime) { }
+
+	public void OnTransitionFromCamera(
+		ICinemachineCamera fromCam,
+		Vector3 worldUp,
+		float deltaTime) { }
 }

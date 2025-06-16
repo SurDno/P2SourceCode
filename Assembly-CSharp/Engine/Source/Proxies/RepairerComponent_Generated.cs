@@ -5,36 +5,30 @@ using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Engine.Source.Components;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (RepairerComponent))]
-  public class RepairerComponent_Generated : 
-    RepairerComponent,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      RepairerComponent_Generated instance = Activator.CreateInstance<RepairerComponent_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-      CloneableObjectUtility.FillListTo(((RepairerComponent_Generated) target2).repairableGroups, repairableGroups);
-    }
+[FactoryProxy(typeof(RepairerComponent))]
+public class RepairerComponent_Generated :
+	RepairerComponent,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<RepairerComponent_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteListEnum(writer, "RepairableGroups", repairableGroups);
-    }
+	public void CopyTo(object target2) {
+		CloneableObjectUtility.FillListTo(((RepairerComponent_Generated)target2).repairableGroups, repairableGroups);
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      repairableGroups = DefaultDataReadUtility.ReadListEnum(reader, "RepairableGroups", repairableGroups);
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteListEnum(writer, "RepairableGroups", repairableGroups);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		repairableGroups = DefaultDataReadUtility.ReadListEnum(reader, "RepairableGroups", repairableGroups);
+	}
 }

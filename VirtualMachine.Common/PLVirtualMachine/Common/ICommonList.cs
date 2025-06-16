@@ -2,31 +2,29 @@
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  [VMType("CommonList")]
-  public interface ICommonList : IVMStringSerializable
-  {
-    int ObjectsCount { get; }
+namespace PLVirtualMachine.Common;
 
-    object GetObject(int objIndex);
+[VMType("CommonList")]
+public interface ICommonList : IVMStringSerializable {
+	int ObjectsCount { get; }
 
-    void SetObject(int objIndex, object obj);
+	object GetObject(int objIndex);
 
-    VMType GetType(int objIndex);
+	void SetObject(int objIndex, object obj);
 
-    void Clear();
+	VMType GetType(int objIndex);
 
-    void AddObject(object obj);
+	void Clear();
 
-    void RemoveObjectByIndex(int objIndex);
+	void AddObject(object obj);
 
-    int RemoveObjectInstanceByGuid(Guid objGuid);
+	void RemoveObjectByIndex(int objIndex);
 
-    void Merge(ICommonList mergeList);
+	int RemoveObjectInstanceByGuid(Guid objGuid);
 
-    bool CheckObjectExist(object obj);
+	void Merge(ICommonList mergeList);
 
-    int GetListIndexOfMaxValue();
-  }
+	bool CheckObjectExist(object obj);
+
+	int GetListIndexOfMaxValue();
 }

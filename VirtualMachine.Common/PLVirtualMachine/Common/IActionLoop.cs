@@ -1,15 +1,13 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IActionLoop
-  {
-    CommonVariable LoopListParam { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    object StartIndexParam { get; }
+public interface IActionLoop {
+	CommonVariable LoopListParam { get; }
 
-    object EndIndexParam { get; }
+	object StartIndexParam { get; }
 
-    bool LoopRandomIndexing { get; }
+	object EndIndexParam { get; }
 
-    IVariable LoopListParamInstance { get; }
-  }
+	bool LoopRandomIndexing { get; }
+
+	IVariable LoopListParamInstance { get; }
 }

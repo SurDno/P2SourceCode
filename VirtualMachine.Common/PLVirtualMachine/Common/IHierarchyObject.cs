@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IHierarchyObject : IEngineInstanced, IEngineTemplated, INamed
-  {
-    HierarchyGuid HierarchyGuid { get; }
+namespace PLVirtualMachine.Common;
 
-    IEnumerable<IHierarchyObject> HierarchyChilds { get; }
+public interface IHierarchyObject : IEngineInstanced, IEngineTemplated, INamed {
+	HierarchyGuid HierarchyGuid { get; }
 
-    void AddHierarchyChild(IHierarchyObject child);
+	IEnumerable<IHierarchyObject> HierarchyChilds { get; }
 
-    void InitInstanceGuid(Guid instanceGuid);
-  }
+	void AddHierarchyChild(IHierarchyObject child);
+
+	void InitInstanceGuid(Guid instanceGuid);
 }

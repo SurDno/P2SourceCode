@@ -1,5 +1,4 @@
-﻿public enum TOD_MoonPositionType
-{
-  OppositeToSun,
-  Realistic,
+﻿public enum TOD_MoonPositionType {
+	OppositeToSun,
+	Realistic
 }

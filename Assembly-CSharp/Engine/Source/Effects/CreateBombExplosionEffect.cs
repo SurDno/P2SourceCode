@@ -9,75 +9,58 @@ using Engine.Source.Components;
 using Engine.Source.Connections;
 using Inspectors;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class CreateBombExplosionEffect : IEffect, IEntityEventsListener
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected Typed<IEntity> template;
-    private IEntity bombEntity;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class CreateBombExplosionEffect : IEffect, IEntityEventsListener {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected Typed<IEntity> template;
 
-    public IEntity Target { get; set; }
+	private IEntity bombEntity;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	public string Name => GetType().Name;
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      bombEntity = ServiceLocator.GetService<IFactory>().Instantiate(template.Value);
-      ((Entity) bombEntity).DontSave = true;
-      bombEntity.GetComponent<ParentComponent>()?.SetParent(Target);
-      ServiceLocator.GetService<ISimulation>().Add(bombEntity, ServiceLocator.GetService<ISimulation>().Objects);
-      LocationItemComponent component1 = bombEntity.GetComponent<LocationItemComponent>();
-      if (component1 != null)
-        component1.Location = Target?.GetComponent<LocationItemComponent>()?.Location;
-      NPCWeaponService component2 = ((IEntityView) Target).GameObject.GetComponent<NPCWeaponService>();
-      ((IEntityView) bombEntity).Position = component2.ProjectileHitPosition;
-      ((IEntityView) bombEntity).Rotation = component2.ProjectileHitRotation;
-      ((Entity) Target).AddListener(this);
-      ((Entity) bombEntity).AddListener(this);
-      return true;
-    }
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      return !bombEntity.IsDisposed;
-    }
+	public IEntity Target { get; set; }
 
-    public void Cleanup()
-    {
-    }
+	public ParameterEffectQueueEnum Queue => queue;
 
-    public void OnEntityEvent(IEntity sender, EntityEvents kind)
-    {
-      if (kind != EntityEvents.DisposeEvent)
-        return;
-      if (sender == Target)
-      {
-        ((Entity) Target).RemoveListener(this);
-        bombEntity.Dispose();
-      }
-      else if (sender == bombEntity)
-      {
-        ((Entity) Target).RemoveListener(this);
-        ((Entity) bombEntity).RemoveListener(this);
-      }
-    }
-  }
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		bombEntity = ServiceLocator.GetService<IFactory>().Instantiate(template.Value);
+		((Entity)bombEntity).DontSave = true;
+		bombEntity.GetComponent<ParentComponent>()?.SetParent(Target);
+		ServiceLocator.GetService<ISimulation>().Add(bombEntity, ServiceLocator.GetService<ISimulation>().Objects);
+		var component1 = bombEntity.GetComponent<LocationItemComponent>();
+		if (component1 != null)
+			component1.Location = Target?.GetComponent<LocationItemComponent>()?.Location;
+		var component2 = ((IEntityView)Target).GameObject.GetComponent<NPCWeaponService>();
+		((IEntityView)bombEntity).Position = component2.ProjectileHitPosition;
+		((IEntityView)bombEntity).Rotation = component2.ProjectileHitRotation;
+		((Entity)Target).AddListener(this);
+		((Entity)bombEntity).AddListener(this);
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		return !bombEntity.IsDisposed;
+	}
+
+	public void Cleanup() { }
+
+	public void OnEntityEvent(IEntity sender, EntityEvents kind) {
+		if (kind != EntityEvents.DisposeEvent)
+			return;
+		if (sender == Target) {
+			((Entity)Target).RemoveListener(this);
+			bombEntity.Dispose();
+		} else if (sender == bombEntity) {
+			((Entity)Target).RemoveListener(this);
+			((Entity)bombEntity).RemoveListener(this);
+		}
+	}
 }

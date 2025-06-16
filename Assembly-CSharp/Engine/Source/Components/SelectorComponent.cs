@@ -9,62 +9,48 @@ using Engine.Source.Connections;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Required(typeof (LocationItemComponent))]
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SelectorComponent : EngineComponent
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<SelectorPreset> presets = new List<SelectorPreset>();
-    private bool initialise;
-    [FromThis]
-    private LocationItemComponent locationItemComponent;
+namespace Engine.Source.Components;
 
-    public override void OnAdded()
-    {
-      base.OnAdded();
-      locationItemComponent.OnHibernationChanged += LocationItemComponent_OnChangeHibernation;
-    }
+[Required(typeof(LocationItemComponent))]
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class SelectorComponent : EngineComponent {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected List<SelectorPreset> presets = new();
 
-    public override void OnRemoved()
-    {
-      locationItemComponent.OnHibernationChanged -= LocationItemComponent_OnChangeHibernation;
-      base.OnRemoved();
-    }
+	private bool initialise;
+	[FromThis] private LocationItemComponent locationItemComponent;
 
-    private void LocationItemComponent_OnChangeHibernation(ILocationItemComponent sender)
-    {
-      if (initialise || locationItemComponent.IsHibernation)
-        return;
-      initialise = true;
-      if (presets.Count == 0)
-        return;
-      IEntity sceneEntity = ((IEntityHierarchy) Owner).SceneEntity;
-      if (sceneEntity == null)
-      {
-        Debug.LogError("SceneEntity not found : " + Owner.GetInfo());
-      }
-      else
-      {
-        int num = Random.Range(0, presets.Count);
-        for (int index = 0; index < presets.Count; ++index)
-        {
-          foreach (SceneGameObject sceneGameObject in presets[index].Objects)
-          {
-            IEntity entityByTemplate = EntityUtility.GetEntityByTemplate(sceneEntity, sceneGameObject.Id);
-            if (entityByTemplate != null)
-              entityByTemplate.IsEnabled = num == index;
-            else
-              Debug.LogError("SelectorComponent - EntityByTemplate not found , id : " + sceneGameObject.Id + " , owner : " + Owner.GetInfo());
-          }
-        }
-      }
-    }
-  }
+	public override void OnAdded() {
+		base.OnAdded();
+		locationItemComponent.OnHibernationChanged += LocationItemComponent_OnChangeHibernation;
+	}
+
+	public override void OnRemoved() {
+		locationItemComponent.OnHibernationChanged -= LocationItemComponent_OnChangeHibernation;
+		base.OnRemoved();
+	}
+
+	private void LocationItemComponent_OnChangeHibernation(ILocationItemComponent sender) {
+		if (initialise || locationItemComponent.IsHibernation)
+			return;
+		initialise = true;
+		if (presets.Count == 0)
+			return;
+		var sceneEntity = ((IEntityHierarchy)Owner).SceneEntity;
+		if (sceneEntity == null)
+			Debug.LogError("SceneEntity not found : " + Owner.GetInfo());
+		else {
+			var num = Random.Range(0, presets.Count);
+			for (var index = 0; index < presets.Count; ++index)
+				foreach (var sceneGameObject in presets[index].Objects) {
+					var entityByTemplate = EntityUtility.GetEntityByTemplate(sceneEntity, sceneGameObject.Id);
+					if (entityByTemplate != null)
+						entityByTemplate.IsEnabled = num == index;
+					else
+						Debug.LogError("SelectorComponent - EntityByTemplate not found , id : " + sceneGameObject.Id +
+						               " , owner : " + Owner.GetInfo());
+				}
+		}
+	}
 }

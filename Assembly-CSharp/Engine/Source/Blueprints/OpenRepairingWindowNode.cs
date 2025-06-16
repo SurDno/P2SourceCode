@@ -7,29 +7,24 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class OpenRepairingWindowNode : FlowControlNode
-  {
-    private ValueInput<IEntity> targetInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        IEntity target = targetInput.value;
-        if (target == null)
-          return;
-        UIServiceUtility.PushWindow<IRepairingWindow>(output, window =>
-        {
-          window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
-          window.Target = target;
-        });
-      });
-      targetInput = AddValueInput<IEntity>("Target");
-    }
-  }
+[Category("Engine")]
+public class OpenRepairingWindowNode : FlowControlNode {
+	private ValueInput<IEntity> targetInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			var target = targetInput.value;
+			if (target == null)
+				return;
+			UIServiceUtility.PushWindow<IRepairingWindow>(output, window => {
+				window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
+				window.Target = target;
+			});
+		});
+		targetInput = AddValueInput<IEntity>("Target");
+	}
 }

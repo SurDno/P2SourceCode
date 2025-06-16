@@ -1,8 +1,6 @@
-﻿namespace AmplifyBloom
-{
-  public enum DemoUIElementAction
-  {
-    Press,
-    Slide,
-  }
+﻿namespace AmplifyBloom;
+
+public enum DemoUIElementAction {
+	Press,
+	Slide
 }

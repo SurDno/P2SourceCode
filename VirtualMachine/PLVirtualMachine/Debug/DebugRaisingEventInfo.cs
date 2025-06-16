@@ -1,18 +1,15 @@
-﻿namespace PLVirtualMachine.Debug
-{
-  public class DebugRaisingEventInfo
-  {
-    private string eventOwnerUniName;
-    private ulong eventGuid;
+﻿namespace PLVirtualMachine.Debug;
 
-    public DebugRaisingEventInfo(string eventOwnerUniName, ulong eventGuid)
-    {
-      this.eventOwnerUniName = eventOwnerUniName;
-      this.eventGuid = eventGuid;
-    }
+public class DebugRaisingEventInfo {
+	private string eventOwnerUniName;
+	private ulong eventGuid;
 
-    public string EventOwnerUniName => eventOwnerUniName;
+	public DebugRaisingEventInfo(string eventOwnerUniName, ulong eventGuid) {
+		this.eventOwnerUniName = eventOwnerUniName;
+		this.eventGuid = eventGuid;
+	}
 
-    public ulong EventGuid => eventGuid;
-  }
+	public string EventOwnerUniName => eventOwnerUniName;
+
+	public ulong EventGuid => eventGuid;
 }

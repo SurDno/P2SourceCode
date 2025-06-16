@@ -1,15 +1,15 @@
 ﻿using UnityEngine;
 
-namespace AssetDatabases
-{
-  public class AsyncLoadFromResources : IAsyncLoad
-  {
-    private ResourceRequest operation;
+namespace AssetDatabases;
 
-    public AsyncLoadFromResources(ResourceRequest operation) => this.operation = operation;
+public class AsyncLoadFromResources : IAsyncLoad {
+	private ResourceRequest operation;
 
-    public object Asset => operation.asset;
+	public AsyncLoadFromResources(ResourceRequest operation) {
+		this.operation = operation;
+	}
 
-    public bool IsDone => operation.isDone;
-  }
+	public object Asset => operation.asset;
+
+	public bool IsDone => operation.isDone;
 }

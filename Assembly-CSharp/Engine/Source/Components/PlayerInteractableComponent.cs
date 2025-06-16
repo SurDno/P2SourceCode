@@ -17,224 +17,186 @@ using InputServices;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Factory]
-  [Required(typeof (LocationItemComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class PlayerInteractableComponent : EngineComponent, IUpdatable, IPlayerActivated
-  {
-    [Inspected]
-    private IEntity currentTarget;
-    [Inspected]
-    private InteractableComponent currentInteractable;
-    [Inspected]
-    private List<InteractItemInfo> validateItems = new List<InteractItemInfo>();
-    [Inspected]
-    private HashSet<GameActionType> pressed = new HashSet<GameActionType>();
-    [FromLocator]
-    private GameActionService gameActionService;
-    [FromLocator]
-    private UIService uiService;
-    [FromLocator]
-    private PickingService pickingService;
-    private List<InteractItemInfo> tmp = new List<InteractItemInfo>();
-    private bool isJoystick;
-    private IOrderedEnumerable<InteractItemInfo> validateItemsOrdered;
-    private List<GameActionType> cachedLastInteractionTypes = new List<GameActionType>();
-    private List<GameActionType> comparationList = new List<GameActionType>();
+namespace Engine.Source.Components;
 
-    public InteractableComponent Interactable => currentInteractable;
+[Factory]
+[Required(typeof(LocationItemComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class PlayerInteractableComponent : EngineComponent, IUpdatable, IPlayerActivated {
+	[Inspected] private IEntity currentTarget;
+	[Inspected] private InteractableComponent currentInteractable;
+	[Inspected] private List<InteractItemInfo> validateItems = new();
+	[Inspected] private HashSet<GameActionType> pressed = new();
+	[FromLocator] private GameActionService gameActionService;
+	[FromLocator] private UIService uiService;
+	[FromLocator] private PickingService pickingService;
+	private List<InteractItemInfo> tmp = new();
+	private bool isJoystick;
+	private IOrderedEnumerable<InteractItemInfo> validateItemsOrdered;
+	private List<GameActionType> cachedLastInteractionTypes = new();
+	private List<GameActionType> comparationList = new();
 
-    public IEnumerable<InteractItemInfo> ValidateItems
-    {
-      get => validateItems;
-    }
+	public InteractableComponent Interactable => currentInteractable;
 
-    public override void OnChangeEnabled()
-    {
-      base.OnChangeEnabled();
-      currentTarget = null;
-      currentInteractable = null;
-      validateItems.Clear();
-    }
+	public IEnumerable<InteractItemInfo> ValidateItems => validateItems;
 
-    public void ComputeUpdate()
-    {
-      if (!PlayerUtility.IsPlayerCanControlling)
-      {
-        ClearActions();
-      }
-      else
-      {
-        if (isJoystick != InputService.Instance.JoystickUsed)
-        {
-          isJoystick = InputService.Instance.JoystickUsed;
-          cachedLastInteractionTypes = null;
-        }
-        IEntity entity = pickingService.TargetEntity;
-        if (entity != null && pickingService.TargetEntityDistance > (double) ExternalSettingsInstance<ExternalCommonSettings>.Instance.InteractionDistance)
-          entity = null;
-        if (entity != currentTarget)
-        {
-          currentTarget = entity;
-          currentInteractable = null;
-          cachedLastInteractionTypes = null;
-          if (currentTarget != null)
-            currentInteractable = currentTarget.GetComponent<InteractableComponent>();
-        }
-        UpdateActions();
-      }
-    }
+	public override void OnChangeEnabled() {
+		base.OnChangeEnabled();
+		currentTarget = null;
+		currentInteractable = null;
+		validateItems.Clear();
+	}
 
-    private void ClearActions()
-    {
-      validateItems.Clear();
-      cachedLastInteractionTypes = null;
-    }
+	public void ComputeUpdate() {
+		if (!PlayerUtility.IsPlayerCanControlling)
+			ClearActions();
+		else {
+			if (isJoystick != InputService.Instance.JoystickUsed) {
+				isJoystick = InputService.Instance.JoystickUsed;
+				cachedLastInteractionTypes = null;
+			}
 
-    private void UpdateActions()
-    {
-      bool isSame = false;
-      if (currentInteractable != null && !currentInteractable.IsDisposed && currentInteractable.Owner.IsEnabledInHierarchy && currentInteractable.IsEnabled)
-      {
-        comparationList.Clear();
-        currentInteractable.Items.ForEach(i =>
-        {
-          if (!InteractValidationService.Validate(currentInteractable, i).Result)
-            return;
-          comparationList.Add(i.Action);
-        });
-        if (cachedLastInteractionTypes == null || !cachedLastInteractionTypes.SequenceEqual(comparationList))
-        {
-          ClearActions();
-          validateItems.AddRange(currentInteractable.GetValidateItems(Owner));
-          cachedLastInteractionTypes = new List<GameActionType>(comparationList);
-        }
-        else
-          isSame = true;
-      }
-      else
-        ClearActions();
-      if (!isSame)
-      {
-        if (validateItemsOrdered == null)
-          validateItemsOrdered = validateItems.OrderBy(o => o.Invalid);
-        tmp.Clear();
-        tmp.AddRange(validateItemsOrdered);
-        for (int index = 1; index < tmp.Count && !tmp[index].Invalid; ++index)
-        {
-          if (tmp[index].Item.Action == tmp[index - 1].Item.Action)
-          {
-            tmp[index].Invalid = true;
-            tmp[index].Dublicate = true;
-          }
-        }
-        int index1 = 0;
-        for (int index2 = 0; index2 < validateItems.Count; ++index2)
-        {
-          InteractItemInfo validateItem = validateItems[index2];
-          if (validateItem.Invalid)
-          {
-            validateItem.OverrideAction = index1 < InteractUtility.DebugActions.Length ? InteractUtility.DebugActions[index1].Action : InteractUtility.DebugActions[InteractUtility.DebugActions.Length - 1].Action;
-            ++index1;
-          }
-        }
-        CoroutineService.Instance.WaitFrame(1, (Action) (() => UpdateIcons(false)));
-      }
-      UpdateIcons(isSame);
-    }
+			var entity = pickingService.TargetEntity;
+			if (entity != null && pickingService.TargetEntityDistance >
+			    (double)ExternalSettingsInstance<ExternalCommonSettings>.Instance.InteractionDistance)
+				entity = null;
+			if (entity != currentTarget) {
+				currentTarget = entity;
+				currentInteractable = null;
+				cachedLastInteractionTypes = null;
+				if (currentTarget != null)
+					currentInteractable = currentTarget.GetComponent<InteractableComponent>();
+			}
 
-    private void UpdateIcons(bool isSame)
-    {
-      IHudWindow hudWindow = uiService.Get<IHudWindow>();
-      if (hudWindow == null)
-        return;
-      InteractableWindow interactableInterface = hudWindow.InteractableInterface;
-      if (interactableInterface == null)
-        return;
-      if (!isSame)
-      {
-        InteractableWindow.IconType info = InteractableWindow.IconType.None;
-        if (!InputService.Instance.JoystickUsed)
-        {
-          string text = "";
-          if (currentInteractable != null && !currentInteractable.IsDisposed)
-          {
-            info = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);
-            text = DefaultInteractableMapping.GetText(validateItems);
-          }
-          interactableInterface.SetInfo(info, text);
-        }
-        else
-        {
-          List<KeyValuePair<Sprite, bool>> iconSprites = null;
-          if (currentInteractable != null && !currentInteractable.IsDisposed)
-          {
-            InteractableWindow.IconType iconType = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);
-            List<KeyValuePair<GameActionType, bool>> actions;
-            string[] text = DefaultInteractableMapping.GetText(validateItems, out iconSprites, out actions);
-            interactableInterface.SetInfo(iconType, text, iconSprites, actions);
-          }
-          else
-            interactableInterface.DeactivateAllTitles();
-        }
-      }
-      else
-        interactableInterface.UpdateProgress();
-    }
+			UpdateActions();
+		}
+	}
 
-    private bool Listener(GameActionType type, bool down)
-    {
-      if (!PlayerUtility.IsPlayerCanControlling || !down || currentInteractable == null || currentInteractable.IsDisposed)
-        return false;
-      InteractItemInfo interactItemInfo = null;
-      foreach (InteractItemInfo validateItem in validateItems)
-      {
-        if (validateItem.Invalid)
-        {
-          if (InstanceByRequest<EngineApplication>.Instance.IsDebug && validateItem.OverrideAction == type)
-          {
-            interactItemInfo = validateItem;
-            break;
-          }
-        }
-        else if (validateItem.Item.Action == type)
-        {
-          interactItemInfo = validateItem;
-          break;
-        }
-      }
-      if (interactItemInfo == null)
-        return false;
-      currentInteractable.BeginInteract(Owner, interactItemInfo.Item.Type);
-      currentInteractable = null;
-      currentTarget = null;
-      validateItems.Clear();
-      UpdateIcons(false);
-      return true;
-    }
+	private void ClearActions() {
+		validateItems.Clear();
+		cachedLastInteractionTypes = null;
+	}
 
-    public void PlayerActivated()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-      foreach (GameActionType interactAction in InteractUtility.InteractActions)
-        gameActionService.AddListener(interactAction, Listener);
-      JoystickLayoutSwitcher.Instance.OnLayoutChanged += OnLayoutChanged;
-    }
+	private void UpdateActions() {
+		var isSame = false;
+		if (currentInteractable != null && !currentInteractable.IsDisposed &&
+		    currentInteractable.Owner.IsEnabledInHierarchy && currentInteractable.IsEnabled) {
+			comparationList.Clear();
+			currentInteractable.Items.ForEach(i => {
+				if (!InteractValidationService.Validate(currentInteractable, i).Result)
+					return;
+				comparationList.Add(i.Action);
+			});
+			if (cachedLastInteractionTypes == null || !cachedLastInteractionTypes.SequenceEqual(comparationList)) {
+				ClearActions();
+				validateItems.AddRange(currentInteractable.GetValidateItems(Owner));
+				cachedLastInteractionTypes = new List<GameActionType>(comparationList);
+			} else
+				isSame = true;
+		} else
+			ClearActions();
 
-    public void PlayerDeactivated()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-      foreach (GameActionType interactAction in InteractUtility.InteractActions)
-        gameActionService.RemoveListener(interactAction, Listener);
-      JoystickLayoutSwitcher.Instance.OnLayoutChanged -= OnLayoutChanged;
-    }
+		if (!isSame) {
+			if (validateItemsOrdered == null)
+				validateItemsOrdered = validateItems.OrderBy(o => o.Invalid);
+			tmp.Clear();
+			tmp.AddRange(validateItemsOrdered);
+			for (var index = 1; index < tmp.Count && !tmp[index].Invalid; ++index)
+				if (tmp[index].Item.Action == tmp[index - 1].Item.Action) {
+					tmp[index].Invalid = true;
+					tmp[index].Dublicate = true;
+				}
 
-    private void OnLayoutChanged(JoystickLayoutSwitcher.KeyLayouts newLayout)
-    {
-      cachedLastInteractionTypes = null;
-      UpdateActions();
-    }
-  }
+			var index1 = 0;
+			for (var index2 = 0; index2 < validateItems.Count; ++index2) {
+				var validateItem = validateItems[index2];
+				if (validateItem.Invalid) {
+					validateItem.OverrideAction = index1 < InteractUtility.DebugActions.Length
+						? InteractUtility.DebugActions[index1].Action
+						: InteractUtility.DebugActions[InteractUtility.DebugActions.Length - 1].Action;
+					++index1;
+				}
+			}
+
+			CoroutineService.Instance.WaitFrame(1, (Action)(() => UpdateIcons(false)));
+		}
+
+		UpdateIcons(isSame);
+	}
+
+	private void UpdateIcons(bool isSame) {
+		var hudWindow = uiService.Get<IHudWindow>();
+		if (hudWindow == null)
+			return;
+		var interactableInterface = hudWindow.InteractableInterface;
+		if (interactableInterface == null)
+			return;
+		if (!isSame) {
+			var info = InteractableWindow.IconType.None;
+			if (!InputService.Instance.JoystickUsed) {
+				var text = "";
+				if (currentInteractable != null && !currentInteractable.IsDisposed) {
+					info = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);
+					text = DefaultInteractableMapping.GetText(validateItems);
+				}
+
+				interactableInterface.SetInfo(info, text);
+			} else {
+				List<KeyValuePair<Sprite, bool>> iconSprites = null;
+				if (currentInteractable != null && !currentInteractable.IsDisposed) {
+					var iconType = DefaultInteractableMapping.GetIconType(currentInteractable, validateItems);
+					List<KeyValuePair<GameActionType, bool>> actions;
+					var text = DefaultInteractableMapping.GetText(validateItems, out iconSprites, out actions);
+					interactableInterface.SetInfo(iconType, text, iconSprites, actions);
+				} else
+					interactableInterface.DeactivateAllTitles();
+			}
+		} else
+			interactableInterface.UpdateProgress();
+	}
+
+	private bool Listener(GameActionType type, bool down) {
+		if (!PlayerUtility.IsPlayerCanControlling || !down || currentInteractable == null ||
+		    currentInteractable.IsDisposed)
+			return false;
+		InteractItemInfo interactItemInfo = null;
+		foreach (var validateItem in validateItems)
+			if (validateItem.Invalid) {
+				if (InstanceByRequest<EngineApplication>.Instance.IsDebug && validateItem.OverrideAction == type) {
+					interactItemInfo = validateItem;
+					break;
+				}
+			} else if (validateItem.Item.Action == type) {
+				interactItemInfo = validateItem;
+				break;
+			}
+
+		if (interactItemInfo == null)
+			return false;
+		currentInteractable.BeginInteract(Owner, interactItemInfo.Item.Type);
+		currentInteractable = null;
+		currentTarget = null;
+		validateItems.Clear();
+		UpdateIcons(false);
+		return true;
+	}
+
+	public void PlayerActivated() {
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+		foreach (var interactAction in InteractUtility.InteractActions)
+			gameActionService.AddListener(interactAction, Listener);
+		JoystickLayoutSwitcher.Instance.OnLayoutChanged += OnLayoutChanged;
+	}
+
+	public void PlayerDeactivated() {
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+		foreach (var interactAction in InteractUtility.InteractActions)
+			gameActionService.RemoveListener(interactAction, Listener);
+		JoystickLayoutSwitcher.Instance.OnLayoutChanged -= OnLayoutChanged;
+	}
+
+	private void OnLayoutChanged(JoystickLayoutSwitcher.KeyLayouts newLayout) {
+		cachedLastInteractionTypes = null;
+		UpdateActions();
+	}
 }

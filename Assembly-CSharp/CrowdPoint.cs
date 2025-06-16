@@ -2,15 +2,13 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class CrowdPoint : MonoBehaviour
-{
-  [SerializeField]
-  [FormerlySerializedAs("Area")]
-  private AreaEnum area;
-  [SerializeField]
-  private bool onNavMesh;
+public class CrowdPoint : MonoBehaviour {
+	[SerializeField] [FormerlySerializedAs("Area")]
+	private AreaEnum area;
 
-  public AreaEnum Area => area;
+	[SerializeField] private bool onNavMesh;
 
-  public bool OnNavMesh => onNavMesh;
+	public AreaEnum Area => area;
+
+	public bool OnNavMesh => onNavMesh;
 }

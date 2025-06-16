@@ -9,43 +9,37 @@ using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
 
-namespace PLVirtualMachine.GameLogic
-{
-  [TypeData(EDataType.TCustomType)]
-  [DataFactory("CustomType")]
-  public class VMCustomType : VMBaseObject, IStub, IEditorDataReader
-  {
-    public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
-    {
-      while (xml.Read()) {
-        if (xml.NodeType == XmlNodeType.Element)
-        {
-          switch (xml.Name)
-          {
-            case "Name":
-              name = EditorDataReadUtility.ReadValue(xml, name);
-              continue;
-            case "Parent":
-              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
-              continue;
-            default:
-              if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
-                Logger.AddError(typeContext + " : " + xml.Name);
-              XmlReaderUtility.SkipNode(xml);
-              continue;
-          }
-        }
+namespace PLVirtualMachine.GameLogic;
 
-        if (xml.NodeType == XmlNodeType.EndElement)
-          break;
-      }
-    }
+[TypeData(EDataType.TCustomType)]
+[DataFactory("CustomType")]
+public class VMCustomType : VMBaseObject, IStub, IEditorDataReader {
+	public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext) {
+		while (xml.Read()) {
+			if (xml.NodeType == XmlNodeType.Element)
+				switch (xml.Name) {
+					case "Name":
+						name = EditorDataReadUtility.ReadValue(xml, name);
+						continue;
+					case "Parent":
+						parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+						continue;
+					default:
+						if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
+							Logger.AddError(typeContext + " : " + xml.Name);
+						XmlReaderUtility.SkipNode(xml);
+						continue;
+				}
 
-    public VMCustomType(ulong guid)
-      : base(guid)
-    {
-    }
+			if (xml.NodeType == XmlNodeType.EndElement)
+				break;
+		}
+	}
 
-    public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_TYPES;
-  }
+	public VMCustomType(ulong guid)
+		: base(guid) { }
+
+	public override EObjectCategory GetCategory() {
+		return EObjectCategory.OBJECT_CATEGORY_TYPES;
+	}
 }

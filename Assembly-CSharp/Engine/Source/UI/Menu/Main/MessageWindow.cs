@@ -2,18 +2,16 @@
 using Engine.Impl.UI.Menu.Main;
 using UnityEngine;
 
-namespace Engine.Source.UI.Menu.Main
-{
-  public class MessageWindow : SimpleWindow, IMessageWindow, IWindow
-  {
-    [SerializeField]
-    private StringView textView;
+namespace Engine.Source.UI.Menu.Main;
 
-    protected override void RegisterLayer()
-    {
-      RegisterLayer<IMessageWindow>(this);
-    }
+public class MessageWindow : SimpleWindow, IMessageWindow, IWindow {
+	[SerializeField] private StringView textView;
 
-    public void SetMessage(string text) => textView.StringValue = text;
-  }
+	protected override void RegisterLayer() {
+		RegisterLayer<IMessageWindow>(this);
+	}
+
+	public void SetMessage(string text) {
+		textView.StringValue = text;
+	}
 }

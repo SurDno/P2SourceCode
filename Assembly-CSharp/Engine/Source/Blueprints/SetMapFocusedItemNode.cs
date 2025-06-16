@@ -6,23 +6,19 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class SetMapFocusedItemNode : FlowControlNode
-  {
-    private ValueInput<IEntity> targetInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        ServiceLocator.GetService<MapService>().FocusedItem = targetInput.value?.GetComponent<MapItemComponent>();
-        output.Call();
-      });
-      targetInput = AddValueInput<IEntity>("Target");
-    }
-  }
+[Category("Engine")]
+public class SetMapFocusedItemNode : FlowControlNode {
+	private ValueInput<IEntity> targetInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			ServiceLocator.GetService<MapService>().FocusedItem = targetInput.value?.GetComponent<MapItemComponent>();
+			output.Call();
+		});
+		targetInput = AddValueInput<IEntity>("Target");
+	}
 }

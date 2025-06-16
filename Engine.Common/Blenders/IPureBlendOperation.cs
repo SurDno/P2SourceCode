@@ -1,6 +1,3 @@
-﻿namespace Engine.Common.Blenders
-{
-  public interface IPureBlendOperation
-  {
-  }
-}
+﻿namespace Engine.Common.Blenders;
+
+public interface IPureBlendOperation { }

@@ -8,102 +8,90 @@ using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  [FactoryProxy(typeof (VMWeather))]
-  public class Weather : VMWeather, IInitialiseComponentFromHierarchy, IInitialiseEvents
-  {
-    public override string GetComponentTypeName() => nameof (Weather);
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
-    {
-    }
+[FactoryProxy(typeof(VMWeather))]
+public class Weather : VMWeather, IInitialiseComponentFromHierarchy, IInitialiseEvents {
+	public override string GetComponentTypeName() {
+		return nameof(Weather);
+	}
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
-      string name = target.Name;
-    }
+	public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject) { }
 
-    public override void Initialize(VMBaseEntity parent)
-    {
-      base.Initialize(parent);
-      if (Instance == null)
-        Instance = this;
-      else
-        Logger.AddError("Weather component creation dublicate!");
-    }
+	public void InitialiseEvent(DynamicEvent target) {
+		var name = target.Name;
+	}
 
-    public static void ResetInstance() => Instance = null;
+	public override void Initialize(VMBaseEntity parent) {
+		base.Initialize(parent);
+		if (Instance == null)
+			Instance = this;
+		else
+			Logger.AddError("Weather component creation dublicate!");
+	}
 
-    public override void SetWeatherLayerWeight(
-      WeatherLayer weatherLayer,
-      float fWeight,
-      float fTimeToBlend)
-    {
-      IWeatherLayerBlenderItem layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
-      if (layerBlenderItem == null)
-        Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
-      else
-        layerBlenderItem.SetOpacity(fWeight, TimeSpan.FromSeconds(fTimeToBlend));
-    }
+	public static void ResetInstance() {
+		Instance = null;
+	}
 
-    public override void SetWeatherLayerWeightGT(
-      WeatherLayer weatherLayer,
-      float fWeight,
-      GameTime timeToBlend)
-    {
-      IWeatherLayerBlenderItem layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
-      if (layerBlenderItem == null)
-        Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
-      else
-        layerBlenderItem.SetOpacity(fWeight, TimeSpan.FromSeconds(timeToBlend.TotalSeconds));
-    }
+	public override void SetWeatherLayerWeight(
+		WeatherLayer weatherLayer,
+		float fWeight,
+		float fTimeToBlend) {
+		var layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
+		if (layerBlenderItem == null)
+			Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
+		else
+			layerBlenderItem.SetOpacity(fWeight, TimeSpan.FromSeconds(fTimeToBlend));
+	}
 
-    public override void SetWeatherSample(
-      WeatherLayer weatherLayer,
-      ISampleRef weatherSample,
-      float fTimeToBlend)
-    {
-      IWeatherLayerBlenderItem layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
-      if (layerBlenderItem == null)
-      {
-        Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
-      }
-      else
-      {
-        IWeatherSnapshot template = ServiceCache.TemplateService.GetTemplate<IWeatherSnapshot>(weatherSample.EngineTemplateGuid);
-        if (template == null)
-        {
-          Logger.AddError(string.Format("Weather snapshot with guid={0} not found!", weatherSample.EngineTemplateGuid));
-        }
-        else
-        {
-          ITimeService service = ServiceLocator.GetService<ITimeService>();
-          layerBlenderItem.Blender.BlendTo(template, TimeSpan.FromSeconds(fTimeToBlend * (double) service.GameTimeFactor));
-        }
-      }
-    }
+	public override void SetWeatherLayerWeightGT(
+		WeatherLayer weatherLayer,
+		float fWeight,
+		GameTime timeToBlend) {
+		var layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
+		if (layerBlenderItem == null)
+			Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
+		else
+			layerBlenderItem.SetOpacity(fWeight, TimeSpan.FromSeconds(timeToBlend.TotalSeconds));
+	}
 
-    public override void SetWeatherSampleGT(
-      WeatherLayer weatherLayer,
-      ISampleRef weatherSample,
-      GameTime timeToBlend)
-    {
-      IWeatherLayerBlenderItem layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
-      if (layerBlenderItem == null)
-      {
-        Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
-      }
-      else
-      {
-        IWeatherSnapshot template = ServiceCache.TemplateService.GetTemplate<IWeatherSnapshot>(weatherSample.EngineTemplateGuid);
-        if (template == null)
-          Logger.AddError(string.Format("Weather snapshot with guid={0} not found!", weatherSample.EngineTemplateGuid));
-        else
-          layerBlenderItem.Blender.BlendTo(template, (TimeSpan) timeToBlend);
-      }
-    }
+	public override void SetWeatherSample(
+		WeatherLayer weatherLayer,
+		ISampleRef weatherSample,
+		float fTimeToBlend) {
+		var layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
+		if (layerBlenderItem == null)
+			Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
+		else {
+			var template = ServiceCache.TemplateService.GetTemplate<IWeatherSnapshot>(weatherSample.EngineTemplateGuid);
+			if (template == null)
+				Logger.AddError(string.Format("Weather snapshot with guid={0} not found!",
+					weatherSample.EngineTemplateGuid));
+			else {
+				var service = ServiceLocator.GetService<ITimeService>();
+				layerBlenderItem.Blender.BlendTo(template,
+					TimeSpan.FromSeconds(fTimeToBlend * (double)service.GameTimeFactor));
+			}
+		}
+	}
 
-    public static VMWeather Instance { get; private set; }
-  }
+	public override void SetWeatherSampleGT(
+		WeatherLayer weatherLayer,
+		ISampleRef weatherSample,
+		GameTime timeToBlend) {
+		var layerBlenderItem = ServiceLocator.GetService<IWeatherController>().GetItem(weatherLayer);
+		if (layerBlenderItem == null)
+			Logger.AddError(string.Format("Invalid weather layer : {0}", weatherLayer));
+		else {
+			var template = ServiceCache.TemplateService.GetTemplate<IWeatherSnapshot>(weatherSample.EngineTemplateGuid);
+			if (template == null)
+				Logger.AddError(string.Format("Weather snapshot with guid={0} not found!",
+					weatherSample.EngineTemplateGuid));
+			else
+				layerBlenderItem.Blender.BlendTo(template, (TimeSpan)timeToBlend);
+		}
+	}
+
+	public static VMWeather Instance { get; private set; }
 }

@@ -4,25 +4,18 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Connections;
 using Inspectors;
 
-namespace Engine.Source.Inventory
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class InventoryContainerOpenResource
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected Typed<IEntity> resource = new Typed<IEntity>();
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected int amount = 1;
+namespace Engine.Source.Inventory;
 
-    public Typed<IEntity> ResourceType => resource;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class InventoryContainerOpenResource {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected Typed<IEntity> resource = new();
 
-    public int Amount => amount;
-  }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected int amount = 1;
+
+	public Typed<IEntity> ResourceType => resource;
+
+	public int Amount => amount;
 }

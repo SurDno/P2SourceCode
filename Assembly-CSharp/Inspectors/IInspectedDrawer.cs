@@ -2,62 +2,60 @@
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace Inspectors
-{
-  public interface IInspectedDrawer
-  {
-    int IndentLevel { get; set; }
+namespace Inspectors;
 
-    float IndentSize { get; }
+public interface IInspectedDrawer {
+	int IndentLevel { get; set; }
 
-    string MultiTextField(string name, string value);
+	float IndentSize { get; }
 
-    string TextField(string name, string value);
+	string MultiTextField(string name, string value);
 
-    int IntField(string name, int value);
+	string TextField(string name, string value);
 
-    long LongField(string name, long value);
+	int IntField(string name, int value);
 
-    float FloatField(string name, float value);
+	long LongField(string name, long value);
 
-    float SliderField(string name, float value, float min, float max);
+	float FloatField(string name, float value);
 
-    double DoubleField(string name, double value);
+	float SliderField(string name, float value, float min, float max);
 
-    bool BoolField(string name, bool value);
+	double DoubleField(string name, double value);
 
-    Vector2 Vector2Field(string name, Vector2 value);
+	bool BoolField(string name, bool value);
 
-    Vector3 Vector3Field(string name, Vector3 value);
+	Vector2 Vector2Field(string name, Vector2 value);
 
-    Vector4 Vector4Field(string name, Vector4 value);
+	Vector3 Vector3Field(string name, Vector3 value);
 
-    Color ColorField(string name, Color value);
+	Vector4 Vector4Field(string name, Vector4 value);
 
-    Rect RectField(string name, Rect value);
+	Color ColorField(string name, Color value);
 
-    Bounds BoundsField(string name, Bounds value);
+	Rect RectField(string name, Rect value);
 
-    Object ObjectField(string name, Object value, Type type);
+	Bounds BoundsField(string name, Bounds value);
 
-    Enum EnumPopup(string name, Enum value, IExpandedProvider context);
+	Object ObjectField(string name, Object value, Type type);
 
-    Enum EnumSortedPopup(string name, Enum value, IExpandedProvider context);
+	Enum EnumPopup(string name, Enum value, IExpandedProvider context);
 
-    Enum EnumMaskPopup(string name, Enum value, IExpandedProvider context);
+	Enum EnumSortedPopup(string name, Enum value, IExpandedProvider context);
 
-    string ListPopup(string name, string value, string[] values, IExpandedProvider context);
+	Enum EnumMaskPopup(string name, Enum value, IExpandedProvider context);
 
-    bool Foldout(string name, bool value, Action context);
+	string ListPopup(string name, string value, string[] values, IExpandedProvider context);
 
-    bool ButtonField(string name);
+	bool Foldout(string name, bool value, Action context);
 
-    AnimationCurve CurveField(string name, AnimationCurve value);
+	bool ButtonField(string name);
 
-    int BeginBox();
+	AnimationCurve CurveField(string name, AnimationCurve value);
 
-    void EndBox(int level);
+	int BeginBox();
 
-    IContextMenu CreateMenu();
-  }
+	void EndBox(int level);
+
+	IContextMenu CreateMenu();
 }

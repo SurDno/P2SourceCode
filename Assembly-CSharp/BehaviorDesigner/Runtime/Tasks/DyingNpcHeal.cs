@@ -8,59 +8,53 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [FactoryProxy(typeof (DyingNpcHeal))]
-  [TaskCategory("Pathologic")]
-  [TaskDescription("умереть мирно")]
-  [TaskIcon("{SkinColor}WaitIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class DyingNpcHeal : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public bool success;
-    private Animator animator;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      DefaultDataWriteUtility.Write(writer, "Success", success);
-    }
+[FactoryProxy(typeof(DyingNpcHeal))]
+[TaskCategory("Pathologic")]
+[TaskDescription("умереть мирно")]
+[TaskIcon("{SkinColor}WaitIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class DyingNpcHeal : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public bool success;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      success = DefaultDataReadUtility.Read(reader, "Success", success);
-    }
+	private Animator animator;
 
-    public override void OnAwake()
-    {
-      Pivot component = gameObject.GetComponent<Pivot>();
-      if (!(component != null))
-        return;
-      animator = component.GetAnimator();
-    }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		DefaultDataWriteUtility.Write(writer, "Success", success);
+	}
 
-    public override void OnStart()
-    {
-      if (success)
-        animator.SetTrigger("GoodHeal");
-      else
-        animator.SetTrigger("BadHeal");
-    }
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		success = DefaultDataReadUtility.Read(reader, "Success", success);
+	}
 
-    public override TaskStatus OnUpdate() => TaskStatus.Running;
-  }
+	public override void OnAwake() {
+		var component = gameObject.GetComponent<Pivot>();
+		if (!(component != null))
+			return;
+		animator = component.GetAnimator();
+	}
+
+	public override void OnStart() {
+		if (success)
+			animator.SetTrigger("GoodHeal");
+		else
+			animator.SetTrigger("BadHeal");
+	}
+
+	public override TaskStatus OnUpdate() {
+		return TaskStatus.Running;
+	}
 }

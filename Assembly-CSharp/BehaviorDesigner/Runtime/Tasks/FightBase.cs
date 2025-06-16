@@ -8,89 +8,79 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (FightBase))]
-  public class FightBase : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    protected NPCEnemy owner;
-    protected float waitDuration;
-    protected float startTime;
-    protected float lastTime;
-    private float pauseTime;
-    private bool initialized;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public virtual TaskStatus DoUpdate(float deltaTime) => TaskStatus.Running;
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(FightBase))]
+public class FightBase : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	protected NPCEnemy owner;
+	protected float waitDuration;
+	protected float startTime;
+	protected float lastTime;
+	private float pauseTime;
+	private bool initialized;
 
-    public override void OnPause(bool paused)
-    {
-      if (paused)
-      {
-        pauseTime = Time.time;
-      }
-      else
-      {
-        startTime += Time.time - pauseTime;
-        lastTime += Time.time - pauseTime;
-      }
-    }
+	public virtual TaskStatus DoUpdate(float deltaTime) {
+		return TaskStatus.Running;
+	}
 
-    public override void OnStart()
-    {
-      if (!initialized)
-      {
-        Pivot component = GetComponent<Pivot>();
-        if (component == null)
-        {
-          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (Pivot).Name + " engine component", gameObject);
-          return;
-        }
-        owner = component.GetNpcEnemy();
-        if (owner == null)
-        {
-          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component", gameObject);
-          return;
-        }
-        initialized = true;
-      }
-      lastTime = startTime = Time.time;
-    }
+	public override void OnPause(bool paused) {
+		if (paused)
+			pauseTime = Time.time;
+		else {
+			startTime += Time.time - pauseTime;
+			lastTime += Time.time - pauseTime;
+		}
+	}
 
-    public override TaskStatus OnUpdate()
-    {
-      if (!initialized || owner.Enemy == null)
-        return TaskStatus.Failure;
-      float deltaTime = Time.time - lastTime;
-      lastTime = Time.time;
-      return DoUpdate(deltaTime);
-    }
+	public override void OnStart() {
+		if (!initialized) {
+			var component = GetComponent<Pivot>();
+			if (component == null) {
+				Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof(Pivot).Name + " engine component",
+					gameObject);
+				return;
+			}
 
-    public override void OnReset()
-    {
-    }
+			owner = component.GetNpcEnemy();
+			if (owner == null) {
+				Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof(NPCEnemy).Name + " engine component",
+					gameObject);
+				return;
+			}
 
-    public override void OnEnd()
-    {
-    }
+			initialized = true;
+		}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    }
+		lastTime = startTime = Time.time;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    }
-  }
+	public override TaskStatus OnUpdate() {
+		if (!initialized || owner.Enemy == null)
+			return TaskStatus.Failure;
+		var deltaTime = Time.time - lastTime;
+		lastTime = Time.time;
+		return DoUpdate(deltaTime);
+	}
+
+	public override void OnReset() { }
+
+	public override void OnEnd() { }
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+	}
 }

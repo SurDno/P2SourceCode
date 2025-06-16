@@ -5,182 +5,153 @@ using System.Net.Sockets;
 using System.Threading;
 using PLVirtualMachine.Common.Data;
 
-namespace PLVirtualMachine.Common.VMDebug
-{
-  public class DebugIpcController : IDisposable
-  {
-    protected string serverAddress;
-    protected int portAddress;
-    protected Socket socket;
-    protected byte[] dataBuffer;
-    private EDebugIPCControllerType ipcControllerType;
-    private EDebugIPCApplicationWorkMode workMode;
-    private Thread ipcMessageLoopThread;
-    private List<string> lastErrors = new List<string>();
-    private object mainLoopThreadLocker = new object();
-    private bool isInited;
-    protected static readonly int MAX_DEBUG_MESSAGE_SIZE = 65536;
-    protected static readonly int LOOP_SLEEP_TIME = 1;
+namespace PLVirtualMachine.Common.VMDebug;
 
-    public DebugIpcController(EDebugIPCControllerType type)
-    {
-      ipcControllerType = type;
-      workMode = EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY;
-    }
+public class DebugIpcController : IDisposable {
+	protected string serverAddress;
+	protected int portAddress;
+	protected Socket socket;
+	protected byte[] dataBuffer;
+	private EDebugIPCControllerType ipcControllerType;
+	private EDebugIPCApplicationWorkMode workMode;
+	private Thread ipcMessageLoopThread;
+	private List<string> lastErrors = new();
+	private object mainLoopThreadLocker = new();
+	private bool isInited;
+	protected static readonly int MAX_DEBUG_MESSAGE_SIZE = 65536;
+	protected static readonly int LOOP_SLEEP_TIME = 1;
 
-    public List<string> LastErrors
-    {
-      get
-      {
-        lock (mainLoopThreadLocker)
-          return lastErrors;
-      }
-    }
+	public DebugIpcController(EDebugIPCControllerType type) {
+		ipcControllerType = type;
+		workMode = EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY;
+	}
 
-    public virtual void Init(string serverAddressStr = "")
-    {
-      if (isInited)
-        return;
-      if (serverAddressStr != "")
-      {
-        string[] strArray = serverAddressStr.Split(';');
-        serverAddress = strArray[0];
-        portAddress = StringUtility.ToInt32(strArray[1]);
-      }
-      else
-      {
-        serverAddress = "localhost";
-        portAddress = 11000;
-      }
-      dataBuffer = new byte[MAX_DEBUG_MESSAGE_SIZE];
-      isInited = true;
-      if (IsAsyncWork)
-      {
-        StartAsync();
-      }
-      else
-      {
-        ipcMessageLoopThread = new Thread(Start);
-        ipcMessageLoopThread.Start();
-      }
-    }
+	public List<string> LastErrors {
+		get {
+			lock (mainLoopThreadLocker) {
+				return lastErrors;
+			}
+		}
+	}
 
-    public void Close()
-    {
-      Stop();
-      if (ipcMessageLoopThread == null)
-        return;
-      ipcMessageLoopThread.Join();
-      ipcMessageLoopThread = null;
-    }
+	public virtual void Init(string serverAddressStr = "") {
+		if (isInited)
+			return;
+		if (serverAddressStr != "") {
+			var strArray = serverAddressStr.Split(';');
+			serverAddress = strArray[0];
+			portAddress = StringUtility.ToInt32(strArray[1]);
+		} else {
+			serverAddress = "localhost";
+			portAddress = 11000;
+		}
 
-    protected virtual void Start()
-    {
-    }
+		dataBuffer = new byte[MAX_DEBUG_MESSAGE_SIZE];
+		isInited = true;
+		if (IsAsyncWork)
+			StartAsync();
+		else {
+			ipcMessageLoopThread = new Thread(Start);
+			ipcMessageLoopThread.Start();
+		}
+	}
 
-    protected virtual void StartAsync()
-    {
-    }
+	public void Close() {
+		Stop();
+		if (ipcMessageLoopThread == null)
+			return;
+		ipcMessageLoopThread.Join();
+		ipcMessageLoopThread = null;
+	}
 
-    protected virtual void Stop() => isInited = false;
+	protected virtual void Start() { }
 
-    public void Dispose() => Close();
+	protected virtual void StartAsync() { }
 
-    public EDebugIPCControllerType ControllerType => ipcControllerType;
+	protected virtual void Stop() {
+		isInited = false;
+	}
 
-    public EDebugIPCApplicationWorkMode ControllerWorkMode => workMode;
+	public void Dispose() {
+		Close();
+	}
 
-    protected void ProcessLoop()
-    {
-      while (true)
-      {
-        ReciveIpcMessage debugMessage = OnListen();
-        if (debugMessage != null)
-        {
-          ProcessMessage(debugMessage);
-          if (ControllerType != EDebugIPCControllerType.IPC_DEBUG_CLIENT || ControllerWorkMode != EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY)
-            Thread.Sleep(LOOP_SLEEP_TIME);
-          else
-            goto label_4;
-        }
-        else
-          break;
-      }
-      OnNeedClose();
-      return;
-label_4:;
-    }
+	public EDebugIPCControllerType ControllerType => ipcControllerType;
 
-    protected virtual ReciveIpcMessage OnListen() => null;
+	public EDebugIPCApplicationWorkMode ControllerWorkMode => workMode;
 
-    protected virtual void ProcessMessage(ReciveIpcMessage debugMessage)
-    {
-    }
+	protected void ProcessLoop() {
+		while (true) {
+			var debugMessage = OnListen();
+			if (debugMessage != null) {
+				ProcessMessage(debugMessage);
+				if (ControllerType != EDebugIPCControllerType.IPC_DEBUG_CLIENT || ControllerWorkMode !=
+				    EDebugIPCApplicationWorkMode.IPC_APPLICATION_WORK_MODE_PLAY)
+					Thread.Sleep(LOOP_SLEEP_TIME);
+				else
+					goto label_4;
+			} else
+				break;
+		}
 
-    protected ReciveIpcMessage ReceiveMessage(Socket target)
-    {
-      try
-      {
-        int length = target.Receive(dataBuffer);
-        if (length > 0)
-        {
-          ReciveIpcMessage message = new ReciveIpcMessage();
-          message.Deserialize(dataBuffer, length);
-          return message;
-        }
-      }
-      catch (Exception ex)
-      {
-      }
-      return null;
-    }
+		OnNeedClose();
+		return;
+		label_4: ;
+	}
 
-    protected void SendMessage(Socket target, SendIpcMessage debugMessage)
-    {
-      byte[] buffer = debugMessage.Serialize();
-      target.Send(buffer);
-    }
+	protected virtual ReciveIpcMessage OnListen() {
+		return null;
+	}
 
-    protected virtual void SetWorkMode(EDebugIPCApplicationWorkMode workMode)
-    {
-      this.workMode = workMode;
-    }
+	protected virtual void ProcessMessage(ReciveIpcMessage debugMessage) { }
 
-    protected bool IsAsyncWork
-    {
-      get => ipcControllerType == EDebugIPCControllerType.IPC_DEBUG_SERVER;
-    }
+	protected ReciveIpcMessage ReceiveMessage(Socket target) {
+		try {
+			var length = target.Receive(dataBuffer);
+			if (length > 0) {
+				var message = new ReciveIpcMessage();
+				message.Deserialize(dataBuffer, length);
+				return message;
+			}
+		} catch (Exception ex) { }
 
-    protected IPAddress GetIPAddress()
-    {
-      try
-      {
-        IPHostEntry hostEntry = Dns.GetHostEntry(serverAddress);
-        IPAddress ipAddress = null;
-        foreach (IPAddress address in hostEntry.AddressList)
-        {
-          if (address.AddressFamily == AddressFamily.InterNetwork)
-            ipAddress = address;
-        }
-        return ipAddress;
-      }
-      catch (Exception ex)
-      {
-        OnError(string.Format("Cannot find ipc controler ip address by host {0}, error: {1}", serverAddress, ex));
-        return null;
-      }
-    }
+		return null;
+	}
 
-    protected virtual void OnNeedClose()
-    {
-    }
+	protected void SendMessage(Socket target, SendIpcMessage debugMessage) {
+		var buffer = debugMessage.Serialize();
+		target.Send(buffer);
+	}
 
-    protected virtual void OnError(string sErrorText)
-    {
-      lock (mainLoopThreadLocker)
-        lastErrors.Add(sErrorText);
-    }
+	protected virtual void SetWorkMode(EDebugIPCApplicationWorkMode workMode) {
+		this.workMode = workMode;
+	}
 
-    protected void ResetErrors() => lastErrors.Clear();
-  }
+	protected bool IsAsyncWork => ipcControllerType == EDebugIPCControllerType.IPC_DEBUG_SERVER;
+
+	protected IPAddress GetIPAddress() {
+		try {
+			var hostEntry = Dns.GetHostEntry(serverAddress);
+			IPAddress ipAddress = null;
+			foreach (var address in hostEntry.AddressList)
+				if (address.AddressFamily == AddressFamily.InterNetwork)
+					ipAddress = address;
+			return ipAddress;
+		} catch (Exception ex) {
+			OnError(string.Format("Cannot find ipc controler ip address by host {0}, error: {1}", serverAddress, ex));
+			return null;
+		}
+	}
+
+	protected virtual void OnNeedClose() { }
+
+	protected virtual void OnError(string sErrorText) {
+		lock (mainLoopThreadLocker) {
+			lastErrors.Add(sErrorText);
+		}
+	}
+
+	protected void ResetErrors() {
+		lastErrors.Clear();
+	}
 }

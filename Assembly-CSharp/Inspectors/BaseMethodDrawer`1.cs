@@ -1,18 +1,16 @@
 ﻿using System;
 
-namespace Inspectors
-{
-  public abstract class BaseMethodDrawer<T> : IMethodDrawer where T : class, IMethodDrawer, new()
-  {
-    public static readonly T Instance = new T();
+namespace Inspectors;
 
-    public abstract void DrawInspected(
-      string name,
-      Type type,
-      object value,
-      bool mutable,
-      IInspectedProvider context,
-      IInspectedDrawer drawer,
-      Action<object> setter);
-  }
+public abstract class BaseMethodDrawer<T> : IMethodDrawer where T : class, IMethodDrawer, new() {
+	public static readonly T Instance = new();
+
+	public abstract void DrawInspected(
+		string name,
+		Type type,
+		object value,
+		bool mutable,
+		IInspectedProvider context,
+		IInspectedDrawer drawer,
+		Action<object> setter);
 }

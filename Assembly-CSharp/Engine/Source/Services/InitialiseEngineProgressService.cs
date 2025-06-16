@@ -1,33 +1,29 @@
 ﻿using Engine.Impl.UI.Menu.Main;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [RuntimeService(typeof (InitialiseEngineProgressService))]
-  public class InitialiseEngineProgressService
-  {
-    public int Progress { get; set; }
+namespace Engine.Source.Services;
 
-    public int Count { get; private set; }
+[RuntimeService(typeof(InitialiseEngineProgressService))]
+public class InitialiseEngineProgressService {
+	public int Progress { get; set; }
 
-    public void Begin(int count)
-    {
-      Progress = 0;
-      Count = count;
-      LoadWindow.Instance.Progress = ScriptableObjectInstance<GameSettingsData>.Instance.MaxLoaderProgress;
-      LoadWindow.Instance.ShowProgress = true;
-    }
+	public int Count { get; private set; }
 
-    public void Update(string title, string info)
-    {
-      float maxLoaderProgress = ScriptableObjectInstance<GameSettingsData>.Instance.MaxLoaderProgress;
-      LoadWindow.Instance.Progress = Mathf.Clamp01((float) ((Progress + 1) / (double) Count * (1.0 - maxLoaderProgress)) + maxLoaderProgress);
-    }
+	public void Begin(int count) {
+		Progress = 0;
+		Count = count;
+		LoadWindow.Instance.Progress = ScriptableObjectInstance<GameSettingsData>.Instance.MaxLoaderProgress;
+		LoadWindow.Instance.ShowProgress = true;
+	}
 
-    public void End()
-    {
-      LoadWindow.Instance.ShowProgress = false;
-      LoadWindow.Instance.Progress = 0.0f;
-    }
-  }
+	public void Update(string title, string info) {
+		var maxLoaderProgress = ScriptableObjectInstance<GameSettingsData>.Instance.MaxLoaderProgress;
+		LoadWindow.Instance.Progress =
+			Mathf.Clamp01((float)((Progress + 1) / (double)Count * (1.0 - maxLoaderProgress)) + maxLoaderProgress);
+	}
+
+	public void End() {
+		LoadWindow.Instance.ShowProgress = false;
+		LoadWindow.Instance.Progress = 0.0f;
+	}
 }

@@ -1,11 +1,9 @@
-﻿namespace Engine.Common.Services
-{
-  public interface IBackerUnlocksService
-  {
-    bool ItemUnlocked { get; }
+﻿namespace Engine.Common.Services;
 
-    bool QuestUnlocked { get; }
+public interface IBackerUnlocksService {
+	bool ItemUnlocked { get; }
 
-    bool PolyhedralRoomUnlocked { get; }
-  }
+	bool QuestUnlocked { get; }
+
+	bool PolyhedralRoomUnlocked { get; }
 }

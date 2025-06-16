@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.UI
-{
-  public interface IGameWindow : IWindow, IPauseMenu
-  {
-  }
-}
+﻿namespace Engine.Source.UI;
+
+public interface IGameWindow : IWindow, IPauseMenu { }

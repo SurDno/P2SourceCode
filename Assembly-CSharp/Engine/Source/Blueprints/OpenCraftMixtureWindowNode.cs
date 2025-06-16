@@ -6,29 +6,24 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class OpenCraftMixtureWindowNode : FlowControlNode
-  {
-    private ValueInput<IStorageComponent> targetInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        IStorageComponent target = targetInput.value;
-        if (target == null)
-          return;
-        UIServiceUtility.PushWindow<ICraftMixtureWindow>(output, window =>
-        {
-          window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
-          window.Target = target;
-        });
-      });
-      targetInput = AddValueInput<IStorageComponent>("Storage");
-    }
-  }
+[Category("Engine")]
+public class OpenCraftMixtureWindowNode : FlowControlNode {
+	private ValueInput<IStorageComponent> targetInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			var target = targetInput.value;
+			if (target == null)
+				return;
+			UIServiceUtility.PushWindow<ICraftMixtureWindow>(output, window => {
+				window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
+				window.Target = target;
+			});
+		});
+		targetInput = AddValueInput<IStorageComponent>("Storage");
+	}
 }

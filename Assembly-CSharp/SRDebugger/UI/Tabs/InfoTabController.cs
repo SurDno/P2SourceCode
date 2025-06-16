@@ -6,80 +6,74 @@ using SRF;
 using SRF.Service;
 using UnityEngine;
 
-namespace SRDebugger.UI.Tabs
-{
-  public class InfoTabController : SRMonoBehaviour
-  {
-    public const string NameColor = "#BCBCBC";
-    private Dictionary<string, InfoBlock> _infoBlocks = new Dictionary<string, InfoBlock>();
-    public InfoBlock InfoBlockPrefab;
-    public RectTransform LayoutContainer;
+namespace SRDebugger.UI.Tabs;
 
-    protected void Start() => Construct();
+public class InfoTabController : SRMonoBehaviour {
+	public const string NameColor = "#BCBCBC";
+	private Dictionary<string, InfoBlock> _infoBlocks = new();
+	public InfoBlock InfoBlockPrefab;
+	public RectTransform LayoutContainer;
 
-    protected void OnEnable() => Refresh();
+	protected void Start() {
+		Construct();
+	}
 
-    public void Refresh()
-    {
-      ISystemInformationService service = SRServiceManager.GetService<ISystemInformationService>();
-      foreach (KeyValuePair<string, InfoBlock> infoBlock in _infoBlocks)
-        FillInfoBlock(infoBlock.Value, service.GetInfo(infoBlock.Key));
-    }
+	protected void OnEnable() {
+		Refresh();
+	}
 
-    private void Construct()
-    {
-      ISystemInformationService service = SRServiceManager.GetService<ISystemInformationService>();
-      foreach (string category in service.GetCategories())
-      {
-        IList<ISystemInfo> info = service.GetInfo(category);
-        if (info.Count != 0)
-        {
-          InfoBlock block = CreateBlock(category);
-          FillInfoBlock(block, info);
-          _infoBlocks.Add(category, block);
-        }
-      }
-    }
+	public void Refresh() {
+		var service = SRServiceManager.GetService<ISystemInformationService>();
+		foreach (var infoBlock in _infoBlocks)
+			FillInfoBlock(infoBlock.Value, service.GetInfo(infoBlock.Key));
+	}
 
-    private void FillInfoBlock(InfoBlock block, IList<ISystemInfo> info)
-    {
-      StringBuilder stringBuilder = new StringBuilder();
-      int num1 = 0;
-      foreach (ISystemInfo systemInfo in info)
-      {
-        if (systemInfo.Title.Length > num1)
-          num1 = systemInfo.Title.Length;
-      }
-      int num2 = num1 + 2;
-      bool flag = true;
-      foreach (ISystemInfo systemInfo in info)
-      {
-        if (flag)
-          flag = false;
-        else
-          stringBuilder.AppendLine();
-        stringBuilder.Append("<color=");
-        stringBuilder.Append("#BCBCBC");
-        stringBuilder.Append(">");
-        stringBuilder.Append(systemInfo.Title);
-        stringBuilder.Append(": ");
-        stringBuilder.Append("</color>");
-        for (int length = systemInfo.Title.Length; length <= num2; ++length)
-          stringBuilder.Append(' ');
-        if (systemInfo.Value is bool)
-          stringBuilder.Append(systemInfo.Value);
-        else
-          stringBuilder.Append(systemInfo.Value);
-      }
-      block.Content.text = stringBuilder.ToString();
-    }
+	private void Construct() {
+		var service = SRServiceManager.GetService<ISystemInformationService>();
+		foreach (var category in service.GetCategories()) {
+			var info = service.GetInfo(category);
+			if (info.Count != 0) {
+				var block = CreateBlock(category);
+				FillInfoBlock(block, info);
+				_infoBlocks.Add(category, block);
+			}
+		}
+	}
 
-    private InfoBlock CreateBlock(string title)
-    {
-      InfoBlock block = SRInstantiate.Instantiate(InfoBlockPrefab);
-      block.Title.text = title;
-      block.CachedTransform.SetParent(LayoutContainer, false);
-      return block;
-    }
-  }
+	private void FillInfoBlock(InfoBlock block, IList<ISystemInfo> info) {
+		var stringBuilder = new StringBuilder();
+		var num1 = 0;
+		foreach (var systemInfo in info)
+			if (systemInfo.Title.Length > num1)
+				num1 = systemInfo.Title.Length;
+		var num2 = num1 + 2;
+		var flag = true;
+		foreach (var systemInfo in info) {
+			if (flag)
+				flag = false;
+			else
+				stringBuilder.AppendLine();
+			stringBuilder.Append("<color=");
+			stringBuilder.Append("#BCBCBC");
+			stringBuilder.Append(">");
+			stringBuilder.Append(systemInfo.Title);
+			stringBuilder.Append(": ");
+			stringBuilder.Append("</color>");
+			for (var length = systemInfo.Title.Length; length <= num2; ++length)
+				stringBuilder.Append(' ');
+			if (systemInfo.Value is bool)
+				stringBuilder.Append(systemInfo.Value);
+			else
+				stringBuilder.Append(systemInfo.Value);
+		}
+
+		block.Content.text = stringBuilder.ToString();
+	}
+
+	private InfoBlock CreateBlock(string title) {
+		var block = SRInstantiate.Instantiate(InfoBlockPrefab);
+		block.Title.text = title;
+		block.CachedTransform.SetParent(LayoutContainer, false);
+		return block;
+	}
 }

@@ -2,20 +2,17 @@
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  [FactoryProxy(typeof (VMDisease))]
-  public class Disease : VMDisease, IInitialiseComponentFromHierarchy, IInitialiseEvents
-  {
-    public override string GetComponentTypeName() => "DiseaseComponent";
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
-    {
-    }
+[FactoryProxy(typeof(VMDisease))]
+public class Disease : VMDisease, IInitialiseComponentFromHierarchy, IInitialiseEvents {
+	public override string GetComponentTypeName() {
+		return "DiseaseComponent";
+	}
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
-      string name = target.Name;
-    }
-  }
+	public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject) { }
+
+	public void InitialiseEvent(DynamicEvent target) {
+		var name = target.Name;
+	}
 }

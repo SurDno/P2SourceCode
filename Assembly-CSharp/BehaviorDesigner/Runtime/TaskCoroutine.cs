@@ -1,33 +1,31 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime
-{
-  public class TaskCoroutine
-  {
-    private IEnumerator mCoroutineEnumerator;
-    private Coroutine mCoroutine;
-    private BehaviorTree mParent;
-    private string mCoroutineName;
-    private bool mStop;
+namespace BehaviorDesigner.Runtime;
 
-    public Coroutine Coroutine => mCoroutine;
+public class TaskCoroutine {
+	private IEnumerator mCoroutineEnumerator;
+	private Coroutine mCoroutine;
+	private BehaviorTree mParent;
+	private string mCoroutineName;
+	private bool mStop;
 
-    public void Stop() => mStop = true;
+	public Coroutine Coroutine => mCoroutine;
 
-    public TaskCoroutine(BehaviorTree parent, IEnumerator coroutine, string coroutineName)
-    {
-      mParent = parent;
-      mCoroutineEnumerator = coroutine;
-      mCoroutineName = coroutineName;
-      mCoroutine = parent.StartCoroutine(RunCoroutine());
-    }
+	public void Stop() {
+		mStop = true;
+	}
 
-    public IEnumerator RunCoroutine()
-    {
-      while (!mStop && mCoroutineEnumerator != null && mCoroutineEnumerator.MoveNext())
-        yield return mCoroutineEnumerator.Current;
-      mParent.TaskCoroutineEnded(this, mCoroutineName);
-    }
-  }
+	public TaskCoroutine(BehaviorTree parent, IEnumerator coroutine, string coroutineName) {
+		mParent = parent;
+		mCoroutineEnumerator = coroutine;
+		mCoroutineName = coroutineName;
+		mCoroutine = parent.StartCoroutine(RunCoroutine());
+	}
+
+	public IEnumerator RunCoroutine() {
+		while (!mStop && mCoroutineEnumerator != null && mCoroutineEnumerator.MoveNext())
+			yield return mCoroutineEnumerator.Current;
+		mParent.TaskCoroutineEnded(this, mCoroutineName);
+	}
 }

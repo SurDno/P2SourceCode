@@ -1,8 +1,6 @@
-﻿namespace ClipperLib
-{
-  internal enum EdgeSide
-  {
-    esLeft,
-    esRight,
-  }
+﻿namespace ClipperLib;
+
+internal enum EdgeSide {
+	esLeft,
+	esRight
 }

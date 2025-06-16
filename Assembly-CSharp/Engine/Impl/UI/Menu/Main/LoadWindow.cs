@@ -7,195 +7,171 @@ using InputServices;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Menu.Main
-{
-  public class LoadWindow : MonoBehaviour
-  {
-    [SerializeField]
-    private SpriteView spriteView;
-    [SerializeField]
-    private StringView tooltipTagView;
-    [SerializeField]
-    private HideableView defaultSprite;
-    [SerializeField]
-    private LoadWindowGameData gameDataSettings;
-    [SerializeField]
-    private Slider progress;
-    [SerializeField]
-    private GameObject loadingSpinner;
-    private int gameDay;
-    private LoadWindowMode mode = LoadWindowMode.Initial;
-    private string bufferedTooltip;
+namespace Engine.Impl.UI.Menu.Main;
 
-    public static LoadWindow Instance { get; private set; }
+public class LoadWindow : MonoBehaviour {
+	[SerializeField] private SpriteView spriteView;
+	[SerializeField] private StringView tooltipTagView;
+	[SerializeField] private HideableView defaultSprite;
+	[SerializeField] private LoadWindowGameData gameDataSettings;
+	[SerializeField] private Slider progress;
+	[SerializeField] private GameObject loadingSpinner;
+	private int gameDay;
+	private LoadWindowMode mode = LoadWindowMode.Initial;
+	private string bufferedTooltip;
 
-    public int GameDay
-    {
-      get => gameDay;
-      set
-      {
-        if (gameDay == value)
-          return;
-        gameDay = value;
-        Invalidate();
-      }
-    }
+	public static LoadWindow Instance { get; private set; }
 
-    public LoadWindowMode Mode
-    {
-      get => mode;
-      set
-      {
-        if (mode == value)
-          return;
-        mode = value;
-        Invalidate();
-      }
-    }
+	public int GameDay {
+		get => gameDay;
+		set {
+			if (gameDay == value)
+				return;
+			gameDay = value;
+			Invalidate();
+		}
+	}
 
-    public bool Show
-    {
-      get => gameObject.activeSelf;
-      set => gameObject.SetActive(value);
-    }
+	public LoadWindowMode Mode {
+		get => mode;
+		set {
+			if (mode == value)
+				return;
+			mode = value;
+			Invalidate();
+		}
+	}
 
-    public bool ShowProgress
-    {
-      get => progress.gameObject.activeSelf;
-      set => progress.gameObject.SetActive(value);
-    }
+	public bool Show {
+		get => gameObject.activeSelf;
+		set => gameObject.SetActive(value);
+	}
 
-    public float Progress
-    {
-      get => progress.value;
-      set => progress.value = value;
-    }
+	public bool ShowProgress {
+		get => progress.gameObject.activeSelf;
+		set => progress.gameObject.SetActive(value);
+	}
 
-    private void Awake() => Instance = this;
+	public float Progress {
+		get => progress.value;
+		set => progress.value = value;
+	}
 
-    private void Build()
-    {
-      defaultSprite.Visible = mode == LoadWindowMode.Initial;
-      Sprite sprite1 = null;
-      string str = null;
-      if (mode == LoadWindowMode.StartGameData || mode == LoadWindowMode.LoadSavedGame)
-      {
-        LoadWindowGameDataItem windowGameDataItem = gameDataSettings.GetItem(InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().Name);
-        if (!windowGameDataItem.IsNull)
-        {
-          UnitySubAsset<Sprite> imageInformation;
-          if (mode == LoadWindowMode.LoadSavedGame)
-          {
-            IProfilesService service = ServiceLocator.GetService<IProfilesService>();
-            int intValue = service != null ? service.GetIntValue("Deaths") : 0;
-            if (windowGameDataItem.LoadStorables != null && InstanceByRequest<EngineApplication>.Instance.IsInitialized)
-            {
-              IInventoryPlaceholderSerializable placeholderSerializable = Evaluate(windowGameDataItem.LoadStorables.Items, GameDay, intValue);
-              if (placeholderSerializable != new IInventoryPlaceholderSerializable())
-              {
-                Sprite sprite2;
-                if (!(placeholderSerializable.Value is InventoryPlaceholder inventoryPlaceholder))
-                {
-                  sprite2 = null;
-                }
-                else
-                {
-                  imageInformation = inventoryPlaceholder.ImageInformation;
-                  sprite2 = imageInformation.Value;
-                }
-                sprite1 = sprite2;
-              }
-            }
-            if (windowGameDataItem.LoadTooltips != null)
-              str = Evaluate(windowGameDataItem.LoadTooltips.Items, GameDay, intValue);
-          }
-          if (sprite1 == null)
-          {
-            Sprite sprite3;
-            if (!(windowGameDataItem.StartStorable.Value is InventoryPlaceholder inventoryPlaceholder))
-            {
-              sprite3 = null;
-            }
-            else
-            {
-              imageInformation = inventoryPlaceholder.ImageInformation;
-              sprite3 = imageInformation.Value;
-            }
-            sprite1 = sprite3;
-          }
-          if (str == null)
-            str = windowGameDataItem.StartTooltip;
-        }
-      }
-      spriteView.SetValue(sprite1, true);
-      tooltipTagView.StringValue = str;
-      bufferedTooltip = str;
-    }
+	private void Awake() {
+		Instance = this;
+	}
 
-    private void Clear()
-    {
-      spriteView.SetValue(null, true);
-      tooltipTagView.StringValue = null;
-      bufferedTooltip = null;
-    }
+	private void Build() {
+		defaultSprite.Visible = mode == LoadWindowMode.Initial;
+		Sprite sprite1 = null;
+		string str = null;
+		if (mode == LoadWindowMode.StartGameData || mode == LoadWindowMode.LoadSavedGame) {
+			var windowGameDataItem =
+				gameDataSettings.GetItem(InstanceByRequest<GameDataService>.Instance.GetCurrentGameData().Name);
+			if (!windowGameDataItem.IsNull) {
+				UnitySubAsset<Sprite> imageInformation;
+				if (mode == LoadWindowMode.LoadSavedGame) {
+					var service = ServiceLocator.GetService<IProfilesService>();
+					var intValue = service != null ? service.GetIntValue("Deaths") : 0;
+					if (windowGameDataItem.LoadStorables != null &&
+					    InstanceByRequest<EngineApplication>.Instance.IsInitialized) {
+						var placeholderSerializable =
+							Evaluate(windowGameDataItem.LoadStorables.Items, GameDay, intValue);
+						if (placeholderSerializable != new IInventoryPlaceholderSerializable()) {
+							Sprite sprite2;
+							if (!(placeholderSerializable.Value is InventoryPlaceholder inventoryPlaceholder))
+								sprite2 = null;
+							else {
+								imageInformation = inventoryPlaceholder.ImageInformation;
+								sprite2 = imageInformation.Value;
+							}
 
-    private bool Evaluate<T>(LoadWindowDataItem<T> item, int gameDay, int deathCount)
-    {
-      return (!item.LimitGameDay || gameDay >= item.MinGameDay && gameDay <= item.MaxGameDay) && (!item.LimitDeathCount || deathCount >= item.MinDeathCount && deathCount <= item.MaxDeathCount);
-    }
+							sprite1 = sprite2;
+						}
+					}
 
-    private T Evaluate<T>(LoadWindowDataItem<T>[] items, int gameDay, int deathCount)
-    {
-      int max = 0;
-      for (int index = 0; index < items.Length; ++index)
-      {
-        LoadWindowDataItem<T> loadWindowDataItem = items[index];
-        if (Evaluate(loadWindowDataItem, gameDay, deathCount))
-          max += loadWindowDataItem.Weight;
-      }
-      if (max == 0)
-        return default (T);
-      int num1 = Random.Range(0, max);
-      int num2 = 0;
-      for (int index = 0; index < items.Length; ++index)
-      {
-        LoadWindowDataItem<T> loadWindowDataItem = items[index];
-        if (Evaluate(loadWindowDataItem, gameDay, deathCount))
-        {
-          num2 += loadWindowDataItem.Weight;
-          if (num1 < num2)
-            return loadWindowDataItem.Value;
-        }
-      }
-      return default (T);
-    }
+					if (windowGameDataItem.LoadTooltips != null)
+						str = Evaluate(windowGameDataItem.LoadTooltips.Items, GameDay, intValue);
+				}
 
-    private void Invalidate()
-    {
-      if (!isActiveAndEnabled)
-        return;
-      Build();
-    }
+				if (sprite1 == null) {
+					Sprite sprite3;
+					if (!(windowGameDataItem.StartStorable.Value is InventoryPlaceholder inventoryPlaceholder))
+						sprite3 = null;
+					else {
+						imageInformation = inventoryPlaceholder.ImageInformation;
+						sprite3 = imageInformation.Value;
+					}
 
-    private void OnDisable()
-    {
-      Clear();
-      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
-    }
+					sprite1 = sprite3;
+				}
 
-    private void OnEnable()
-    {
-      loadingSpinner.SetActive(true);
-      Build();
-      InputService.Instance.onJoystickUsedChanged += OnJoystick;
-    }
+				if (str == null)
+					str = windowGameDataItem.StartTooltip;
+			}
+		}
 
-    private void OnJoystick(bool joystick)
-    {
-      if (bufferedTooltip == null)
-        return;
-      tooltipTagView.StringValue = null;
-      tooltipTagView.StringValue = bufferedTooltip;
-    }
-  }
+		spriteView.SetValue(sprite1, true);
+		tooltipTagView.StringValue = str;
+		bufferedTooltip = str;
+	}
+
+	private void Clear() {
+		spriteView.SetValue(null, true);
+		tooltipTagView.StringValue = null;
+		bufferedTooltip = null;
+	}
+
+	private bool Evaluate<T>(LoadWindowDataItem<T> item, int gameDay, int deathCount) {
+		return (!item.LimitGameDay || (gameDay >= item.MinGameDay && gameDay <= item.MaxGameDay)) &&
+		       (!item.LimitDeathCount || (deathCount >= item.MinDeathCount && deathCount <= item.MaxDeathCount));
+	}
+
+	private T Evaluate<T>(LoadWindowDataItem<T>[] items, int gameDay, int deathCount) {
+		var max = 0;
+		for (var index = 0; index < items.Length; ++index) {
+			var loadWindowDataItem = items[index];
+			if (Evaluate(loadWindowDataItem, gameDay, deathCount))
+				max += loadWindowDataItem.Weight;
+		}
+
+		if (max == 0)
+			return default;
+		var num1 = Random.Range(0, max);
+		var num2 = 0;
+		for (var index = 0; index < items.Length; ++index) {
+			var loadWindowDataItem = items[index];
+			if (Evaluate(loadWindowDataItem, gameDay, deathCount)) {
+				num2 += loadWindowDataItem.Weight;
+				if (num1 < num2)
+					return loadWindowDataItem.Value;
+			}
+		}
+
+		return default;
+	}
+
+	private void Invalidate() {
+		if (!isActiveAndEnabled)
+			return;
+		Build();
+	}
+
+	private void OnDisable() {
+		Clear();
+		InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+	}
+
+	private void OnEnable() {
+		loadingSpinner.SetActive(true);
+		Build();
+		InputService.Instance.onJoystickUsedChanged += OnJoystick;
+	}
+
+	private void OnJoystick(bool joystick) {
+		if (bufferedTooltip == null)
+			return;
+		tooltipTagView.StringValue = null;
+		tooltipTagView.StringValue = bufferedTooltip;
+	}
 }

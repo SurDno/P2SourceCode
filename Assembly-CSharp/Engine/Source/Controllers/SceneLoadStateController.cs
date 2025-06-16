@@ -5,42 +5,40 @@ using Inspectors;
 using StateSetters;
 using UnityEngine;
 
-namespace Engine.Source.Controllers
-{
-  public class SceneLoadStateController : MonoBehaviour, IEntityAttachable
-  {
-    [SerializeField]
-    private StateSetterItem[] sceneLoadState;
-    private ILocationComponent location;
+namespace Engine.Source.Controllers;
 
-    public void Attach(IEntity owner)
-    {
-      location = owner.GetComponent<ILocationComponent>();
-      if (location == null)
-        return;
-      location.OnHibernationChanged += LocationOnChangeHibernation;
-      LocationOnChangeHibernation(location);
-    }
+public class SceneLoadStateController : MonoBehaviour, IEntityAttachable {
+	[SerializeField] private StateSetterItem[] sceneLoadState;
+	private ILocationComponent location;
 
-    public void Detach()
-    {
-      if (location == null)
-        return;
-      location.OnHibernationChanged -= LocationOnChangeHibernation;
-    }
+	public void Attach(IEntity owner) {
+		location = owner.GetComponent<ILocationComponent>();
+		if (location == null)
+			return;
+		location.OnHibernationChanged += LocationOnChangeHibernation;
+		LocationOnChangeHibernation(location);
+	}
 
-    private void LocationOnChangeHibernation(ILocationComponent sender)
-    {
-      if (location.IsHibernation)
-        SceneLoadOff();
-      else
-        SceneLoadOn();
-    }
+	public void Detach() {
+		if (location == null)
+			return;
+		location.OnHibernationChanged -= LocationOnChangeHibernation;
+	}
 
-    [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    private void SceneLoadOn() => sceneLoadState.Apply(true);
+	private void LocationOnChangeHibernation(ILocationComponent sender) {
+		if (location.IsHibernation)
+			SceneLoadOff();
+		else
+			SceneLoadOn();
+	}
 
-    [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    private void SceneLoadOff() => sceneLoadState.Apply(false);
-  }
+	[Inspected(Mode = ExecuteMode.EditAndRuntime)]
+	private void SceneLoadOn() {
+		sceneLoadState.Apply(true);
+	}
+
+	[Inspected(Mode = ExecuteMode.EditAndRuntime)]
+	private void SceneLoadOff() {
+		sceneLoadState.Apply(false);
+	}
 }

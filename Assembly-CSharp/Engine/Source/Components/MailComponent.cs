@@ -6,16 +6,14 @@ using Engine.Common.Types;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (IMailComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class MailComponent : EngineComponent, IMailComponent, IComponent
-  {
-    public MailStateEnum State { get; set; }
+namespace Engine.Source.Components;
 
-    public LocalizedText Header { get; set; }
+[Factory(typeof(IMailComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class MailComponent : EngineComponent, IMailComponent, IComponent {
+	public MailStateEnum State { get; set; }
 
-    public LocalizedText Text { get; set; }
-  }
+	public LocalizedText Header { get; set; }
+
+	public LocalizedText Text { get; set; }
 }

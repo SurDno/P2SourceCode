@@ -1,9 +1,7 @@
-﻿namespace SteamNative
-{
-  internal enum HTMLMouseButton
-  {
-    Left,
-    Right,
-    Middle,
-  }
+﻿namespace SteamNative;
+
+internal enum HTMLMouseButton {
+	Left,
+	Right,
+	Middle
 }

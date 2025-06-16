@@ -1,11 +1,9 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface ILogicObject : IContext, INamed
-  {
-    IBlueprint Blueprint { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    bool Static { get; }
+public interface ILogicObject : IContext, INamed {
+	IBlueprint Blueprint { get; }
 
-    IVariable GetSelf();
-  }
+	bool Static { get; }
+
+	IVariable GetSelf();
 }

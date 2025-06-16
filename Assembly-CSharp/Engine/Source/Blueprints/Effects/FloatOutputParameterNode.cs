@@ -7,68 +7,57 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class FloatOutputParameterNode : FlowControlNode, IUpdatable, IParameter<float>, IParameter
-  {
-    [Port("Value")]
-    private ValueInput<float> valueInput;
-    [Port("Name")]
-    private ValueInput<string> nameInput;
-    [FromLocator]
-    private EffectsService effects;
-    private float prevValue;
-    private bool created;
-    private bool destroed;
+namespace Engine.Source.Blueprints.Effects;
 
-    public float Value => valueInput.value;
+[Category("Effects")]
+public class FloatOutputParameterNode : FlowControlNode, IUpdatable, IParameter<float>, IParameter {
+	[Port("Value")] private ValueInput<float> valueInput;
+	[Port("Name")] private ValueInput<string> nameInput;
+	[FromLocator] private EffectsService effects;
+	private float prevValue;
+	private bool created;
+	private bool destroed;
 
-    public override void OnGraphStarted()
-    {
-      base.OnGraphStarted();
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable(this);
-    }
+	public float Value => valueInput.value;
 
-    public override void OnGraphStoped()
-    {
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable(this);
-      base.OnGraphStoped();
-    }
+	public override void OnGraphStarted() {
+		base.OnGraphStarted();
+		InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      float num = valueInput.value;
-      if (prevValue == (double) num)
-        return;
-      prevValue = num;
-      if (num != 0.0)
-        CreateEffect();
-      else
-        DestroyEffect();
-    }
+	public override void OnGraphStoped() {
+		InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable(this);
+		base.OnGraphStoped();
+	}
 
-    public override void OnDestroy()
-    {
-      destroed = true;
-      DestroyEffect();
-      base.OnDestroy();
-    }
+	public void ComputeUpdate() {
+		var num = valueInput.value;
+		if (prevValue == (double)num)
+			return;
+		prevValue = num;
+		if (num != 0.0)
+			CreateEffect();
+		else
+			DestroyEffect();
+	}
 
-    protected void CreateEffect()
-    {
-      if (destroed || created)
-        return;
-      created = true;
-      effects.AddParameter(nameInput.value, this);
-    }
+	public override void OnDestroy() {
+		destroed = true;
+		DestroyEffect();
+		base.OnDestroy();
+	}
 
-    protected void DestroyEffect()
-    {
-      if (!created)
-        return;
-      created = false;
-      effects.RemoveParameter(nameInput.value, this);
-    }
-  }
+	protected void CreateEffect() {
+		if (destroed || created)
+			return;
+		created = true;
+		effects.AddParameter(nameInput.value, this);
+	}
+
+	protected void DestroyEffect() {
+		if (!created)
+			return;
+		created = false;
+		effects.RemoveParameter(nameInput.value, this);
+	}
 }

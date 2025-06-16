@@ -16,141 +16,120 @@ using Inspectors;
 using JerboaAnimationInstancing;
 using UnityEngine;
 
-namespace Engine.Impl.Services
-{
-  [GameService(typeof (JerboaService), typeof (IJerboaService))]
-  [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class JerboaService : IJerboaService, IUpdatable, IInitialisable, ISavesController
-  {
-    private GameObject prefabInstance;
-    private JerboaManager jerboaManager;
-    private float quality = 1f;
-    private float amount;
-    private JerboaColorEnum color = JerboaColorEnum.Default;
+namespace Engine.Impl.Services;
 
-    public float Quality
-    {
-      get => quality;
-      set
-      {
-        quality = value;
-        if (!(jerboaManager != null))
-          return;
-        jerboaManager.Quality = quality;
-      }
-    }
+[GameService(typeof(JerboaService), typeof(IJerboaService))]
+[GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
+public class JerboaService : IJerboaService, IUpdatable, IInitialisable, ISavesController {
+	private GameObject prefabInstance;
+	private JerboaManager jerboaManager;
+	private float quality = 1f;
+	private float amount;
+	private JerboaColorEnum color = JerboaColorEnum.Default;
 
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected(Mutable = true)]
-    public float Amount
-    {
-      get => amount;
-      set
-      {
-        amount = value;
-        if (!(jerboaManager != null))
-          return;
-        jerboaManager.Weight = amount;
-      }
-    }
+	public float Quality {
+		get => quality;
+		set {
+			quality = value;
+			if (!(jerboaManager != null))
+				return;
+			jerboaManager.Quality = quality;
+		}
+	}
 
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected(Mutable = true)]
-    public JerboaColorEnum Color
-    {
-      get => color;
-      set
-      {
-        color = value;
-        if (!(jerboaManager != null))
-          return;
-        jerboaManager.ColorEnum = color;
-      }
-    }
+	[StateSaveProxy]
+	[StateLoadProxy()]
+	[Inspected(Mutable = true)]
+	public float Amount {
+		get => amount;
+		set {
+			amount = value;
+			if (!(jerboaManager != null))
+				return;
+			jerboaManager.Weight = amount;
+		}
+	}
 
-    public void Syncronize()
-    {
-      if (!(jerboaManager != null))
-        return;
-      jerboaManager.Syncronize();
-    }
+	[StateSaveProxy]
+	[StateLoadProxy()]
+	[Inspected(Mutable = true)]
+	public JerboaColorEnum Color {
+		get => color;
+		set {
+			color = value;
+			if (!(jerboaManager != null))
+				return;
+			jerboaManager.ColorEnum = color;
+		}
+	}
 
-    public void Initialise()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+	public void Syncronize() {
+		if (!(jerboaManager != null))
+			return;
+		jerboaManager.Syncronize();
+	}
 
-    public void Terminate()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-      if (!(prefabInstance != null))
-        return;
-      Object.Destroy(prefabInstance);
-      prefabInstance = null;
-    }
+	public void Initialise() {
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-      if (player == null)
-        return;
-      Vector3 position = ((IEntityView) player).Position;
-      if (prefabInstance == null && ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab != null)
-      {
-        prefabInstance = Object.Instantiate(ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab, position, Quaternion.identity);
-        jerboaManager = prefabInstance.GetComponent<JerboaManager>();
-        if (jerboaManager == null)
-        {
-          Debug.Log("Jerboa prefab doesn't contain JerboaManager component");
-        }
-        else
-        {
-          jerboaManager.Weight = amount;
-          jerboaManager.ColorEnum = color;
-          jerboaManager.Quality = quality;
-          jerboaManager.Syncronize();
-        }
-      }
-      LocationItemComponent component = player.GetComponent<LocationItemComponent>();
-      jerboaManager.Visible = component == null || !component.IsIndoor;
-      if (!(prefabInstance != null))
-        return;
-      prefabInstance.transform.position = position;
-    }
+	public void Terminate() {
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+		if (!(prefabInstance != null))
+			return;
+		Object.Destroy(prefabInstance);
+		prefabInstance = null;
+	}
 
-    public IEnumerator Load(IErrorLoadingHandler errorHandler)
-    {
-      yield break;
-    }
+	public void ComputeUpdate() {
+		var player = ServiceLocator.GetService<ISimulation>().Player;
+		if (player == null)
+			return;
+		var position = ((IEntityView)player).Position;
+		if (prefabInstance == null && ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab != null) {
+			prefabInstance = Object.Instantiate(ScriptableObjectInstance<ResourceFromCodeData>.Instance.JerboaPrefab,
+				position, Quaternion.identity);
+			jerboaManager = prefabInstance.GetComponent<JerboaManager>();
+			if (jerboaManager == null)
+				Debug.Log("Jerboa prefab doesn't contain JerboaManager component");
+			else {
+				jerboaManager.Weight = amount;
+				jerboaManager.ColorEnum = color;
+				jerboaManager.Quality = quality;
+				jerboaManager.Syncronize();
+			}
+		}
 
-    public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
-    {
-      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
-      if (node == null)
-      {
-        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
-      }
-      else
-      {
-        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
-        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
-        yield break;
-      }
-    }
+		var component = player.GetComponent<LocationItemComponent>();
+		jerboaManager.Visible = component == null || !component.IsIndoor;
+		if (!(prefabInstance != null))
+			return;
+		prefabInstance.transform.position = position;
+	}
 
-    public void Unload()
-    {
-      if (!(prefabInstance != null))
-        return;
-      Object.Destroy(prefabInstance);
-      prefabInstance = null;
-    }
+	public IEnumerator Load(IErrorLoadingHandler errorHandler) {
+		yield break;
+	}
 
-    public void Save(IDataWriter writer, string context)
-    {
-      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
-    }
-  }
+	public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler) {
+		var node = element[TypeUtility.GetTypeName(GetType())];
+		if (node == null)
+			errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
+		else {
+			var reader = new XmlNodeDataReader(node, context);
+			((ISerializeStateLoad)this).StateLoad(reader, GetType());
+			yield break;
+		}
+	}
+
+	public void Unload() {
+		if (!(prefabInstance != null))
+			return;
+		Object.Destroy(prefabInstance);
+		prefabInstance = null;
+	}
+
+	public void Save(IDataWriter writer, string context) {
+		DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
+	}
 }

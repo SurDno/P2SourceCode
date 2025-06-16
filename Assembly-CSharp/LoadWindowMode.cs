@@ -1,7 +1,6 @@
-﻿public enum LoadWindowMode
-{
-  None,
-  Initial,
-  StartGameData,
-  LoadSavedGame,
+﻿public enum LoadWindowMode {
+	None,
+	Initial,
+	StartGameData,
+	LoadSavedGame
 }

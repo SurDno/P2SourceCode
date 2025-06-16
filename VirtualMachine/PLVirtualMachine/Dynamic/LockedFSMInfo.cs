@@ -1,26 +1,22 @@
 ﻿using PLVirtualMachine.Base;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public class LockedFSMInfo
-  {
-    public LockedFSMInfo(DynamicFSM lockFSM)
-    {
-      LockedFSM = lockFSM;
-      LastEntityMethodExecuteData = null;
-      NeedRestoreAction = false;
-    }
+namespace PLVirtualMachine.Dynamic;
 
-    public void SetLastActionMethodExecData(EntityMethodExecuteData lastActionMethodExecData)
-    {
-      LastEntityMethodExecuteData = lastActionMethodExecData;
-      NeedRestoreAction = false;
-    }
+public class LockedFSMInfo {
+	public LockedFSMInfo(DynamicFSM lockFSM) {
+		LockedFSM = lockFSM;
+		LastEntityMethodExecuteData = null;
+		NeedRestoreAction = false;
+	}
 
-    public bool NeedRestoreAction { get; set; }
+	public void SetLastActionMethodExecData(EntityMethodExecuteData lastActionMethodExecData) {
+		LastEntityMethodExecuteData = lastActionMethodExecData;
+		NeedRestoreAction = false;
+	}
 
-    public DynamicFSM LockedFSM { get; private set; }
+	public bool NeedRestoreAction { get; set; }
 
-    public EntityMethodExecuteData LastEntityMethodExecuteData { get; private set; }
-  }
+	public DynamicFSM LockedFSM { get; private set; }
+
+	public EntityMethodExecuteData LastEntityMethodExecuteData { get; private set; }
 }

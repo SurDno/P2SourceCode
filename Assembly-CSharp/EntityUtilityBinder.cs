@@ -1,5 +1,3 @@
 ﻿using UnityEngine;
 
-public class EntityUtilityBinder : MonoBehaviour
-{
-}
+public class EntityUtilityBinder : MonoBehaviour { }

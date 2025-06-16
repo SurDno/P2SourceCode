@@ -2,52 +2,50 @@
 using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 
-namespace Engine.Common.Components
-{
-  public interface INpcControllerComponent : IComponent
-  {
-    event Action<ActionEnum> ActionEvent;
+namespace Engine.Common.Components;
 
-    event Action<CombatActionEnum, IEntity> CombatActionEvent;
+public interface INpcControllerComponent : IComponent {
+	event Action<ActionEnum> ActionEvent;
 
-    IParameterValue<bool> IsDead { get; }
+	event Action<CombatActionEnum, IEntity> CombatActionEvent;
 
-    IParameterValue<bool> IsImmortal { get; }
+	IParameterValue<bool> IsDead { get; }
 
-    IParameterValue<bool> IsAway { get; }
+	IParameterValue<bool> IsImmortal { get; }
 
-    IParameterValue<bool> CanAutopsy { get; }
+	IParameterValue<bool> IsAway { get; }
 
-    IParameterValue<bool> CanTrade { get; }
+	IParameterValue<bool> CanAutopsy { get; }
 
-    IParameterValue<bool> ForceTrade { get; }
+	IParameterValue<bool> CanTrade { get; }
 
-    IParameterValue<bool> CanHeal { get; }
+	IParameterValue<bool> ForceTrade { get; }
 
-    IParameterValue<float> Health { get; }
+	IParameterValue<bool> CanHeal { get; }
 
-    IParameterValue<float> Infection { get; }
+	IParameterValue<float> Health { get; }
 
-    IParameterValue<float> PreInfection { get; }
+	IParameterValue<float> Infection { get; }
 
-    IParameterValue<float> Pain { get; }
+	IParameterValue<float> PreInfection { get; }
 
-    IParameterValue<float> Immunity { get; }
+	IParameterValue<float> Pain { get; }
 
-    IParameterValue<StammKind> StammKind { get; }
+	IParameterValue<float> Immunity { get; }
 
-    IParameterValue<FractionEnum> Fraction { get; }
+	IParameterValue<StammKind> StammKind { get; }
 
-    IParameterValue<CombatStyleEnum> CombatStyle { get; }
+	IParameterValue<FractionEnum> Fraction { get; }
 
-    IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
+	IParameterValue<CombatStyleEnum> CombatStyle { get; }
 
-    IParameterValue<bool> HealingAttempted { get; }
+	IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
 
-    IParameterValue<bool> ImmuneBoostAttempted { get; }
+	IParameterValue<bool> HealingAttempted { get; }
 
-    IParameterValue<bool> IsCombatIgnored { get; }
+	IParameterValue<bool> ImmuneBoostAttempted { get; }
 
-    IParameterValue<bool> SayReplicsInIdle { get; }
-  }
+	IParameterValue<bool> IsCombatIgnored { get; }
+
+	IParameterValue<bool> SayReplicsInIdle { get; }
 }

@@ -2,8 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-internal class TumbaAfishaEntry
-{
-  public int Day;
-  public Material AfishaMaterial;
+internal class TumbaAfishaEntry {
+	public int Day;
+	public Material AfishaMaterial;
 }

@@ -1,6 +1,5 @@
-﻿public enum PatrolTypeEnum
-{
-  Looped,
-  ToTheEndAndBack,
-  ToTheEndAndStop,
+﻿public enum PatrolTypeEnum {
+	Looped,
+	ToTheEndAndBack,
+	ToTheEndAndStop
 }

@@ -1,44 +1,36 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RootMotion.Dynamics
-{
-  [HelpURL("https://www.youtube.com/watch?v=y-luLRVmL7E&index=1&list=PLVxSIA1OaTOuE2SB9NUbckQ9r2hTg4mvL")]
-  [AddComponentMenu("Scripts/RootMotion.Dynamics/Ragdoll Manager/Ragdoll Editor")]
-  public class RagdollEditor : MonoBehaviour
-  {
-    [HideInInspector]
-    public Rigidbody selectedRigidbody;
-    [HideInInspector]
-    public Collider selectedCollider;
-    [HideInInspector]
-    public bool symmetry = true;
-    [HideInInspector]
-    public Mode mode;
+namespace RootMotion.Dynamics;
 
-    [ContextMenu("User Manual")]
-    private void OpenUserManual()
-    {
-      Application.OpenURL("http://root-motion.com/puppetmasterdox/html/page2.html");
-    }
+[HelpURL("https://www.youtube.com/watch?v=y-luLRVmL7E&index=1&list=PLVxSIA1OaTOuE2SB9NUbckQ9r2hTg4mvL")]
+[AddComponentMenu("Scripts/RootMotion.Dynamics/Ragdoll Manager/Ragdoll Editor")]
+public class RagdollEditor : MonoBehaviour {
+	[HideInInspector] public Rigidbody selectedRigidbody;
+	[HideInInspector] public Collider selectedCollider;
+	[HideInInspector] public bool symmetry = true;
+	[HideInInspector] public Mode mode;
 
-    [ContextMenu("Scrpt Reference")]
-    private void OpenScriptReference()
-    {
-      Application.OpenURL("http://root-motion.com/puppetmasterdox/html/class_root_motion_1_1_dynamics_1_1_ragdoll_editor.html");
-    }
+	[ContextMenu("User Manual")]
+	private void OpenUserManual() {
+		Application.OpenURL("http://root-motion.com/puppetmasterdox/html/page2.html");
+	}
 
-    [ContextMenu("TUTORIAL VIDEO")]
-    private void OpenTutorial()
-    {
-      Application.OpenURL("https://www.youtube.com/watch?v=y-luLRVmL7E&index=1&list=PLVxSIA1OaTOuE2SB9NUbckQ9r2hTg4mvL");
-    }
+	[ContextMenu("Scrpt Reference")]
+	private void OpenScriptReference() {
+		Application.OpenURL(
+			"http://root-motion.com/puppetmasterdox/html/class_root_motion_1_1_dynamics_1_1_ragdoll_editor.html");
+	}
 
-    [Serializable]
-    public enum Mode
-    {
-      Colliders,
-      Joints,
-    }
-  }
+	[ContextMenu("TUTORIAL VIDEO")]
+	private void OpenTutorial() {
+		Application.OpenURL(
+			"https://www.youtube.com/watch?v=y-luLRVmL7E&index=1&list=PLVxSIA1OaTOuE2SB9NUbckQ9r2hTg4mvL");
+	}
+
+	[Serializable]
+	public enum Mode {
+		Colliders,
+		Joints
+	}
 }

@@ -1,11 +1,9 @@
-﻿namespace Inspectors
-{
-  public interface IExpandedProvider
-  {
-    bool GetExpanded(string name);
+﻿namespace Inspectors;
 
-    void SetExpanded(string name, bool value);
+public interface IExpandedProvider {
+	bool GetExpanded(string name);
 
-    string DeepName { get; set; }
-  }
+	void SetExpanded(string name, bool value);
+
+	string DeepName { get; set; }
 }

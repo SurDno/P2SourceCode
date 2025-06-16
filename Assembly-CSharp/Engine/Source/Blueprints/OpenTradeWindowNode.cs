@@ -7,30 +7,25 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class OpenTradeWindowNode : FlowControlNode
-  {
-    private ValueInput<IMarketComponent> targetInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        IMarketComponent target = targetInput.value;
-        if (target == null)
-          return;
-        ((MarketComponent) target).FillPrices();
-        UIServiceUtility.PushWindow<ITradeWindow>(output, window =>
-        {
-          window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
-          window.Market = target;
-        });
-      });
-      targetInput = AddValueInput<IMarketComponent>("Market");
-    }
-  }
+[Category("Engine")]
+public class OpenTradeWindowNode : FlowControlNode {
+	private ValueInput<IMarketComponent> targetInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			var target = targetInput.value;
+			if (target == null)
+				return;
+			((MarketComponent)target).FillPrices();
+			UIServiceUtility.PushWindow<ITradeWindow>(output, window => {
+				window.Actor = ServiceLocator.GetService<ISimulation>().Player.GetComponent<IStorageComponent>();
+				window.Market = target;
+			});
+		});
+		targetInput = AddValueInput<IMarketComponent>("Market");
+	}
 }

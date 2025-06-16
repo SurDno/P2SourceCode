@@ -1,6 +1,5 @@
-﻿public enum TOD_ColorRangeType
-{
-  Auto,
-  HDR,
-  LDR,
+﻿public enum TOD_ColorRangeType {
+	Auto,
+	HDR,
+	LDR
 }

@@ -8,100 +8,83 @@ using Engine.Source.Commons;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Blenders
-{
-  public abstract class SmoothBlender<T> : EngineObject, ISmoothBlender<T>, IUpdatable where T : class, IObject, IBlendable<T>
-  {
-    [Inspected]
-    private T fromBlendable;
-    [Inspected]
-    private T currentBlendable;
-    [Inspected]
-    private T targetBlendable;
-    [Inspected]
-    private TimeSpan startTime;
-    [Inspected]
-    private TimeSpan interval;
-    [Inspected]
-    private bool compute;
-    [Inspected]
-    private float progress;
-    private LerpBlendOperation lerpBlendOperation = new LerpBlendOperation();
+namespace Engine.Source.Blenders;
 
-    [Inspected]
-    public Guid SnapshotTemplateId { get; private set; }
+public abstract class SmoothBlender<T> : EngineObject, ISmoothBlender<T>, IUpdatable
+	where T : class, IObject, IBlendable<T> {
+	[Inspected] private T fromBlendable;
+	[Inspected] private T currentBlendable;
+	[Inspected] private T targetBlendable;
+	[Inspected] private TimeSpan startTime;
+	[Inspected] private TimeSpan interval;
+	[Inspected] private bool compute;
+	[Inspected] private float progress;
+	private LerpBlendOperation lerpBlendOperation = new();
 
-    public T Current => currentBlendable;
+	[Inspected] public Guid SnapshotTemplateId { get; private set; }
 
-    public T Target => targetBlendable;
+	public T Current => currentBlendable;
 
-    public float Progress => progress;
+	public T Target => targetBlendable;
 
-    public event Action<ISmoothBlender<T>> OnChanged;
+	public float Progress => progress;
 
-    public SmoothBlender()
-    {
-      fromBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
-      currentBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
-    }
+	public event Action<ISmoothBlender<T>> OnChanged;
 
-    public void BlendTo(T value, TimeSpan interval)
-    {
-      SnapshotTemplateId = value.Id;
-      Stop();
-      startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
-      this.interval = interval;
-      targetBlendable = value;
-      compute = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+	public SmoothBlender() {
+		fromBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
+		currentBlendable = ServiceLocator.GetService<IFactory>().Create<T>();
+	}
 
-    private void Stop()
-    {
-      if (!compute)
-        return;
-      compute = false;
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-      ((ICopyable) currentBlendable).CopyTo(fromBlendable);
-      startTime = TimeSpan.Zero;
-      interval = TimeSpan.Zero;
-      targetBlendable = default (T);
-      progress = 0.0f;
-      Action<ISmoothBlender<T>> onChanged = OnChanged;
-      if (onChanged == null)
-        return;
-      onChanged(this);
-    }
+	public void BlendTo(T value, TimeSpan interval) {
+		SnapshotTemplateId = value.Id;
+		Stop();
+		startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
+		this.interval = interval;
+		targetBlendable = value;
+		compute = true;
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    public override void Dispose()
-    {
-      Stop();
-      base.Dispose();
-    }
+	private void Stop() {
+		if (!compute)
+			return;
+		compute = false;
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+		((ICopyable)currentBlendable).CopyTo(fromBlendable);
+		startTime = TimeSpan.Zero;
+		interval = TimeSpan.Zero;
+		targetBlendable = default;
+		progress = 0.0f;
+		var onChanged = OnChanged;
+		if (onChanged == null)
+			return;
+		onChanged(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      if (!compute)
-        return;
-      TimeSpan timeSpan = ServiceLocator.GetService<TimeService>().AbsoluteGameTime - startTime;
-      if (timeSpan >= interval)
-      {
-        ((ICopyable) targetBlendable).CopyTo(currentBlendable);
-        Stop();
-      }
-      else
-      {
-        float num = Mathf.Clamp01((float) (timeSpan.TotalSeconds / interval.TotalSeconds));
-        if (num == (double) progress)
-          return;
-        progress = num;
-        lerpBlendOperation.Time = progress;
-        currentBlendable.Blend(fromBlendable, targetBlendable, lerpBlendOperation);
-        Action<ISmoothBlender<T>> onChanged = OnChanged;
-        if (onChanged == null)
-          return;
-        onChanged(this);
-      }
-    }
-  }
+	public override void Dispose() {
+		Stop();
+		base.Dispose();
+	}
+
+	public void ComputeUpdate() {
+		if (!compute)
+			return;
+		var timeSpan = ServiceLocator.GetService<TimeService>().AbsoluteGameTime - startTime;
+		if (timeSpan >= interval) {
+			((ICopyable)targetBlendable).CopyTo(currentBlendable);
+			Stop();
+		} else {
+			var num = Mathf.Clamp01((float)(timeSpan.TotalSeconds / interval.TotalSeconds));
+			if (num == (double)progress)
+				return;
+			progress = num;
+			lerpBlendOperation.Time = progress;
+			currentBlendable.Blend(fromBlendable, targetBlendable, lerpBlendOperation);
+			var onChanged = OnChanged;
+			if (onChanged == null)
+				return;
+			onChanged(this);
+		}
+	}
 }

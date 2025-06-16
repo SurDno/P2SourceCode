@@ -9,66 +9,57 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (DetectTypeParameter))]
-  public class DetectTypeParameter_Generated : 
-    DetectTypeParameter,
-    IComputeNeedSave,
-    INeedSave,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead,
-    ISerializeStateSave,
-    ISerializeStateLoad
-  {
-    public bool NeedSave { get; private set; } = true;
+namespace Engine.Source.Proxies;
 
-    public void ComputeNeedSave(object target2)
-    {
-      NeedSave = true;
-      DetectTypeParameter_Generated parameterGenerated = (DetectTypeParameter_Generated) target2;
-      if (parameterGenerated.name != name || parameterGenerated.value != value)
-        return;
-      NeedSave = false;
-    }
+[FactoryProxy(typeof(DetectTypeParameter))]
+public class DetectTypeParameter_Generated :
+	DetectTypeParameter,
+	IComputeNeedSave,
+	INeedSave,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead,
+	ISerializeStateSave,
+	ISerializeStateLoad {
+	public bool NeedSave { get; private set; } = true;
 
-    public object Clone()
-    {
-      DetectTypeParameter_Generated instance = Activator.CreateInstance<DetectTypeParameter_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+	public void ComputeNeedSave(object target2) {
+		NeedSave = true;
+		var parameterGenerated = (DetectTypeParameter_Generated)target2;
+		if (parameterGenerated.name != name || parameterGenerated.value != value)
+			return;
+		NeedSave = false;
+	}
 
-    public void CopyTo(object target2)
-    {
-      DetectTypeParameter_Generated parameterGenerated = (DetectTypeParameter_Generated) target2;
-      parameterGenerated.name = name;
-      parameterGenerated.value = value;
-    }
+	public object Clone() {
+		var instance = Activator.CreateInstance<DetectTypeParameter_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
-    }
+	public void CopyTo(object target2) {
+		var parameterGenerated = (DetectTypeParameter_Generated)target2;
+		parameterGenerated.name = name;
+		parameterGenerated.value = value;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
-      value = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "Value");
-    }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
+	}
 
-    public void StateSave(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
-    }
+	public void DataRead(IDataReader reader, Type type) {
+		name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
+		value = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "Value");
+	}
 
-    public void StateLoad(IDataReader reader, Type type)
-    {
-      value = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "Value");
-    }
-  }
+	public void StateSave(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
+	}
+
+	public void StateLoad(IDataReader reader, Type type) {
+		value = DefaultDataReadUtility.ReadEnum<DetectType>(reader, "Value");
+	}
 }

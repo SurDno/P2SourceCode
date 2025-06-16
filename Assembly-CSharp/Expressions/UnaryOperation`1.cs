@@ -2,34 +2,25 @@
 using Engine.Source.Commons.Effects;
 using Inspectors;
 
-namespace Expressions
-{
-  public abstract class UnaryOperation<T> : IValue<T> where T : struct
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Name = "value", Mutable = true, Mode = ExecuteMode.Edit)]
-    protected IValue<T> value;
+namespace Expressions;
 
-    protected abstract T Compute(T value);
+public abstract class UnaryOperation<T> : IValue<T> where T : struct {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy()]
+	[Inspected]
+	[Inspected(Name = "value", Mutable = true, Mode = ExecuteMode.Edit)]
+	protected IValue<T> value;
 
-    public T GetValue(IEffect context)
-    {
-      return value != null ? Compute(value.GetValue(context)) : default (T);
-    }
+	protected abstract T Compute(T value);
 
-    protected abstract string OperatorView();
+	public T GetValue(IEffect context) {
+		return value != null ? Compute(value.GetValue(context)) : default;
+	}
 
-    public string ValueView
-    {
-      get => OperatorView() + (value != null ? value.ValueView : "null");
-    }
+	protected abstract string OperatorView();
 
-    public string TypeView
-    {
-      get => OperatorView() + (value != null ? value.TypeView : "null");
-    }
-  }
+	public string ValueView => OperatorView() + (value != null ? value.ValueView : "null");
+
+	public string TypeView => OperatorView() + (value != null ? value.TypeView : "null");
 }

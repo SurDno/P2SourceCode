@@ -1,11 +1,9 @@
-﻿namespace SRDebugger.Services
-{
-  public interface ISystemInfo
-  {
-    string Title { get; }
+﻿namespace SRDebugger.Services;
 
-    object Value { get; }
+public interface ISystemInfo {
+	string Title { get; }
 
-    bool IsPrivate { get; }
-  }
+	object Value { get; }
+
+	bool IsPrivate { get; }
 }

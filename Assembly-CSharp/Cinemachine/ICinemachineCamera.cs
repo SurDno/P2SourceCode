@@ -1,31 +1,29 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine
-{
-  public interface ICinemachineCamera
-  {
-    string Name { get; }
+namespace Cinemachine;
 
-    string Description { get; }
+public interface ICinemachineCamera {
+	string Name { get; }
 
-    int Priority { get; set; }
+	string Description { get; }
 
-    Transform LookAt { get; set; }
+	int Priority { get; set; }
 
-    Transform Follow { get; set; }
+	Transform LookAt { get; set; }
 
-    CameraState State { get; }
+	Transform Follow { get; set; }
 
-    GameObject VirtualCameraGameObject { get; }
+	CameraState State { get; }
 
-    ICinemachineCamera LiveChildOrSelf { get; }
+	GameObject VirtualCameraGameObject { get; }
 
-    ICinemachineCamera ParentCamera { get; }
+	ICinemachineCamera LiveChildOrSelf { get; }
 
-    bool IsLiveChild(ICinemachineCamera vcam);
+	ICinemachineCamera ParentCamera { get; }
 
-    void UpdateCameraState(Vector3 worldUp, float deltaTime);
+	bool IsLiveChild(ICinemachineCamera vcam);
 
-    void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime);
-  }
+	void UpdateCameraState(Vector3 worldUp, float deltaTime);
+
+	void OnTransitionFromCamera(ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime);
 }

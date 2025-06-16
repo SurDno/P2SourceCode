@@ -4,60 +4,57 @@ using Engine.Common.Types;
 using Engine.Impl.Services.Factories;
 using Inspectors;
 
-namespace Engine.Source.UI.Menu.Protagonist.MindMap
-{
-  [Factory(typeof (IMMPage))]
-  public class MMPage : IMMPage
-  {
-    private List<MMLink> links = new List<MMLink>();
-    private List<MMNode> nodes = new List<MMNode>();
+namespace Engine.Source.UI.Menu.Protagonist.MindMap;
 
-    [Inspected]
-    public bool Global { get; set; }
+[Factory(typeof(IMMPage))]
+public class MMPage : IMMPage {
+	private List<MMLink> links = new();
+	private List<MMNode> nodes = new();
 
-    [Inspected]
-    public LocalizedText Title { get; set; }
+	[Inspected] public bool Global { get; set; }
 
-    [Inspected]
-    public IEnumerable<IMMNode> Nodes => nodes;
+	[Inspected] public LocalizedText Title { get; set; }
 
-    public int NodesCount => nodes.Count;
+	[Inspected] public IEnumerable<IMMNode> Nodes => nodes;
 
-    [Inspected]
-    public IEnumerable<IMMLink> Links => links;
+	public int NodesCount => nodes.Count;
 
-    public int LinksCount => links.Count;
+	[Inspected] public IEnumerable<IMMLink> Links => links;
 
-    public MMWindow MindMap { get; set; }
+	public int LinksCount => links.Count;
 
-    public MMLink GetLink(int index) => links[index];
+	public MMWindow MindMap { get; set; }
 
-    public MMNode GetNode(int index) => nodes[index];
+	public MMLink GetLink(int index) {
+		return links[index];
+	}
 
-    public void AddNode(IMMNode node)
-    {
-      ((MMNode) node).MindMap = MindMap;
-      nodes.Add((MMNode) node);
-    }
+	public MMNode GetNode(int index) {
+		return nodes[index];
+	}
 
-    public void RemoveNode(IMMNode node)
-    {
-      ((MMNode) node).MindMap = null;
-      nodes.Remove((MMNode) node);
-    }
+	public void AddNode(IMMNode node) {
+		((MMNode)node).MindMap = MindMap;
+		nodes.Add((MMNode)node);
+	}
 
-    public void AddLink(IMMLink link) => links.Add((MMLink) link);
+	public void RemoveNode(IMMNode node) {
+		((MMNode)node).MindMap = null;
+		nodes.Remove((MMNode)node);
+	}
 
-    public void RemoveLink(IMMLink link) => links.Remove((MMLink) link);
+	public void AddLink(IMMLink link) {
+		links.Add((MMLink)link);
+	}
 
-    public bool HasUndiscovered()
-    {
-      foreach (MMNode node in nodes)
-      {
-        if (node != null && node.Content != null && node.Undiscovered)
-          return true;
-      }
-      return false;
-    }
-  }
+	public void RemoveLink(IMMLink link) {
+		links.Remove((MMLink)link);
+	}
+
+	public bool HasUndiscovered() {
+		foreach (var node in nodes)
+			if (node != null && node.Content != null && node.Undiscovered)
+				return true;
+		return false;
+	}
 }

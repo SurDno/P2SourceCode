@@ -1,8 +1,6 @@
-﻿namespace AmplifyBloom
-{
-  public enum PrecisionModes
-  {
-    Low,
-    High,
-  }
+﻿namespace AmplifyBloom;
+
+public enum PrecisionModes {
+	Low,
+	High
 }

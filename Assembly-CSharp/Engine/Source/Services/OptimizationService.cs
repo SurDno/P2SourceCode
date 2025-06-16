@@ -2,15 +2,13 @@
 using Engine.Source.Settings.External;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [RuntimeService(typeof (IOptimizationService))]
-  public class OptimizationService : IOptimizationService
-  {
-    public bool FrameHasSpike { get; set; }
+namespace Engine.Source.Services;
 
-    public bool LazyFsm => ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.LazyFsm;
+[RuntimeService(typeof(IOptimizationService))]
+public class OptimizationService : IOptimizationService {
+	public bool FrameHasSpike { get; set; }
 
-    public bool IsUnity => Application.isEditor;
-  }
+	public bool LazyFsm => ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.LazyFsm;
+
+	public bool IsUnity => Application.isEditor;
 }

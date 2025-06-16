@@ -1,24 +1,21 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  [Serializable]
-  public class ConstraintPosition : Constraint
-  {
-    public Vector3 position;
+namespace RootMotion.FinalIK;
 
-    public override void UpdateConstraint()
-    {
-      if (weight <= 0.0 || !isValid)
-        return;
-      transform.position = Vector3.Lerp(transform.position, position, weight);
-    }
+[Serializable]
+public class ConstraintPosition : Constraint {
+	public Vector3 position;
 
-    public ConstraintPosition()
-    {
-    }
+	public override void UpdateConstraint() {
+		if (weight <= 0.0 || !isValid)
+			return;
+		transform.position = Vector3.Lerp(transform.position, position, weight);
+	}
 
-    public ConstraintPosition(Transform transform) => this.transform = transform;
-  }
+	public ConstraintPosition() { }
+
+	public ConstraintPosition(Transform transform) {
+		this.transform = transform;
+	}
 }

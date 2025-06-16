@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.UI
-{
-  public interface IStartLoadGameWindow : IWindow, IMainMenu, IPauseMenu
-  {
-  }
-}
+﻿namespace Engine.Source.UI;
+
+public interface IStartLoadGameWindow : IWindow, IMainMenu, IPauseMenu { }

@@ -4,23 +4,19 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class DisposeInstanceNode : FlowControlNode
-  {
-    private ValueInput<IObject> instanceValue;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        ((IDisposable) instanceValue.value)?.Dispose();
-        output.Call();
-      });
-      instanceValue = AddValueInput<IObject>("Instance");
-    }
-  }
+[Category("Engine")]
+public class DisposeInstanceNode : FlowControlNode {
+	private ValueInput<IObject> instanceValue;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			((IDisposable)instanceValue.value)?.Dispose();
+			output.Call();
+		});
+		instanceValue = AddValueInput<IObject>("Instance");
+	}
 }

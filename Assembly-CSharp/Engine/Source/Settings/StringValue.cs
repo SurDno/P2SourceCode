@@ -1,40 +1,33 @@
 ﻿using Inspectors;
 
-namespace Engine.Source.Settings
-{
-  public class StringValue : IValue<string>
-  {
-    [Inspected]
-    private string name;
-    [Inspected]
-    private string defaultValue;
-    private string value;
+namespace Engine.Source.Settings;
 
-    public StringValue(string name, string defaultValue = "")
-    {
-      this.name = name;
-      this.defaultValue = defaultValue;
-      value = PlayerSettings.Instance.GetString(name, defaultValue);
-    }
+public class StringValue : IValue<string> {
+	[Inspected] private string name;
+	[Inspected] private string defaultValue;
+	private string value;
 
-    [Inspected(Mutable = true)]
-    public string Value
-    {
-      get => value;
-      set
-      {
-        if (this.value == value)
-          return;
-        this.value = value;
-        PlayerSettings.Instance.SetString(name, value);
-        PlayerSettings.Instance.Save();
-      }
-    }
+	public StringValue(string name, string defaultValue = "") {
+		this.name = name;
+		this.defaultValue = defaultValue;
+		value = PlayerSettings.Instance.GetString(name, defaultValue);
+	}
 
-    public string DefaultValue => defaultValue;
+	[Inspected(Mutable = true)]
+	public string Value {
+		get => value;
+		set {
+			if (this.value == value)
+				return;
+			this.value = value;
+			PlayerSettings.Instance.SetString(name, value);
+			PlayerSettings.Instance.Save();
+		}
+	}
 
-    public string MinValue => defaultValue;
+	public string DefaultValue => defaultValue;
 
-    public string MaxValue => defaultValue;
-  }
+	public string MinValue => defaultValue;
+
+	public string MaxValue => defaultValue;
 }

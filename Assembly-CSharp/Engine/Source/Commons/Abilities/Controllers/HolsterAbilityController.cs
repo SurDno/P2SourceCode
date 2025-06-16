@@ -5,77 +5,76 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using Inspectors;
 
-namespace Engine.Source.Commons.Abilities.Controllers
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class HolsterAbilityController : IAbilityController
-  {
-    [DataReadProxy(Name = "Weapon")]
-    [DataWriteProxy(Name = "Weapon")]
-    [CopyableProxy()]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected WeaponKind weaponKind = WeaponKind.Unknown;
-    private AbilityItem abilityItem;
-    private StorableComponent storable;
-    private IAttackerPlayerComponent attacker;
+namespace Engine.Source.Commons.Abilities.Controllers;
 
-    public void Initialise(AbilityItem abilityItem)
-    {
-      this.abilityItem = abilityItem;
-      storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
-      if (storable == null)
-        return;
-      storable.ChangeStorageEvent += ChangeStorageEvent;
-      CheckItem();
-    }
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class HolsterAbilityController : IAbilityController {
+	[DataReadProxy(Name = "Weapon")]
+	[DataWriteProxy(Name = "Weapon")]
+	[CopyableProxy()]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected WeaponKind weaponKind = WeaponKind.Unknown;
 
-    public void Shutdown()
-    {
-      Cleanup();
-      if (storable != null)
-      {
-        storable.ChangeStorageEvent -= ChangeStorageEvent;
-        abilityItem.Active = false;
-      }
-      abilityItem = null;
-      storable = null;
-    }
+	private AbilityItem abilityItem;
+	private StorableComponent storable;
+	private IAttackerPlayerComponent attacker;
 
-    private void ChangeStorageEvent(IStorableComponent sender) => CheckItem();
+	public void Initialise(AbilityItem abilityItem) {
+		this.abilityItem = abilityItem;
+		storable = this.abilityItem.Ability.Owner.GetComponent<StorableComponent>();
+		if (storable == null)
+			return;
+		storable.ChangeStorageEvent += ChangeStorageEvent;
+		CheckItem();
+	}
 
-    private void CheckItem()
-    {
-      Cleanup();
-      IStorageComponent storage = storable.Storage;
-      if (storage == null)
-        return;
-      attacker = storage.Owner.GetComponent<IAttackerPlayerComponent>();
-      if (attacker != null)
-      {
-        attacker.WeaponHolsterStartEvent += WeaponHolsterStartEvent;
-        attacker.WeaponUnholsterEndEvent += WeaponUnholsterEndEvent;
-        UpdateAbility();
-      }
-    }
+	public void Shutdown() {
+		Cleanup();
+		if (storable != null) {
+			storable.ChangeStorageEvent -= ChangeStorageEvent;
+			abilityItem.Active = false;
+		}
 
-    private void Cleanup()
-    {
-      if (attacker == null)
-        return;
-      attacker.WeaponHolsterStartEvent -= WeaponHolsterStartEvent;
-      attacker.WeaponUnholsterEndEvent -= WeaponUnholsterEndEvent;
-      attacker = null;
-      UpdateAbility();
-    }
+		abilityItem = null;
+		storable = null;
+	}
 
-    private void WeaponHolsterStartEvent(WeaponKind weapon) => UpdateAbility();
+	private void ChangeStorageEvent(IStorableComponent sender) {
+		CheckItem();
+	}
 
-    private void WeaponUnholsterEndEvent(WeaponKind weapon) => UpdateAbility();
+	private void CheckItem() {
+		Cleanup();
+		var storage = storable.Storage;
+		if (storage == null)
+			return;
+		attacker = storage.Owner.GetComponent<IAttackerPlayerComponent>();
+		if (attacker != null) {
+			attacker.WeaponHolsterStartEvent += WeaponHolsterStartEvent;
+			attacker.WeaponUnholsterEndEvent += WeaponUnholsterEndEvent;
+			UpdateAbility();
+		}
+	}
 
-    private void UpdateAbility()
-    {
-      abilityItem.Active = attacker != null && attacker.CurrentWeapon == weaponKind;
-    }
-  }
+	private void Cleanup() {
+		if (attacker == null)
+			return;
+		attacker.WeaponHolsterStartEvent -= WeaponHolsterStartEvent;
+		attacker.WeaponUnholsterEndEvent -= WeaponUnholsterEndEvent;
+		attacker = null;
+		UpdateAbility();
+	}
+
+	private void WeaponHolsterStartEvent(WeaponKind weapon) {
+		UpdateAbility();
+	}
+
+	private void WeaponUnholsterEndEvent(WeaponKind weapon) {
+		UpdateAbility();
+	}
+
+	private void UpdateAbility() {
+		abilityItem.Active = attacker != null && attacker.CurrentWeapon == weaponKind;
+	}
 }

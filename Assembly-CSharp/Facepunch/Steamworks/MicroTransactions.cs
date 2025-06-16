@@ -1,29 +1,27 @@
 ﻿using System;
 using SteamNative;
 
-namespace Facepunch.Steamworks
-{
-  public class MicroTransactions : IDisposable
-  {
-    internal Client client;
+namespace Facepunch.Steamworks;
 
-    public event AuthorizationResponse OnAuthorizationResponse;
+public class MicroTransactions : IDisposable {
+	internal Client client;
 
-    internal MicroTransactions(Client c)
-    {
-      client = c;
-      MicroTxnAuthorizationResponse_t.RegisterCallback(client, onMicroTxnAuthorizationResponse);
-    }
+	public event AuthorizationResponse OnAuthorizationResponse;
 
-    private void onMicroTxnAuthorizationResponse(MicroTxnAuthorizationResponse_t arg1, bool arg2)
-    {
-      if (OnAuthorizationResponse == null)
-        return;
-      OnAuthorizationResponse(arg1.Authorized == 1, (int) arg1.AppID, arg1.OrderID);
-    }
+	internal MicroTransactions(Client c) {
+		client = c;
+		MicroTxnAuthorizationResponse_t.RegisterCallback(client, onMicroTxnAuthorizationResponse);
+	}
 
-    public void Dispose() => client = null;
+	private void onMicroTxnAuthorizationResponse(MicroTxnAuthorizationResponse_t arg1, bool arg2) {
+		if (OnAuthorizationResponse == null)
+			return;
+		OnAuthorizationResponse(arg1.Authorized == 1, (int)arg1.AppID, arg1.OrderID);
+	}
 
-    public delegate void AuthorizationResponse(bool authorized, int appId, ulong orderId);
-  }
+	public void Dispose() {
+		client = null;
+	}
+
+	public delegate void AuthorizationResponse(bool authorized, int appId, ulong orderId);
 }

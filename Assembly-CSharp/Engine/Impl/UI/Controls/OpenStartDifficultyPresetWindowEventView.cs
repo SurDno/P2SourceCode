@@ -1,9 +1,6 @@
 ﻿using Engine.Source.UI;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class OpenStartDifficultyPresetWindowEventView : 
-    OpenWindowEventView<IStartDifficultyPresetWindow>
-  {
-  }
-}
+namespace Engine.Impl.UI.Controls;
+
+public class OpenStartDifficultyPresetWindowEventView :
+	OpenWindowEventView<IStartDifficultyPresetWindow> { }

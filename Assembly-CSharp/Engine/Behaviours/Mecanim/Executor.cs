@@ -1,11 +1,8 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Engine.Behaviours.Mecanim
-{
-  [DisallowMultipleComponent]
-  [Serializable]
-  public class Executor : Base
-  {
-  }
-}
+namespace Engine.Behaviours.Mecanim;
+
+[DisallowMultipleComponent]
+[Serializable]
+public class Executor : Base { }

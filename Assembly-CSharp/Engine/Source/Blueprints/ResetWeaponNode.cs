@@ -4,20 +4,16 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class ResetWeaponNode : FlowControlNode
-  {
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        ServiceLocator.GetService<ISimulation>().Player?.GetComponent<IAttackerPlayerComponent>()?.ResetWeapon();
-        output.Call();
-      });
-    }
-  }
+namespace Engine.Source.Blueprints;
+
+[Category("Engine")]
+public class ResetWeaponNode : FlowControlNode {
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			ServiceLocator.GetService<ISimulation>().Player?.GetComponent<IAttackerPlayerComponent>()?.ResetWeapon();
+			output.Call();
+		});
+	}
 }

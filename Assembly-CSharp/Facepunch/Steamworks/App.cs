@@ -1,35 +1,40 @@
 ﻿using System;
 
-namespace Facepunch.Steamworks
-{
-  public class App : IDisposable
-  {
-    internal Client client;
+namespace Facepunch.Steamworks;
 
-    internal App(Client c) => client = c;
+public class App : IDisposable {
+	internal Client client;
 
-    public void Dispose() => client = null;
+	internal App(Client c) {
+		client = c;
+	}
 
-    public void MarkContentCorrupt(bool missingFilesOnly = false)
-    {
-      client.native.apps.MarkContentCorrupt(missingFilesOnly);
-    }
+	public void Dispose() {
+		client = null;
+	}
 
-    public void InstallDlc(uint appId) => client.native.apps.InstallDLC(appId);
+	public void MarkContentCorrupt(bool missingFilesOnly = false) {
+		client.native.apps.MarkContentCorrupt(missingFilesOnly);
+	}
 
-    public void UninstallDlc(uint appId) => client.native.apps.UninstallDLC(appId);
+	public void InstallDlc(uint appId) {
+		client.native.apps.InstallDLC(appId);
+	}
 
-    public DateTime PurchaseTime(uint appId)
-    {
-      uint purchaseUnixTime = client.native.apps.GetEarliestPurchaseUnixTime(appId);
-      return purchaseUnixTime == 0U ? DateTime.MinValue : Utility.Epoch.ToDateTime(purchaseUnixTime);
-    }
+	public void UninstallDlc(uint appId) {
+		client.native.apps.UninstallDLC(appId);
+	}
 
-    public bool IsSubscribed(uint appId)
-    {
-      return client.native.apps.BIsSubscribedApp(appId);
-    }
+	public DateTime PurchaseTime(uint appId) {
+		var purchaseUnixTime = client.native.apps.GetEarliestPurchaseUnixTime(appId);
+		return purchaseUnixTime == 0U ? DateTime.MinValue : Utility.Epoch.ToDateTime(purchaseUnixTime);
+	}
 
-    public bool IsInstalled(uint appId) => client.native.apps.BIsAppInstalled(appId);
-  }
+	public bool IsSubscribed(uint appId) {
+		return client.native.apps.BIsSubscribedApp(appId);
+	}
+
+	public bool IsInstalled(uint appId) {
+		return client.native.apps.BIsAppInstalled(appId);
+	}
 }

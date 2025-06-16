@@ -2,28 +2,26 @@
 using System.Collections.Generic;
 using Object = UnityEngine.Object;
 
-namespace AssetDatabases
-{
-  public interface IAssetDatabase
-  {
-    void RegisterAssets();
+namespace AssetDatabases;
 
-    IEnumerable<string> GetAllAssetPaths();
+public interface IAssetDatabase {
+	void RegisterAssets();
 
-    int GetAllAssetPathsCount();
+	IEnumerable<string> GetAllAssetPaths();
 
-    string GetPath(Guid id);
+	int GetAllAssetPathsCount();
 
-    Guid GetId(string path);
+	string GetPath(Guid id);
 
-    T Load<T>(string path) where T : Object;
+	Guid GetId(string path);
 
-    Object[] LoadAll(string path);
+	T Load<T>(string path) where T : Object;
 
-    IAsyncLoad LoadAsync<T>(string path) where T : Object;
+	Object[] LoadAll(string path);
 
-    IAsyncLoad LoadSceneAsync(string path);
+	IAsyncLoad LoadAsync<T>(string path) where T : Object;
 
-    void Unload(Object obj);
-  }
+	IAsyncLoad LoadSceneAsync(string path);
+
+	void Unload(Object obj);
 }

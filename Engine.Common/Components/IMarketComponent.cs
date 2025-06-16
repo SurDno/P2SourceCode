@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace Engine.Common.Components
-{
-  public interface IMarketComponent : IComponent
-  {
-    bool IsEnabled { get; set; }
+namespace Engine.Common.Components;
 
-    event Action OnFillPrices;
-  }
+public interface IMarketComponent : IComponent {
+	bool IsEnabled { get; set; }
+
+	event Action OnFillPrices;
 }

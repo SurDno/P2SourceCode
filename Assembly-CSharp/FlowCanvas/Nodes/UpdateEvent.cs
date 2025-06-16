@@ -1,17 +1,19 @@
 ﻿using NodeCanvas.Framework;
 using ParadoxNotion.Design;
 
-namespace FlowCanvas.Nodes
-{
-  [Name("On Update")]
-  [Category("Events/Graph")]
-  [Description("Called per-frame")]
-  public class UpdateEvent : EventNode, IUpdatable
-  {
-    private FlowOutput update;
+namespace FlowCanvas.Nodes;
 
-    protected override void RegisterPorts() => update = AddFlowOutput("Out");
+[Name("On Update")]
+[Category("Events/Graph")]
+[Description("Called per-frame")]
+public class UpdateEvent : EventNode, IUpdatable {
+	private FlowOutput update;
 
-    public void Update() => update.Call();
-  }
+	protected override void RegisterPorts() {
+		update = AddFlowOutput("Out");
+	}
+
+	public void Update() {
+		update.Call();
+	}
 }

@@ -1,24 +1,22 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace Scripts.Editor
-{
-  public struct AssetsEnumerator : IEnumerable<string>, IEnumerable
-  {
-    private IEnumerable<string> assets;
-    private string title;
+namespace Scripts.Editor;
 
-    public AssetsEnumerator(string title, IEnumerable<string> assets)
-    {
-      this.title = title;
-      this.assets = assets;
-    }
+public struct AssetsEnumerator : IEnumerable<string>, IEnumerable {
+	private IEnumerable<string> assets;
+	private string title;
 
-    public IEnumerator<string> GetEnumerator() => assets.GetEnumerator();
+	public AssetsEnumerator(string title, IEnumerable<string> assets) {
+		this.title = title;
+		this.assets = assets;
+	}
 
-    IEnumerator IEnumerable.GetEnumerator()
-    {
-      return GetEnumerator();
-    }
-  }
+	public IEnumerator<string> GetEnumerator() {
+		return assets.GetEnumerator();
+	}
+
+	IEnumerator IEnumerable.GetEnumerator() {
+		return GetEnumerator();
+	}
 }

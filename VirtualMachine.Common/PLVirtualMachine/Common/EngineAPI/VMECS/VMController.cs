@@ -4,56 +4,50 @@ using Engine.Common.Components;
 using Engine.Common.Components.Interactable;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("Controller", typeof (IControllerComponent))]
-  public class VMController : VMEngineComponent<IControllerComponent>
-  {
-    public const string ComponentName = "Controller";
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.BeginInteractEvent -= FireBeginInteractEvent;
-      Component.EndInteractEvent -= FireEndInteractEvent;
-      base.Clear();
-    }
+[Info("Controller", typeof(IControllerComponent))]
+public class VMController : VMEngineComponent<IControllerComponent> {
+	public const string ComponentName = "Controller";
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.BeginInteractEvent += FireBeginInteractEvent;
-      Component.EndInteractEvent += FireEndInteractEvent;
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.BeginInteractEvent -= FireBeginInteractEvent;
+		Component.EndInteractEvent -= FireEndInteractEvent;
+		base.Clear();
+	}
 
-    private void FireBeginInteractEvent(
-      IEntity owner,
-      IInteractableComponent target,
-      IInteractItem item)
-    {
-      Action<IEntity, IEntity, InteractType> controllIteractEvent = BeginControllIteractEvent;
-      if (controllIteractEvent == null)
-        return;
-      controllIteractEvent(owner, target.Owner, item.Type);
-    }
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.BeginInteractEvent += FireBeginInteractEvent;
+		Component.EndInteractEvent += FireEndInteractEvent;
+	}
 
-    private void FireEndInteractEvent(
-      IEntity owner,
-      IInteractableComponent target,
-      IInteractItem item)
-    {
-      Action<IEntity, IEntity, InteractType> controllIteractEvent = EndControllIteractEvent;
-      if (controllIteractEvent == null)
-        return;
-      controllIteractEvent(owner, target.Owner, item.Type);
-    }
+	private void FireBeginInteractEvent(
+		IEntity owner,
+		IInteractableComponent target,
+		IInteractItem item) {
+		var controllIteractEvent = BeginControllIteractEvent;
+		if (controllIteractEvent == null)
+			return;
+		controllIteractEvent(owner, target.Owner, item.Type);
+	}
 
-    [Event("Begin interact event", "агент:Controller,цель:Interactive,тип")]
-    public event Action<IEntity, IEntity, InteractType> BeginControllIteractEvent;
+	private void FireEndInteractEvent(
+		IEntity owner,
+		IInteractableComponent target,
+		IInteractItem item) {
+		var controllIteractEvent = EndControllIteractEvent;
+		if (controllIteractEvent == null)
+			return;
+		controllIteractEvent(owner, target.Owner, item.Type);
+	}
 
-    [Event("End interact event", "агент:Controller,цель:Interactive,тип")]
-    public event Action<IEntity, IEntity, InteractType> EndControllIteractEvent;
-  }
+	[Event("Begin interact event", "агент:Controller,цель:Interactive,тип")]
+	public event Action<IEntity, IEntity, InteractType> BeginControllIteractEvent;
+
+	[Event("End interact event", "агент:Controller,цель:Interactive,тип")]
+	public event Action<IEntity, IEntity, InteractType> EndControllIteractEvent;
 }

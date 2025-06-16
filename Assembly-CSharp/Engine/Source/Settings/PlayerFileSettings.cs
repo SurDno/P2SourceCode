@@ -5,129 +5,110 @@ using Cofe.Serializations.Converters;
 using Engine.Common.Utility;
 using UnityEngine;
 
-namespace Engine.Source.Settings
-{
-  public class PlayerFileSettings : IPlayerSettings
-  {
-    private string path = "{DataPath}/Settings/PlayerSettings.xml".Replace("{DataPath}", Application.persistentDataPath);
-    private XmlElement element;
+namespace Engine.Source.Settings;
 
-    public PlayerFileSettings()
-    {
-      if (File.Exists(path))
-      {
-        try
-        {
-          XmlDocument xmlDocument = new XmlDocument();
-          xmlDocument.Load(path);
-          element = xmlDocument.DocumentElement;
-        }
-        catch (Exception ex)
-        {
-          Debug.LogException(ex);
-        }
-      }
-      if (element != null)
-        return;
-      element = XmlUtility.CreateDocument().CreateNode("Root");
-      Save();
-    }
+public class PlayerFileSettings : IPlayerSettings {
+	private string path =
+		"{DataPath}/Settings/PlayerSettings.xml".Replace("{DataPath}", Application.persistentDataPath);
 
-    public int GetInt(string name, int defaultValue)
-    {
-      string str = GetValue(name);
-      return str == null ? defaultValue : DefaultConverter.ParseInt(str);
-    }
+	private XmlElement element;
 
-    public void SetInt(string name, int value)
-    {
-      SetValue(name, DefaultConverter.ToString(value));
-    }
+	public PlayerFileSettings() {
+		if (File.Exists(path))
+			try {
+				var xmlDocument = new XmlDocument();
+				xmlDocument.Load(path);
+				element = xmlDocument.DocumentElement;
+			} catch (Exception ex) {
+				Debug.LogException(ex);
+			}
 
-    public bool GetBool(string name, bool defaultValue)
-    {
-      string str = GetValue(name);
-      return str == null ? defaultValue : DefaultConverter.ParseBool(str);
-    }
+		if (element != null)
+			return;
+		element = XmlUtility.CreateDocument().CreateNode("Root");
+		Save();
+	}
 
-    public void SetBool(string name, bool value)
-    {
-      SetValue(name, DefaultConverter.ToString(value));
-    }
+	public int GetInt(string name, int defaultValue) {
+		var str = GetValue(name);
+		return str == null ? defaultValue : DefaultConverter.ParseInt(str);
+	}
 
-    public float GetFloat(string name, float defaultValue)
-    {
-      string str = GetValue(name);
-      return str == null ? defaultValue : DefaultConverter.ParseFloat(str);
-    }
+	public void SetInt(string name, int value) {
+		SetValue(name, DefaultConverter.ToString(value));
+	}
 
-    public void SetFloat(string name, float value)
-    {
-      SetValue(name, DefaultConverter.ToString(value));
-    }
+	public bool GetBool(string name, bool defaultValue) {
+		var str = GetValue(name);
+		return str == null ? defaultValue : DefaultConverter.ParseBool(str);
+	}
 
-    public string GetString(string name, string defaultValue)
-    {
-      return GetValue(name) ?? defaultValue;
-    }
+	public void SetBool(string name, bool value) {
+		SetValue(name, DefaultConverter.ToString(value));
+	}
 
-    public void SetString(string name, string value) => SetValue(name, value);
+	public float GetFloat(string name, float defaultValue) {
+		var str = GetValue(name);
+		return str == null ? defaultValue : DefaultConverter.ParseFloat(str);
+	}
 
-    public T GetEnum<T>(string name, T defaultValue) where T : struct, IComparable, IFormattable, IConvertible
-    {
-      string str = GetValue(name);
-      T result;
-      return str == null || !DefaultConverter.TryParseEnum(str, out result) ? defaultValue : result;
-    }
+	public void SetFloat(string name, float value) {
+		SetValue(name, DefaultConverter.ToString(value));
+	}
 
-    public void SetEnum<T>(string name, T value) where T : struct, IComparable, IFormattable, IConvertible
-    {
-      SetValue(name, value.ToString());
-    }
+	public string GetString(string name, string defaultValue) {
+		return GetValue(name) ?? defaultValue;
+	}
 
-    public void Save()
-    {
-      try
-      {
-        element.SaveDocument(path);
-      }
-      catch (Exception ex)
-      {
-        Debug.LogException(ex);
-      }
-    }
+	public void SetString(string name, string value) {
+		SetValue(name, value);
+	}
 
-    private string GetValue(string name)
-    {
-      foreach (XmlElement childNode in element.ChildNodes)
-      {
-        XmlElement xmlElement = childNode["Key"];
-        if (xmlElement != null && xmlElement.InnerText == name)
-          return childNode["Value"]?.InnerText;
-      }
-      return null;
-    }
+	public T GetEnum<T>(string name, T defaultValue) where T : struct, IComparable, IFormattable, IConvertible {
+		var str = GetValue(name);
+		T result;
+		return str == null || !DefaultConverter.TryParseEnum(str, out result) ? defaultValue : result;
+	}
 
-    private void SetValue(string name, string value)
-    {
-      foreach (XmlElement childNode in element.ChildNodes)
-      {
-        XmlElement xmlElement1 = childNode["Key"];
-        if (xmlElement1 != null && xmlElement1.InnerText == name)
-        {
-          XmlElement xmlElement2 = childNode["Value"];
-          if (xmlElement2 != null)
-          {
-            xmlElement2.InnerText = value;
-            return;
-          }
-          childNode.CreateNode("Value", value);
-          return;
-        }
-      }
-      XmlElement node = element.CreateNode("Item");
-      node.CreateNode("Key", name);
-      node.CreateNode("Value", value);
-    }
-  }
+	public void SetEnum<T>(string name, T value) where T : struct, IComparable, IFormattable, IConvertible {
+		SetValue(name, value.ToString());
+	}
+
+	public void Save() {
+		try {
+			element.SaveDocument(path);
+		} catch (Exception ex) {
+			Debug.LogException(ex);
+		}
+	}
+
+	private string GetValue(string name) {
+		foreach (XmlElement childNode in element.ChildNodes) {
+			var xmlElement = childNode["Key"];
+			if (xmlElement != null && xmlElement.InnerText == name)
+				return childNode["Value"]?.InnerText;
+		}
+
+		return null;
+	}
+
+	private void SetValue(string name, string value) {
+		foreach (XmlElement childNode in element.ChildNodes) {
+			var xmlElement1 = childNode["Key"];
+			if (xmlElement1 != null && xmlElement1.InnerText == name) {
+				var xmlElement2 = childNode["Value"];
+				if (xmlElement2 != null) {
+					xmlElement2.InnerText = value;
+					return;
+				}
+
+				childNode.CreateNode("Value", value);
+				return;
+			}
+		}
+
+		var node = element.CreateNode("Item");
+		node.CreateNode("Key", name);
+		node.CreateNode("Value", value);
+	}
 }

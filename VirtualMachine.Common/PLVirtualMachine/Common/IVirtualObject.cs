@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IVirtualObject
-  {
-    bool IsVirtual { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    IContainer VirtualObjectTemplate { get; }
-  }
+public interface IVirtualObject {
+	bool IsVirtual { get; }
+
+	IContainer VirtualObjectTemplate { get; }
 }

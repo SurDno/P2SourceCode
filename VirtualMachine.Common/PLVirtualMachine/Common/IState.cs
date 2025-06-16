@@ -1,29 +1,27 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IState : 
-    IGraphObject,
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable,
-    ILocalContext
-  {
-    List<IEntryPoint> EntryPoints { get; }
+namespace PLVirtualMachine.Common;
 
-    int GetExitPointsCount();
+public interface IState :
+	IGraphObject,
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable,
+	ILocalContext {
+	List<IEntryPoint> EntryPoints { get; }
 
-    bool Initial { get; }
+	int GetExitPointsCount();
 
-    bool IgnoreBlock { get; }
+	bool Initial { get; }
 
-    bool IsProcedure { get; }
+	bool IgnoreBlock { get; }
 
-    bool IsStable { get; }
+	bool IsProcedure { get; }
 
-    EStateType StateType { get; }
-  }
+	bool IsStable { get; }
+
+	EStateType StateType { get; }
 }

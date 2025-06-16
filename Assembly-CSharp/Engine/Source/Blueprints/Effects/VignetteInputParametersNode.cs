@@ -7,22 +7,17 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class VignetteInputParametersNode : FlowControlNode
-  {
-    [Port("Name")]
-    private ValueInput<string> nameInput;
-    [FromLocator]
-    private EffectsService effects;
-    private List<IParameter<IntensityParameter<Color>>> result = new List<IParameter<IntensityParameter<Color>>>();
+namespace Engine.Source.Blueprints.Effects;
 
-    [Port("Value")]
-    private IList<IParameter<IntensityParameter<Color>>> Value()
-    {
-      effects.GetParameters(nameInput.value, result);
-      return result;
-    }
-  }
+[Category("Effects")]
+public class VignetteInputParametersNode : FlowControlNode {
+	[Port("Name")] private ValueInput<string> nameInput;
+	[FromLocator] private EffectsService effects;
+	private List<IParameter<IntensityParameter<Color>>> result = new();
+
+	[Port("Value")]
+	private IList<IParameter<IntensityParameter<Color>>> Value() {
+		effects.GetParameters(nameInput.value, result);
+		return result;
+	}
 }

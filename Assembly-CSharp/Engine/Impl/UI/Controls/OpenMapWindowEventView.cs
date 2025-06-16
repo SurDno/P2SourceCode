@@ -2,14 +2,11 @@
 using Engine.Source.Services;
 using Engine.Source.UI;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class OpenMapWindowEventView : OpenWindowEventView<IMapWindow>
-  {
-    protected override bool PrepareWindow()
-    {
-      InterfaceBlockingService service = ServiceLocator.GetService<InterfaceBlockingService>();
-      return service == null || !service.BlockMapInterface;
-    }
-  }
+namespace Engine.Impl.UI.Controls;
+
+public class OpenMapWindowEventView : OpenWindowEventView<IMapWindow> {
+	protected override bool PrepareWindow() {
+		var service = ServiceLocator.GetService<InterfaceBlockingService>();
+		return service == null || !service.BlockMapInterface;
+	}
 }

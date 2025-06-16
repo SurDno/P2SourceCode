@@ -1,9 +1,12 @@
 ﻿using Engine.Common.Types;
 using UnityEngine;
 
-public static class EngineExtension
-{
-  public static Vector2 To(this Position vector) => new Vector2(vector.X, vector.Y);
+public static class EngineExtension {
+	public static Vector2 To(this Position vector) {
+		return new Vector2(vector.X, vector.Y);
+	}
 
-  public static Position To(this Vector2 vector) => new Position(vector.x, vector.y);
+	public static Position To(this Vector2 vector) {
+		return new Position(vector.x, vector.y);
+	}
 }

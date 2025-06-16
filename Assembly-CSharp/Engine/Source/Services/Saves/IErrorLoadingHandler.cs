@@ -1,15 +1,13 @@
 ﻿using System;
 
-namespace Engine.Source.Services.Saves
-{
-  public interface IErrorLoadingHandler
-  {
-    string ErrorLoading { get; }
+namespace Engine.Source.Services.Saves;
 
-    bool HasErrorLoading { get; }
+public interface IErrorLoadingHandler {
+	string ErrorLoading { get; }
 
-    void LogError(string text);
+	bool HasErrorLoading { get; }
 
-    void LogException(Exception e);
-  }
+	void LogError(string text);
+
+	void LogException(Exception e);
 }

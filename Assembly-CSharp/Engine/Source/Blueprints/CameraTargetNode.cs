@@ -5,23 +5,19 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class CameraTargetNode : FlowControlNode
-  {
-    private ValueInput<GameObject> cameraTargetValue;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        ServiceLocator.GetService<CameraService>().GameObjectTarget = cameraTargetValue.value;
-        output.Call();
-      });
-      cameraTargetValue = AddValueInput<GameObject>("Target");
-    }
-  }
+[Category("Engine")]
+public class CameraTargetNode : FlowControlNode {
+	private ValueInput<GameObject> cameraTargetValue;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			ServiceLocator.GetService<CameraService>().GameObjectTarget = cameraTargetValue.value;
+			output.Call();
+		});
+		cameraTargetValue = AddValueInput<GameObject>("Target");
+	}
 }

@@ -1,14 +1,13 @@
-﻿public interface ISettingEntity : ISelectable
-{
-  bool Interactable { get; set; }
+﻿public interface ISettingEntity : ISelectable {
+	bool Interactable { get; set; }
 
-  void OnSelect();
+	void OnSelect();
 
-  void OnDeSelect();
+	void OnDeSelect();
 
-  void IncrementValue();
+	void IncrementValue();
 
-  void DecrementValue();
+	void DecrementValue();
 
-  bool IsActive();
+	bool IsActive();
 }

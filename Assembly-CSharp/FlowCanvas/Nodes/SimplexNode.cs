@@ -3,76 +3,53 @@ using System.Reflection;
 using ParadoxNotion;
 using ParadoxNotion.Design;
 
-namespace FlowCanvas.Nodes
-{
-  [SpoofAOT]
-  public abstract class SimplexNode
-  {
-    [NonSerialized]
-    private string _name;
-    [NonSerialized]
-    private string _description;
+namespace FlowCanvas.Nodes;
 
-    public virtual string name
-    {
-      get
-      {
-        if (string.IsNullOrEmpty(_name))
-        {
-          NameAttribute attribute = GetType().RTGetAttribute<NameAttribute>(false);
-          _name = attribute != null ? attribute.name : GetType().FriendlyName().SplitCamelCase();
-        }
-        return _name;
-      }
-    }
+[SpoofAOT]
+public abstract class SimplexNode {
+	[NonSerialized] private string _name;
+	[NonSerialized] private string _description;
 
-    public virtual string description
-    {
-      get
-      {
-        if (string.IsNullOrEmpty(_description))
-        {
-          DescriptionAttribute attribute = GetType().RTGetAttribute<DescriptionAttribute>(false);
-          _description = attribute != null ? attribute.description : "No Description";
-        }
-        return _description;
-      }
-    }
+	public virtual string name {
+		get {
+			if (string.IsNullOrEmpty(_name)) {
+				var attribute = GetType().RTGetAttribute<NameAttribute>(false);
+				_name = attribute != null ? attribute.name : GetType().FriendlyName().SplitCamelCase();
+			}
 
-    protected ParameterInfo[] parameters
-    {
-      get
-      {
-        return GetType().GetMethod("Invoke", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetParameters();
-      }
-    }
+			return _name;
+		}
+	}
 
-    public void RegisterPorts(FlowNode node)
-    {
-      OnRegisterPorts(node);
-      foreach (PropertyInfo property in GetType().GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
-      {
-        if (property.CanRead && !property.GetGetMethod().IsVirtual)
-          node.AddPropertyOutput(property, this);
-      }
-    }
+	public virtual string description {
+		get {
+			if (string.IsNullOrEmpty(_description)) {
+				var attribute = GetType().RTGetAttribute<DescriptionAttribute>(false);
+				_description = attribute != null ? attribute.description : "No Description";
+			}
 
-    protected abstract void OnRegisterPorts(FlowNode node);
+			return _description;
+		}
+	}
 
-    public virtual void OnGraphStarted()
-    {
-    }
+	protected ParameterInfo[] parameters => GetType()
+		.GetMethod("Invoke", BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public).GetParameters();
 
-    public virtual void OnGraphPaused()
-    {
-    }
+	public void RegisterPorts(FlowNode node) {
+		OnRegisterPorts(node);
+		foreach (var property in GetType()
+			         .GetProperties(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public))
+			if (property.CanRead && !property.GetGetMethod().IsVirtual)
+				node.AddPropertyOutput(property, this);
+	}
 
-    public virtual void OnGraphUnpaused()
-    {
-    }
+	protected abstract void OnRegisterPorts(FlowNode node);
 
-    public virtual void OnGraphStoped()
-    {
-    }
-  }
+	public virtual void OnGraphStarted() { }
+
+	public virtual void OnGraphPaused() { }
+
+	public virtual void OnGraphUnpaused() { }
+
+	public virtual void OnGraphStoped() { }
 }

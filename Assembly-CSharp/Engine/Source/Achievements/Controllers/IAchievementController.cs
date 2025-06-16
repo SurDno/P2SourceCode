@@ -1,9 +1,7 @@
-﻿namespace Engine.Source.Achievements.Controllers
-{
-  public interface IAchievementController
-  {
-    void Initialise(string id);
+﻿namespace Engine.Source.Achievements.Controllers;
 
-    void Terminate();
-  }
+public interface IAchievementController {
+	void Initialise(string id);
+
+	void Terminate();
 }

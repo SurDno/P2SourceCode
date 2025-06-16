@@ -3,100 +3,90 @@ using BehaviorDesigner.Runtime.Tasks;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-namespace BehaviorDesigner.Runtime
-{
-  public class ExternalBehaviorTree : ScriptableObject, IBehaviorTree
-  {
-    [SerializeField]
-    [FormerlySerializedAs("mBehaviorSource")]
-    private BehaviorSource behaviorSource;
+namespace BehaviorDesigner.Runtime;
 
-    public BehaviorSource BehaviorSource
-    {
-      get => behaviorSource;
-      set => behaviorSource = value;
-    }
+public class ExternalBehaviorTree : ScriptableObject, IBehaviorTree {
+	[SerializeField] [FormerlySerializedAs("mBehaviorSource")]
+	private BehaviorSource behaviorSource;
 
-    public Object GetObject() => this;
+	public BehaviorSource BehaviorSource {
+		get => behaviorSource;
+		set => behaviorSource = value;
+	}
 
-    public string GetOwnerName() => name;
+	public Object GetObject() {
+		return this;
+	}
 
-    public SharedVariable GetVariable(string name)
-    {
-      CheckForSerialization();
-      return behaviorSource.GetVariable(name);
-    }
+	public string GetOwnerName() {
+		return name;
+	}
 
-    public void SetVariable(string name, SharedVariable item)
-    {
-      CheckForSerialization();
-      behaviorSource.SetVariable(name, item);
-    }
+	public SharedVariable GetVariable(string name) {
+		CheckForSerialization();
+		return behaviorSource.GetVariable(name);
+	}
 
-    public void SetVariableValue(string name, object value)
-    {
-      GetVariable(name)?.SetValue(value);
-    }
+	public void SetVariable(string name, SharedVariable item) {
+		CheckForSerialization();
+		behaviorSource.SetVariable(name, item);
+	}
 
-    private T FindTask<T>(Task task) where T : Task
-    {
-      if (task.GetType().Equals(typeof (T)))
-        return (T) task;
-      if (task is ParentTask parentTask && parentTask.Children != null)
-      {
-        for (int index = 0; index < parentTask.Children.Count; ++index)
-        {
-          T obj = default (T);
-          T task1;
-          if ((task1 = FindTask<T>(parentTask.Children[index])) != null)
-            return task1;
-        }
-      }
-      return default (T);
-    }
+	public void SetVariableValue(string name, object value) {
+		GetVariable(name)?.SetValue(value);
+	}
 
-    private void FindTasks<T>(Task task, ref List<T> taskList) where T : Task
-    {
-      if (typeof (T).IsAssignableFrom(task.GetType()))
-        taskList.Add((T) task);
-      if (!(task is ParentTask parentTask) || parentTask.Children == null)
-        return;
-      for (int index = 0; index < parentTask.Children.Count; ++index)
-        FindTasks(parentTask.Children[index], ref taskList);
-    }
+	private T FindTask<T>(Task task) where T : Task {
+		if (task.GetType().Equals(typeof(T)))
+			return (T)task;
+		if (task is ParentTask parentTask && parentTask.Children != null)
+			for (var index = 0; index < parentTask.Children.Count; ++index) {
+				var obj = default(T);
+				T task1;
+				if ((task1 = FindTask<T>(parentTask.Children[index])) != null)
+					return task1;
+			}
 
-    private void CheckForSerialization()
-    {
-      behaviorSource.Owner = this;
-      behaviorSource.CheckForSerialization(false, null, GetOwnerName());
-    }
+		return default;
+	}
 
-    private Task FindTaskWithName(string taskName, Task task)
-    {
-      if (task.FriendlyName.Equals(taskName))
-        return task;
-      if (task is ParentTask parentTask && parentTask.Children != null)
-      {
-        for (int index = 0; index < parentTask.Children.Count; ++index)
-        {
-          Task taskWithName;
-          if ((taskWithName = FindTaskWithName(taskName, parentTask.Children[index])) != null)
-            return taskWithName;
-        }
-      }
-      return null;
-    }
+	private void FindTasks<T>(Task task, ref List<T> taskList) where T : Task {
+		if (typeof(T).IsAssignableFrom(task.GetType()))
+			taskList.Add((T)task);
+		if (!(task is ParentTask parentTask) || parentTask.Children == null)
+			return;
+		for (var index = 0; index < parentTask.Children.Count; ++index)
+			FindTasks(parentTask.Children[index], ref taskList);
+	}
 
-    private void FindTasksWithName(string taskName, Task task, ref List<Task> taskList)
-    {
-      if (task.FriendlyName.Equals(taskName))
-        taskList.Add(task);
-      if (!(task is ParentTask parentTask) || parentTask.Children == null)
-        return;
-      for (int index = 0; index < parentTask.Children.Count; ++index)
-        FindTasksWithName(taskName, parentTask.Children[index], ref taskList);
-    }
+	private void CheckForSerialization() {
+		behaviorSource.Owner = this;
+		behaviorSource.CheckForSerialization(false, null, GetOwnerName());
+	}
 
-    int IBehaviorTree.GetInstanceID() => GetInstanceID();
-  }
+	private Task FindTaskWithName(string taskName, Task task) {
+		if (task.FriendlyName.Equals(taskName))
+			return task;
+		if (task is ParentTask parentTask && parentTask.Children != null)
+			for (var index = 0; index < parentTask.Children.Count; ++index) {
+				Task taskWithName;
+				if ((taskWithName = FindTaskWithName(taskName, parentTask.Children[index])) != null)
+					return taskWithName;
+			}
+
+		return null;
+	}
+
+	private void FindTasksWithName(string taskName, Task task, ref List<Task> taskList) {
+		if (task.FriendlyName.Equals(taskName))
+			taskList.Add(task);
+		if (!(task is ParentTask parentTask) || parentTask.Children == null)
+			return;
+		for (var index = 0; index < parentTask.Children.Count; ++index)
+			FindTasksWithName(taskName, parentTask.Children[index], ref taskList);
+	}
+
+	int IBehaviorTree.GetInstanceID() {
+		return GetInstanceID();
+	}
 }

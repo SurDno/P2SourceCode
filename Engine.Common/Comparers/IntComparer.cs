@@ -1,13 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace Engine.Common.Comparers
-{
-  public class IntComparer : IEqualityComparer<int>
-  {
-    public static readonly IntComparer Instance = new IntComparer();
+namespace Engine.Common.Comparers;
 
-    public bool Equals(int x, int y) => x == y;
+public class IntComparer : IEqualityComparer<int> {
+	public static readonly IntComparer Instance = new();
 
-    public int GetHashCode(int obj) => obj;
-  }
+	public bool Equals(int x, int y) {
+		return x == y;
+	}
+
+	public int GetHashCode(int obj) {
+		return obj;
+	}
 }

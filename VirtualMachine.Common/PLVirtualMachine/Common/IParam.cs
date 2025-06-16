@@ -1,11 +1,9 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IParam : IVariable, INamed
-  {
-    object Value { get; set; }
+﻿namespace PLVirtualMachine.Common;
 
-    bool Implicit { get; }
+public interface IParam : IVariable, INamed {
+	object Value { get; set; }
 
-    IGameObjectContext OwnerContext { get; }
-  }
+	bool Implicit { get; }
+
+	IGameObjectContext OwnerContext { get; }
 }

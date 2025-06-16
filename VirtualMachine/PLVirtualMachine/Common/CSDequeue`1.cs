@@ -2,69 +2,71 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace PLVirtualMachine.Common
-{
-  public class CSDequeue<T>
-  {
-    private LinkedList<T> linkedListData = new LinkedList<T>();
+namespace PLVirtualMachine.Common;
 
-    public CSDequeue()
-    {
-    }
+public class CSDequeue<T> {
+	private LinkedList<T> linkedListData = new();
 
-    public CSDequeue(List<T> list)
-    {
-      linkedListData = new LinkedList<T>(list);
-    }
+	public CSDequeue() { }
 
-    public void PushBack(T obj) => linkedListData.AddLast(obj);
+	public CSDequeue(List<T> list) {
+		linkedListData = new LinkedList<T>(list);
+	}
 
-    public T PopBack()
-    {
-      T obj = linkedListData.Last.Value;
-      linkedListData.RemoveLast();
-      return obj;
-    }
+	public void PushBack(T obj) {
+		linkedListData.AddLast(obj);
+	}
 
-    public T GetBack() => linkedListData.Last.Value;
+	public T PopBack() {
+		var obj = linkedListData.Last.Value;
+		linkedListData.RemoveLast();
+		return obj;
+	}
 
-    public void MergeBack(CSDequeue<T> other)
-    {
-      linkedListData = new LinkedList<T>(linkedListData.Concat(other.linkedListData));
-    }
+	public T GetBack() {
+		return linkedListData.Last.Value;
+	}
 
-    public void PushFront(T obj) => linkedListData.AddFirst(obj);
+	public void MergeBack(CSDequeue<T> other) {
+		linkedListData = new LinkedList<T>(linkedListData.Concat(other.linkedListData));
+	}
 
-    public T PopFront()
-    {
-      if (linkedListData.First == null)
-        return default (T);
-      T obj = linkedListData.First.Value;
-      linkedListData.RemoveFirst();
-      return obj;
-    }
+	public void PushFront(T obj) {
+		linkedListData.AddFirst(obj);
+	}
 
-    public T GetFront() => linkedListData.First.Value;
+	public T PopFront() {
+		if (linkedListData.First == null)
+			return default;
+		var obj = linkedListData.First.Value;
+		linkedListData.RemoveFirst();
+		return obj;
+	}
 
-    public void MergeFront(CSDequeue<T> other)
-    {
-      LinkedList<T> linkedListData = other.linkedListData;
-      try
-      {
-        this.linkedListData = new LinkedList<T>(linkedListData.Concat(this.linkedListData));
-      }
-      catch (Exception ex)
-      {
-        ex.ToString();
-      }
-    }
+	public T GetFront() {
+		return linkedListData.First.Value;
+	}
 
-    public void Clear() => linkedListData.Clear();
+	public void MergeFront(CSDequeue<T> other) {
+		var linkedListData = other.linkedListData;
+		try {
+			this.linkedListData = new LinkedList<T>(linkedListData.Concat(this.linkedListData));
+		} catch (Exception ex) {
+			ex.ToString();
+		}
+	}
 
-    public int Count() => linkedListData.Count;
+	public void Clear() {
+		linkedListData.Clear();
+	}
 
-    public bool Empty() => linkedListData.Count == 0;
+	public int Count() {
+		return linkedListData.Count;
+	}
 
-    public List<T> ToList => linkedListData.ToList();
-  }
+	public bool Empty() {
+		return linkedListData.Count == 0;
+	}
+
+	public List<T> ToList => linkedListData.ToList();
 }

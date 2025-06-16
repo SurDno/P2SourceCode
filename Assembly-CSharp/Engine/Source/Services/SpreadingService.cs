@@ -19,133 +19,121 @@ using Engine.Source.Services.Saves;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (SpreadingService), typeof (ISpreadingService))]
-  [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class SpreadingService : ISpreadingService, ISavesController
-  {
-    [StateSaveProxy(MemberEnum.CustomListReference)]
-    [StateLoadProxy(MemberEnum.CustomListReference)]
-    [Inspected]
-    protected List<SpreadingComponent> spreadingComponents = new List<SpreadingComponent>();
-    [StateSaveProxy(MemberEnum.CustomListReference)]
-    [StateLoadProxy(MemberEnum.CustomListReference)]
-    [Inspected]
-    protected List<IRegionComponent> regionComponents = new List<IRegionComponent>();
+namespace Engine.Source.Services;
 
-    public event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoadedOnce;
+[GameService(typeof(SpreadingService), typeof(ISpreadingService))]
+[GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
+public class SpreadingService : ISpreadingService, ISavesController {
+	[StateSaveProxy(MemberEnum.CustomListReference)] [StateLoadProxy(MemberEnum.CustomListReference)] [Inspected]
+	protected List<SpreadingComponent> spreadingComponents = new();
 
-    public event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoaded;
+	[StateSaveProxy(MemberEnum.CustomListReference)] [StateLoadProxy(MemberEnum.CustomListReference)] [Inspected]
+	protected List<IRegionComponent> regionComponents = new();
 
-    public event Action<IEntity> OnRegionLoadedOnce;
+	public event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoadedOnce;
 
-    public event Action<IEntity> OnRegionLoaded;
+	public event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoaded;
 
-    public void Reset() => Clear();
+	public event Action<IEntity> OnRegionLoadedOnce;
 
-    public void AddRegion(IRegionComponent regionComponent)
-    {
-      ILocationComponent component = regionComponent.Owner.GetComponent<ILocationComponent>();
-      if (component == null)
-        return;
-      component.OnHibernationChanged += RegionComponent_Location_OnHibernationChanged;
-    }
+	public event Action<IEntity> OnRegionLoaded;
 
-    public void RemoveRegion(IRegionComponent regionComponent)
-    {
-      ILocationComponent component = regionComponent.Owner.GetComponent<ILocationComponent>();
-      if (component == null)
-        return;
-      component.OnHibernationChanged -= RegionComponent_Location_OnHibernationChanged;
-    }
+	public void Reset() {
+		Clear();
+	}
 
-    private void RegionComponent_Location_OnHibernationChanged(ILocationComponent sender)
-    {
-      if (sender.IsHibernation)
-        return;
-      IRegionComponent component = sender.GetComponent<IRegionComponent>();
-      Action<IEntity> onRegionLoaded = OnRegionLoaded;
-      if (onRegionLoaded != null)
-        onRegionLoaded(component.Owner);
-      if (regionComponents.Contains(component))
-        return;
-      regionComponents.Add(component);
-      Action<IEntity> regionLoadedOnce = OnRegionLoadedOnce;
-      if (regionLoadedOnce != null)
-        regionLoadedOnce(component.Owner);
-      Debug.Log(ObjectInfoUtility.GetStream().Append("Spreading items, region : ").GetInfo(component.Owner));
-    }
+	public void AddRegion(IRegionComponent regionComponent) {
+		var component = regionComponent.Owner.GetComponent<ILocationComponent>();
+		if (component == null)
+			return;
+		component.OnHibernationChanged += RegionComponent_Location_OnHibernationChanged;
+	}
 
-    public void AddSpreading(SpreadingComponent spreadingComponent)
-    {
-      ILocationItemComponent component = spreadingComponent.GetComponent<ILocationItemComponent>();
-      if (component == null)
-        return;
-      component.OnHibernationChanged += SpreadingComponent_LocationItem_OnHibernationChanged;
-    }
+	public void RemoveRegion(IRegionComponent regionComponent) {
+		var component = regionComponent.Owner.GetComponent<ILocationComponent>();
+		if (component == null)
+			return;
+		component.OnHibernationChanged -= RegionComponent_Location_OnHibernationChanged;
+	}
 
-    public void RemoveSpreading(SpreadingComponent spreadingComponent)
-    {
-      ILocationItemComponent component = spreadingComponent.GetComponent<ILocationItemComponent>();
-      if (component == null)
-        return;
-      component.OnHibernationChanged -= SpreadingComponent_LocationItem_OnHibernationChanged;
-    }
+	private void RegionComponent_Location_OnHibernationChanged(ILocationComponent sender) {
+		if (sender.IsHibernation)
+			return;
+		var component = sender.GetComponent<IRegionComponent>();
+		var onRegionLoaded = OnRegionLoaded;
+		if (onRegionLoaded != null)
+			onRegionLoaded(component.Owner);
+		if (regionComponents.Contains(component))
+			return;
+		regionComponents.Add(component);
+		var regionLoadedOnce = OnRegionLoadedOnce;
+		if (regionLoadedOnce != null)
+			regionLoadedOnce(component.Owner);
+		Debug.Log(ObjectInfoUtility.GetStream().Append("Spreading items, region : ").GetInfo(component.Owner));
+	}
 
-    private void SpreadingComponent_LocationItem_OnHibernationChanged(ILocationItemComponent sender)
-    {
-      if (sender.IsHibernation)
-        return;
-      SpreadingComponent component = sender.GetComponent<SpreadingComponent>();
-      IEntity owner = LocationItemUtility.FindParentComponent<IRegionComponent>(component.Owner)?.Owner;
-      IEntity parent = ((IEntityHierarchy) component.Owner).Parent;
-      IBuildingComponent parentComponent = LocationItemUtility.FindParentComponent<IBuildingComponent>(component.Owner);
-      BuildingEnum buildingEnum = parentComponent != null ? parentComponent.Building : BuildingEnum.None;
-      DiseasedStateEnum diseasedState = component.DiseasedState;
-      Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> onFurnitureLoaded = OnFurnitureLoaded;
-      if (onFurnitureLoaded != null)
-        onFurnitureLoaded(parent, owner, buildingEnum, diseasedState);
-      if (spreadingComponents.Contains(component))
-        return;
-      spreadingComponents.Add(component);
-      Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> furnitureLoadedOnce = OnFurnitureLoadedOnce;
-      if (furnitureLoadedOnce != null)
-        furnitureLoadedOnce(parent, owner, buildingEnum, diseasedState);
-      Debug.Log(ObjectInfoUtility.GetStream().Append("Spreading items, entity : ").GetInfo(parent).Append(" , region : ").Append(owner.Name).Append(" ,  building : ").Append(buildingEnum).Append(" , diseased : ").Append(diseasedState));
-    }
+	public void AddSpreading(SpreadingComponent spreadingComponent) {
+		var component = spreadingComponent.GetComponent<ILocationItemComponent>();
+		if (component == null)
+			return;
+		component.OnHibernationChanged += SpreadingComponent_LocationItem_OnHibernationChanged;
+	}
 
-    public IEnumerator Load(IErrorLoadingHandler errorHandler)
-    {
-      yield break;
-    }
+	public void RemoveSpreading(SpreadingComponent spreadingComponent) {
+		var component = spreadingComponent.GetComponent<ILocationItemComponent>();
+		if (component == null)
+			return;
+		component.OnHibernationChanged -= SpreadingComponent_LocationItem_OnHibernationChanged;
+	}
 
-    public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
-    {
-      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
-      if (node == null)
-      {
-        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
-      }
-      else
-      {
-        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
-        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
-        yield break;
-      }
-    }
+	private void SpreadingComponent_LocationItem_OnHibernationChanged(ILocationItemComponent sender) {
+		if (sender.IsHibernation)
+			return;
+		var component = sender.GetComponent<SpreadingComponent>();
+		var owner = LocationItemUtility.FindParentComponent<IRegionComponent>(component.Owner)?.Owner;
+		var parent = ((IEntityHierarchy)component.Owner).Parent;
+		var parentComponent = LocationItemUtility.FindParentComponent<IBuildingComponent>(component.Owner);
+		var buildingEnum = parentComponent != null ? parentComponent.Building : BuildingEnum.None;
+		var diseasedState = component.DiseasedState;
+		var onFurnitureLoaded = OnFurnitureLoaded;
+		if (onFurnitureLoaded != null)
+			onFurnitureLoaded(parent, owner, buildingEnum, diseasedState);
+		if (spreadingComponents.Contains(component))
+			return;
+		spreadingComponents.Add(component);
+		var furnitureLoadedOnce = OnFurnitureLoadedOnce;
+		if (furnitureLoadedOnce != null)
+			furnitureLoadedOnce(parent, owner, buildingEnum, diseasedState);
+		Debug.Log(ObjectInfoUtility.GetStream().Append("Spreading items, entity : ").GetInfo(parent)
+			.Append(" , region : ").Append(owner.Name).Append(" ,  building : ").Append(buildingEnum)
+			.Append(" , diseased : ").Append(diseasedState));
+	}
 
-    public void Unload() => Clear();
+	public IEnumerator Load(IErrorLoadingHandler errorHandler) {
+		yield break;
+	}
 
-    public void Save(IDataWriter writer, string context)
-    {
-      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
-    }
+	public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler) {
+		var node = element[TypeUtility.GetTypeName(GetType())];
+		if (node == null)
+			errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
+		else {
+			var reader = new XmlNodeDataReader(node, context);
+			((ISerializeStateLoad)this).StateLoad(reader, GetType());
+			yield break;
+		}
+	}
 
-    private void Clear()
-    {
-      spreadingComponents.Clear();
-      regionComponents.Clear();
-    }
-  }
+	public void Unload() {
+		Clear();
+	}
+
+	public void Save(IDataWriter writer, string context) {
+		DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
+	}
+
+	private void Clear() {
+		spreadingComponents.Clear();
+		regionComponents.Clear();
+	}
 }

@@ -6,33 +6,30 @@ using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (RemoveEntityEffect))]
-  public class RemoveEntityEffect_Generated : 
-    RemoveEntityEffect,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      RemoveEntityEffect_Generated instance = Activator.CreateInstance<RemoveEntityEffect_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2) => ((RemoveEntityEffect_Generated) target2).queue = queue;
+[FactoryProxy(typeof(RemoveEntityEffect))]
+public class RemoveEntityEffect_Generated :
+	RemoveEntityEffect,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<RemoveEntityEffect_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
-    }
+	public void CopyTo(object target2) {
+		((RemoveEntityEffect_Generated)target2).queue = queue;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+	}
 }

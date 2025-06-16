@@ -8,132 +8,109 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (ILocationComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class LocationComponent : EngineComponent, ILocationComponent, IComponent
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected LocationType locationType;
-    [Inspected]
-    private HashSet<ILocationComponent> childs = new HashSet<ILocationComponent>();
-    [Inspected]
-    private LocationComponent currentLocation;
-    [Inspected]
-    private LocationComponent logicLocation;
-    [Inspected]
-    private ILocationComponent parent;
-    private IEntity player;
-    private bool isHibernation = true;
+namespace Engine.Source.Components;
 
-    [Inspected]
-    public bool IsIndoor => locationType == LocationType.Indoor;
+[Factory(typeof(ILocationComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class LocationComponent : EngineComponent, ILocationComponent, IComponent {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected LocationType locationType;
 
-    [Inspected]
-    public LocationType LocationType => locationType;
+	[Inspected] private HashSet<ILocationComponent> childs = new();
+	[Inspected] private LocationComponent currentLocation;
+	[Inspected] private LocationComponent logicLocation;
+	[Inspected] private ILocationComponent parent;
+	private IEntity player;
+	private bool isHibernation = true;
 
-    [Inspected(Mutable = true)]
-    public bool IsHibernation
-    {
-      get => isHibernation;
-      set
-      {
-        if (isHibernation == value)
-          return;
-        isHibernation = value;
-        Action<ILocationComponent> hibernationChanged = OnHibernationChanged;
-        if (hibernationChanged == null)
-          return;
-        hibernationChanged(this);
-      }
-    }
+	[Inspected] public bool IsIndoor => locationType == LocationType.Indoor;
 
-    [Inspected]
-    public IEntity Player
-    {
-      get => player;
-      set
-      {
-        player = value;
-        Action onPlayerChanged = OnPlayerChanged;
-        if (onPlayerChanged == null)
-          return;
-        onPlayerChanged();
-      }
-    }
+	[Inspected] public LocationType LocationType => locationType;
 
-    public IEnumerable<ILocationComponent> Childs => childs;
+	[Inspected(Mutable = true)]
+	public bool IsHibernation {
+		get => isHibernation;
+		set {
+			if (isHibernation == value)
+				return;
+			isHibernation = value;
+			var hibernationChanged = OnHibernationChanged;
+			if (hibernationChanged == null)
+				return;
+			hibernationChanged(this);
+		}
+	}
 
-    public ILocationComponent Parent => parent;
+	[Inspected]
+	public IEntity Player {
+		get => player;
+		set {
+			player = value;
+			var onPlayerChanged = OnPlayerChanged;
+			if (onPlayerChanged == null)
+				return;
+			onPlayerChanged();
+		}
+	}
 
-    public ILocationComponent CurrentLocation
-    {
-      get => currentLocation;
-      set
-      {
-        if (currentLocation != null)
-        {
-          currentLocation.RemoveChild(this);
-          currentLocation = null;
-        }
-        currentLocation = (LocationComponent) value;
-        if (currentLocation != null)
-          currentLocation.AddChild(this);
-        logicLocation = GetLogicLocation();
-      }
-    }
+	public IEnumerable<ILocationComponent> Childs => childs;
 
-    public ILocationComponent LogicLocation => logicLocation;
+	public ILocationComponent Parent => parent;
 
-    private LocationComponent GetLogicLocation()
-    {
-      LocationComponent logicLocation = this;
-      while (true)
-      {
-        if (logicLocation != null)
-        {
-          if (logicLocation.LocationType == 0)
-            logicLocation = (LocationComponent) logicLocation.Parent;
-          else
-            goto label_3;
-        }
-        else
-          break;
-      }
-      return null;
-label_3:
-      return logicLocation;
-    }
+	public ILocationComponent CurrentLocation {
+		get => currentLocation;
+		set {
+			if (currentLocation != null) {
+				currentLocation.RemoveChild(this);
+				currentLocation = null;
+			}
 
-    public event Action<ILocationComponent> OnHibernationChanged;
+			currentLocation = (LocationComponent)value;
+			if (currentLocation != null)
+				currentLocation.AddChild(this);
+			logicLocation = GetLogicLocation();
+		}
+	}
 
-    public event Action OnPlayerChanged;
+	public ILocationComponent LogicLocation => logicLocation;
 
-    public void AddChild(ILocationComponent child)
-    {
-      childs.Add(child);
-      ((LocationComponent) child).parent = this;
-    }
+	private LocationComponent GetLogicLocation() {
+		var logicLocation = this;
+		while (true)
+			if (logicLocation != null) {
+				if (logicLocation.LocationType == 0)
+					logicLocation = (LocationComponent)logicLocation.Parent;
+				else
+					goto label_3;
+			} else
+				break;
 
-    public void RemoveChild(ILocationComponent child)
-    {
-      childs.Remove(child);
-      ((LocationComponent) child).parent = null;
-    }
+		return null;
+		label_3:
+		return logicLocation;
+	}
 
-    public override void OnAdded()
-    {
-      base.OnAdded();
-      IEntity sceneEntity = ((IEntityHierarchy) Owner).SceneEntity;
-      if (sceneEntity == null)
-        return;
-      LocationComponent component = sceneEntity.GetComponent<LocationComponent>();
-      if (component != null)
-        CurrentLocation = component;
-    }
-  }
+	public event Action<ILocationComponent> OnHibernationChanged;
+
+	public event Action OnPlayerChanged;
+
+	public void AddChild(ILocationComponent child) {
+		childs.Add(child);
+		((LocationComponent)child).parent = this;
+	}
+
+	public void RemoveChild(ILocationComponent child) {
+		childs.Remove(child);
+		((LocationComponent)child).parent = null;
+	}
+
+	public override void OnAdded() {
+		base.OnAdded();
+		var sceneEntity = ((IEntityHierarchy)Owner).SceneEntity;
+		if (sceneEntity == null)
+			return;
+		var component = sceneEntity.GetComponent<LocationComponent>();
+		if (component != null)
+			CurrentLocation = component;
+	}
 }

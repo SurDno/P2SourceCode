@@ -1,22 +1,20 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface ILogicMap : 
-    IGraph,
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable
-  {
-    List<IGraphObject> Nodes { get; }
+namespace PLVirtualMachine.Common;
 
-    ELogicMapType LogicMapType { get; }
+public interface ILogicMap :
+	IGraph,
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable {
+	List<IGraphObject> Nodes { get; }
 
-    IGameMode GameTimeContext { get; }
+	ELogicMapType LogicMapType { get; }
 
-    IGameString Title { get; }
-  }
+	IGameMode GameTimeContext { get; }
+
+	IGameString Title { get; }
 }

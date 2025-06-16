@@ -2,31 +2,26 @@
 using Cofe.Serializations.Converters;
 using UnityEngine;
 
-namespace Engine.Source.Connections
-{
-  [Serializable]
-  public struct DateTimeField : ISerializationCallbackReceiver
-  {
-    [SerializeField]
-    private string data;
+namespace Engine.Source.Connections;
 
-    public DateTime Value { get; set; }
+[Serializable]
+public struct DateTimeField : ISerializationCallbackReceiver {
+	[SerializeField] private string data;
 
-    public void OnAfterDeserialize()
-    {
-      DateTime result;
-      if (data != null && DefaultConverter.TryParseDateTime(data, out result))
-        Value = result;
-      else
-        Value = DateTime.MinValue;
-    }
+	public DateTime Value { get; set; }
 
-    public void OnBeforeSerialize()
-    {
-      if (Value != DateTime.MinValue)
-        data = DefaultConverter.ToString(Value);
-      else
-        data = "";
-    }
-  }
+	public void OnAfterDeserialize() {
+		DateTime result;
+		if (data != null && DefaultConverter.TryParseDateTime(data, out result))
+			Value = result;
+		else
+			Value = DateTime.MinValue;
+	}
+
+	public void OnBeforeSerialize() {
+		if (Value != DateTime.MinValue)
+			data = DefaultConverter.ToString(Value);
+		else
+			data = "";
+	}
 }

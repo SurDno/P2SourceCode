@@ -1,25 +1,21 @@
 ﻿using Engine.Common.Components.AttackerPlayer;
 
-namespace Engine.Behaviours.Engines.Controllers
-{
-  public class PlayerHandsWeaponController : PlayerUppercotWeaponControllerBase
-  {
-    protected override string Prefix => "Hands";
+namespace Engine.Behaviours.Engines.Controllers;
 
-    protected override void ApplyVisibility()
-    {
-      pivot.HandsGeometryVisible = geometryVisible;
-      ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
-    }
+public class PlayerHandsWeaponController : PlayerUppercotWeaponControllerBase {
+	protected override string Prefix => "Hands";
 
-    protected override void ApplyLayerWeight(float layerWeight)
-    {
-      animatorState.HandsLayerWeight = layerWeight;
-      animatorState.ReactionLayerWeight = layerWeight;
-    }
+	protected override void ApplyVisibility() {
+		pivot.HandsGeometryVisible = geometryVisible;
+		ApplyLayerWeight(geometryVisible ? 1f : 0.0f);
+	}
 
-    protected override WeaponKind WeaponKind => WeaponKind.Hands;
+	protected override void ApplyLayerWeight(float layerWeight) {
+		animatorState.HandsLayerWeight = layerWeight;
+		animatorState.ReactionLayerWeight = layerWeight;
+	}
 
-    protected override bool SupportsLowStaminaPunch => true;
-  }
+	protected override WeaponKind WeaponKind => WeaponKind.Hands;
+
+	protected override bool SupportsLowStaminaPunch => true;
 }

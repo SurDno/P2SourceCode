@@ -4,15 +4,12 @@ using UnityEngine;
 using UnityEngine.Serialization;
 
 [Serializable]
-public class POIAnimationSetupBase
-{
-  [SerializeField]
-  public AnimationClip EnterAnimationClip;
-  [SerializeField]
-  public AnimationClip ExitAnimationClip;
-  [SerializeField]
-  [FormerlySerializedAs("Elements")]
-  public List<POIAnimationSetupElementBase> ElementsOld = new List<POIAnimationSetupElementBase>();
+public class POIAnimationSetupBase {
+	[SerializeField] public AnimationClip EnterAnimationClip;
+	[SerializeField] public AnimationClip ExitAnimationClip;
 
-  public virtual List<POIAnimationSetupElementBase> Elements { get; }
+	[SerializeField] [FormerlySerializedAs("Elements")]
+	public List<POIAnimationSetupElementBase> ElementsOld = new();
+
+	public virtual List<POIAnimationSetupElementBase> Elements { get; }
 }

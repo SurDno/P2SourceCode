@@ -4,191 +4,163 @@ using Cofe.Loggers;
 using PLVirtualMachine.Common;
 using PLVirtualMachine.GameLogic;
 
-namespace PLVirtualMachine.Objects
-{
-  public class VMWorldHierarchyObject : 
-    IWorldHierarchyObject,
-    ILogicObject,
-    IContext,
-    INamed,
-    IWorldObject,
-    IEngineTemplated,
-    IHierarchyObject,
-    IEngineInstanced
-  {
-    private VMObjRef selfRef;
-    private Guid engineInstanceGuid = Guid.Empty;
-    private HierarchyGuid hierarchyGuid;
-    private IWorldBlueprint template;
-    private IWorldHierarchyObject parent;
-    private List<IHierarchyObject> hierarchySimpleChildsList;
-    private List<IWorldHierarchyObject> hierarchyChilds;
+namespace PLVirtualMachine.Objects;
 
-    public void Initialize(IWorldBlueprint templateObject)
-    {
-      if (!typeof (VMWorldObject).IsAssignableFrom(templateObject.GetType()))
-      {
-        Logger.AddError(string.Format("Template {0} for hierarchy object must be vm world object !", templateObject.Name));
-      }
-      else
-      {
-        template = templateObject;
-        hierarchyGuid = new HierarchyGuid(template.BaseGuid);
-        HierarchyManager.CreateChilds(this);
-        HierarchyManager.CreateSimpleChilds(this);
-      }
-    }
+public class VMWorldHierarchyObject :
+	IWorldHierarchyObject,
+	ILogicObject,
+	IContext,
+	INamed,
+	IWorldObject,
+	IEngineTemplated,
+	IHierarchyObject,
+	IEngineInstanced {
+	private VMObjRef selfRef;
+	private Guid engineInstanceGuid = Guid.Empty;
+	private HierarchyGuid hierarchyGuid;
+	private IWorldBlueprint template;
+	private IWorldHierarchyObject parent;
+	private List<IHierarchyObject> hierarchySimpleChildsList;
+	private List<IWorldHierarchyObject> hierarchyChilds;
 
-    public ulong BaseGuid => template.BaseGuid;
+	public void Initialize(IWorldBlueprint templateObject) {
+		if (!typeof(VMWorldObject).IsAssignableFrom(templateObject.GetType()))
+			Logger.AddError(string.Format("Template {0} for hierarchy object must be vm world object !",
+				templateObject.Name));
+		else {
+			template = templateObject;
+			hierarchyGuid = new HierarchyGuid(template.BaseGuid);
+			HierarchyManager.CreateChilds(this);
+			HierarchyManager.CreateSimpleChilds(this);
+		}
+	}
 
-    public string Name => template.Name;
+	public ulong BaseGuid => template.BaseGuid;
 
-    public bool Static => true;
+	public string Name => template.Name;
 
-    public IBlueprint Blueprint => template;
+	public bool Static => true;
 
-    public IBlueprint EditorTemplate => template;
+	public IBlueprint Blueprint => template;
 
-    public Guid EngineGuid => engineInstanceGuid;
+	public IBlueprint EditorTemplate => template;
 
-    public Guid EngineTemplateGuid => template.EngineTemplateGuid;
+	public Guid EngineGuid => engineInstanceGuid;
 
-    public Guid EngineBaseTemplateGuid => template.EngineBaseTemplateGuid;
+	public Guid EngineTemplateGuid => template.EngineTemplateGuid;
 
-    public IVariable GetSelf()
-    {
-      if (selfRef == null)
-      {
-        selfRef = new VMObjRef();
-        selfRef.Initialize(HierarchyGuid);
-      }
-      return selfRef;
-    }
+	public Guid EngineBaseTemplateGuid => template.EngineBaseTemplateGuid;
 
-    public IEnumerable<string> GetComponentNames() => Blueprint.GetComponentNames();
+	public IVariable GetSelf() {
+		if (selfRef == null) {
+			selfRef = new VMObjRef();
+			selfRef.Initialize(HierarchyGuid);
+		}
 
-    public IEnumerable<IVariable> GetContextVariables(EContextVariableCategory contextVarCategory)
-    {
-      return Blueprint.GetContextVariables(contextVarCategory);
-    }
+		return selfRef;
+	}
 
-    public IVariable GetContextVariable(string variableName)
-    {
-      return Blueprint.GetContextVariable(variableName);
-    }
+	public IEnumerable<string> GetComponentNames() {
+		return Blueprint.GetComponentNames();
+	}
 
-    public bool IsFunctionalSupport(string componentName)
-    {
-      return Blueprint.IsFunctionalSupport(componentName);
-    }
+	public IEnumerable<IVariable> GetContextVariables(EContextVariableCategory contextVarCategory) {
+		return Blueprint.GetContextVariables(contextVarCategory);
+	}
 
-    public bool IsFunctionalSupport(IEnumerable<string> functionalsList)
-    {
-      return Blueprint.IsFunctionalSupport(functionalsList);
-    }
+	public IVariable GetContextVariable(string variableName) {
+		return Blueprint.GetContextVariable(variableName);
+	}
 
-    public HierarchyGuid WorldPositionGuid
-    {
-      get
-      {
-        return template.WorldPositionGuid.IsEmpty ? HierarchyGuid : template.WorldPositionGuid;
-      }
-    }
+	public bool IsFunctionalSupport(string componentName) {
+		return Blueprint.IsFunctionalSupport(componentName);
+	}
 
-    public HierarchyGuid HierarchyGuid => hierarchyGuid;
+	public bool IsFunctionalSupport(IEnumerable<string> functionalsList) {
+		return Blueprint.IsFunctionalSupport(functionalsList);
+	}
 
-    public IEnumerable<IHierarchyObject> HierarchyChilds
-    {
-      get
-      {
-        if (hierarchyChilds != null)
-        {
-          for (int i = 0; i < hierarchyChilds.Count; ++i)
-            yield return hierarchyChilds[i];
-        }
-      }
-    }
+	public HierarchyGuid WorldPositionGuid =>
+		template.WorldPositionGuid.IsEmpty ? HierarchyGuid : template.WorldPositionGuid;
 
-    public void AddHierarchyChild(IHierarchyObject child)
-    {
-      if (hierarchyChilds == null)
-        hierarchyChilds = new List<IWorldHierarchyObject>();
-      hierarchyChilds.Add((IWorldHierarchyObject) child);
-    }
+	public HierarchyGuid HierarchyGuid => hierarchyGuid;
 
-    public void AddHierarchySimpleChild(IHierarchyObject child)
-    {
-      if (hierarchySimpleChildsList == null)
-        hierarchySimpleChildsList = new List<IHierarchyObject>();
-      hierarchySimpleChildsList.Add(child);
-    }
+	public IEnumerable<IHierarchyObject> HierarchyChilds {
+		get {
+			if (hierarchyChilds != null)
+				for (var i = 0; i < hierarchyChilds.Count; ++i)
+					yield return hierarchyChilds[i];
+		}
+	}
 
-    public IEnumerable<IHierarchyObject> SimpleChilds
-    {
-      get
-      {
-        if (hierarchySimpleChildsList != null)
-        {
-          foreach (IHierarchyObject hierarchySimpleChilds in hierarchySimpleChildsList)
-            yield return hierarchySimpleChilds;
-        }
-      }
-    }
+	public void AddHierarchyChild(IHierarchyObject child) {
+		if (hierarchyChilds == null)
+			hierarchyChilds = new List<IWorldHierarchyObject>();
+		hierarchyChilds.Add((IWorldHierarchyObject)child);
+	}
 
-    public void ClearHierarchy()
-    {
-      if (hierarchyChilds != null)
-      {
-        foreach (IWorldHierarchyObject hierarchyChild in hierarchyChilds)
-          hierarchyChild.ClearHierarchy();
-        hierarchyChilds.Clear();
-        hierarchyChilds = null;
-      }
-      if (hierarchySimpleChildsList != null)
-      {
-        foreach (HierarchySimpleChildInfo hierarchySimpleChilds in hierarchySimpleChildsList)
-          hierarchySimpleChilds.ClearHierarchy();
-        hierarchySimpleChildsList.Clear();
-        hierarchySimpleChildsList = null;
-      }
-      selfRef = null;
-      template = null;
-      parent = null;
-    }
+	public void AddHierarchySimpleChild(IHierarchyObject child) {
+		if (hierarchySimpleChildsList == null)
+			hierarchySimpleChildsList = new List<IHierarchyObject>();
+		hierarchySimpleChildsList.Add(child);
+	}
 
-    public virtual bool IsPhysic => true;
+	public IEnumerable<IHierarchyObject> SimpleChilds {
+		get {
+			if (hierarchySimpleChildsList != null)
+				foreach (var hierarchySimpleChilds in hierarchySimpleChildsList)
+					yield return hierarchySimpleChilds;
+		}
+	}
 
-    public bool Instantiated => false;
+	public void ClearHierarchy() {
+		if (hierarchyChilds != null) {
+			foreach (var hierarchyChild in hierarchyChilds)
+				hierarchyChild.ClearHierarchy();
+			hierarchyChilds.Clear();
+			hierarchyChilds = null;
+		}
 
-    public bool IsEngineRoot => template.WorldPositionGuid.TemplateGuid == ulong.MaxValue;
+		if (hierarchySimpleChildsList != null) {
+			foreach (HierarchySimpleChildInfo hierarchySimpleChilds in hierarchySimpleChildsList)
+				hierarchySimpleChilds.ClearHierarchy();
+			hierarchySimpleChildsList.Clear();
+			hierarchySimpleChildsList = null;
+		}
 
-    public bool DirectEngineCreated => ((VMLogicObject) template).DirectEngineCreated;
+		selfRef = null;
+		template = null;
+		parent = null;
+	}
 
-    public void InitInstanceGuid(Guid instanceGuid)
-    {
-      if (Guid.Empty != engineInstanceGuid)
-        Logger.AddError("Engine instance guid already inited in world hierarchy object with hid = " + HierarchyGuid.Write());
-      else
-        engineInstanceGuid = instanceGuid;
-    }
+	public virtual bool IsPhysic => true;
 
-    public IWorldHierarchyObject Parent
-    {
-      get => parent;
-      set
-      {
-        parent = value;
-        hierarchyGuid = new HierarchyGuid(parent.HierarchyGuid, Blueprint.BaseGuid);
-        if (hierarchyChilds != null)
-        {
-          foreach (IWorldHierarchyObject hierarchyChild in hierarchyChilds)
-            hierarchyChild.Parent = value;
-        }
-        foreach (HierarchySimpleChildInfo simpleChild in SimpleChilds)
-          simpleChild.SetParent(this);
-      }
-    }
+	public bool Instantiated => false;
 
-    public bool IsPhantom => ((VMWorldObject) template).IsPhantom;
-  }
+	public bool IsEngineRoot => template.WorldPositionGuid.TemplateGuid == ulong.MaxValue;
+
+	public bool DirectEngineCreated => ((VMLogicObject)template).DirectEngineCreated;
+
+	public void InitInstanceGuid(Guid instanceGuid) {
+		if (Guid.Empty != engineInstanceGuid)
+			Logger.AddError("Engine instance guid already inited in world hierarchy object with hid = " +
+			                HierarchyGuid.Write());
+		else
+			engineInstanceGuid = instanceGuid;
+	}
+
+	public IWorldHierarchyObject Parent {
+		get => parent;
+		set {
+			parent = value;
+			hierarchyGuid = new HierarchyGuid(parent.HierarchyGuid, Blueprint.BaseGuid);
+			if (hierarchyChilds != null)
+				foreach (var hierarchyChild in hierarchyChilds)
+					hierarchyChild.Parent = value;
+			foreach (HierarchySimpleChildInfo simpleChild in SimpleChilds)
+				simpleChild.SetParent(this);
+		}
+	}
+
+	public bool IsPhantom => ((VMWorldObject)template).IsPhantom;
 }

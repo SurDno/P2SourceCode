@@ -1,40 +1,32 @@
 ﻿using ParadoxNotion;
 using ParadoxNotion.Design;
 
-namespace FlowCanvas.Nodes
-{
-  [Description("Called when a custom value-based event is received on target.\nTo send an event from code use:\n'FlowScriptController.SendEvent<T>(string name, T value)'")]
-  [Category("Events/Script")]
-  public class CustomEvent<T> : EventNode<FlowScriptController>
-  {
-    [RequiredField]
-    public string eventName;
-    private FlowOutput received;
-    private T receivedValue;
+namespace FlowCanvas.Nodes;
 
-    public override string name
-    {
-      get => base.name + string.Format(" [ <color=#DDDDDD>{0}</color> ]", eventName);
-    }
+[Description(
+	"Called when a custom value-based event is received on target.\nTo send an event from code use:\n'FlowScriptController.SendEvent<T>(string name, T value)'")]
+[Category("Events/Script")]
+public class CustomEvent<T> : EventNode<FlowScriptController> {
+	[RequiredField] public string eventName;
+	private FlowOutput received;
+	private T receivedValue;
 
-    protected override string[] GetTargetMessageEvents()
-    {
-      return new string[1]{ "OnCustomEvent" };
-    }
+	public override string name => base.name + string.Format(" [ <color=#DDDDDD>{0}</color> ]", eventName);
 
-    protected override void RegisterPorts()
-    {
-      received = AddFlowOutput("Received");
-      AddValueOutput("Event Value", () => receivedValue);
-    }
+	protected override string[] GetTargetMessageEvents() {
+		return new string[1] { "OnCustomEvent" };
+	}
 
-    public void OnCustomEvent(EventData receivedEvent)
-    {
-      if (!(receivedEvent.name == eventName))
-        return;
-      if (receivedEvent is EventData<T>)
-        receivedValue = (receivedEvent as EventData<T>).value;
-      received.Call();
-    }
-  }
+	protected override void RegisterPorts() {
+		received = AddFlowOutput("Received");
+		AddValueOutput("Event Value", () => receivedValue);
+	}
+
+	public void OnCustomEvent(EventData receivedEvent) {
+		if (!(receivedEvent.name == eventName))
+			return;
+		if (receivedEvent is EventData<T>)
+			receivedValue = (receivedEvent as EventData<T>).value;
+		received.Call();
+	}
 }

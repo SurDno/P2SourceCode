@@ -1,7 +1,5 @@
-﻿namespace PLVirtualMachine.Dynamic
-{
-  public interface IInitialiseEvents
-  {
-    void InitialiseEvent(DynamicEvent target);
-  }
+﻿namespace PLVirtualMachine.Dynamic;
+
+public interface IInitialiseEvents {
+	void InitialiseEvent(DynamicEvent target);
 }

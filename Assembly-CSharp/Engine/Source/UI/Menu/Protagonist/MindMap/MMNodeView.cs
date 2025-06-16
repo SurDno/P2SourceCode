@@ -2,76 +2,68 @@
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Engine.Source.UI.Menu.Protagonist.MindMap
-{
-  public class MMNodeView : 
-    MonoBehaviour,
-    IPointerEnterHandler,
-    IEventSystemHandler,
-    IPointerExitHandler,
-    IPointerClickHandler
-  {
-    private RawImage nodeImage;
-    private string baseColor;
-    private string highlightedColor = "#bcac88";
-    private RectTransform rectTransform;
+namespace Engine.Source.UI.Menu.Protagonist.MindMap;
 
-    public MMNode Node { get; set; }
+public class MMNodeView :
+	MonoBehaviour,
+	IPointerEnterHandler,
+	IEventSystemHandler,
+	IPointerExitHandler,
+	IPointerClickHandler {
+	private RawImage nodeImage;
+	private string baseColor;
+	private string highlightedColor = "#bcac88";
+	private RectTransform rectTransform;
 
-    public bool HasMapItem { get; set; }
+	public MMNode Node { get; set; }
 
-    public GameObject NewIndicator { get; set; }
+	public bool HasMapItem { get; set; }
 
-    private void OnEnable()
-    {
-      if (nodeImage == null)
-        nodeImage = GetComponent<RawImage>();
-      if (nodeImage != null)
-        baseColor = nodeImage.color.ToRGBHex();
-      rectTransform = GetComponent<RectTransform>();
-    }
+	public GameObject NewIndicator { get; set; }
 
-    public Rect GetSpriteRect()
-    {
-      return rectTransform != null ? rectTransform.rect : Rect.zero;
-    }
+	private void OnEnable() {
+		if (nodeImage == null)
+			nodeImage = GetComponent<RawImage>();
+		if (nodeImage != null)
+			baseColor = nodeImage.color.ToRGBHex();
+		rectTransform = GetComponent<RectTransform>();
+	}
 
-    public void SetActive(bool active)
-    {
-      Color color;
-      if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) || !(nodeImage != null))
-        return;
-      nodeImage.color = color;
-    }
+	public Rect GetSpriteRect() {
+		return rectTransform != null ? rectTransform.rect : Rect.zero;
+	}
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-      SetActive(true);
-      GetComponentInParent<MMPageView>().ShowNodeInfo(this);
-    }
+	public void SetActive(bool active) {
+		Color color;
+		if (!UnityEngine.ColorUtility.TryParseHtmlString(active ? highlightedColor : baseColor, out color) ||
+		    !(nodeImage != null))
+			return;
+		nodeImage.color = color;
+	}
 
-    public void MarkNodeDiscovered()
-    {
-      if (Node.Undiscovered)
-        Node.Undiscovered = false;
-      if (!(NewIndicator != null))
-        return;
-      Destroy(NewIndicator);
-      NewIndicator = null;
-    }
+	public void OnPointerEnter(PointerEventData eventData) {
+		SetActive(true);
+		GetComponentInParent<MMPageView>().ShowNodeInfo(this);
+	}
 
-    public void OnPointerExit(PointerEventData eventData)
-    {
-      SetActive(false);
-      GetComponentInParent<MMPageView>().HideNodeInfo(this);
-    }
+	public void MarkNodeDiscovered() {
+		if (Node.Undiscovered)
+			Node.Undiscovered = false;
+		if (!(NewIndicator != null))
+			return;
+		Destroy(NewIndicator);
+		NewIndicator = null;
+	}
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-      MarkNodeDiscovered();
-      if (!HasMapItem)
-        return;
-      GetComponentInParent<MMPageView>().CallMap(this);
-    }
-  }
+	public void OnPointerExit(PointerEventData eventData) {
+		SetActive(false);
+		GetComponentInParent<MMPageView>().HideNodeInfo(this);
+	}
+
+	public void OnPointerClick(PointerEventData eventData) {
+		MarkNodeDiscovered();
+		if (!HasMapItem)
+			return;
+		GetComponentInParent<MMPageView>().CallMap(this);
+	}
 }

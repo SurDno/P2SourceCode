@@ -10,67 +10,53 @@ using Engine.Source.Connections;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class CreateProjectileEntityEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected Typed<IEntity> template;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ProjectileSpawnPlaceEnum spawnPlace = ProjectileSpawnPlaceEnum.None;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class CreateProjectileEntityEffect : IEffect {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected Typed<IEntity> template;
 
-    public IEntity Target { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ProjectileSpawnPlaceEnum spawnPlace = ProjectileSpawnPlaceEnum.None;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	public string Name => GetType().Name;
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      IEntity entity = ServiceLocator.GetService<IFactory>().Instantiate(template.Value);
-      ((Entity) entity).DontSave = true;
-      entity.GetComponent<ParentComponent>()?.SetParent(Target);
-      ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Objects);
-      LocationItemComponent component1 = entity.GetComponent<LocationItemComponent>();
-      if (component1 != null)
-        component1.Location = Target?.GetComponent<LocationItemComponent>()?.Location;
-      Transform transform = ((IEntityView) Target).GameObject.transform;
-      NPCWeaponService component2 = ((IEntityView) Target).GameObject.GetComponent<NPCWeaponService>();
-      if (component2 != null && spawnPlace == ProjectileSpawnPlaceEnum.Bomb && component2.BombParent != null)
-        transform = component2.BombParent.transform;
-      if (component2 != null && spawnPlace == ProjectileSpawnPlaceEnum.Samopal && component2.SamopalParent != null)
-        transform = component2.SamopalParent.transform;
-      if (transform != null)
-      {
-        ((IEntityView) entity).Position = transform.position;
-        ((IEntityView) entity).Rotation = transform.rotation;
-      }
-      return true;
-    }
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime) => false;
+	public IEntity Target { get; set; }
 
-    public void Cleanup()
-    {
-    }
-  }
+	public ParameterEffectQueueEnum Queue => queue;
+
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		var entity = ServiceLocator.GetService<IFactory>().Instantiate(template.Value);
+		((Entity)entity).DontSave = true;
+		entity.GetComponent<ParentComponent>()?.SetParent(Target);
+		ServiceLocator.GetService<ISimulation>().Add(entity, ServiceLocator.GetService<ISimulation>().Objects);
+		var component1 = entity.GetComponent<LocationItemComponent>();
+		if (component1 != null)
+			component1.Location = Target?.GetComponent<LocationItemComponent>()?.Location;
+		var transform = ((IEntityView)Target).GameObject.transform;
+		var component2 = ((IEntityView)Target).GameObject.GetComponent<NPCWeaponService>();
+		if (component2 != null && spawnPlace == ProjectileSpawnPlaceEnum.Bomb && component2.BombParent != null)
+			transform = component2.BombParent.transform;
+		if (component2 != null && spawnPlace == ProjectileSpawnPlaceEnum.Samopal && component2.SamopalParent != null)
+			transform = component2.SamopalParent.transform;
+		if (transform != null) {
+			((IEntityView)entity).Position = transform.position;
+			((IEntityView)entity).Rotation = transform.rotation;
+		}
+
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		return false;
+	}
+
+	public void Cleanup() { }
 }

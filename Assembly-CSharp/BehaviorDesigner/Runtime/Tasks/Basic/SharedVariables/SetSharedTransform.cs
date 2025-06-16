@@ -8,61 +8,56 @@ using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables
-{
-  [FactoryProxy(typeof (SetSharedTransform))]
-  [TaskCategory("Basic/SharedVariable")]
-  [TaskDescription("Sets the SharedTransform variable to the specified object. Returns Success.")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SetSharedTransform : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [Tooltip("The value to set the SharedTransform to. If null the variable will be set to the current Transform")]
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedTransform targetValue;
-    [RequiredField]
-    [Tooltip("The SharedTransform to set")]
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public SharedTransform targetVariable;
+namespace BehaviorDesigner.Runtime.Tasks.Basic.SharedVariables;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetValue", targetValue);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetVariable", targetVariable);
-    }
+[FactoryProxy(typeof(SetSharedTransform))]
+[TaskCategory("Basic/SharedVariable")]
+[TaskDescription("Sets the SharedTransform variable to the specified object. Returns Success.")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class SetSharedTransform : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[Tooltip("The value to set the SharedTransform to. If null the variable will be set to the current Transform")]
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy]
+	[SerializeField]
+	public SharedTransform targetValue;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      targetValue = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetValue", targetValue);
-      targetVariable = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetVariable", targetVariable);
-    }
+	[RequiredField]
+	[Tooltip("The SharedTransform to set")]
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy()]
+	[SerializeField]
+	public SharedTransform targetVariable;
 
-    public override TaskStatus OnUpdate()
-    {
-      targetVariable.Value = targetValue.Value != null ? targetValue.Value : transform;
-      return TaskStatus.Success;
-    }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetValue", targetValue);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "TargetVariable", targetVariable);
+	}
 
-    public override void OnReset()
-    {
-      targetValue = null;
-      targetVariable = null;
-    }
-  }
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		targetValue = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetValue", targetValue);
+		targetVariable = BehaviorTreeDataReadUtility.ReadShared(reader, "TargetVariable", targetVariable);
+	}
+
+	public override TaskStatus OnUpdate() {
+		targetVariable.Value = targetValue.Value != null ? targetValue.Value : transform;
+		return TaskStatus.Success;
+	}
+
+	public override void OnReset() {
+		targetValue = null;
+		targetVariable = null;
+	}
 }

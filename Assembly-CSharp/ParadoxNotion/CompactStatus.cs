@@ -1,8 +1,6 @@
-﻿namespace ParadoxNotion
-{
-  public enum CompactStatus
-  {
-    Failure,
-    Success,
-  }
+﻿namespace ParadoxNotion;
+
+public enum CompactStatus {
+	Failure,
+	Success
 }

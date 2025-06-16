@@ -10,78 +10,68 @@ using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
 
-namespace PLVirtualMachine.FSM
-{
-  [TypeData(EDataType.TEntryPoint)]
-  [DataFactory("EntryPoint")]
-  public class VMEntryPoint : 
-    VMBaseObject,
-    IStub,
-    IEditorDataReader,
-    IEntryPoint,
-    IObject,
-    IEditorBaseTemplate
-  {
-    [FieldData("AssociatedEntryPoint", DataFieldType.Reference)]
-    private VMEntryPoint assocEntryPoint;
-    [FieldData("ActionLine", DataFieldType.Reference)]
-    private IActionLine actionLine;
+namespace PLVirtualMachine.FSM;
 
-    public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
-    {
-      while (xml.Read()) {
-        if (xml.NodeType == XmlNodeType.Element)
-        {
-          switch (xml.Name)
-          {
-            case "AssociatedEntryPoint":
-              assocEntryPoint = EditorDataReadUtility.ReadReference<VMEntryPoint>(xml, creator);
-              continue;
-            case "ActionLine":
-              actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
-              continue;
-            case "Name":
-              name = EditorDataReadUtility.ReadValue(xml, name);
-              continue;
-            case "Parent":
-              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
-              continue;
-            default:
-              if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
-                Logger.AddError(typeContext + " : " + xml.Name);
-              XmlReaderUtility.SkipNode(xml);
-              continue;
-          }
-        }
+[TypeData(EDataType.TEntryPoint)]
+[DataFactory("EntryPoint")]
+public class VMEntryPoint :
+	VMBaseObject,
+	IStub,
+	IEditorDataReader,
+	IEntryPoint,
+	IObject,
+	IEditorBaseTemplate {
+	[FieldData("AssociatedEntryPoint", DataFieldType.Reference)]
+	private VMEntryPoint assocEntryPoint;
 
-        if (xml.NodeType == XmlNodeType.EndElement)
-          break;
-      }
-    }
+	[FieldData("ActionLine", DataFieldType.Reference)]
+	private IActionLine actionLine;
 
-    public VMEntryPoint(ulong guid)
-      : base(guid)
-    {
-    }
+	public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext) {
+		while (xml.Read()) {
+			if (xml.NodeType == XmlNodeType.Element)
+				switch (xml.Name) {
+					case "AssociatedEntryPoint":
+						assocEntryPoint = EditorDataReadUtility.ReadReference<VMEntryPoint>(xml, creator);
+						continue;
+					case "ActionLine":
+						actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
+						continue;
+					case "Name":
+						name = EditorDataReadUtility.ReadValue(xml, name);
+						continue;
+					case "Parent":
+						parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+						continue;
+					default:
+						if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
+							Logger.AddError(typeContext + " : " + xml.Name);
+						XmlReaderUtility.SkipNode(xml);
+						continue;
+				}
 
-    public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_NONE;
+			if (xml.NodeType == XmlNodeType.EndElement)
+				break;
+		}
+	}
 
-    public IActionLine ActionLine
-    {
-      get
-      {
-        return assocEntryPoint != null && assocEntryPoint.ActionLine != null ? assocEntryPoint.ActionLine : actionLine;
-      }
-    }
+	public VMEntryPoint(ulong guid)
+		: base(guid) { }
 
-    public override void Clear()
-    {
-      base.Clear();
-      assocEntryPoint = null;
-      if (actionLine == null)
-        return;
-      ((VMActionLine) actionLine).Clear();
-      actionLine = null;
-    }
-  }
+	public override EObjectCategory GetCategory() {
+		return EObjectCategory.OBJECT_CATEGORY_NONE;
+	}
+
+	public IActionLine ActionLine => assocEntryPoint != null && assocEntryPoint.ActionLine != null
+		? assocEntryPoint.ActionLine
+		: actionLine;
+
+	public override void Clear() {
+		base.Clear();
+		assocEntryPoint = null;
+		if (actionLine == null)
+			return;
+		((VMActionLine)actionLine).Clear();
+		actionLine = null;
+	}
 }

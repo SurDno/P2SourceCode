@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IFunctionalPoint : IStaticUpdateable
-  {
-    string TargetFunction { get; }
+namespace PLVirtualMachine.Common;
 
-    BaseFunction TargetFunctionInstance { get; }
+public interface IFunctionalPoint : IStaticUpdateable {
+	string TargetFunction { get; }
 
-    ILocalContext LocalContext { get; }
+	BaseFunction TargetFunctionInstance { get; }
 
-    CommonVariable TargetObject { get; }
+	ILocalContext LocalContext { get; }
 
-    CommonVariable TargetParam { get; }
+	CommonVariable TargetObject { get; }
 
-    List<CommonVariable> SourceParams { get; }
-  }
+	CommonVariable TargetParam { get; }
+
+	List<CommonVariable> SourceParams { get; }
 }

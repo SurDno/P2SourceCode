@@ -1,15 +1,17 @@
 ﻿using System;
 
-namespace ParadoxNotion.Design
-{
-  [AttributeUsage(AttributeTargets.Field)]
-  public class PopupFieldAttribute : Attribute
-  {
-    public object[] values;
-    public string staticPath;
+namespace ParadoxNotion.Design;
 
-    public PopupFieldAttribute(params object[] values) => this.values = values;
+[AttributeUsage(AttributeTargets.Field)]
+public class PopupFieldAttribute : Attribute {
+	public object[] values;
+	public string staticPath;
 
-    public PopupFieldAttribute(string staticPath) => this.staticPath = staticPath;
-  }
+	public PopupFieldAttribute(params object[] values) {
+		this.values = values;
+	}
+
+	public PopupFieldAttribute(string staticPath) {
+		this.staticPath = staticPath;
+	}
 }

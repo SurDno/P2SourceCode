@@ -5,60 +5,58 @@ using PLVirtualMachine.Common.EngineAPI;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
-{
-  [Info("IndoorCrowdComponent", typeof (IIndoorCrowdComponent))]
-  public class VMIndoorCrowd : VMEngineComponent<IIndoorCrowdComponent>
-  {
-    public const string ComponentName = "IndoorCrowdComponent";
+namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents;
 
-    [Event("Need create object event", "template object", false)]
-    public event NeedCreateObjectEventType NeedCreateObjectEvent;
+[Info("IndoorCrowdComponent", typeof(IIndoorCrowdComponent))]
+public class VMIndoorCrowd : VMEngineComponent<IIndoorCrowdComponent> {
+	public const string ComponentName = "IndoorCrowdComponent";
 
-    [Event("Need delete object event", "object", false)]
-    public event Action<IEntity> NeedDeleteObjectEvent;
+	[Event("Need create object event", "template object", false)]
+	public event NeedCreateObjectEventType NeedCreateObjectEvent;
 
-    [Method("Add entity", "Target", "")]
-    public void AddEntity(IEntity entity) => Component.AddEntity(entity);
+	[Event("Need delete object event", "object", false)]
+	public event Action<IEntity> NeedDeleteObjectEvent;
 
-    [Method("Reset", "", "")]
-    public void Reset() => Component.Reset();
+	[Method("Add entity", "Target", "")]
+	public void AddEntity(IEntity entity) {
+		Component.AddEntity(entity);
+	}
 
-    public void OnCreateEntity(IEntity entity)
-    {
-      EngineAPIManager.ObjectCreationExtraDebugInfoMode = true;
-      NeedCreateObjectEventType createObjectEvent = NeedCreateObjectEvent;
-      if (createObjectEvent != null)
-        createObjectEvent(entity);
-      EngineAPIManager.ObjectCreationExtraDebugInfoMode = false;
-    }
+	[Method("Reset", "", "")]
+	public void Reset() {
+		Component.Reset();
+	}
 
-    public void OnDeleteEntity(IEntity entity)
-    {
-      EngineAPIManager.ObjectCreationExtraDebugInfoMode = true;
-      Action<IEntity> deleteObjectEvent = NeedDeleteObjectEvent;
-      if (deleteObjectEvent != null)
-        deleteObjectEvent(entity);
-      EngineAPIManager.ObjectCreationExtraDebugInfoMode = false;
-    }
+	public void OnCreateEntity(IEntity entity) {
+		EngineAPIManager.ObjectCreationExtraDebugInfoMode = true;
+		var createObjectEvent = NeedCreateObjectEvent;
+		if (createObjectEvent != null)
+			createObjectEvent(entity);
+		EngineAPIManager.ObjectCreationExtraDebugInfoMode = false;
+	}
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.OnCreateEntity -= OnCreateEntity;
-      Component.OnDeleteEntity -= OnDeleteEntity;
-      base.Clear();
-    }
+	public void OnDeleteEntity(IEntity entity) {
+		EngineAPIManager.ObjectCreationExtraDebugInfoMode = true;
+		var deleteObjectEvent = NeedDeleteObjectEvent;
+		if (deleteObjectEvent != null)
+			deleteObjectEvent(entity);
+		EngineAPIManager.ObjectCreationExtraDebugInfoMode = false;
+	}
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.OnCreateEntity += OnCreateEntity;
-      Component.OnDeleteEntity += OnDeleteEntity;
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.OnCreateEntity -= OnCreateEntity;
+		Component.OnDeleteEntity -= OnDeleteEntity;
+		base.Clear();
+	}
 
-    public delegate void NeedCreateObjectEventType([Template] IEntity entity);
-  }
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.OnCreateEntity += OnCreateEntity;
+		Component.OnDeleteEntity += OnDeleteEntity;
+	}
+
+	public delegate void NeedCreateObjectEventType([Template] IEntity entity);
 }

@@ -2,60 +2,54 @@
 using Engine.Common.Components.Parameters;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("GlobalDoorsManager")]
-  public class VMGlobalDoorsManager : VMComponent
-  {
-    public const string ComponentName = "GlobalDoorsManager";
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    public override void Initialize(VMBaseEntity parent) => base.Initialize(parent);
+[Info("GlobalDoorsManager")]
+public class VMGlobalDoorsManager : VMComponent {
+	public const string ComponentName = "GlobalDoorsManager";
 
-    [Method("Open door", "Door", "")]
-    public virtual void OpenDoor(IObjRef gateObj)
-    {
-    }
+	public override void Initialize(VMBaseEntity parent) {
+		base.Initialize(parent);
+	}
 
-    [Method("Unlock door", "Door", "")]
-    public virtual void UnlockDoor(IObjRef gateObj)
-    {
-    }
+	[Method("Open door", "Door", "")]
+	public virtual void OpenDoor(IObjRef gateObj) { }
 
-    [Method("Is door open", "Door", "")]
-    public virtual bool IsDoorOpen(IObjRef gateObj) => false;
+	[Method("Unlock door", "Door", "")]
+	public virtual void UnlockDoor(IObjRef gateObj) { }
 
-    [Method("Is door unlocked", "Door", "")]
-    public virtual bool IsDoorUnlocked(IObjRef gateObj) => false;
+	[Method("Is door open", "Door", "")]
+	public virtual bool IsDoorOpen(IObjRef gateObj) {
+		return false;
+	}
 
-    [Method("", ",,,", "")]
-    public virtual void SetGatesOpeningState(
-      string gatesRootInfo,
-      GateState gateState,
-      string operationVolume,
-      PriorityParameterEnum priority)
-    {
-    }
+	[Method("Is door unlocked", "Door", "")]
+	public virtual bool IsDoorUnlocked(IObjRef gateObj) {
+		return false;
+	}
 
-    [Method("", ",,,", "")]
-    public virtual void SetGatesLockState(
-      string gatesRootInfo,
-      LockState gateLockState,
-      string operationVolume,
-      PriorityParameterEnum priority)
-    {
-    }
+	[Method("", ",,,", "")]
+	public virtual void SetGatesOpeningState(
+		string gatesRootInfo,
+		GateState gateState,
+		string operationVolume,
+		PriorityParameterEnum priority) { }
 
-    [Method("", ",,,,,", "")]
-    public virtual void SetGatesAllStates(
-      string gatesRootInfo,
-      GateState gateState,
-      LockState gateLockState,
-      string gateStatuses,
-      string operationVolume,
-      PriorityParameterEnum priority)
-    {
-    }
+	[Method("", ",,,", "")]
+	public virtual void SetGatesLockState(
+		string gatesRootInfo,
+		LockState gateLockState,
+		string operationVolume,
+		PriorityParameterEnum priority) { }
 
-    public static VMGlobalDoorsManager Instance { get; protected set; }
-  }
+	[Method("", ",,,,,", "")]
+	public virtual void SetGatesAllStates(
+		string gatesRootInfo,
+		GateState gateState,
+		LockState gateLockState,
+		string gateStatuses,
+		string operationVolume,
+		PriorityParameterEnum priority) { }
+
+	public static VMGlobalDoorsManager Instance { get; protected set; }
 }

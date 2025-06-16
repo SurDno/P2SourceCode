@@ -2,39 +2,41 @@
 using TriangleNet.Data;
 using TriangleNet.Geometry;
 
-namespace TriangleNet.Tools
-{
-  public class VoronoiRegion
-  {
-    private bool bounded;
-    private Point generator;
-    private int id;
-    private List<Point> vertices;
+namespace TriangleNet.Tools;
 
-    public int ID => id;
+public class VoronoiRegion {
+	private bool bounded;
+	private Point generator;
+	private int id;
+	private List<Point> vertices;
 
-    public Point Generator => generator;
+	public int ID => id;
 
-    public ICollection<Point> Vertices => vertices;
+	public Point Generator => generator;
 
-    public bool Bounded
-    {
-      get => bounded;
-      set => bounded = value;
-    }
+	public ICollection<Point> Vertices => vertices;
 
-    public VoronoiRegion(Vertex generator)
-    {
-      id = generator.id;
-      this.generator = generator;
-      vertices = new List<Point>();
-      bounded = true;
-    }
+	public bool Bounded {
+		get => bounded;
+		set => bounded = value;
+	}
 
-    public void Add(Point point) => vertices.Add(point);
+	public VoronoiRegion(Vertex generator) {
+		id = generator.id;
+		this.generator = generator;
+		vertices = new List<Point>();
+		bounded = true;
+	}
 
-    public void Add(List<Point> points) => vertices.AddRange(points);
+	public void Add(Point point) {
+		vertices.Add(point);
+	}
 
-    public override string ToString() => string.Format("R-ID {0}", id);
-  }
+	public void Add(List<Point> points) {
+		vertices.AddRange(points);
+	}
+
+	public override string ToString() {
+		return string.Format("R-ID {0}", id);
+	}
 }

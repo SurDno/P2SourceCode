@@ -1,33 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Facepunch.Steamworks
-{
-  public class User : IDisposable
-  {
-    internal Client client;
-    internal Dictionary<string, string> richPresence = new Dictionary<string, string>();
+namespace Facepunch.Steamworks;
 
-    internal User(Client c) => client = c;
+public class User : IDisposable {
+	internal Client client;
+	internal Dictionary<string, string> richPresence = new();
 
-    public void Dispose() => client = null;
+	internal User(Client c) {
+		client = c;
+	}
 
-    public string GetRichPresence(string key)
-    {
-      string str = null;
-      return richPresence.TryGetValue(key, out str) ? str : null;
-    }
+	public void Dispose() {
+		client = null;
+	}
 
-    public void SetRichPresence(string key, string value)
-    {
-      richPresence[key] = value;
-      client.native.friends.SetRichPresence(key, value);
-    }
+	public string GetRichPresence(string key) {
+		string str = null;
+		return richPresence.TryGetValue(key, out str) ? str : null;
+	}
 
-    public void ClearRichPresence()
-    {
-      richPresence.Clear();
-      client.native.friends.ClearRichPresence();
-    }
-  }
+	public void SetRichPresence(string key, string value) {
+		richPresence[key] = value;
+		client.native.friends.SetRichPresence(key, value);
+	}
+
+	public void ClearRichPresence() {
+		richPresence.Clear();
+		client.native.friends.ClearRichPresence();
+	}
 }

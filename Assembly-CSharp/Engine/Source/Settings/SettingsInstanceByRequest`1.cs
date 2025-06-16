@@ -2,26 +2,23 @@
 using Engine.Source.Commons;
 using Inspectors;
 
-namespace Engine.Source.Settings
-{
-  public abstract class SettingsInstanceByRequest<T> : InstanceByRequest<T> where T : class, new()
-  {
-    public SettingsInstanceByRequest() => SettingsViewService.AddSettings(this);
+namespace Engine.Source.Settings;
 
-    protected virtual void OnInvalidate()
-    {
-    }
+public abstract class SettingsInstanceByRequest<T> : InstanceByRequest<T> where T : class, new() {
+	public SettingsInstanceByRequest() {
+		SettingsViewService.AddSettings(this);
+	}
 
-    public event Action OnApply;
+	protected virtual void OnInvalidate() { }
 
-    [Inspected]
-    public void Apply()
-    {
-      OnInvalidate();
-      Action onApply = OnApply;
-      if (onApply == null)
-        return;
-      onApply();
-    }
-  }
+	public event Action OnApply;
+
+	[Inspected]
+	public void Apply() {
+		OnInvalidate();
+		var onApply = OnApply;
+		if (onApply == null)
+			return;
+		onApply();
+	}
 }

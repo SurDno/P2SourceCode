@@ -3,30 +3,23 @@ using System.Linq;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace FlowCanvas.Nodes
-{
-  [Description("Create a collection of <T> objects")]
-  public class CreateCollection<T> : VariableNode, IMultiPortNode
-  {
-    [SerializeField]
-    private int _portCount = 4;
+namespace FlowCanvas.Nodes;
 
-    public int portCount
-    {
-      get => _portCount;
-      set => _portCount = value;
-    }
+[Description("Create a collection of <T> objects")]
+public class CreateCollection<T> : VariableNode, IMultiPortNode {
+	[SerializeField] private int _portCount = 4;
 
-    public override void SetVariable(object o)
-    {
-    }
+	public int portCount {
+		get => _portCount;
+		set => _portCount = value;
+	}
 
-    protected override void RegisterPorts()
-    {
-      List<ValueInput<T>> ins = new List<ValueInput<T>>();
-      for (int index = 0; index < portCount; ++index)
-        ins.Add(AddValueInput<T>("Element" + index));
-      AddValueOutput("Collection", () => ins.Select(p => p.value).ToArray());
-    }
-  }
+	public override void SetVariable(object o) { }
+
+	protected override void RegisterPorts() {
+		var ins = new List<ValueInput<T>>();
+		for (var index = 0; index < portCount; ++index)
+			ins.Add(AddValueInput<T>("Element" + index));
+		AddValueOutput("Collection", () => ins.Select(p => p.value).ToArray());
+	}
 }

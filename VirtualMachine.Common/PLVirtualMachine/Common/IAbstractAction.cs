@@ -1,13 +1,11 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IAbstractAction : IBaseAction, IFunctionalPoint, IStaticUpdateable
-  {
-    EActionType ActionType { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    EMathOperationType MathOperationType { get; }
+public interface IAbstractAction : IBaseAction, IFunctionalPoint, IStaticUpdateable {
+	EActionType ActionType { get; }
 
-    IParam SourceConstant { get; }
+	EMathOperationType MathOperationType { get; }
 
-    string TargetEvent { get; }
-  }
+	IParam SourceConstant { get; }
+
+	string TargetEvent { get; }
 }

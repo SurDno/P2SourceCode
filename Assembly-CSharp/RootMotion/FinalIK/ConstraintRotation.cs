@@ -1,24 +1,21 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  [Serializable]
-  public class ConstraintRotation : Constraint
-  {
-    public Quaternion rotation;
+namespace RootMotion.FinalIK;
 
-    public override void UpdateConstraint()
-    {
-      if (weight <= 0.0 || !isValid)
-        return;
-      transform.rotation = Quaternion.Slerp(transform.rotation, rotation, weight);
-    }
+[Serializable]
+public class ConstraintRotation : Constraint {
+	public Quaternion rotation;
 
-    public ConstraintRotation()
-    {
-    }
+	public override void UpdateConstraint() {
+		if (weight <= 0.0 || !isValid)
+			return;
+		transform.rotation = Quaternion.Slerp(transform.rotation, rotation, weight);
+	}
 
-    public ConstraintRotation(Transform transform) => this.transform = transform;
-  }
+	public ConstraintRotation() { }
+
+	public ConstraintRotation(Transform transform) {
+		this.transform = transform;
+	}
 }

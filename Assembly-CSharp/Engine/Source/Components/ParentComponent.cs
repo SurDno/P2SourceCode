@@ -3,31 +3,31 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (ParentComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class ParentComponent : EngineComponent
-  {
-    private IEntity parent;
-    private IEntity rootParent;
+namespace Engine.Source.Components;
 
-    public void SetParent(IEntity parent)
-    {
-      this.parent = parent;
-      rootParent = FindRootParent();
-    }
+[Factory(typeof(ParentComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class ParentComponent : EngineComponent {
+	private IEntity parent;
+	private IEntity rootParent;
 
-    private IEntity FindRootParent()
-    {
-      if (parent == null)
-        return Owner;
-      ParentComponent component = parent.GetComponent<ParentComponent>();
-      return component == null ? parent : component.GetRootParent();
-    }
+	public void SetParent(IEntity parent) {
+		this.parent = parent;
+		rootParent = FindRootParent();
+	}
 
-    public IEntity GetParent() => parent;
+	private IEntity FindRootParent() {
+		if (parent == null)
+			return Owner;
+		var component = parent.GetComponent<ParentComponent>();
+		return component == null ? parent : component.GetRootParent();
+	}
 
-    public IEntity GetRootParent() => rootParent;
-  }
+	public IEntity GetParent() {
+		return parent;
+	}
+
+	public IEntity GetRootParent() {
+		return rootParent;
+	}
 }

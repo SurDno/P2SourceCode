@@ -1,19 +1,17 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IGraph : 
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable
-  {
-    List<ILink> Links { get; }
+namespace PLVirtualMachine.Common;
 
-    List<ILink> GetLinksByDestState(IGraphObject state);
+public interface IGraph :
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable {
+	List<ILink> Links { get; }
 
-    List<ILink> GetLinksBySourceState(IGraphObject state);
-  }
+	List<ILink> GetLinksByDestState(IGraphObject state);
+
+	List<ILink> GetLinksBySourceState(IGraphObject state);
 }

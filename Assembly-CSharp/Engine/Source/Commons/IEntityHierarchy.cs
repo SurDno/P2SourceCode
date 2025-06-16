@@ -1,18 +1,16 @@
 ﻿using Engine.Common;
 using Engine.Impl.Services.HierarchyServices;
 
-namespace Engine.Source.Commons
-{
-  public interface IEntityHierarchy
-  {
-    IEntity SceneEntity { get; }
+namespace Engine.Source.Commons;
 
-    IEntity Parent { get; }
+public interface IEntityHierarchy {
+	IEntity SceneEntity { get; }
 
-    HierarchyItem HierarchyItem { get; set; }
+	IEntity Parent { get; }
 
-    void Add(IEntity entity);
+	HierarchyItem HierarchyItem { get; set; }
 
-    void Remove(IEntity entity);
-  }
+	void Add(IEntity entity);
+
+	void Remove(IEntity entity);
 }

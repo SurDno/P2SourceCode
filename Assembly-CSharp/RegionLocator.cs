@@ -2,50 +2,43 @@
 using Engine.Common.Components.Regions;
 using UnityEngine;
 
-public class RegionLocator : MonoBehaviour
-{
-  private static RegionLocator instance;
-  private Dictionary<RegionEnum, RegionMesh> regionsCache = new Dictionary<RegionEnum, RegionMesh>();
+public class RegionLocator : MonoBehaviour {
+	private static RegionLocator instance;
+	private Dictionary<RegionEnum, RegionMesh> regionsCache = new();
 
-  public static RegionEnum GetRegionName(Vector3 position)
-  {
-    return instance.GetRegionNameInternal(position);
-  }
+	public static RegionEnum GetRegionName(Vector3 position) {
+		return instance.GetRegionNameInternal(position);
+	}
 
-  private void Initialise()
-  {
-    int childCount = instance.transform.childCount;
-    for (int index = 0; index < childCount; ++index)
-    {
-      RegionMesh component = instance.transform.GetChild(index).gameObject.GetComponent<RegionMesh>();
-      if (!(component == null))
-      {
-        component.Initialise();
-        regionsCache[component.Region] = component;
-      }
-    }
-  }
+	private void Initialise() {
+		var childCount = instance.transform.childCount;
+		for (var index = 0; index < childCount; ++index) {
+			var component = instance.transform.GetChild(index).gameObject.GetComponent<RegionMesh>();
+			if (!(component == null)) {
+				component.Initialise();
+				regionsCache[component.Region] = component;
+			}
+		}
+	}
 
-  public static RegionMesh GetRegionMesh(RegionEnum regionName)
-  {
-    RegionMesh regionMesh;
-    instance.regionsCache.TryGetValue(regionName, out regionMesh);
-    return regionMesh;
-  }
+	public static RegionMesh GetRegionMesh(RegionEnum regionName) {
+		RegionMesh regionMesh;
+		instance.regionsCache.TryGetValue(regionName, out regionMesh);
+		return regionMesh;
+	}
 
-  private void Awake()
-  {
-    instance = this;
-    Initialise();
-  }
+	private void Awake() {
+		instance = this;
+		Initialise();
+	}
 
-  private RegionEnum GetRegionNameInternal(Vector3 position)
-  {
-    int layerMask = 1 << gameObject.layer;
-    RaycastHit hitInfo;
-    if (!Physics.Raycast(new Ray(new Vector3(position.x, 2f, position.z), Vector3.down), out hitInfo, 3f, layerMask, QueryTriggerInteraction.Collide))
-      return RegionEnum.None;
-    RegionMesh component = hitInfo.collider.GetComponent<RegionMesh>();
-    return component == null ? RegionEnum.None : component.Region;
-  }
+	private RegionEnum GetRegionNameInternal(Vector3 position) {
+		var layerMask = 1 << gameObject.layer;
+		RaycastHit hitInfo;
+		if (!Physics.Raycast(new Ray(new Vector3(position.x, 2f, position.z), Vector3.down), out hitInfo, 3f, layerMask,
+			    QueryTriggerInteraction.Collide))
+			return RegionEnum.None;
+		var component = hitInfo.collider.GetComponent<RegionMesh>();
+		return component == null ? RegionEnum.None : component.Region;
+	}
 }

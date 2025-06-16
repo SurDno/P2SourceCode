@@ -1,13 +1,11 @@
 ﻿using Engine.Source.Commons.Effects;
 
-namespace Engine.Source.Effects.Engine
-{
-  public interface IEffectValueSetter
-  {
-    string ValueView { get; }
+namespace Engine.Source.Effects.Engine;
 
-    string TypeView { get; }
+public interface IEffectValueSetter {
+	string ValueView { get; }
 
-    void Compute(IEffect context);
-  }
+	string TypeView { get; }
+
+	void Compute(IEffect context);
 }

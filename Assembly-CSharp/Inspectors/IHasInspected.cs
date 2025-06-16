@@ -1,7 +1,5 @@
-﻿namespace Inspectors
-{
-  public interface IHasInspected
-  {
-    void HasInspected(ExecuteMode mode);
-  }
+﻿namespace Inspectors;
+
+public interface IHasInspected {
+	void HasInspected(ExecuteMode mode);
 }

@@ -2,164 +2,152 @@
 using System.Collections.Generic;
 using SteamNative;
 
-namespace Facepunch.Steamworks
-{
-  public class LobbyList : IDisposable
-  {
-    internal Client client;
-    internal List<ulong> requests;
-    public Action OnLobbiesUpdated;
+namespace Facepunch.Steamworks;
 
-    public List<Lobby> Lobbies { get; private set; }
+public class LobbyList : IDisposable {
+	internal Client client;
+	internal List<ulong> requests;
+	public Action OnLobbiesUpdated;
 
-    public bool Finished { get; private set; }
+	public List<Lobby> Lobbies { get; private set; }
 
-    internal LobbyList(Client client)
-    {
-      this.client = client;
-      Lobbies = new List<Lobby>();
-      requests = new List<ulong>();
-    }
+	public bool Finished { get; private set; }
 
-    public void Refresh(Filter filter = null)
-    {
-      Lobbies.Clear();
-      requests.Clear();
-      Finished = false;
-      if (filter == null)
-      {
-        filter = new Filter();
-        filter.StringFilters.Add("appid", client.AppId.ToString());
-      }
-      client.native.matchmaking.AddRequestLobbyListDistanceFilter((LobbyDistanceFilter) filter.DistanceFilter);
-      int? nullable = filter.SlotsAvailable;
-      if (nullable.HasValue)
-      {
-        SteamMatchmaking matchmaking = client.native.matchmaking;
-        nullable = filter.SlotsAvailable;
-        int nSlotsAvailable = nullable.Value;
-        matchmaking.AddRequestLobbyListFilterSlotsAvailable(nSlotsAvailable);
-      }
-      nullable = filter.MaxResults;
-      if (nullable.HasValue)
-      {
-        SteamMatchmaking matchmaking = client.native.matchmaking;
-        nullable = filter.MaxResults;
-        int cMaxResults = nullable.Value;
-        matchmaking.AddRequestLobbyListResultCountFilter(cMaxResults);
-      }
-      foreach (KeyValuePair<string, string> stringFilter in filter.StringFilters)
-        client.native.matchmaking.AddRequestLobbyListStringFilter(stringFilter.Key, stringFilter.Value, LobbyComparison.Equal);
-      foreach (KeyValuePair<string, int> nearFilter in filter.NearFilters)
-        client.native.matchmaking.AddRequestLobbyListNearValueFilter(nearFilter.Key, nearFilter.Value);
-      client.native.matchmaking.RequestLobbyList(OnLobbyList);
-    }
+	internal LobbyList(Client client) {
+		this.client = client;
+		Lobbies = new List<Lobby>();
+		requests = new List<ulong>();
+	}
 
-    private void OnLobbyList(LobbyMatchList_t callback, bool error)
-    {
-      if (error)
-        return;
-      uint lobbiesMatching = callback.LobbiesMatching;
-      for (int iLobby = 0; iLobby < lobbiesMatching; ++iLobby)
-      {
-        ulong lobbyByIndex = client.native.matchmaking.GetLobbyByIndex(iLobby);
-        requests.Add(lobbyByIndex);
-        Lobby lobby = Lobby.FromSteam(client, lobbyByIndex);
-        if (lobby.Name != "")
-        {
-          Lobbies.Add(lobby);
-          checkFinished();
-        }
-        else
-        {
-          client.native.matchmaking.RequestLobbyData(lobbyByIndex);
-          LobbyDataUpdate_t.RegisterCallback(client, OnLobbyDataUpdated);
-        }
-      }
-      checkFinished();
-      if (OnLobbiesUpdated == null)
-        return;
-      OnLobbiesUpdated();
-    }
+	public void Refresh(Filter filter = null) {
+		Lobbies.Clear();
+		requests.Clear();
+		Finished = false;
+		if (filter == null) {
+			filter = new Filter();
+			filter.StringFilters.Add("appid", client.AppId.ToString());
+		}
 
-    private void checkFinished()
-    {
-      if (Lobbies.Count == requests.Count)
-        Finished = true;
-      else
-        Finished = false;
-    }
+		client.native.matchmaking.AddRequestLobbyListDistanceFilter((LobbyDistanceFilter)filter.DistanceFilter);
+		var nullable = filter.SlotsAvailable;
+		if (nullable.HasValue) {
+			var matchmaking = client.native.matchmaking;
+			nullable = filter.SlotsAvailable;
+			var nSlotsAvailable = nullable.Value;
+			matchmaking.AddRequestLobbyListFilterSlotsAvailable(nSlotsAvailable);
+		}
 
-    private void OnLobbyDataUpdated(LobbyDataUpdate_t callback, bool error)
-    {
-      if (callback.Success != 1)
-        return;
-      Lobby lobby = Lobbies.Find(x => (long) x.LobbyID == (long) callback.SteamIDLobby);
-      if (lobby == null)
-      {
-        Lobbies.Add(lobby);
-        checkFinished();
-      }
-      if (OnLobbiesUpdated != null)
-        OnLobbiesUpdated();
-    }
+		nullable = filter.MaxResults;
+		if (nullable.HasValue) {
+			var matchmaking = client.native.matchmaking;
+			nullable = filter.MaxResults;
+			var cMaxResults = nullable.Value;
+			matchmaking.AddRequestLobbyListResultCountFilter(cMaxResults);
+		}
 
-    public void Dispose() => client = null;
+		foreach (var stringFilter in filter.StringFilters)
+			client.native.matchmaking.AddRequestLobbyListStringFilter(stringFilter.Key, stringFilter.Value,
+				LobbyComparison.Equal);
+		foreach (var nearFilter in filter.NearFilters)
+			client.native.matchmaking.AddRequestLobbyListNearValueFilter(nearFilter.Key, nearFilter.Value);
+		client.native.matchmaking.RequestLobbyList(OnLobbyList);
+	}
 
-    public class Filter
-    {
-      public Dictionary<string, string> StringFilters = new Dictionary<string, string>();
-      public Dictionary<string, int> NearFilters = new Dictionary<string, int>();
-      public Distance DistanceFilter = Distance.Worldwide;
+	private void OnLobbyList(LobbyMatchList_t callback, bool error) {
+		if (error)
+			return;
+		var lobbiesMatching = callback.LobbiesMatching;
+		for (var iLobby = 0; iLobby < lobbiesMatching; ++iLobby) {
+			var lobbyByIndex = client.native.matchmaking.GetLobbyByIndex(iLobby);
+			requests.Add(lobbyByIndex);
+			var lobby = Lobby.FromSteam(client, lobbyByIndex);
+			if (lobby.Name != "") {
+				Lobbies.Add(lobby);
+				checkFinished();
+			} else {
+				client.native.matchmaking.RequestLobbyData(lobbyByIndex);
+				LobbyDataUpdate_t.RegisterCallback(client, OnLobbyDataUpdated);
+			}
+		}
 
-      public int? SlotsAvailable { get; set; }
+		checkFinished();
+		if (OnLobbiesUpdated == null)
+			return;
+		OnLobbiesUpdated();
+	}
 
-      public int? MaxResults { get; set; }
+	private void checkFinished() {
+		if (Lobbies.Count == requests.Count)
+			Finished = true;
+		else
+			Finished = false;
+	}
 
-      public enum Distance
-      {
-        Close,
-        Default,
-        Far,
-        Worldwide,
-      }
+	private void OnLobbyDataUpdated(LobbyDataUpdate_t callback, bool error) {
+		if (callback.Success != 1)
+			return;
+		var lobby = Lobbies.Find(x => (long)x.LobbyID == (long)callback.SteamIDLobby);
+		if (lobby == null) {
+			Lobbies.Add(lobby);
+			checkFinished();
+		}
 
-      public enum Comparison
-      {
-        EqualToOrLessThan = -2,
-        LessThan = -1,
-        Equal = 0,
-        GreaterThan = 1,
-        EqualToOrGreaterThan = 2,
-        NotEqual = 3,
-      }
-    }
+		if (OnLobbiesUpdated != null)
+			OnLobbiesUpdated();
+	}
 
-    public class Lobby
-    {
-      internal Client Client;
+	public void Dispose() {
+		client = null;
+	}
 
-      public string Name { get; private set; }
+	public class Filter {
+		public Dictionary<string, string> StringFilters = new();
+		public Dictionary<string, int> NearFilters = new();
+		public Distance DistanceFilter = Distance.Worldwide;
 
-      public ulong LobbyID { get; private set; }
+		public int? SlotsAvailable { get; set; }
 
-      public ulong Owner { get; private set; }
+		public int? MaxResults { get; set; }
 
-      public int MemberLimit { get; private set; }
+		public enum Distance {
+			Close,
+			Default,
+			Far,
+			Worldwide
+		}
 
-      public int NumMembers { get; private set; }
+		public enum Comparison {
+			EqualToOrLessThan = -2,
+			LessThan = -1,
+			Equal = 0,
+			GreaterThan = 1,
+			EqualToOrGreaterThan = 2,
+			NotEqual = 3
+		}
+	}
 
-      internal static Lobby FromSteam(Client client, ulong lobby)
-      {
-        return new Lobby {
-          Client = client,
-          LobbyID = lobby,
-          Name = client.native.matchmaking.GetLobbyData(lobby, "name"),
-          MemberLimit = client.native.matchmaking.GetLobbyMemberLimit(lobby),
-          Owner = client.native.matchmaking.GetLobbyOwner(lobby),
-          NumMembers = client.native.matchmaking.GetNumLobbyMembers(lobby)
-        };
-      }
-    }
-  }
+	public class Lobby {
+		internal Client Client;
+
+		public string Name { get; private set; }
+
+		public ulong LobbyID { get; private set; }
+
+		public ulong Owner { get; private set; }
+
+		public int MemberLimit { get; private set; }
+
+		public int NumMembers { get; private set; }
+
+		internal static Lobby FromSteam(Client client, ulong lobby) {
+			return new Lobby {
+				Client = client,
+				LobbyID = lobby,
+				Name = client.native.matchmaking.GetLobbyData(lobby, "name"),
+				MemberLimit = client.native.matchmaking.GetLobbyMemberLimit(lobby),
+				Owner = client.native.matchmaking.GetLobbyOwner(lobby),
+				NumMembers = client.native.matchmaking.GetNumLobbyMembers(lobby)
+			};
+		}
+	}
 }

@@ -8,49 +8,44 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks.Pathologic
-{
-  [TaskDescription("Target weapon Off")]
-  [TaskCategory("Pathologic/IK")]
-  [TaskIcon("Pathologic_InstantIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (TargetWeaponOff))]
-  public class TargetWeaponOff : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    private IKController ikController;
+namespace BehaviorDesigner.Runtime.Tasks.Pathologic;
 
-    public override TaskStatus OnUpdate()
-    {
-      if (ikController == null)
-      {
-        ikController = gameObject.GetComponent<IKController>();
-        if (ikController == null)
-        {
-          Debug.LogError(gameObject.name + ": doesn't contain " + typeof (IKController).Name + " unity component", gameObject);
-          return TaskStatus.Failure;
-        }
-      }
-      ikController.WeaponTarget = null;
-      return TaskStatus.Success;
-    }
+[TaskDescription("Target weapon Off")]
+[TaskCategory("Pathologic/IK")]
+[TaskIcon("Pathologic_InstantIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(TargetWeaponOff))]
+public class TargetWeaponOff : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	private IKController ikController;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    }
+	public override TaskStatus OnUpdate() {
+		if (ikController == null) {
+			ikController = gameObject.GetComponent<IKController>();
+			if (ikController == null) {
+				Debug.LogError(gameObject.name + ": doesn't contain " + typeof(IKController).Name + " unity component",
+					gameObject);
+				return TaskStatus.Failure;
+			}
+		}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    }
-  }
+		ikController.WeaponTarget = null;
+		return TaskStatus.Success;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+	}
 }

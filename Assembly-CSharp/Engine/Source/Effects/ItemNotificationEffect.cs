@@ -8,39 +8,31 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Services;
 using Inspectors;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class ItemNotificationEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class ItemNotificationEffect : IEffect {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	public string Name => GetType().Name;
 
-    public IEntity Target { get; set; }
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public ParameterEffectQueueEnum Queue => queue;
+	public IEntity Target { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime) => true;
+	public ParameterEffectQueueEnum Queue => queue;
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      IEntity entity = AbilityItem.Item;
-      ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemBroken, entity.Template);
-      return false;
-    }
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		return true;
+	}
 
-    public void Cleanup()
-    {
-    }
-  }
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		var entity = AbilityItem.Item;
+		ServiceLocator.GetService<NotificationService>().AddNotify(NotificationEnum.ItemBroken, entity.Template);
+		return false;
+	}
+
+	public void Cleanup() { }
 }

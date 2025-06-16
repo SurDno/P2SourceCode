@@ -1,28 +1,24 @@
 ﻿using System;
 using Inspectors;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (QuestCompassService))]
-  public class QuestCompassService
-  {
-    private bool enabled;
-    public Action<bool> OnEnableChanged;
+namespace Engine.Source.Services;
 
-    [Inspected(Mutable = true)]
-    public bool IsEnabled
-    {
-      get => enabled;
-      set
-      {
-        if (enabled == value)
-          return;
-        enabled = value;
-        Action<bool> onEnableChanged = OnEnableChanged;
-        if (onEnableChanged == null)
-          return;
-        onEnableChanged(value);
-      }
-    }
-  }
+[GameService(typeof(QuestCompassService))]
+public class QuestCompassService {
+	private bool enabled;
+	public Action<bool> OnEnableChanged;
+
+	[Inspected(Mutable = true)]
+	public bool IsEnabled {
+		get => enabled;
+		set {
+			if (enabled == value)
+				return;
+			enabled = value;
+			var onEnableChanged = OnEnableChanged;
+			if (onEnableChanged == null)
+				return;
+			onEnableChanged(value);
+		}
+	}
 }

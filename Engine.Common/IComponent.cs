@@ -1,9 +1,7 @@
-﻿namespace Engine.Common
-{
-  public interface IComponent
-  {
-    IEntity Owner { get; }
+﻿namespace Engine.Common;
 
-    bool IsDisposed { get; }
-  }
+public interface IComponent {
+	IEntity Owner { get; }
+
+	bool IsDisposed { get; }
 }

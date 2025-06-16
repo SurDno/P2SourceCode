@@ -1,16 +1,14 @@
 ﻿using System;
 using Engine.Common.Types;
 
-namespace Engine.Common.MindMap
-{
-  public interface IMMContent
-  {
-    Guid Id { get; set; }
+namespace Engine.Common.MindMap;
 
-    LocalizedText Description { get; set; }
+public interface IMMContent {
+	Guid Id { get; set; }
 
-    MMContentKind Kind { get; set; }
+	LocalizedText Description { get; set; }
 
-    IMMPlaceholder Placeholder { get; set; }
-  }
+	MMContentKind Kind { get; set; }
+
+	IMMPlaceholder Placeholder { get; set; }
 }

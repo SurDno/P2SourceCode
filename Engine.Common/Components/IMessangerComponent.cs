@@ -1,9 +1,7 @@
-﻿namespace Engine.Common.Components
-{
-  public interface IMessangerComponent : IComponent
-  {
-    void StartTeleporting();
+﻿namespace Engine.Common.Components;
 
-    void StopTeleporting();
-  }
+public interface IMessangerComponent : IComponent {
+	void StartTeleporting();
+
+	void StopTeleporting();
 }

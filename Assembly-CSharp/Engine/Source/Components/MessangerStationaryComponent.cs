@@ -10,72 +10,62 @@ using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (IMessangerStationaryComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class MessangerStationaryComponent : 
-    EngineComponent,
-    IMessangerStationaryComponent,
-    IComponent,
-    INeedSave
-  {
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [DataReadProxy]
-    [DataWriteProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy]
-    protected SpawnpointKindEnum spawnpointKindEnum;
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected]
-    protected bool registred;
+namespace Engine.Source.Components;
 
-    public SpawnpointKindEnum SpawnpointKind
-    {
-      get => spawnpointKindEnum;
-      set
-      {
-        spawnpointKindEnum = value;
-        if (!registred)
-          return;
-        StopTeleporting();
-        StartTeleporting();
-      }
-    }
+[Factory(typeof(IMessangerStationaryComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave |
+               TypeEnum.StateLoad)]
+public class MessangerStationaryComponent :
+	EngineComponent,
+	IMessangerStationaryComponent,
+	IComponent,
+	INeedSave {
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[DataReadProxy]
+	[DataWriteProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	[CopyableProxy]
+	protected SpawnpointKindEnum spawnpointKindEnum;
 
-    public bool NeedSave => true;
+	[StateSaveProxy] [StateLoadProxy()] [Inspected]
+	protected bool registred;
 
-    public override void OnAdded()
-    {
-    }
+	public SpawnpointKindEnum SpawnpointKind {
+		get => spawnpointKindEnum;
+		set {
+			spawnpointKindEnum = value;
+			if (!registred)
+				return;
+			StopTeleporting();
+			StartTeleporting();
+		}
+	}
 
-    public override void OnRemoved()
-    {
-      if (!registred)
-        return;
-      StopTeleporting();
-    }
+	public bool NeedSave => true;
 
-    public void StartTeleporting()
-    {
-      ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(Owner, spawnpointKindEnum);
-      registred = true;
-    }
+	public override void OnAdded() { }
 
-    public void StopTeleporting()
-    {
-      ServiceLocator.GetService<PostmanStaticTeleportService>().UnregisterPostman(Owner);
-      registred = false;
-    }
+	public override void OnRemoved() {
+		if (!registred)
+			return;
+		StopTeleporting();
+	}
 
-    [OnLoaded]
-    protected void OnLoaded()
-    {
-      if (!registred)
-        return;
-      ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(Owner, spawnpointKindEnum);
-    }
-  }
+	public void StartTeleporting() {
+		ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(Owner, spawnpointKindEnum);
+		registred = true;
+	}
+
+	public void StopTeleporting() {
+		ServiceLocator.GetService<PostmanStaticTeleportService>().UnregisterPostman(Owner);
+		registred = false;
+	}
+
+	[OnLoaded]
+	protected void OnLoaded() {
+		if (!registred)
+			return;
+		ServiceLocator.GetService<PostmanStaticTeleportService>().RegisterPostman(Owner, spawnpointKindEnum);
+	}
 }

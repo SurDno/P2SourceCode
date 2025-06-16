@@ -2,20 +2,17 @@
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  [FactoryProxy(typeof (VMDetectable))]
-  public class Detectable : VMDetectable, IInitialiseComponentFromHierarchy, IInitialiseEvents
-  {
-    public override string GetComponentTypeName() => nameof (Detectable);
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
-    {
-    }
+[FactoryProxy(typeof(VMDetectable))]
+public class Detectable : VMDetectable, IInitialiseComponentFromHierarchy, IInitialiseEvents {
+	public override string GetComponentTypeName() {
+		return nameof(Detectable);
+	}
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
-      string name = target.Name;
-    }
-  }
+	public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject) { }
+
+	public void InitialiseEvent(DynamicEvent target) {
+		var name = target.Name;
+	}
 }

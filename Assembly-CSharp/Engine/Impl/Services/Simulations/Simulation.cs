@@ -22,306 +22,258 @@ using Engine.Source.Services.Saves;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Impl.Services.Simulations
-{
-  [Depend(typeof (IFactory))]
-  [Depend(typeof (HierarchyService))]
-  [RuntimeService(typeof (Simulation), typeof (ISimulation))]
-  [SaveDepend(typeof (VirtualMachineController))]
-  [SaveDepend(typeof (ISteppeHerbService))]
-  public class Simulation : ISimulation, IInitialisable, ISavesController
-  {
-    private const string nodeName = "Simulation";
-    private const string entityName = "Entity";
-    private const string idName = "Id";
-    private const string pathName = "HierarchyPath";
-    [Inspected]
-    private Dictionary<Guid, IEntity> entities = new Dictionary<Guid, IEntity>(GuidComparer.Instance);
-    private IEntity hierarchy;
-    private IEntity objects;
-    private IEntity storables;
-    private IEntity others;
-    private bool initialise;
-    private IEntity player;
-    [Inspected]
-    private List<IEntity> players = new List<IEntity>();
+namespace Engine.Impl.Services.Simulations;
 
-    public IEntity Get(Guid id)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      IEntity entity;
-      entities.TryGetValue(id, out entity);
-      return entity;
-    }
+[Depend(typeof(IFactory))]
+[Depend(typeof(HierarchyService))]
+[RuntimeService(typeof(Simulation), typeof(ISimulation))]
+[SaveDepend(typeof(VirtualMachineController))]
+[SaveDepend(typeof(ISteppeHerbService))]
+public class Simulation : ISimulation, IInitialisable, ISavesController {
+	private const string nodeName = "Simulation";
+	private const string entityName = "Entity";
+	private const string idName = "Id";
+	private const string pathName = "HierarchyPath";
+	[Inspected] private Dictionary<Guid, IEntity> entities = new(GuidComparer.Instance);
+	private IEntity hierarchy;
+	private IEntity objects;
+	private IEntity storables;
+	private IEntity others;
+	private bool initialise;
+	private IEntity player;
+	[Inspected] private List<IEntity> players = new();
 
-    [Inspected]
-    public IEntity Hierarchy
-    {
-      get
-      {
-        if (!initialise)
-          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return hierarchy;
-      }
-    }
+	public IEntity Get(Guid id) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		IEntity entity;
+		entities.TryGetValue(id, out entity);
+		return entity;
+	}
 
-    [Inspected]
-    public IEntity Objects
-    {
-      get
-      {
-        if (!initialise)
-          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return objects;
-      }
-    }
+	[Inspected]
+	public IEntity Hierarchy {
+		get {
+			if (!initialise)
+				throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+			return hierarchy;
+		}
+	}
 
-    [Inspected]
-    public IEntity Storables
-    {
-      get
-      {
-        if (!initialise)
-          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return storables;
-      }
-    }
+	[Inspected]
+	public IEntity Objects {
+		get {
+			if (!initialise)
+				throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+			return objects;
+		}
+	}
 
-    [Inspected]
-    public IEntity Others
-    {
-      get
-      {
-        if (!initialise)
-          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        return others;
-      }
-    }
+	[Inspected]
+	public IEntity Storables {
+		get {
+			if (!initialise)
+				throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+			return storables;
+		}
+	}
 
-    [Inspected]
-    public IEntity Player
-    {
-      get => player;
-      set
-      {
-        if (!initialise)
-          throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-        if (player == value)
-          return;
-        if (player != null)
-          DeactivatePlayer(player);
-        player = value;
-        if (player != null)
-          ActivatePlayer(player);
-        Action<IEntity> onPlayerChanged = OnPlayerChanged;
-        if (onPlayerChanged == null)
-          return;
-        onPlayerChanged(player);
-      }
-    }
+	[Inspected]
+	public IEntity Others {
+		get {
+			if (!initialise)
+				throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+			return others;
+		}
+	}
 
-    public event Action<IEntity> OnPlayerChanged;
+	[Inspected]
+	public IEntity Player {
+		get => player;
+		set {
+			if (!initialise)
+				throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+			if (player == value)
+				return;
+			if (player != null)
+				DeactivatePlayer(player);
+			player = value;
+			if (player != null)
+				ActivatePlayer(player);
+			var onPlayerChanged = OnPlayerChanged;
+			if (onPlayerChanged == null)
+				return;
+			onPlayerChanged(player);
+		}
+	}
 
-    public void Initialise()
-    {
-      initialise = true;
-      hierarchy = CreateObject("Hierarchy", Ids.HierarchyId);
-      ((ComponentCollection) Hierarchy).Add<LocationComponent>().IsHibernation = false;
-      objects = CreateObject("Objects", Ids.ObjectsId);
-      storables = CreateObject("Storables", Ids.StorablesId);
-      others = CreateObject("Others", Ids.OthersId);
-    }
+	public event Action<IEntity> OnPlayerChanged;
 
-    public void Terminate()
-    {
-      DisposeRoot(Storables);
-      storables = null;
-      DisposeRoot(Objects);
-      objects = null;
-      DisposeRoot(Others);
-      others = null;
-      DisposeRoot(Hierarchy);
-      hierarchy = null;
-      if (entities.Count != 0)
-      {
-        Debug.LogError("Simulation is not empty, count : " + entities.Count);
-        entities.Clear();
-      }
-      initialise = false;
-    }
+	public void Initialise() {
+		initialise = true;
+		hierarchy = CreateObject("Hierarchy", Ids.HierarchyId);
+		((ComponentCollection)Hierarchy).Add<LocationComponent>().IsHibernation = false;
+		objects = CreateObject("Objects", Ids.ObjectsId);
+		storables = CreateObject("Storables", Ids.StorablesId);
+		others = CreateObject("Others", Ids.OthersId);
+	}
 
-    private IEntity CreateObject(string name, Guid id)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      IEntity entity = ServiceCache.Factory.Create<IEntity>(id);
-      entity.Name = name;
-      entities.Add(entity.Id, entity);
-      ((Entity) entity).OnAdded();
-      return entity;
-    }
+	public void Terminate() {
+		DisposeRoot(Storables);
+		storables = null;
+		DisposeRoot(Objects);
+		objects = null;
+		DisposeRoot(Others);
+		others = null;
+		DisposeRoot(Hierarchy);
+		hierarchy = null;
+		if (entities.Count != 0) {
+			Debug.LogError("Simulation is not empty, count : " + entities.Count);
+			entities.Clear();
+		}
 
-    public void Add(IEntity entity, IEntity parent)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      if (entity.IsTemplate)
-        Debug.LogError("Add template to simulation : " + entity.GetInfo());
-      ServiceCache.OptimizationService.FrameHasSpike = true;
-      entities.Add(entity.Id, entity);
-      ((IEntityHierarchy) parent).Add(entity);
-      ((Entity) entity).OnAdded();
-    }
+		initialise = false;
+	}
 
-    public void Remove(IEntity entity)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      ((Entity) entity).OnRemoved();
-      IEntity parent = entity.Parent;
-      if (parent != null)
-      {
-        ((IEntityHierarchy) parent).Remove(entity);
-        entities.Remove(entity.Id);
-      }
-      else if (!Ids.IsRoot(entity.Id))
-        throw new Exception(entity.GetInfo());
-    }
+	private IEntity CreateObject(string name, Guid id) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		var entity = ServiceCache.Factory.Create<IEntity>(id);
+		entity.Name = name;
+		entities.Add(entity.Id, entity);
+		((Entity)entity).OnAdded();
+		return entity;
+	}
 
-    private void DisposeRoot(IEntity entity)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      ((Entity) entity).OnRemoved();
-      entity.Dispose();
-      entities.Remove(entity.Id);
-    }
+	public void Add(IEntity entity, IEntity parent) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		if (entity.IsTemplate)
+			Debug.LogError("Add template to simulation : " + entity.GetInfo());
+		ServiceCache.OptimizationService.FrameHasSpike = true;
+		entities.Add(entity.Id, entity);
+		((IEntityHierarchy)parent).Add(entity);
+		((Entity)entity).OnAdded();
+	}
 
-    public IEnumerator Load(IErrorLoadingHandler errorHandler)
-    {
-      yield break;
-    }
+	public void Remove(IEntity entity) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		((Entity)entity).OnRemoved();
+		var parent = entity.Parent;
+		if (parent != null) {
+			((IEntityHierarchy)parent).Remove(entity);
+			entities.Remove(entity.Id);
+		} else if (!Ids.IsRoot(entity.Id))
+			throw new Exception(entity.GetInfo());
+	}
 
-    public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
-    {
-      DateTime time = DateTime.UtcNow;
-      TimeSpan minTime = TimeSpan.FromSeconds(1.0);
-      XmlElement vmNode = element[nameof (Simulation)];
-      if (vmNode == null)
-      {
-        errorHandler.LogError("Simulation node not found , context : " + context);
-      }
-      else
-      {
-        foreach (XmlElement childNode in vmNode.ChildNodes)
-        {
-          XmlElement item = childNode;
-          if (item.Name != "Entity")
-          {
-            Debug.LogError(item.Name + " is not Entity , context : " + context);
-          }
-          else
-          {
-            XmlElement idNode = item["Id"];
-            if (idNode == null)
-            {
-              Debug.LogError("Id node not found , context : " + context);
-            }
-            else
-            {
-              Guid id = DefaultConverter.ParseGuid(idNode.InnerText);
-              IEntity entity;
-              if (!entities.TryGetValue(id, out entity))
-              {
-                XmlElement pathNode = item["HierarchyPath"];
-                Debug.LogError("Entity " + id + " not found , path : " + (pathNode != null ? pathNode.InnerText : (object) "null") + " , count : " + entities.Count + " , context : " + context);
-              }
-              else
-              {
-                XmlNodeDataReader reader = new XmlNodeDataReader(item, context);
-                ((ISerializeStateLoad) entity).StateLoad(reader, typeof (Entity));
-                DateTime currentTime = DateTime.UtcNow;
-                if (time + minTime < currentTime)
-                {
-                  time = currentTime;
-                  yield return null;
-                }
-                idNode = null;
-                id = new Guid();
-                entity = null;
-                reader = null;
-                item = null;
-              }
-            }
-          }
-        }
-        foreach (KeyValuePair<Guid, IEntity> entity1 in entities)
-        {
-          KeyValuePair<Guid, IEntity> entity = entity1;
-          MetaService.Compute(entity.Value, OnLoadedAttribute.Id);
-          entity = new KeyValuePair<Guid, IEntity>();
-        }
-      }
-    }
+	private void DisposeRoot(IEntity entity) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		((Entity)entity).OnRemoved();
+		entity.Dispose();
+		entities.Remove(entity.Id);
+	}
 
-    public void Unload()
-    {
-      List<KeyValuePair<Guid, IEntity>> list = entities.ToList();
-      for (int index = 0; index < list.Count; ++index)
-      {
-        KeyValuePair<Guid, IEntity> keyValuePair = list[index];
-        if (!Ids.IsRoot(keyValuePair.Value.Id))
-        {
-          Debug.LogError("Wrong clenup simulation, entity not unloaded : " + keyValuePair.Value.GetInfo());
-          Remove(keyValuePair.Value);
-          keyValuePair.Value.Dispose();
-        }
-      }
-    }
+	public IEnumerator Load(IErrorLoadingHandler errorHandler) {
+		yield break;
+	}
 
-    public void Save(IDataWriter writer, string context)
-    {
-      writer.Begin(nameof (Simulation), null, true);
-      foreach (KeyValuePair<Guid, IEntity> entity1 in entities)
-      {
-        Entity entity2 = (Entity) entity1.Value;
-        if (entity2.NeedSave)
-          DefaultStateSaveUtility.SaveSerialize(writer, "Entity", entity2);
-      }
-      writer.End(nameof (Simulation), true);
-    }
+	public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler) {
+		var time = DateTime.UtcNow;
+		var minTime = TimeSpan.FromSeconds(1.0);
+		var vmNode = element[nameof(Simulation)];
+		if (vmNode == null)
+			errorHandler.LogError("Simulation node not found , context : " + context);
+		else {
+			foreach (XmlElement childNode in vmNode.ChildNodes) {
+				var item = childNode;
+				if (item.Name != "Entity")
+					Debug.LogError(item.Name + " is not Entity , context : " + context);
+				else {
+					var idNode = item["Id"];
+					if (idNode == null)
+						Debug.LogError("Id node not found , context : " + context);
+					else {
+						var id = DefaultConverter.ParseGuid(idNode.InnerText);
+						IEntity entity;
+						if (!entities.TryGetValue(id, out entity)) {
+							var pathNode = item["HierarchyPath"];
+							Debug.LogError("Entity " + id + " not found , path : " +
+							               (pathNode != null ? pathNode.InnerText : (object)"null") + " , count : " +
+							               entities.Count + " , context : " + context);
+						} else {
+							var reader = new XmlNodeDataReader(item, context);
+							((ISerializeStateLoad)entity).StateLoad(reader, typeof(Entity));
+							var currentTime = DateTime.UtcNow;
+							if (time + minTime < currentTime) {
+								time = currentTime;
+								yield return null;
+							}
 
-    public void AddPlayer(IEntity owner)
-    {
-      ((Entity) owner).IsPlayer = true;
-      players.Remove(owner);
-      players.Add(owner);
-      Player = players.FirstOrDefault();
-    }
+							idNode = null;
+							id = new Guid();
+							entity = null;
+							reader = null;
+							item = null;
+						}
+					}
+				}
+			}
 
-    public void RemovePlayer(IEntity owner)
-    {
-      players.Remove(owner);
-      Player = players.FirstOrDefault();
-    }
+			foreach (var entity1 in entities) {
+				var entity = entity1;
+				MetaService.Compute(entity.Value, OnLoadedAttribute.Id);
+				entity = new KeyValuePair<Guid, IEntity>();
+			}
+		}
+	}
 
-    private void ActivatePlayer(IEntity player)
-    {
-      foreach (IComponent component in player.Components)
-      {
-        if (component is IPlayerActivated playerActivated)
-          playerActivated.PlayerActivated();
-      }
-    }
+	public void Unload() {
+		var list = entities.ToList();
+		for (var index = 0; index < list.Count; ++index) {
+			var keyValuePair = list[index];
+			if (!Ids.IsRoot(keyValuePair.Value.Id)) {
+				Debug.LogError("Wrong clenup simulation, entity not unloaded : " + keyValuePair.Value.GetInfo());
+				Remove(keyValuePair.Value);
+				keyValuePair.Value.Dispose();
+			}
+		}
+	}
 
-    private void DeactivatePlayer(IEntity player)
-    {
-      foreach (IComponent component in player.Components)
-      {
-        if (component is IPlayerActivated playerActivated)
-          playerActivated.PlayerDeactivated();
-      }
-    }
-  }
+	public void Save(IDataWriter writer, string context) {
+		writer.Begin(nameof(Simulation), null, true);
+		foreach (var entity1 in entities) {
+			var entity2 = (Entity)entity1.Value;
+			if (entity2.NeedSave)
+				DefaultStateSaveUtility.SaveSerialize(writer, "Entity", entity2);
+		}
+
+		writer.End(nameof(Simulation), true);
+	}
+
+	public void AddPlayer(IEntity owner) {
+		((Entity)owner).IsPlayer = true;
+		players.Remove(owner);
+		players.Add(owner);
+		Player = players.FirstOrDefault();
+	}
+
+	public void RemovePlayer(IEntity owner) {
+		players.Remove(owner);
+		Player = players.FirstOrDefault();
+	}
+
+	private void ActivatePlayer(IEntity player) {
+		foreach (var component in player.Components)
+			if (component is IPlayerActivated playerActivated)
+				playerActivated.PlayerActivated();
+	}
+
+	private void DeactivatePlayer(IEntity player) {
+		foreach (var component in player.Components)
+			if (component is IPlayerActivated playerActivated)
+				playerActivated.PlayerDeactivated();
+	}
 }

@@ -1,8 +1,6 @@
-﻿namespace ClipperLib
-{
-  public enum PolyType
-  {
-    ptSubject,
-    ptClip,
-  }
+﻿namespace ClipperLib;
+
+public enum PolyType {
+	ptSubject,
+	ptClip
 }

@@ -7,45 +7,39 @@ using Engine.Source.Commons.Abilities;
 using Engine.Source.Commons.Effects;
 using Inspectors;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class NpcStaggerEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    protected string name = "";
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    public ShotType punchType;
+namespace Engine.Source.Effects;
 
-    public string Name => name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class NpcStaggerEffect : IEffect {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy]
+	[Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
+	protected string name = "";
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public IEntity Target { get; set; }
+	public ShotType punchType;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	public string Name => name;
 
-    public void Cleanup()
-    {
-    }
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      EnemyBase component = ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
-      ((IEntityView) Target).GameObject.GetComponent<EnemyBase>()?.Stagger(component);
-      return true;
-    }
+	public IEntity Target { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime) => false;
-  }
+	public ParameterEffectQueueEnum Queue => queue;
+
+	public void Cleanup() { }
+
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		var component = ((IEntityView)AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
+		((IEntityView)Target).GameObject.GetComponent<EnemyBase>()?.Stagger(component);
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		return false;
+	}
 }

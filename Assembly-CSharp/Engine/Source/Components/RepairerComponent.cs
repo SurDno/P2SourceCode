@@ -7,31 +7,20 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
 
-namespace Engine.Source.Components
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class RepairerComponent : EngineComponent
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<StorableGroup> repairableGroups = new List<StorableGroup>();
+namespace Engine.Source.Components;
 
-    public IEnumerable<StorableGroup> RepairableGroups
-    {
-      get => repairableGroups;
-    }
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class RepairerComponent : EngineComponent {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected List<StorableGroup> repairableGroups = new();
 
-    public bool CanRepairItem(IStorableComponent item)
-    {
-      foreach (StorableGroup repairableGroup in repairableGroups)
-      {
-        if (item.Groups.Contains(repairableGroup))
-          return true;
-      }
-      return false;
-    }
-  }
+	public IEnumerable<StorableGroup> RepairableGroups => repairableGroups;
+
+	public bool CanRepairItem(IStorableComponent item) {
+		foreach (var repairableGroup in repairableGroups)
+			if (item.Groups.Contains(repairableGroup))
+				return true;
+		return false;
+	}
 }

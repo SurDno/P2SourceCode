@@ -1,12 +1,9 @@
-﻿namespace FlowCanvas.Nodes
-{
-  public abstract class PureFunctionNode<TResult> : PureFunctionNodeBase
-  {
-    public abstract TResult Invoke();
+﻿namespace FlowCanvas.Nodes;
 
-    protected override sealed void OnRegisterPorts(FlowNode node)
-    {
-      node.AddValueOutput("Value", () => Invoke());
-    }
-  }
+public abstract class PureFunctionNode<TResult> : PureFunctionNodeBase {
+	public abstract TResult Invoke();
+
+	protected sealed override void OnRegisterPorts(FlowNode node) {
+		node.AddValueOutput("Value", () => Invoke());
+	}
 }

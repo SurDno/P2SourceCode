@@ -4,40 +4,30 @@ using Engine.Source.Commons;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class PositionComponent : EngineComponent
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    protected Vector3 position;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    protected Vector3 rotation;
+namespace Engine.Source.Components;
 
-    public Vector3 Position
-    {
-      get => position;
-      set => position = value;
-    }
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class PositionComponent : EngineComponent {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected(Mode = ExecuteMode.EditAndRuntime)]
+	protected Vector3 position;
 
-    public Vector3 Rotation
-    {
-      get => rotation;
-      set => rotation = value;
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected(Mode = ExecuteMode.EditAndRuntime)]
+	protected Vector3 rotation;
 
-    public override void OnAdded()
-    {
-      base.OnAdded();
-      ((IEntityView) Owner).Position = position;
-      ((IEntityView) Owner).Rotation = Quaternion.Euler(rotation);
-    }
-  }
+	public Vector3 Position {
+		get => position;
+		set => position = value;
+	}
+
+	public Vector3 Rotation {
+		get => rotation;
+		set => rotation = value;
+	}
+
+	public override void OnAdded() {
+		base.OnAdded();
+		((IEntityView)Owner).Position = position;
+		((IEntityView)Owner).Rotation = Quaternion.Euler(rotation);
+	}
 }

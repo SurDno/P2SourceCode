@@ -1,7 +1,6 @@
-﻿public enum PunchTypeEnum
-{
-  None,
-  Light,
-  Moderate,
-  Strong,
+﻿public enum PunchTypeEnum {
+	None,
+	Light,
+	Moderate,
+	Strong
 }

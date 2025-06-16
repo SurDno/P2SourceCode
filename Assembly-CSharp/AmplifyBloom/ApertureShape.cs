@@ -1,9 +1,7 @@
-﻿namespace AmplifyBloom
-{
-  public enum ApertureShape
-  {
-    Square,
-    Hexagon,
-    Octagon,
-  }
+﻿namespace AmplifyBloom;
+
+public enum ApertureShape {
+	Square,
+	Hexagon,
+	Octagon
 }

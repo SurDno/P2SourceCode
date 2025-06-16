@@ -1,9 +1,7 @@
-﻿namespace SteamNative
-{
-  internal enum RemoteStoragePublishedFileVisibility
-  {
-    Public,
-    FriendsOnly,
-    Private,
-  }
+﻿namespace SteamNative;
+
+internal enum RemoteStoragePublishedFileVisibility {
+	Public,
+	FriendsOnly,
+	Private
 }

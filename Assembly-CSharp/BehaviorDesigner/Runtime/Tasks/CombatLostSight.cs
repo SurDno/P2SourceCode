@@ -10,55 +10,49 @@ using Engine.Source.Services;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [TaskCategory("Pathologic/GroupBehaviour")]
-  [TaskIcon("{SkinColor}SequenceIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (CombatLostSight))]
-  public class CombatLostSight : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public SharedTransform Enemy;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public override void OnStart()
-    {
-      CombatService service = ServiceLocator.GetService<CombatService>();
-      if (service == null || Enemy.Value == null || Owner == null)
-        return;
-      EnemyBase component1 = Enemy.Value.GetComponent<EnemyBase>();
-      if (component1 == null)
-        return;
-      EnemyBase component2 = Owner.GetComponent<EnemyBase>();
-      if (component2 == null)
-        return;
-      service.LostSight(component2, component1);
-    }
+[TaskCategory("Pathologic/GroupBehaviour")]
+[TaskIcon("{SkinColor}SequenceIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(CombatLostSight))]
+public class CombatLostSight : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedTransform Enemy;
 
-    public override TaskStatus OnUpdate() => TaskStatus.Success;
+	public override void OnStart() {
+		var service = ServiceLocator.GetService<CombatService>();
+		if (service == null || Enemy.Value == null || Owner == null)
+			return;
+		var component1 = Enemy.Value.GetComponent<EnemyBase>();
+		if (component1 == null)
+			return;
+		var component2 = Owner.GetComponent<EnemyBase>();
+		if (component2 == null)
+			return;
+		service.LostSight(component2, component1);
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Enemy", Enemy);
-    }
+	public override TaskStatus OnUpdate() {
+		return TaskStatus.Success;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      Enemy = BehaviorTreeDataReadUtility.ReadShared(reader, "Enemy", Enemy);
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Enemy", Enemy);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Enemy = BehaviorTreeDataReadUtility.ReadShared(reader, "Enemy", Enemy);
+	}
 }

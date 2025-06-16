@@ -1,9 +1,7 @@
-﻿namespace SteamNative
-{
-  internal enum UGCReadAction
-  {
-    ontinueReadingUntilFinished,
-    ontinueReading,
-    lose,
-  }
+﻿namespace SteamNative;
+
+internal enum UGCReadAction {
+	ontinueReadingUntilFinished,
+	ontinueReading,
+	lose
 }

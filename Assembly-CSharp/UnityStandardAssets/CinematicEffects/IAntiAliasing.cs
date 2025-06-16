@@ -1,17 +1,15 @@
 ﻿using UnityEngine;
 
-namespace UnityStandardAssets.CinematicEffects
-{
-  public interface IAntiAliasing
-  {
-    void OnEnable(AntiAliasing owner);
+namespace UnityStandardAssets.CinematicEffects;
 
-    void OnDisable();
+public interface IAntiAliasing {
+	void OnEnable(AntiAliasing owner);
 
-    void OnPreCull(Camera camera);
+	void OnDisable();
 
-    void OnPostRender(Camera camera);
+	void OnPreCull(Camera camera);
 
-    void OnRenderImage(Camera camera, RenderTexture source, RenderTexture destination);
-  }
+	void OnPostRender(Camera camera);
+
+	void OnRenderImage(Camera camera, RenderTexture source, RenderTexture destination);
 }

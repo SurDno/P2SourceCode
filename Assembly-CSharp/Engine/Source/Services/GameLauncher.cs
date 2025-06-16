@@ -5,114 +5,93 @@ using Engine.Source.Commons;
 using Engine.Source.Settings;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [RuntimeService(typeof (GameLauncher))]
-  public class GameLauncher
-  {
-    private bool busy;
+namespace Engine.Source.Services;
 
-    public void StartGame()
-    {
-      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      CoroutineService.Instance.Route(StartGameRoute());
-    }
+[RuntimeService(typeof(GameLauncher))]
+public class GameLauncher {
+	private bool busy;
 
-    public void RestartGame()
-    {
-      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      CoroutineService.Instance.Route(RestartGameRoute(null));
-    }
+	public void StartGame() {
+		Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":")
+			.Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+		CoroutineService.Instance.Route(StartGameRoute());
+	}
 
-    public void RestartGameWithSave(string saveName)
-    {
-      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      CoroutineService.Instance.Route(RestartGameRoute(saveName));
-    }
+	public void RestartGame() {
+		Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":")
+			.Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+		CoroutineService.Instance.Route(RestartGameRoute(null));
+	}
 
-    public void StartNewGame()
-    {
-      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      CoroutineService.Instance.Route(LoadGameRoute(null));
-    }
+	public void RestartGameWithSave(string saveName) {
+		Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":")
+			.Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+		CoroutineService.Instance.Route(RestartGameRoute(saveName));
+	}
 
-    public void StartGameWithSave(string saveName)
-    {
-      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      CoroutineService.Instance.Route(LoadGameRoute(saveName));
-    }
+	public void StartNewGame() {
+		Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":")
+			.Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+		CoroutineService.Instance.Route(LoadGameRoute(null));
+	}
 
-    public void ExitToMainMenu()
-    {
-      Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":").Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
-      CoroutineService.Instance.Route(ExitToMainMenuRoute());
-    }
+	public void StartGameWithSave(string saveName) {
+		Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":")
+			.Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+		CoroutineService.Instance.Route(LoadGameRoute(saveName));
+	}
 
-    private IEnumerator LoadGameRoute(string saveName)
-    {
-      if (busy)
-      {
-        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
-      }
-      else
-      {
-        busy = true;
-        yield return GameLauncherUtility.LoadGameRoute(saveName);
-        busy = false;
-      }
-    }
+	public void ExitToMainMenu() {
+		Debug.Log(ObjectInfoUtility.GetStream().Append(TypeUtility.GetTypeName(GetType())).Append(":")
+			.Append(MethodBase.GetCurrentMethod().Name).Append("\n").GetStackTrace());
+		CoroutineService.Instance.Route(ExitToMainMenuRoute());
+	}
 
-    private IEnumerator ExitToMainMenuRoute()
-    {
-      if (busy)
-      {
-        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
-      }
-      else
-      {
-        busy = true;
-        yield return GameLauncherUtility.UnloadGameRoute();
-        yield return GameLauncherUtility.ShowStartWindow();
-        busy = false;
-      }
-    }
+	private IEnumerator LoadGameRoute(string saveName) {
+		if (busy)
+			Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
+		else {
+			busy = true;
+			yield return GameLauncherUtility.LoadGameRoute(saveName);
+			busy = false;
+		}
+	}
 
-    private IEnumerator RestartGameRoute(string saveName)
-    {
-      if (busy)
-      {
-        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
-      }
-      else
-      {
-        busy = true;
-        yield return GameLauncherUtility.UnloadGameRoute();
-        yield return GameLauncherUtility.LoadGameRoute(saveName);
-        busy = false;
-      }
-    }
+	private IEnumerator ExitToMainMenuRoute() {
+		if (busy)
+			Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
+		else {
+			busy = true;
+			yield return GameLauncherUtility.UnloadGameRoute();
+			yield return GameLauncherUtility.ShowStartWindow();
+			busy = false;
+		}
+	}
 
-    private IEnumerator StartGameRoute()
-    {
-      if (busy)
-      {
-        Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
-      }
-      else
-      {
-        busy = true;
-        if (InstanceByRequest<CommonSettings>.Instance.NotFirstStart.Value)
-        {
-          yield return GameLauncherUtility.ShowStartWindow();
-          busy = false;
-        }
-        else
-        {
-          yield return GameLauncherUtility.ShowStartGammaWindow();
-          InstanceByRequest<CommonSettings>.Instance.NotFirstStart.Value = true;
-          busy = false;
-        }
-      }
-    }
-  }
+	private IEnumerator RestartGameRoute(string saveName) {
+		if (busy)
+			Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
+		else {
+			busy = true;
+			yield return GameLauncherUtility.UnloadGameRoute();
+			yield return GameLauncherUtility.LoadGameRoute(saveName);
+			busy = false;
+		}
+	}
+
+	private IEnumerator StartGameRoute() {
+		if (busy)
+			Debug.LogError(GetType().Name + ":" + MethodBase.GetCurrentMethod().Name + " Launcher is busy");
+		else {
+			busy = true;
+			if (InstanceByRequest<CommonSettings>.Instance.NotFirstStart.Value) {
+				yield return GameLauncherUtility.ShowStartWindow();
+				busy = false;
+			} else {
+				yield return GameLauncherUtility.ShowStartGammaWindow();
+				InstanceByRequest<CommonSettings>.Instance.NotFirstStart.Value = true;
+				busy = false;
+			}
+		}
+	}
 }

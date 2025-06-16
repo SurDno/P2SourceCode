@@ -1,21 +1,19 @@
-﻿namespace Engine.Common.Services
-{
-  public interface IProfilesService
-  {
-    string GetValue(string name);
+﻿namespace Engine.Common.Services;
 
-    void SetValue(string name, string value);
+public interface IProfilesService {
+	string GetValue(string name);
 
-    int GetIntValue(string name);
+	void SetValue(string name, string value);
 
-    void SetIntValue(string name, int value);
+	int GetIntValue(string name);
 
-    bool GetBoolValue(string name);
+	void SetIntValue(string name, int value);
 
-    void SetBoolValue(string name, bool value);
+	bool GetBoolValue(string name);
 
-    float GetFloatValue(string name);
+	void SetBoolValue(string name, bool value);
 
-    void SetFloatValue(string name, float value);
-  }
+	float GetFloatValue(string name);
+
+	void SetFloatValue(string name, float value);
 }

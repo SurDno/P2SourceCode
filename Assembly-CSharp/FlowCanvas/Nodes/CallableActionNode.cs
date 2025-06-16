@@ -1,17 +1,13 @@
-﻿namespace FlowCanvas.Nodes
-{
-  public abstract class CallableActionNode : CallableActionNodeBase
-  {
-    public abstract void Invoke();
+﻿namespace FlowCanvas.Nodes;
 
-    protected override sealed void OnRegisterPorts(FlowNode node)
-    {
-      FlowOutput o = node.AddFlowOutput(" ");
-      node.AddFlowInput(" ", () =>
-      {
-        Invoke();
-        o.Call();
-      });
-    }
-  }
+public abstract class CallableActionNode : CallableActionNodeBase {
+	public abstract void Invoke();
+
+	protected sealed override void OnRegisterPorts(FlowNode node) {
+		var o = node.AddFlowOutput(" ");
+		node.AddFlowInput(" ", () => {
+			Invoke();
+			o.Call();
+		});
+	}
 }

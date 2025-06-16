@@ -2,48 +2,40 @@
 using AssetDatabases;
 using Inspectors;
 
-namespace Engine.Impl.Services.HierarchyServices
-{
-  public struct HierarchyContainerInfo
-  {
-    private HierarchyContainer container;
+namespace Engine.Impl.Services.HierarchyServices;
 
-    [Inspected(Header = true)]
-    public string Name => AssetDatabaseUtility.GetFileName(Path);
+public struct HierarchyContainerInfo {
+	private HierarchyContainer container;
 
-    [Inspected]
-    public string Path => AssetDatabaseService.Instance.GetPath(container.Id);
+	[Inspected(Header = true)] public string Name => AssetDatabaseUtility.GetFileName(Path);
 
-    [Inspected]
-    public IEnumerable<HierarchyContainerInfo> Childs
-    {
-      get
-      {
-        foreach (HierarchyContainerInfo container in GetContainers(this.container.Items))
-        {
-          HierarchyContainerInfo child = container;
-          yield return child;
-          child = new HierarchyContainerInfo();
-        }
-      }
-    }
+	[Inspected] public string Path => AssetDatabaseService.Instance.GetPath(container.Id);
 
-    public HierarchyContainerInfo(HierarchyContainer container) => this.container = container;
+	[Inspected]
+	public IEnumerable<HierarchyContainerInfo> Childs {
+		get {
+			foreach (var container in GetContainers(this.container.Items)) {
+				var child = container;
+				yield return child;
+				child = new HierarchyContainerInfo();
+			}
+		}
+	}
 
-    private static IEnumerable<HierarchyContainerInfo> GetContainers(
-      IEnumerable<HierarchyItem> items)
-    {
-      foreach (HierarchyItem item in items)
-      {
-        if (item.Container != null)
-          yield return new HierarchyContainerInfo(item.Container);
-        foreach (HierarchyContainerInfo container in GetContainers(item.Items))
-        {
-          HierarchyContainerInfo scene = container;
-          yield return scene;
-          scene = new HierarchyContainerInfo();
-        }
-      }
-    }
-  }
+	public HierarchyContainerInfo(HierarchyContainer container) {
+		this.container = container;
+	}
+
+	private static IEnumerable<HierarchyContainerInfo> GetContainers(
+		IEnumerable<HierarchyItem> items) {
+		foreach (var item in items) {
+			if (item.Container != null)
+				yield return new HierarchyContainerInfo(item.Container);
+			foreach (var container in GetContainers(item.Items)) {
+				var scene = container;
+				yield return scene;
+				scene = new HierarchyContainerInfo();
+			}
+		}
+	}
 }

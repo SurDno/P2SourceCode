@@ -8,87 +8,70 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class VignetteOutputParameterNode : 
-    FlowControlNode,
-    IUpdatable,
-    IParameter<IntensityParameter<Color>>,
-    IParameter
-  {
-    [Port("Intensity")]
-    private ValueInput<float> intensityValueInput;
-    [Port("Color")]
-    private ValueInput<Color> colorValueInput;
-    [Port("Name")]
-    private ValueInput<string> nameInput;
-    [FromLocator]
-    private EffectsService effects;
-    private float prevIntensityValue;
-    private Color prevColorValue;
-    private bool created;
-    private bool destroed;
-    private float accamulator;
+namespace Engine.Source.Blueprints.Effects;
 
-    IntensityParameter<Color> IParameter<IntensityParameter<Color>>.Value
-    {
-      get
-      {
-        return new IntensityParameter<Color> {
-          Intensity = intensityValueInput.value,
-          Value = colorValueInput.value
-        };
-      }
-    }
+[Category("Effects")]
+public class VignetteOutputParameterNode :
+	FlowControlNode,
+	IUpdatable,
+	IParameter<IntensityParameter<Color>>,
+	IParameter {
+	[Port("Intensity")] private ValueInput<float> intensityValueInput;
+	[Port("Color")] private ValueInput<Color> colorValueInput;
+	[Port("Name")] private ValueInput<string> nameInput;
+	[FromLocator] private EffectsService effects;
+	private float prevIntensityValue;
+	private Color prevColorValue;
+	private bool created;
+	private bool destroed;
+	private float accamulator;
 
-    public override void OnGraphStarted()
-    {
-      base.OnGraphStarted();
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable(this);
-    }
+	IntensityParameter<Color> IParameter<IntensityParameter<Color>>.Value =>
+		new() {
+			Intensity = intensityValueInput.value,
+			Value = colorValueInput.value
+		};
 
-    public override void OnGraphStoped()
-    {
-      InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable(this);
-      base.OnGraphStoped();
-    }
+	public override void OnGraphStarted() {
+		base.OnGraphStarted();
+		InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.AddUpdatable(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      float num = intensityValueInput.value;
-      Color color = colorValueInput.value;
-      if (prevIntensityValue == (double) num && !(prevColorValue != color))
-        return;
-      prevIntensityValue = num;
-      prevColorValue = color;
-      if (num != 0.0)
-        CreateEffect();
-      else
-        DestroyEffect();
-    }
+	public override void OnGraphStoped() {
+		InstanceByRequest<UpdateService>.Instance.BlueprintEffectsUpdater.RemoveUpdatable(this);
+		base.OnGraphStoped();
+	}
 
-    public override void OnDestroy()
-    {
-      destroed = true;
-      DestroyEffect();
-      base.OnDestroy();
-    }
+	public void ComputeUpdate() {
+		var num = intensityValueInput.value;
+		var color = colorValueInput.value;
+		if (prevIntensityValue == (double)num && !(prevColorValue != color))
+			return;
+		prevIntensityValue = num;
+		prevColorValue = color;
+		if (num != 0.0)
+			CreateEffect();
+		else
+			DestroyEffect();
+	}
 
-    protected void CreateEffect()
-    {
-      if (destroed || created)
-        return;
-      created = true;
-      effects.AddParameter(nameInput.value, this);
-    }
+	public override void OnDestroy() {
+		destroed = true;
+		DestroyEffect();
+		base.OnDestroy();
+	}
 
-    protected void DestroyEffect()
-    {
-      if (!created)
-        return;
-      created = false;
-      effects.RemoveParameter(nameInput.value, this);
-    }
-  }
+	protected void CreateEffect() {
+		if (destroed || created)
+			return;
+		created = true;
+		effects.AddParameter(nameInput.value, this);
+	}
+
+	protected void DestroyEffect() {
+		if (!created)
+			return;
+		created = false;
+		effects.RemoveParameter(nameInput.value, this);
+	}
 }

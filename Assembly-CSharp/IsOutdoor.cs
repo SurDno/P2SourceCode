@@ -15,44 +15,39 @@ using UnityEngine;
 [TaskCategory("Pathologic")]
 [Factory]
 [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-[FactoryProxy(typeof (IsOutdoor))]
-public class IsOutdoor : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
-{
-  [DataReadProxy]
-  [DataWriteProxy]
-  [CopyableProxy]
-  [SerializeField]
-  public SharedTransform Target;
-  [DataReadProxy]
-  [DataWriteProxy]
-  [CopyableProxy()]
-  [SerializeField]
-  public SharedBool Outdoor = true;
+[FactoryProxy(typeof(IsOutdoor))]
+public class IsOutdoor : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedTransform Target;
 
-  public override TaskStatus OnUpdate()
-  {
-    return (!(Target.Value == null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(gameObject))?.GetComponent<LocationItemComponent>().IsIndoor != Outdoor.Value ? TaskStatus.Success : TaskStatus.Failure;
-  }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedBool Outdoor = true;
 
-  public void DataWrite(IDataWriter writer)
-  {
-    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
-    BehaviorTreeDataWriteUtility.WriteShared(writer, "Outdoor", Outdoor);
-  }
+	public override TaskStatus OnUpdate() {
+		return (!(Target.Value == null)
+			? EntityUtility.GetEntity(Target.Value.gameObject)
+			: EntityUtility.GetEntity(gameObject))?.GetComponent<LocationItemComponent>().IsIndoor != Outdoor.Value
+			? TaskStatus.Success
+			: TaskStatus.Failure;
+	}
 
-  public void DataRead(IDataReader reader, Type type)
-  {
-    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    id = DefaultDataReadUtility.Read(reader, "Id", id);
-    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
-    Outdoor = BehaviorTreeDataReadUtility.ReadShared(reader, "Outdoor", Outdoor);
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Outdoor", Outdoor);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+		Outdoor = BehaviorTreeDataReadUtility.ReadShared(reader, "Outdoor", Outdoor);
+	}
 }

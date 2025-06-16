@@ -1,41 +1,38 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  [Serializable]
-  public class ConstraintRotationOffset : Constraint
-  {
-    public Quaternion offset;
-    private Quaternion defaultRotation;
-    private Quaternion defaultLocalRotation;
-    private Quaternion lastLocalRotation;
-    private Quaternion defaultTargetLocalRotation;
-    private bool initiated;
+namespace RootMotion.FinalIK;
 
-    public override void UpdateConstraint()
-    {
-      if (weight <= 0.0 || !isValid)
-        return;
-      if (!initiated)
-      {
-        defaultLocalRotation = transform.localRotation;
-        lastLocalRotation = transform.localRotation;
-        initiated = true;
-      }
-      if (rotationChanged)
-        defaultLocalRotation = transform.localRotation;
-      transform.localRotation = defaultLocalRotation;
-      transform.rotation = Quaternion.Slerp(transform.rotation, offset, weight);
-      lastLocalRotation = transform.localRotation;
-    }
+[Serializable]
+public class ConstraintRotationOffset : Constraint {
+	public Quaternion offset;
+	private Quaternion defaultRotation;
+	private Quaternion defaultLocalRotation;
+	private Quaternion lastLocalRotation;
+	private Quaternion defaultTargetLocalRotation;
+	private bool initiated;
 
-    public ConstraintRotationOffset()
-    {
-    }
+	public override void UpdateConstraint() {
+		if (weight <= 0.0 || !isValid)
+			return;
+		if (!initiated) {
+			defaultLocalRotation = transform.localRotation;
+			lastLocalRotation = transform.localRotation;
+			initiated = true;
+		}
 
-    public ConstraintRotationOffset(Transform transform) => this.transform = transform;
+		if (rotationChanged)
+			defaultLocalRotation = transform.localRotation;
+		transform.localRotation = defaultLocalRotation;
+		transform.rotation = Quaternion.Slerp(transform.rotation, offset, weight);
+		lastLocalRotation = transform.localRotation;
+	}
 
-    private bool rotationChanged => transform.localRotation != lastLocalRotation;
-  }
+	public ConstraintRotationOffset() { }
+
+	public ConstraintRotationOffset(Transform transform) {
+		this.transform = transform;
+	}
+
+	private bool rotationChanged => transform.localRotation != lastLocalRotation;
 }

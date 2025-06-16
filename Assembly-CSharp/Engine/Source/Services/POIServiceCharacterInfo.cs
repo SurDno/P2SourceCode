@@ -3,77 +3,65 @@ using Engine.Common.Components;
 using Engine.Source.Components;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  public class POIServiceCharacterInfo
-  {
-    public POIServiceCharacterStateEnum State;
-    public bool SearchClosestPOI;
-    public bool IsCrowd;
-    private IEntity entity;
-    private LocationItemComponent location;
-    private bool isIndoors;
+namespace Engine.Source.Services;
 
-    public GameObject Character { get; private set; }
+public class POIServiceCharacterInfo {
+	public POIServiceCharacterStateEnum State;
+	public bool SearchClosestPOI;
+	public bool IsCrowd;
+	private IEntity entity;
+	private LocationItemComponent location;
+	private bool isIndoors;
 
-    public IEntity Entity
-    {
-      get
-      {
-        if (entity == null)
-          InitEntity();
-        return entity;
-      }
-      private set
-      {
-        entity = value;
-        if (entity == null)
-          return;
-        location = entity.GetComponent<LocationItemComponent>();
-        if (location != null)
-        {
-          IsIndoors = location.IsIndoor;
-          location.OnChangeLocation -= ChangedLocation;
-          location.OnChangeLocation += ChangedLocation;
-        }
-      }
-    }
+	public GameObject Character { get; private set; }
 
-    public bool IsIndoors
-    {
-      get
-      {
-        if (Entity == null)
-          InitEntity();
-        return isIndoors;
-      }
-      private set => isIndoors = value;
-    }
+	public IEntity Entity {
+		get {
+			if (entity == null)
+				InitEntity();
+			return entity;
+		}
+		private set {
+			entity = value;
+			if (entity == null)
+				return;
+			location = entity.GetComponent<LocationItemComponent>();
+			if (location != null) {
+				IsIndoors = location.IsIndoor;
+				location.OnChangeLocation -= ChangedLocation;
+				location.OnChangeLocation += ChangedLocation;
+			}
+		}
+	}
 
-    public POIServiceCharacterInfo(GameObject go)
-    {
-      Character = go;
-      InitEntity();
-    }
+	public bool IsIndoors {
+		get {
+			if (Entity == null)
+				InitEntity();
+			return isIndoors;
+		}
+		private set => isIndoors = value;
+	}
 
-    public void Clear()
-    {
-      if (location == null)
-        return;
-      location.OnChangeLocation -= ChangedLocation;
-    }
+	public POIServiceCharacterInfo(GameObject go) {
+		Character = go;
+		InitEntity();
+	}
 
-    private void InitEntity()
-    {
-      EngineGameObject component = Character.GetComponent<EngineGameObject>();
-      if (!(component != null))
-        return;
-      Entity = component.Owner;
-    }
+	public void Clear() {
+		if (location == null)
+			return;
+		location.OnChangeLocation -= ChangedLocation;
+	}
 
-    private void ChangedLocation(ILocationItemComponent locItem, ILocationComponent loc)
-    {
-      IsIndoors = locItem.IsIndoor;
-    }
-  }
+	private void InitEntity() {
+		var component = Character.GetComponent<EngineGameObject>();
+		if (!(component != null))
+			return;
+		Entity = component.Owner;
+	}
+
+	private void ChangedLocation(ILocationItemComponent locItem, ILocationComponent loc) {
+		IsIndoors = locItem.IsIndoor;
+	}
 }

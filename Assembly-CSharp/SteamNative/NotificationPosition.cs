@@ -1,10 +1,8 @@
-﻿namespace SteamNative
-{
-  internal enum NotificationPosition
-  {
-    TopLeft,
-    TopRight,
-    BottomLeft,
-    BottomRight,
-  }
+﻿namespace SteamNative;
+
+internal enum NotificationPosition {
+	TopLeft,
+	TopRight,
+	BottomLeft,
+	BottomRight
 }

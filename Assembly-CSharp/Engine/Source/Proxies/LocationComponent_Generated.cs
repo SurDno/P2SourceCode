@@ -6,36 +6,30 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Locations;
 using Engine.Source.Components;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (LocationComponent))]
-  public class LocationComponent_Generated : 
-    LocationComponent,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      LocationComponent_Generated instance = Activator.CreateInstance<LocationComponent_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-      ((LocationComponent_Generated) target2).locationType = locationType;
-    }
+[FactoryProxy(typeof(LocationComponent))]
+public class LocationComponent_Generated :
+	LocationComponent,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<LocationComponent_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "LocationType", locationType);
-    }
+	public void CopyTo(object target2) {
+		((LocationComponent_Generated)target2).locationType = locationType;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      locationType = DefaultDataReadUtility.ReadEnum<LocationType>(reader, "LocationType");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "LocationType", locationType);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		locationType = DefaultDataReadUtility.ReadEnum<LocationType>(reader, "LocationType");
+	}
 }

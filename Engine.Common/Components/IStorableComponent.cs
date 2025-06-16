@@ -3,30 +3,28 @@ using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
 using Engine.Common.Types;
 
-namespace Engine.Common.Components
-{
-  public interface IStorableComponent : IComponent
-  {
-    IStorageComponent Storage { get; }
+namespace Engine.Common.Components;
 
-    IInventoryComponent Container { get; }
+public interface IStorableComponent : IComponent {
+	IStorageComponent Storage { get; }
 
-    IParameterValue<float> Durability { get; }
+	IInventoryComponent Container { get; }
 
-    int Max { get; set; }
+	IParameterValue<float> Durability { get; }
 
-    int Count { get; set; }
+	int Max { get; set; }
 
-    IEnumerable<StorableGroup> Groups { get; }
+	int Count { get; set; }
 
-    Invoice Invoice { get; set; }
+	IEnumerable<StorableGroup> Groups { get; }
 
-    LocalizedText Description { get; set; }
+	Invoice Invoice { get; set; }
 
-    LocalizedText Tooltip { get; set; }
+	LocalizedText Description { get; set; }
 
-    LocalizedText Title { get; set; }
+	LocalizedText Tooltip { get; set; }
 
-    LocalizedText SpecialDescription { get; set; }
-  }
+	LocalizedText Title { get; set; }
+
+	LocalizedText SpecialDescription { get; set; }
 }

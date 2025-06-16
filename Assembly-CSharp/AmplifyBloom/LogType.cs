@@ -1,9 +1,7 @@
-﻿namespace AmplifyBloom
-{
-  public enum LogType
-  {
-    Normal,
-    Warning,
-    Error,
-  }
+﻿namespace AmplifyBloom;
+
+public enum LogType {
+	Normal,
+	Warning,
+	Error
 }

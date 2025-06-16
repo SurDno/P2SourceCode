@@ -1,11 +1,9 @@
-﻿namespace Engine.Source.Commons.Parameters
-{
-  public interface IComputeParameter
-  {
-    void ResetResetable();
+﻿namespace Engine.Source.Commons.Parameters;
 
-    void CorrectValue();
+public interface IComputeParameter {
+	void ResetResetable();
 
-    void ComputeEvent();
-  }
+	void CorrectValue();
+
+	void ComputeEvent();
 }

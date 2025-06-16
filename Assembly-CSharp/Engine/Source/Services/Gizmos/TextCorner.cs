@@ -1,11 +1,9 @@
-﻿namespace Engine.Source.Services.Gizmos
-{
-  public enum TextCorner
-  {
-    None,
-    Up,
-    Down,
-    Left,
-    Right,
-  }
+﻿namespace Engine.Source.Services.Gizmos;
+
+public enum TextCorner {
+	None,
+	Up,
+	Down,
+	Left,
+	Right
 }

@@ -3,39 +3,33 @@ using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.GameLogic
-{
-  [VMType("IStateRef")]
-  [VMFactory(typeof (IStateRef))]
-  public class VMStateRef : BaseRef, IStateRef, IRef, IVariable, INamed, IVMStringSerializable
-  {
-    public void Initialize(ulong baseGuid)
-    {
-      BaseGuid = baseGuid;
-      Load();
-    }
+namespace PLVirtualMachine.GameLogic;
 
-    public void Initialize(IState state) => LoadStaticInstance(state);
+[VMType("IStateRef")]
+[VMFactory(typeof(IStateRef))]
+public class VMStateRef : BaseRef, IStateRef, IRef, IVariable, INamed, IVMStringSerializable {
+	public void Initialize(ulong baseGuid) {
+		BaseGuid = baseGuid;
+		Load();
+	}
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_STATE;
-    }
+	public void Initialize(IState state) {
+		LoadStaticInstance(state);
+	}
 
-    public IState State
-    {
-      get
-      {
-        if (StaticInstance == null && BaseGuid > 0UL)
-          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
-        return (IState) StaticInstance;
-      }
-    }
+	public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_STATE;
 
-    public override VMType Type => VMType.CreateStateSpecialType(State);
+	public IState State {
+		get {
+			if (StaticInstance == null && BaseGuid > 0UL)
+				LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+			return (IState)StaticInstance;
+		}
+	}
 
-    public override bool Empty => State == null && base.Empty;
+	public override VMType Type => VMType.CreateStateSpecialType(State);
 
-    protected override Type NeedInstanceType => typeof (IState);
-  }
+	public override bool Empty => State == null && base.Empty;
+
+	protected override Type NeedInstanceType => typeof(IState);
 }

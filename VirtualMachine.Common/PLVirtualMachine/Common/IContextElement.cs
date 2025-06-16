@@ -1,11 +1,9 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IContextElement : IObject, IEditorBaseTemplate, INamed
-  {
-    List<IVariable> LocalContextVariables { get; }
+namespace PLVirtualMachine.Common;
 
-    IVariable GetLocalContextVariable(string variableUniName);
-  }
+public interface IContextElement : IObject, IEditorBaseTemplate, INamed {
+	List<IVariable> LocalContextVariables { get; }
+
+	IVariable GetLocalContextVariable(string variableUniName);
 }

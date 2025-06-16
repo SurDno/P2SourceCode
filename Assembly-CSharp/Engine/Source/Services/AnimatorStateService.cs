@@ -1,15 +1,13 @@
 ﻿using Engine.Behaviours.Unity.Mecanim;
 using Engine.Common;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (AnimatorStateService))]
-  public class AnimatorStateService : IInitialisable
-  {
-    public void Initialise()
-    {
-    }
+namespace Engine.Source.Services;
 
-    public void Terminate() => PlayerAnimatorState.Clear();
-  }
+[GameService(typeof(AnimatorStateService))]
+public class AnimatorStateService : IInitialisable {
+	public void Initialise() { }
+
+	public void Terminate() {
+		PlayerAnimatorState.Clear();
+	}
 }

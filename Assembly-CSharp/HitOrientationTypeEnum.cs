@@ -1,6 +1,5 @@
-﻿public enum HitOrientationTypeEnum
-{
-  None,
-  Front,
-  Back,
+﻿public enum HitOrientationTypeEnum {
+	None,
+	Front,
+	Back
 }

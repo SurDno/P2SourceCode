@@ -1,5 +1,3 @@
 ﻿using UnityEngine;
 
-public class AOFieldBaker : MonoBehaviour
-{
-}
+public class AOFieldBaker : MonoBehaviour { }

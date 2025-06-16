@@ -1,9 +1,7 @@
-﻿namespace Engine.Common.MindMap
-{
-  public enum MMNodeKind
-  {
-    Normal,
-    Сonclusion,
-    Mission,
-  }
+﻿namespace Engine.Common.MindMap;
+
+public enum MMNodeKind {
+	Normal,
+	Сonclusion,
+	Mission
 }

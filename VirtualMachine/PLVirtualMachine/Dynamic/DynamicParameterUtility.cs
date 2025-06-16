@@ -1,31 +1,30 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public static class DynamicParameterUtility
-  {
-    private static Dictionary<ulong, List<IDependedEventRef>> staticParameterDependedEventsDict = new Dictionary<ulong, List<IDependedEventRef>>();
+namespace PLVirtualMachine.Dynamic;
 
-    public static void AddDependedEvent(ulong paramId, IDependedEventRef dependedEvent)
-    {
-      if (!staticParameterDependedEventsDict.ContainsKey(paramId))
-        staticParameterDependedEventsDict.Add(paramId, new List<IDependedEventRef>());
-      staticParameterDependedEventsDict[paramId].Add(dependedEvent);
-    }
+public static class DynamicParameterUtility {
+	private static Dictionary<ulong, List<IDependedEventRef>> staticParameterDependedEventsDict = new();
 
-    public static void RemoveDependedEvent(ulong paramId, IDependedEventRef dependedEvent)
-    {
-      if (!staticParameterDependedEventsDict.ContainsKey(paramId))
-        return;
-      staticParameterDependedEventsDict[paramId].Remove(dependedEvent);
-    }
+	public static void AddDependedEvent(ulong paramId, IDependedEventRef dependedEvent) {
+		if (!staticParameterDependedEventsDict.ContainsKey(paramId))
+			staticParameterDependedEventsDict.Add(paramId, new List<IDependedEventRef>());
+		staticParameterDependedEventsDict[paramId].Add(dependedEvent);
+	}
 
-    public static List<IDependedEventRef> GetParameterDependedEventsByStaticGuid(ulong paramId)
-    {
-      List<IDependedEventRef> dependedEventRefList;
-      return staticParameterDependedEventsDict.TryGetValue(paramId, out dependedEventRefList) ? dependedEventRefList : null;
-    }
+	public static void RemoveDependedEvent(ulong paramId, IDependedEventRef dependedEvent) {
+		if (!staticParameterDependedEventsDict.ContainsKey(paramId))
+			return;
+		staticParameterDependedEventsDict[paramId].Remove(dependedEvent);
+	}
 
-    public static void Clear() => staticParameterDependedEventsDict.Clear();
-  }
+	public static List<IDependedEventRef> GetParameterDependedEventsByStaticGuid(ulong paramId) {
+		List<IDependedEventRef> dependedEventRefList;
+		return staticParameterDependedEventsDict.TryGetValue(paramId, out dependedEventRefList)
+			? dependedEventRefList
+			: null;
+	}
+
+	public static void Clear() {
+		staticParameterDependedEventsDict.Clear();
+	}
 }

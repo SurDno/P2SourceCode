@@ -1,5 +1,3 @@
 ﻿using UnityEngine;
 
-public class Scaler : MonoBehaviour
-{
-}
+public class Scaler : MonoBehaviour { }

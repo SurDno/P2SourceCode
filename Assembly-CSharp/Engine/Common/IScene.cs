@@ -1,6 +1,3 @@
-﻿namespace Engine.Common
-{
-  public interface IScene : IObject
-  {
-  }
-}
+﻿namespace Engine.Common;
+
+public interface IScene : IObject { }

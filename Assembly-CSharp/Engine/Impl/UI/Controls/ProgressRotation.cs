@@ -1,21 +1,14 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class ProgressRotation : ProgressView
-  {
-    [SerializeField]
-    private Vector3 minRotation = Vector3.zero;
-    [SerializeField]
-    private Vector3 maxRotation = Vector3.zero;
+namespace Engine.Impl.UI.Controls;
 
-    protected override void ApplyProgress()
-    {
-      transform.localEulerAngles = Vector3.Lerp(minRotation, maxRotation, Progress);
-    }
+public class ProgressRotation : ProgressView {
+	[SerializeField] private Vector3 minRotation = Vector3.zero;
+	[SerializeField] private Vector3 maxRotation = Vector3.zero;
 
-    public override void SkipAnimation()
-    {
-    }
-  }
+	protected override void ApplyProgress() {
+		transform.localEulerAngles = Vector3.Lerp(minRotation, maxRotation, Progress);
+	}
+
+	public override void SkipAnimation() { }
 }

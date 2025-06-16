@@ -17,56 +17,48 @@ using Action = BehaviorDesigner.Runtime.Tasks.Action;
 [TaskIcon("Pathologic_PlagueCloudIcon.png")]
 [Factory]
 [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-[FactoryProxy(typeof (EnableCloudSound))]
-public class EnableCloudSound : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-{
-  [DataReadProxy]
-  [DataWriteProxy]
-  [CopyableProxy]
-  [SerializeField]
-  public SharedBool Enabled;
-  [DataReadProxy]
-  [DataWriteProxy]
-  [CopyableProxy()]
-  [SerializeField]
-  public SharedFloat MaxDistance = 50f;
-  private PivotCloud pivot;
+[FactoryProxy(typeof(EnableCloudSound))]
+public class EnableCloudSound : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedBool Enabled;
 
-  public override TaskStatus OnUpdate()
-  {
-    if (pivot == null)
-    {
-      pivot = gameObject.GetComponent<PivotCloud>();
-      if (pivot == null)
-      {
-        Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (PivotCloud).Name + " component", gameObject);
-        return TaskStatus.Failure;
-      }
-    }
-    pivot.EnableSound(Enabled.Value);
-    pivot.SetSoundMaxDistance(MaxDistance.Value);
-    return TaskStatus.Success;
-  }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedFloat MaxDistance = 50f;
 
-  public void DataWrite(IDataWriter writer)
-  {
-    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    BehaviorTreeDataWriteUtility.WriteShared(writer, "Enabled", Enabled);
-    BehaviorTreeDataWriteUtility.WriteShared(writer, "MaxDistance", MaxDistance);
-  }
+	private PivotCloud pivot;
 
-  public void DataRead(IDataReader reader, Type type)
-  {
-    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    id = DefaultDataReadUtility.Read(reader, "Id", id);
-    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    Enabled = BehaviorTreeDataReadUtility.ReadShared(reader, "Enabled", Enabled);
-    MaxDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "MaxDistance", MaxDistance);
-  }
+	public override TaskStatus OnUpdate() {
+		if (pivot == null) {
+			pivot = gameObject.GetComponent<PivotCloud>();
+			if (pivot == null) {
+				Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof(PivotCloud).Name + " component",
+					gameObject);
+				return TaskStatus.Failure;
+			}
+		}
+
+		pivot.EnableSound(Enabled.Value);
+		pivot.SetSoundMaxDistance(MaxDistance.Value);
+		return TaskStatus.Success;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Enabled", Enabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "MaxDistance", MaxDistance);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Enabled = BehaviorTreeDataReadUtility.ReadShared(reader, "Enabled", Enabled);
+		MaxDistance = BehaviorTreeDataReadUtility.ReadShared(reader, "MaxDistance", MaxDistance);
+	}
 }

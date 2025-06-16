@@ -5,23 +5,20 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class PlayerActionNode : FlowControlNode
-  {
-    private ValueInput<ActionEnum> actionInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        ServiceLocator.GetService<ISimulation>().Player?.GetComponent<PlayerControllerComponent>()?.ComputeAction(actionInput.value);
-        output.Call();
-      });
-      actionInput = AddValueInput<ActionEnum>("Action");
-    }
-  }
+[Category("Engine")]
+public class PlayerActionNode : FlowControlNode {
+	private ValueInput<ActionEnum> actionInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			ServiceLocator.GetService<ISimulation>().Player?.GetComponent<PlayerControllerComponent>()
+				?.ComputeAction(actionInput.value);
+			output.Call();
+		});
+		actionInput = AddValueInput<ActionEnum>("Action");
+	}
 }

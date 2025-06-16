@@ -11,61 +11,43 @@ using ParadoxNotion.Design;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class PlayLipSyncAudioNode : FlowControlNode
-  {
-    [Port("LipSync", null)]
-    private ValueInput<LipSyncObjectSerializable> lipSyncInput;
-    [Port("Mixer", null)]
-    private ValueInput<AudioMixerGroup> mixerInput;
-    [Port("Volume", 1f)]
-    private ValueInput<float> volumeInput;
-    [Port("Fade", 0.0f)]
-    private ValueInput<float> fadeTime;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        LipSyncObject lipSync = lipSyncInput.value.Value;
-        if (lipSync == null)
-        {
-          output.Call();
-        }
-        else
-        {
-          AudioMixerGroup mixer = mixerInput.value;
-          if (mixer == null)
-          {
-            output.Call();
-          }
-          else
-          {
-            LipSyncInfo lipSyncInfo = LipSyncUtility.GetLipSyncInfo(lipSync);
-            if (lipSyncInfo == null)
-            {
-              output.Call();
-            }
-            else
-            {
-              AudioClip clip = lipSyncInfo.Clip.Value;
-              if (clip == null)
-              {
-                output.Call();
-              }
-              else
-              {
-                AudioState state = SoundUtility.PlayAudioClip2D(clip, mixer, volumeInput.value, fadeTime.value, true, "(blueprint) " + graph.agent.name, (Action) (() => output.Call()));
-                ServiceLocator.GetService<SubtitlesService>().AddSubtitles(null, lipSyncInfo.Tag, state, graphAgent);
-              }
-            }
-          }
-        }
-      });
-    }
-  }
+[Category("Engine")]
+public class PlayLipSyncAudioNode : FlowControlNode {
+	[Port("LipSync", null)] private ValueInput<LipSyncObjectSerializable> lipSyncInput;
+	[Port("Mixer", null)] private ValueInput<AudioMixerGroup> mixerInput;
+	[Port("Volume", 1f)] private ValueInput<float> volumeInput;
+	[Port("Fade", 0.0f)] private ValueInput<float> fadeTime;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			var lipSync = lipSyncInput.value.Value;
+			if (lipSync == null)
+				output.Call();
+			else {
+				var mixer = mixerInput.value;
+				if (mixer == null)
+					output.Call();
+				else {
+					var lipSyncInfo = LipSyncUtility.GetLipSyncInfo(lipSync);
+					if (lipSyncInfo == null)
+						output.Call();
+					else {
+						var clip = lipSyncInfo.Clip.Value;
+						if (clip == null)
+							output.Call();
+						else {
+							var state = SoundUtility.PlayAudioClip2D(clip, mixer, volumeInput.value, fadeTime.value,
+								true, "(blueprint) " + graph.agent.name, (Action)(() => output.Call()));
+							ServiceLocator.GetService<SubtitlesService>()
+								.AddSubtitles(null, lipSyncInfo.Tag, state, graphAgent);
+						}
+					}
+				}
+			}
+		});
+	}
 }

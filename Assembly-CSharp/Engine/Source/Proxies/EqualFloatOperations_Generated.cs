@@ -5,40 +5,34 @@ using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (EqualFloatOperations))]
-  public class EqualFloatOperations_Generated : 
-    EqualFloatOperations,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      EqualFloatOperations_Generated instance = Activator.CreateInstance<EqualFloatOperations_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-      EqualFloatOperations_Generated operationsGenerated = (EqualFloatOperations_Generated) target2;
-      operationsGenerated.a = CloneableObjectUtility.Clone(a);
-      operationsGenerated.b = CloneableObjectUtility.Clone(b);
-    }
+[FactoryProxy(typeof(EqualFloatOperations))]
+public class EqualFloatOperations_Generated :
+	EqualFloatOperations,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<EqualFloatOperations_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "Left", a);
-      DefaultDataWriteUtility.WriteSerialize(writer, "Right", b);
-    }
+	public void CopyTo(object target2) {
+		var operationsGenerated = (EqualFloatOperations_Generated)target2;
+		operationsGenerated.a = CloneableObjectUtility.Clone(a);
+		operationsGenerated.b = CloneableObjectUtility.Clone(b);
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      a = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "Left");
-      b = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "Right");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "Left", a);
+		DefaultDataWriteUtility.WriteSerialize(writer, "Right", b);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		a = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "Left");
+		b = DefaultDataReadUtility.ReadSerialize<IValue<float>>(reader, "Right");
+	}
 }

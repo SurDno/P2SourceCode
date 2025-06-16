@@ -9,131 +9,121 @@ using Engine.Source.Components;
 using Engine.Source.Components.Utilities;
 using UnityEngine;
 
-namespace Engine.Behaviours.Engines.Controllers
-{
-  public class PlayerVisirWeaponController : IWeaponController
-  {
-    private GameObject gameObject;
-    private Animator animator;
-    private PlayerAnimatorState animatorState;
-    private PivotPlayer pivot;
-    private IEntity entity;
-    private DetectableComponent detectable;
-    private bool geometryVisible;
-    private bool weaponVisible;
-    private IEntity item;
-    private float layerWeight;
+namespace Engine.Behaviours.Engines.Controllers;
 
-    public event Action WeaponUnholsterEndEvent;
+public class PlayerVisirWeaponController : IWeaponController {
+	private GameObject gameObject;
+	private Animator animator;
+	private PlayerAnimatorState animatorState;
+	private PivotPlayer pivot;
+	private IEntity entity;
+	private DetectableComponent detectable;
+	private bool geometryVisible;
+	private bool weaponVisible;
+	private IEntity item;
+	private float layerWeight;
 
-    public event Action WeaponHolsterStartEvent;
+	public event Action WeaponUnholsterEndEvent;
 
-    public event Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> WeaponShootEvent;
+	public event Action WeaponHolsterStartEvent;
 
-    bool IWeaponController.GeometryVisible
-    {
-      set
-      {
-        geometryVisible = value;
-        ApplyVisibility();
-      }
-      get => geometryVisible;
-    }
+	public event Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> WeaponShootEvent;
 
-    private bool WeaponVisible
-    {
-      set
-      {
-        weaponVisible = value;
-        ApplyVisibility();
-      }
-    }
+	bool IWeaponController.GeometryVisible {
+		set {
+			geometryVisible = value;
+			ApplyVisibility();
+		}
+		get => geometryVisible;
+	}
 
-    private void ApplyVisibility()
-    {
-      pivot.HandsGeometryVisible = geometryVisible;
-      pivot.VisirGeometryVisible = geometryVisible && weaponVisible;
-    }
+	private bool WeaponVisible {
+		set {
+			weaponVisible = value;
+			ApplyVisibility();
+		}
+	}
 
-    public void OnEnable() => animator.SetTrigger("Triggers/Restore");
+	private void ApplyVisibility() {
+		pivot.HandsGeometryVisible = geometryVisible;
+		pivot.VisirGeometryVisible = geometryVisible && weaponVisible;
+	}
 
-    public void OnDisable()
-    {
-    }
+	public void OnEnable() {
+		animator.SetTrigger("Triggers/Restore");
+	}
 
-    public void Initialise(IEntity entity, GameObject gameObject, Animator animator)
-    {
-      this.entity = entity;
-      pivot = gameObject.GetComponent<PivotPlayer>();
-      if (pivot == null)
-      {
-        Debug.LogErrorFormat("{0} has no {1} unity component", gameObject.name, typeof (PivotPlayer).Name);
-      }
-      else
-      {
-        this.gameObject = gameObject;
-        this.animator = animator;
-        animatorState = PlayerAnimatorState.GetAnimatorState(animator);
-        detectable = (DetectableComponent) entity.GetComponent<IDetectableComponent>();
-        if (detectable != null)
-          return;
-        Debug.LogWarningFormat("{0} doesn't have {1} engine component", gameObject.name, typeof (IDetectableComponent).Name);
-      }
-    }
+	public void OnDisable() { }
 
-    public IEntity GetItem() => item;
+	public void Initialise(IEntity entity, GameObject gameObject, Animator animator) {
+		this.entity = entity;
+		pivot = gameObject.GetComponent<PivotPlayer>();
+		if (pivot == null)
+			Debug.LogErrorFormat("{0} has no {1} unity component", gameObject.name, typeof(PivotPlayer).Name);
+		else {
+			this.gameObject = gameObject;
+			this.animator = animator;
+			animatorState = PlayerAnimatorState.GetAnimatorState(animator);
+			detectable = (DetectableComponent)entity.GetComponent<IDetectableComponent>();
+			if (detectable != null)
+				return;
+			Debug.LogWarningFormat("{0} doesn't have {1} engine component", gameObject.name,
+				typeof(IDetectableComponent).Name);
+		}
+	}
 
-    public void SetItem(IEntity item) => this.item = item;
+	public IEntity GetItem() {
+		return item;
+	}
 
-    public void Activate(bool geometryVisible)
-    {
-      WeaponVisible = true;
-      Action unholsterEndEvent = WeaponUnholsterEndEvent;
-      if (unholsterEndEvent == null)
-        return;
-      unholsterEndEvent();
-    }
+	public void SetItem(IEntity item) {
+		this.item = item;
+	}
 
-    public void Shutdown()
-    {
-      Action holsterStartEvent = WeaponHolsterStartEvent;
-      if (holsterStartEvent != null)
-        holsterStartEvent();
-      WeaponVisible = false;
-    }
+	public void Activate(bool geometryVisible) {
+		WeaponVisible = true;
+		var unholsterEndEvent = WeaponUnholsterEndEvent;
+		if (unholsterEndEvent == null)
+			return;
+		unholsterEndEvent();
+	}
 
-    public void Reset() => animatorState.ResetAnimator();
+	public void Shutdown() {
+		var holsterStartEvent = WeaponHolsterStartEvent;
+		if (holsterStartEvent != null)
+			holsterStartEvent();
+		WeaponVisible = false;
+	}
 
-    public bool Validate(GameObject gameObject, IEntity item) => true;
+	public void Reset() {
+		animatorState.ResetAnimator();
+	}
 
-    public void Update(IEntity target)
-    {
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
-        return;
-      layerWeight = Mathf.MoveTowards(layerWeight, 1f, Time.deltaTime / 0.5f);
-      animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(layerWeight);
-    }
+	public bool Validate(GameObject gameObject, IEntity item) {
+		return true;
+	}
 
-    public void UpdateSilent(IEntity target)
-    {
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
-        return;
-      layerWeight = Mathf.MoveTowards(layerWeight, 0.0f, Time.deltaTime / 0.5f);
-      animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(layerWeight);
-    }
+	public void Update(IEntity target) {
+		if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
+			return;
+		layerWeight = Mathf.MoveTowards(layerWeight, 1f, Time.deltaTime / 0.5f);
+		animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(layerWeight);
+	}
 
-    public void LateUpdate(IEntity target) => pivot.ApplyWeaponTransform(WeaponKind.Visir);
+	public void UpdateSilent(IEntity target) {
+		if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
+			return;
+		layerWeight = Mathf.MoveTowards(layerWeight, 0.0f, Time.deltaTime / 0.5f);
+		animatorState.VisirLightLayerWeight = SmoothUtility.Smooth22(layerWeight);
+	}
 
-    public void FixedUpdate(IEntity target)
-    {
-    }
+	public void LateUpdate(IEntity target) {
+		pivot.ApplyWeaponTransform(WeaponKind.Visir);
+	}
 
-    public void OnAnimatorEvent(string data)
-    {
-    }
+	public void FixedUpdate(IEntity target) { }
 
-    public void Reaction()
-    {
-    }
-  }
+	public void OnAnimatorEvent(string data) { }
+
+	public void Reaction() { }
 }

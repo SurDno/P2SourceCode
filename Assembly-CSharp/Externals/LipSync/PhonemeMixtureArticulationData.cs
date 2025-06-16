@@ -1,7 +1,5 @@
-﻿namespace Externals.LipSync
-{
-  public class PhonemeMixtureArticulationData
-  {
-    public PhonemeData[] Constituents;
-  }
+﻿namespace Externals.LipSync;
+
+public class PhonemeMixtureArticulationData {
+	public PhonemeData[] Constituents;
 }

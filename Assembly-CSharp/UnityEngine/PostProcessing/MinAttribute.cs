@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace UnityEngine.PostProcessing
-{
-  [AttributeUsage(AttributeTargets.Field)]
-  public sealed class MinAttribute : PropertyAttribute
-  {
-    public readonly float min;
+namespace UnityEngine.PostProcessing;
 
-    public MinAttribute(float min) => this.min = min;
-  }
+[AttributeUsage(AttributeTargets.Field)]
+public sealed class MinAttribute : PropertyAttribute {
+	public readonly float min;
+
+	public MinAttribute(float min) {
+		this.min = min;
+	}
 }

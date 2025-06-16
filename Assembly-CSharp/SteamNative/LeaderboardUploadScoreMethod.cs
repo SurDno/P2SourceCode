@@ -1,9 +1,7 @@
-﻿namespace SteamNative
-{
-  internal enum LeaderboardUploadScoreMethod
-  {
-    None,
-    KeepBest,
-    ForceUpdate,
-  }
+﻿namespace SteamNative;
+
+internal enum LeaderboardUploadScoreMethod {
+	None,
+	KeepBest,
+	ForceUpdate
 }

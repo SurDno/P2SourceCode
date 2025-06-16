@@ -1,21 +1,13 @@
 ﻿using UnityEngine;
 
-namespace RootMotion.Dynamics
-{
-  [HelpURL("http://root-motion.com/puppetmasterdox/html/page6.html")]
-  [AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Prop Template")]
-  public class PropTemplate : Prop
-  {
-    protected override void OnStart()
-    {
-    }
+namespace RootMotion.Dynamics;
 
-    protected override void OnPickUp(PropRoot propRoot)
-    {
-    }
+[HelpURL("http://root-motion.com/puppetmasterdox/html/page6.html")]
+[AddComponentMenu("Scripts/RootMotion.Dynamics/PuppetMaster/Prop Template")]
+public class PropTemplate : Prop {
+	protected override void OnStart() { }
 
-    protected override void OnDrop()
-    {
-    }
-  }
+	protected override void OnPickUp(PropRoot propRoot) { }
+
+	protected override void OnDrop() { }
 }

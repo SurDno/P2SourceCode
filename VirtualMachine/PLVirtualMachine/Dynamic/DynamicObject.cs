@@ -2,54 +2,48 @@
 using Cofe.Loggers;
 using PLVirtualMachine.Common;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public abstract class DynamicObject : IRealTimeModifiable
-  {
-    protected VMEntity entity;
-    private IObject staticObject;
-    protected bool active;
-    protected bool modified;
+namespace PLVirtualMachine.Dynamic;
 
-    public DynamicObject(VMEntity entity, bool bActive = true)
-    {
-      this.entity = entity;
-      active = bActive;
-    }
+public abstract class DynamicObject : IRealTimeModifiable {
+	protected VMEntity entity;
+	private IObject staticObject;
+	protected bool active;
+	protected bool modified;
 
-    public abstract void Think();
+	public DynamicObject(VMEntity entity, bool bActive = true) {
+		this.entity = entity;
+		active = bActive;
+	}
 
-    public void InitStatic(IObject staticObject)
-    {
-      if (staticObject == null)
-        Logger.AddError("Invalid dvirtual machine object creation: null static object received");
-      this.staticObject = staticObject;
-    }
+	public abstract void Think();
 
-    public virtual bool Active
-    {
-      get => active;
-      set => active = value;
-    }
+	public void InitStatic(IObject staticObject) {
+		if (staticObject == null)
+			Logger.AddError("Invalid dvirtual machine object creation: null static object received");
+		this.staticObject = staticObject;
+	}
 
-    public VMEntity Entity => entity;
+	public virtual bool Active {
+		get => active;
+		set => active = value;
+	}
 
-    public IObject StaticObject => staticObject;
+	public VMEntity Entity => entity;
 
-    public Guid DynamicGuid => Entity == null ? Guid.Empty : entity.EngineGuid;
+	public IObject StaticObject => staticObject;
 
-    public ulong StaticGuid => staticObject == null ? 0UL : staticObject.BaseGuid;
+	public Guid DynamicGuid => Entity == null ? Guid.Empty : entity.EngineGuid;
 
-    public virtual void OnModify()
-    {
-      modified = true;
-      if (ModifiableParent == null)
-        return;
-      ModifiableParent.OnModify();
-    }
+	public ulong StaticGuid => staticObject == null ? 0UL : staticObject.BaseGuid;
 
-    public bool Modified => modified;
+	public virtual void OnModify() {
+		modified = true;
+		if (ModifiableParent == null)
+			return;
+		ModifiableParent.OnModify();
+	}
 
-    public IRealTimeModifiable ModifiableParent => entity;
-  }
+	public bool Modified => modified;
+
+	public IRealTimeModifiable ModifiableParent => entity;
 }

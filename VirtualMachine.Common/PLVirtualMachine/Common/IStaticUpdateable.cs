@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IStaticUpdateable
-  {
-    void Update();
+﻿namespace PLVirtualMachine.Common;
 
-    bool IsUpdated { get; }
-  }
+public interface IStaticUpdateable {
+	void Update();
+
+	bool IsUpdated { get; }
 }

@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 
-public class LayoutContainer : MonoBehaviour
-{
-  [SerializeField]
-  private RectTransform content;
+public class LayoutContainer : MonoBehaviour {
+	[SerializeField] private RectTransform content;
 
-  public RectTransform Content => content;
+	public RectTransform Content => content;
 }

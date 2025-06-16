@@ -10,234 +10,211 @@ using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
 
-namespace PLVirtualMachine.FSM
-{
-  [TypeData(EDataType.TGraphLink)]
-  [DataFactory("GraphLink")]
-  public class VMEventLink : 
-    VMBaseObject,
-    IStub,
-    IEditorDataReader,
-    IEventLink,
-    ILink,
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable,
-    ILocalContext,
-    IParamListSource
-  {
-    [FieldData("Event", DataFieldType.Reference)]
-    private IEvent linkEvent;
-    [FieldData("EventObject")]
-    private CommonVariable linkEventObject;
-    [FieldData("Source", DataFieldType.Reference)]
-    private IState sourceState;
-    [FieldData("SourceExitPointIndex")]
-    private int sourceExitPointIndex = -1;
-    [FieldData("Destination", DataFieldType.Reference)]
-    private IState destState;
-    [FieldData("DestEntryPointIndex")]
-    private int destEntryPointIndex = -1;
-    [FieldData("ParentGraphAssocLink", DataFieldType.Reference)]
-    private VMEventLink parentGraphAssociatedLink;
-    [FieldData("Enabled")]
-    private bool enabled = true;
-    [FieldData("SourceParams")]
-    private List<CommonVariable> sourceParams = new List<CommonVariable>();
+namespace PLVirtualMachine.FSM;
 
-    public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
-    {
-      while (xml.Read()) {
-        if (xml.NodeType == XmlNodeType.Element)
-        {
-          switch (xml.Name)
-          {
-            case "DestEntryPointIndex":
-              destEntryPointIndex = EditorDataReadUtility.ReadValue(xml, destEntryPointIndex);
-              continue;
-            case "Destination":
-              destState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
-              continue;
-            case "Enabled":
-              enabled = EditorDataReadUtility.ReadValue(xml, enabled);
-              continue;
-            case "Event":
-              linkEvent = EditorDataReadUtility.ReadReference<IEvent>(xml, creator);
-              continue;
-            case "EventObject":
-              linkEventObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
-              continue;
-            case "Name":
-              name = EditorDataReadUtility.ReadValue(xml, name);
-              continue;
-            case "Parent":
-              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
-              continue;
-            case "ParentGraphAssocLink":
-              parentGraphAssociatedLink = EditorDataReadUtility.ReadReference<VMEventLink>(xml, creator);
-              continue;
-            case "Source":
-              sourceState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
-              continue;
-            case "SourceExitPointIndex":
-              sourceExitPointIndex = EditorDataReadUtility.ReadValue(xml, sourceExitPointIndex);
-              continue;
-            case "SourceParams":
-              sourceParams = EditorDataReadUtility.ReadSerializableList(xml, sourceParams);
-              continue;
-            default:
-              if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
-                Logger.AddError(typeContext + " : " + xml.Name);
-              XmlReaderUtility.SkipNode(xml);
-              continue;
-          }
-        }
+[TypeData(EDataType.TGraphLink)]
+[DataFactory("GraphLink")]
+public class VMEventLink :
+	VMBaseObject,
+	IStub,
+	IEditorDataReader,
+	IEventLink,
+	ILink,
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable,
+	ILocalContext,
+	IParamListSource {
+	[FieldData("Event", DataFieldType.Reference)]
+	private IEvent linkEvent;
 
-        if (xml.NodeType == XmlNodeType.EndElement)
-          break;
-      }
-    }
+	[FieldData("EventObject")] private CommonVariable linkEventObject;
 
-    public VMEventLink(ulong guid)
-      : base(guid)
-    {
-    }
+	[FieldData("Source", DataFieldType.Reference)]
+	private IState sourceState;
 
-    public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
+	[FieldData("SourceExitPointIndex")] private int sourceExitPointIndex = -1;
 
-    public IGraphObject Source => sourceState;
+	[FieldData("Destination", DataFieldType.Reference)]
+	private IState destState;
 
-    public IState SourceState => sourceState;
+	[FieldData("DestEntryPointIndex")] private int destEntryPointIndex = -1;
 
-    public int SourceExitPoint => sourceExitPointIndex;
+	[FieldData("ParentGraphAssocLink", DataFieldType.Reference)]
+	private VMEventLink parentGraphAssociatedLink;
 
-    public IGraphObject Destination => destState;
+	[FieldData("Enabled")] private bool enabled = true;
+	[FieldData("SourceParams")] private List<CommonVariable> sourceParams = new();
 
-    public IState DestState => destState;
+	public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext) {
+		while (xml.Read()) {
+			if (xml.NodeType == XmlNodeType.Element)
+				switch (xml.Name) {
+					case "DestEntryPointIndex":
+						destEntryPointIndex = EditorDataReadUtility.ReadValue(xml, destEntryPointIndex);
+						continue;
+					case "Destination":
+						destState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
+						continue;
+					case "Enabled":
+						enabled = EditorDataReadUtility.ReadValue(xml, enabled);
+						continue;
+					case "Event":
+						linkEvent = EditorDataReadUtility.ReadReference<IEvent>(xml, creator);
+						continue;
+					case "EventObject":
+						linkEventObject = EditorDataReadUtility.ReadSerializable<CommonVariable>(xml);
+						continue;
+					case "Name":
+						name = EditorDataReadUtility.ReadValue(xml, name);
+						continue;
+					case "Parent":
+						parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+						continue;
+					case "ParentGraphAssocLink":
+						parentGraphAssociatedLink = EditorDataReadUtility.ReadReference<VMEventLink>(xml, creator);
+						continue;
+					case "Source":
+						sourceState = EditorDataReadUtility.ReadReference<IState>(xml, creator);
+						continue;
+					case "SourceExitPointIndex":
+						sourceExitPointIndex = EditorDataReadUtility.ReadValue(xml, sourceExitPointIndex);
+						continue;
+					case "SourceParams":
+						sourceParams = EditorDataReadUtility.ReadSerializableList(xml, sourceParams);
+						continue;
+					default:
+						if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
+							Logger.AddError(typeContext + " : " + xml.Name);
+						XmlReaderUtility.SkipNode(xml);
+						continue;
+				}
 
-    public int DestEntryPoint => destEntryPointIndex;
+			if (xml.NodeType == XmlNodeType.EndElement)
+				break;
+		}
+	}
 
-    public EventInfo Event
-    {
-      get
-      {
-        return parentGraphAssociatedLink != null ? parentGraphAssociatedLink.Event : new EventInfo(linkEvent, linkEventObject);
-      }
-    }
+	public VMEventLink(ulong guid)
+		: base(guid) { }
 
-    public override IContainer Owner
-    {
-      get
-      {
-        if (sourceState != null)
-          return sourceState.Owner;
-        if (destState != null)
-          return destState.Owner;
-        Logger.AddError(string.Format("Invalid link with id = {0}", BaseGuid));
-        return null;
-      }
-    }
+	public override EObjectCategory GetCategory() {
+		return EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
+	}
 
-    public bool IsInitial()
-    {
-      return IsValid && (Event.EventInstance != null && linkEvent != null && linkEvent.IsInitial(Owner) || parentGraphAssociatedLink != null);
-    }
+	public IGraphObject Source => sourceState;
 
-    public bool Enabled => enabled;
+	public IState SourceState => sourceState;
 
-    public bool IsValid => destState != null || sourceState != null;
+	public int SourceExitPoint => sourceExitPointIndex;
 
-    public IEventLink GetParentGraphAssociatedLink() => parentGraphAssociatedLink;
+	public IGraphObject Destination => destState;
 
-    public bool ExitFromSubGraph
-    {
-      get
-      {
-        if (destState != null || !((FiniteStateMachine) Parent).IsSubGraph)
-          return false;
-        return LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_GRAPH || LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_EVENT_EXECUTION;
-      }
-    }
+	public IState DestState => destState;
 
-    public ELinkExitType LinkExitType
-    {
-      get
-      {
-        return destState == null ? (ELinkExitType) destEntryPointIndex : ELinkExitType.LINK_EXIT_TYPE_NONE;
-      }
-    }
+	public int DestEntryPoint => destEntryPointIndex;
 
-    public List<IVariable> GetLocalContextVariables(
-      EContextVariableCategory eContextVarCategory,
-      IContextElement currentElement,
-      int iCounter = 0)
-    {
-      List<IVariable> contextVariables = new List<IVariable>();
-      if (linkEvent != null)
-      {
-        List<BaseMessage> returnMessages = linkEvent.ReturnMessages;
-        for (int index = 0; index < returnMessages.Count; ++index)
-          contextVariables.Add(returnMessages[index]);
-      }
-      if ((eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOCAL_VAR || eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL) && ((IFiniteStateMachine) Parent).InputParams.Count > 0)
-      {
-        for (int index = 0; index < ((IFiniteStateMachine) Parent).InputParams.Count; ++index)
-          contextVariables.Add(((IFiniteStateMachine) Parent).InputParams[index]);
-      }
-      return contextVariables;
-    }
+	public EventInfo Event => parentGraphAssociatedLink != null
+		? parentGraphAssociatedLink.Event
+		: new EventInfo(linkEvent, linkEventObject);
 
-    public IVariable GetLocalContextVariable(string variableUniName, IContextElement currentElement = null)
-    {
-      if (linkEvent != null)
-      {
-        List<BaseMessage> returnMessages = linkEvent.ReturnMessages;
-        for (int index = 0; index < returnMessages.Count; ++index)
-        {
-          if (returnMessages[index].Name == variableUniName)
-            return returnMessages[index];
-        }
-        if (((IFiniteStateMachine) Parent).InputParams.Count > 0)
-        {
-          for (int index = 0; index < ((IFiniteStateMachine) Parent).InputParams.Count; ++index)
-          {
-            if (((IFiniteStateMachine) Parent).InputParams[index].Name == variableUniName)
-              return ((IFiniteStateMachine) Parent).InputParams[index];
-          }
-        }
-      }
-      return null;
-    }
+	public override IContainer Owner {
+		get {
+			if (sourceState != null)
+				return sourceState.Owner;
+			if (destState != null)
+				return destState.Owner;
+			Logger.AddError(string.Format("Invalid link with id = {0}", BaseGuid));
+			return null;
+		}
+	}
 
-    public List<CommonVariable> SourceParams => sourceParams;
+	public bool IsInitial() {
+		return IsValid && ((Event.EventInstance != null && linkEvent != null && linkEvent.IsInitial(Owner)) ||
+		                   parentGraphAssociatedLink != null);
+	}
 
-    public override void Clear()
-    {
-      base.Clear();
-      if (linkEvent != null)
-      {
-        linkEvent.Clear();
-        linkEvent = null;
-      }
-      if (linkEventObject != null)
-      {
-        linkEventObject.Clear();
-        linkEventObject = null;
-      }
-      if (sourceState != null)
-        sourceState = null;
-      if (destState != null)
-        destState = null;
-      parentGraphAssociatedLink = null;
-      if (sourceParams == null)
-        return;
-      foreach (ContextVariable sourceParam in sourceParams)
-        sourceParam.Clear();
-      sourceParams.Clear();
-      sourceParams = null;
-    }
-  }
+	public bool Enabled => enabled;
+
+	public bool IsValid => destState != null || sourceState != null;
+
+	public IEventLink GetParentGraphAssociatedLink() {
+		return parentGraphAssociatedLink;
+	}
+
+	public bool ExitFromSubGraph {
+		get {
+			if (destState != null || !((FiniteStateMachine)Parent).IsSubGraph)
+				return false;
+			return LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_GRAPH ||
+			       LinkExitType == ELinkExitType.LINK_EXIT_TYPE_OUTER_EVENT_EXECUTION;
+		}
+	}
+
+	public ELinkExitType LinkExitType =>
+		destState == null ? (ELinkExitType)destEntryPointIndex : ELinkExitType.LINK_EXIT_TYPE_NONE;
+
+	public List<IVariable> GetLocalContextVariables(
+		EContextVariableCategory eContextVarCategory,
+		IContextElement currentElement,
+		int iCounter = 0) {
+		var contextVariables = new List<IVariable>();
+		if (linkEvent != null) {
+			var returnMessages = linkEvent.ReturnMessages;
+			for (var index = 0; index < returnMessages.Count; ++index)
+				contextVariables.Add(returnMessages[index]);
+		}
+
+		if ((eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOCAL_VAR ||
+		     eContextVarCategory == EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_ALL) &&
+		    ((IFiniteStateMachine)Parent).InputParams.Count > 0)
+			for (var index = 0; index < ((IFiniteStateMachine)Parent).InputParams.Count; ++index)
+				contextVariables.Add(((IFiniteStateMachine)Parent).InputParams[index]);
+		return contextVariables;
+	}
+
+	public IVariable GetLocalContextVariable(string variableUniName, IContextElement currentElement = null) {
+		if (linkEvent != null) {
+			var returnMessages = linkEvent.ReturnMessages;
+			for (var index = 0; index < returnMessages.Count; ++index)
+				if (returnMessages[index].Name == variableUniName)
+					return returnMessages[index];
+			if (((IFiniteStateMachine)Parent).InputParams.Count > 0)
+				for (var index = 0; index < ((IFiniteStateMachine)Parent).InputParams.Count; ++index)
+					if (((IFiniteStateMachine)Parent).InputParams[index].Name == variableUniName)
+						return ((IFiniteStateMachine)Parent).InputParams[index];
+		}
+
+		return null;
+	}
+
+	public List<CommonVariable> SourceParams => sourceParams;
+
+	public override void Clear() {
+		base.Clear();
+		if (linkEvent != null) {
+			linkEvent.Clear();
+			linkEvent = null;
+		}
+
+		if (linkEventObject != null) {
+			linkEventObject.Clear();
+			linkEventObject = null;
+		}
+
+		if (sourceState != null)
+			sourceState = null;
+		if (destState != null)
+			destState = null;
+		parentGraphAssociatedLink = null;
+		if (sourceParams == null)
+			return;
+		foreach (ContextVariable sourceParam in sourceParams)
+			sourceParam.Clear();
+		sourceParams.Clear();
+		sourceParams = null;
+	}
 }

@@ -7,30 +7,24 @@ using Engine.Source.Commons;
 using Engine.Source.Components.Crowds;
 using Inspectors;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (ICrowdItemComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class CrowdItemComponent : EngineComponent, ICrowdItemComponent, IComponent
-  {
-    [Inspected]
-    public IEntity Crowd { get; private set; }
+namespace Engine.Source.Components;
 
-    public AreaEnum Area => Point == null ? AreaEnum.Unknown : Point.Area;
+[Factory(typeof(ICrowdItemComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class CrowdItemComponent : EngineComponent, ICrowdItemComponent, IComponent {
+	[Inspected] public IEntity Crowd { get; private set; }
 
-    [Inspected]
-    public PointInfo Point { get; private set; }
+	public AreaEnum Area => Point == null ? AreaEnum.Unknown : Point.Area;
 
-    public void AttachToCrowd(IEntity crowd, PointInfo point)
-    {
-      Crowd = crowd;
-      Point = point;
-    }
+	[Inspected] public PointInfo Point { get; private set; }
 
-    public void DetachFromCrowd()
-    {
-      Crowd = null;
-      Point = null;
-    }
-  }
+	public void AttachToCrowd(IEntity crowd, PointInfo point) {
+		Crowd = crowd;
+		Point = point;
+	}
+
+	public void DetachFromCrowd() {
+		Crowd = null;
+		Point = null;
+	}
 }

@@ -1,9 +1,7 @@
-﻿namespace ParadoxNotion
-{
-  public enum PlayDirections
-  {
-    Forward,
-    Backward,
-    Toggle,
-  }
+﻿namespace ParadoxNotion;
+
+public enum PlayDirections {
+	Forward,
+	Backward,
+	Toggle
 }

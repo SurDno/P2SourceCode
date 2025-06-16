@@ -2,36 +2,26 @@
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons
-{
-  public class EntityView
-  {
-    [Inspected]
-    public GameObject GameObject;
+namespace Engine.Source.Commons;
 
-    [Inspected]
-    public Vector3 Position { get; set; }
+public class EntityView {
+	[Inspected] public GameObject GameObject;
 
-    [Inspected]
-    public Quaternion Rotation { get; set; } = Quaternion.identity;
+	[Inspected] public Vector3 Position { get; set; }
 
-    public event Action OnGameObjectChangedEvent;
+	[Inspected] public Quaternion Rotation { get; set; } = Quaternion.identity;
 
-    public void InvokeEvent()
-    {
-      if (OnGameObjectChangedEvent == null)
-        return;
-      foreach (Delegate invocation in OnGameObjectChangedEvent.GetInvocationList())
-      {
-        try
-        {
-          invocation.DynamicInvoke(null);
-        }
-        catch (Exception ex)
-        {
-          Debug.LogError("Error invoke listener, target : " + invocation.Target.GetInfo() + " , owner : " + this.GetInfo() + " , ex : " + ex);
-        }
-      }
-    }
-  }
+	public event Action OnGameObjectChangedEvent;
+
+	public void InvokeEvent() {
+		if (OnGameObjectChangedEvent == null)
+			return;
+		foreach (var invocation in OnGameObjectChangedEvent.GetInvocationList())
+			try {
+				invocation.DynamicInvoke(null);
+			} catch (Exception ex) {
+				Debug.LogError("Error invoke listener, target : " + invocation.Target.GetInfo() + " , owner : " +
+				               this.GetInfo() + " , ex : " + ex);
+			}
+	}
 }

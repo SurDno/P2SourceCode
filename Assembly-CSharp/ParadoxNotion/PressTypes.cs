@@ -1,9 +1,7 @@
-﻿namespace ParadoxNotion
-{
-  public enum PressTypes
-  {
-    Down,
-    Up,
-    Pressed,
-  }
+﻿namespace ParadoxNotion;
+
+public enum PressTypes {
+	Down,
+	Up,
+	Pressed
 }

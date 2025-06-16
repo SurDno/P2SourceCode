@@ -1,5 +1,4 @@
-﻿public enum TOD_ColorOutputType
-{
-  Raw,
-  Dithered,
+﻿public enum TOD_ColorOutputType {
+	Raw,
+	Dithered
 }

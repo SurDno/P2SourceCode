@@ -1,9 +1,7 @@
-﻿namespace Engine.Common.Services
-{
-  public interface ICombatService
-  {
-    void AddPersonalEnemy(IEntity attacker, IEntity enemy);
+﻿namespace Engine.Common.Services;
 
-    void RemovePersonalEnemy(IEntity attacker, IEntity enemy);
-  }
+public interface ICombatService {
+	void AddPersonalEnemy(IEntity attacker, IEntity enemy);
+
+	void RemovePersonalEnemy(IEntity attacker, IEntity enemy);
 }

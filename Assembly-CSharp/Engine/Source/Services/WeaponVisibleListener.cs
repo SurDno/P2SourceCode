@@ -5,46 +5,40 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Simulations;
 using Engine.Source.Components;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (WeaponVisibleListener))]
-  public class WeaponVisibleListener : IInitialisable
-  {
-    private ControllerComponent controller;
+namespace Engine.Source.Services;
 
-    public event Action<WeaponKind, bool> OnWeaponVisibleChanged;
+[GameService(typeof(WeaponVisibleListener))]
+public class WeaponVisibleListener : IInitialisable {
+	private ControllerComponent controller;
 
-    public void Initialise()
-    {
-      ServiceLocator.GetService<Simulation>().OnPlayerChanged += OnPlayerChanged;
-      OnPlayerChanged(ServiceLocator.GetService<ISimulation>().Player);
-    }
+	public event Action<WeaponKind, bool> OnWeaponVisibleChanged;
 
-    public void Terminate()
-    {
-      ServiceLocator.GetService<Simulation>().OnPlayerChanged -= OnPlayerChanged;
-    }
+	public void Initialise() {
+		ServiceLocator.GetService<Simulation>().OnPlayerChanged += OnPlayerChanged;
+		OnPlayerChanged(ServiceLocator.GetService<ISimulation>().Player);
+	}
 
-    private void OnPlayerChanged(IEntity player)
-    {
-      if (controller != null)
-      {
-        controller.OnWeaponEnableChanged -= OnWeaponEnableChanged;
-        controller = null;
-      }
-      if (player != null)
-        controller = player.GetComponent<ControllerComponent>();
-      if (controller == null)
-        return;
-      controller.OnWeaponEnableChanged += OnWeaponEnableChanged;
-    }
+	public void Terminate() {
+		ServiceLocator.GetService<Simulation>().OnPlayerChanged -= OnPlayerChanged;
+	}
 
-    private void OnWeaponEnableChanged(WeaponKind kind, bool value)
-    {
-      Action<WeaponKind, bool> weaponVisibleChanged = OnWeaponVisibleChanged;
-      if (weaponVisibleChanged == null)
-        return;
-      weaponVisibleChanged(kind, value);
-    }
-  }
+	private void OnPlayerChanged(IEntity player) {
+		if (controller != null) {
+			controller.OnWeaponEnableChanged -= OnWeaponEnableChanged;
+			controller = null;
+		}
+
+		if (player != null)
+			controller = player.GetComponent<ControllerComponent>();
+		if (controller == null)
+			return;
+		controller.OnWeaponEnableChanged += OnWeaponEnableChanged;
+	}
+
+	private void OnWeaponEnableChanged(WeaponKind kind, bool value) {
+		var weaponVisibleChanged = OnWeaponVisibleChanged;
+		if (weaponVisibleChanged == null)
+			return;
+		weaponVisibleChanged(kind, value);
+	}
 }

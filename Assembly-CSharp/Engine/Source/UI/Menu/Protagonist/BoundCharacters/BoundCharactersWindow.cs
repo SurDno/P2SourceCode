@@ -7,44 +7,39 @@ using Engine.Source.Services;
 using Engine.Source.Services.Inputs;
 using Engine.Source.Utility;
 
-namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
-{
-  public class BoundCharactersWindow : 
-    CancelableSimpleWindow,
-    IBoundCharactersWindow,
-    IWindow,
-    IPauseMenu
-  {
-    protected override void OnDisable()
-    {
-      PlayerUtility.ShowPlayerHands(true);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
-      base.OnDisable();
-    }
+namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters;
 
-    protected override void OnEnable()
-    {
-      base.OnEnable();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
-      PlayerUtility.ShowPlayerHands(false);
-    }
+public class BoundCharactersWindow :
+	CancelableSimpleWindow,
+	IBoundCharactersWindow,
+	IWindow,
+	IPauseMenu {
+	protected override void OnDisable() {
+		PlayerUtility.ShowPlayerHands(true);
+		ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
+		base.OnDisable();
+	}
 
-    protected override void RegisterLayer()
-    {
-      RegisterLayer<IBoundCharactersWindow>(this);
-    }
+	protected override void OnEnable() {
+		base.OnEnable();
+		ServiceLocator.GetService<GameActionService>()
+			.AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
+		PlayerUtility.ShowPlayerHands(false);
+	}
 
-    public override Type GetWindowType() => typeof (IBoundCharactersWindow);
+	protected override void RegisterLayer() {
+		RegisterLayer<IBoundCharactersWindow>(this);
+	}
 
-    public override IEnumerator OnOpened()
-    {
-      SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IBoundCharactersWindow>(this);
-      return base.OnOpened();
-    }
+	public override Type GetWindowType() {
+		return typeof(IBoundCharactersWindow);
+	}
 
-    public override bool IsWindowAvailable
-    {
-      get => !ServiceLocator.GetService<InterfaceBlockingService>().BlockBoundsInterface;
-    }
-  }
+	public override IEnumerator OnOpened() {
+		SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IBoundCharactersWindow>(this);
+		return base.OnOpened();
+	}
+
+	public override bool IsWindowAvailable =>
+		!ServiceLocator.GetService<InterfaceBlockingService>().BlockBoundsInterface;
 }

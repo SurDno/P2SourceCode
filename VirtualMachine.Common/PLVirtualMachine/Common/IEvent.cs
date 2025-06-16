@@ -1,36 +1,34 @@
 ﻿using System.Collections.Generic;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IEvent : 
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable
-  {
-    ICondition Condition { get; }
+namespace PLVirtualMachine.Common;
 
-    IParam EventParameter { get; }
+public interface IEvent :
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable {
+	ICondition Condition { get; }
 
-    GameTime EventTime { get; }
+	IParam EventParameter { get; }
 
-    bool ChangeTo { get; }
+	GameTime EventTime { get; }
 
-    bool Repeated { get; }
+	bool ChangeTo { get; }
 
-    bool IsInitial(IObject obj);
+	bool Repeated { get; }
 
-    string FunctionalName { get; }
+	bool IsInitial(IObject obj);
 
-    IGameMode GameTimeContext { get; }
+	string FunctionalName { get; }
 
-    bool IsManual { get; }
+	IGameMode GameTimeContext { get; }
 
-    EEventRaisingType EventRaisingType { get; }
+	bool IsManual { get; }
 
-    List<BaseMessage> ReturnMessages { get; }
-  }
+	EEventRaisingType EventRaisingType { get; }
+
+	List<BaseMessage> ReturnMessages { get; }
 }

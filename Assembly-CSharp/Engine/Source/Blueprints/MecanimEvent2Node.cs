@@ -3,46 +3,41 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class MecanimEvent2Node : EventNode<FlowScriptController>
-  {
-    private ValueInput<CutsceneMecanimEvents> mecanimEventsInput;
-    private ValueInput<string> eventNameInput;
-    private FlowOutput received;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      received = AddFlowOutput("Received");
-      mecanimEventsInput = AddValueInput<CutsceneMecanimEvents>("Animator");
-      eventNameInput = AddValueInput<string>("Name");
-    }
+[Category("Engine")]
+public class MecanimEvent2Node : EventNode<FlowScriptController> {
+	private ValueInput<CutsceneMecanimEvents> mecanimEventsInput;
+	private ValueInput<string> eventNameInput;
+	private FlowOutput received;
 
-    public override void OnGraphStarted()
-    {
-      base.OnGraphStarted();
-      CutsceneMecanimEvents cutsceneMecanimEvents = mecanimEventsInput.value;
-      if (!(cutsceneMecanimEvents != null))
-        return;
-      cutsceneMecanimEvents.OnEndAnimationEnd += MecanimEvents_OnEndAnimationEnd;
-    }
+	protected override void RegisterPorts() {
+		received = AddFlowOutput("Received");
+		mecanimEventsInput = AddValueInput<CutsceneMecanimEvents>("Animator");
+		eventNameInput = AddValueInput<string>("Name");
+	}
 
-    public override void OnGraphStoped()
-    {
-      base.OnGraphStoped();
-      CutsceneMecanimEvents cutsceneMecanimEvents = mecanimEventsInput.value;
-      if (!(cutsceneMecanimEvents != null))
-        return;
-      cutsceneMecanimEvents.OnEndAnimationEnd -= MecanimEvents_OnEndAnimationEnd;
-    }
+	public override void OnGraphStarted() {
+		base.OnGraphStarted();
+		var cutsceneMecanimEvents = mecanimEventsInput.value;
+		if (!(cutsceneMecanimEvents != null))
+			return;
+		cutsceneMecanimEvents.OnEndAnimationEnd += MecanimEvents_OnEndAnimationEnd;
+	}
 
-    private void MecanimEvents_OnEndAnimationEnd(string name)
-    {
-      if (!(name == eventNameInput.value))
-        return;
-      Debug.Log(ObjectInfoUtility.GetStream().Append(nameof (MecanimEvent2Node)).Append(" , owner : ").Append(graphAgent.name).Append(" , name : ").Append(name));
-      received.Call();
-    }
-  }
+	public override void OnGraphStoped() {
+		base.OnGraphStoped();
+		var cutsceneMecanimEvents = mecanimEventsInput.value;
+		if (!(cutsceneMecanimEvents != null))
+			return;
+		cutsceneMecanimEvents.OnEndAnimationEnd -= MecanimEvents_OnEndAnimationEnd;
+	}
+
+	private void MecanimEvents_OnEndAnimationEnd(string name) {
+		if (!(name == eventNameInput.value))
+			return;
+		Debug.Log(ObjectInfoUtility.GetStream().Append(nameof(MecanimEvent2Node)).Append(" , owner : ")
+			.Append(graphAgent.name).Append(" , name : ").Append(name));
+		received.Call();
+	}
 }

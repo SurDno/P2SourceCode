@@ -1,8 +1,6 @@
-﻿namespace AmplifyColor
-{
-  public enum Quality
-  {
-    Mobile,
-    Standard,
-  }
+﻿namespace AmplifyColor;
+
+public enum Quality {
+	Mobile,
+	Standard
 }

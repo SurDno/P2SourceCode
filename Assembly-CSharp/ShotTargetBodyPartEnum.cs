@@ -1,8 +1,7 @@
-﻿public enum ShotTargetBodyPartEnum
-{
-  None,
-  Head,
-  Body,
-  Arm,
-  Leg,
+﻿public enum ShotTargetBodyPartEnum {
+	None,
+	Head,
+	Body,
+	Arm,
+	Leg
 }

@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public interface IDynamicMindMapObject
-  {
-    Guid DynamicGuid { get; }
+namespace PLVirtualMachine.Dynamic;
 
-    ulong StaticGuid { get; }
-  }
+public interface IDynamicMindMapObject {
+	Guid DynamicGuid { get; }
+
+	ulong StaticGuid { get; }
 }

@@ -1,15 +1,13 @@
-﻿namespace Engine.Common.Components.Parameters
-{
-  public interface IParameter
-  {
-    ParameterNameEnum Name { get; }
+﻿namespace Engine.Common.Components.Parameters;
 
-    bool Resetable { get; }
+public interface IParameter {
+	ParameterNameEnum Name { get; }
 
-    object ValueData { get; }
+	bool Resetable { get; }
 
-    void AddListener(IChangeParameterListener listener);
+	object ValueData { get; }
 
-    void RemoveListener(IChangeParameterListener listener);
-  }
+	void AddListener(IChangeParameterListener listener);
+
+	void RemoveListener(IChangeParameterListener listener);
 }

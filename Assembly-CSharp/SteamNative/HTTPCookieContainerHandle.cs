@@ -1,16 +1,15 @@
-﻿namespace SteamNative
-{
-  internal struct HTTPCookieContainerHandle
-  {
-    public uint Value;
+﻿namespace SteamNative;
 
-    public static implicit operator HTTPCookieContainerHandle(uint value)
-    {
-      return new HTTPCookieContainerHandle {
-        Value = value
-      };
-    }
+internal struct HTTPCookieContainerHandle {
+	public uint Value;
 
-    public static implicit operator uint(HTTPCookieContainerHandle value) => value.Value;
-  }
+	public static implicit operator HTTPCookieContainerHandle(uint value) {
+		return new HTTPCookieContainerHandle {
+			Value = value
+		};
+	}
+
+	public static implicit operator uint(HTTPCookieContainerHandle value) {
+		return value.Value;
+	}
 }

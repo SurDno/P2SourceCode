@@ -1,9 +1,7 @@
-﻿namespace Facepunch.Steamworks
-{
-  public enum Architecture
-  {
-    Unset,
-    x86,
-    x64,
-  }
+﻿namespace Facepunch.Steamworks;
+
+public enum Architecture {
+	Unset,
+	x86,
+	x64
 }

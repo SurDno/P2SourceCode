@@ -1,10 +1,8 @@
-﻿namespace SteamNative
-{
-  internal enum LeaderboardDisplayType
-  {
-    None,
-    Numeric,
-    TimeSeconds,
-    TimeMilliSeconds,
-  }
+﻿namespace SteamNative;
+
+internal enum LeaderboardDisplayType {
+	None,
+	Numeric,
+	TimeSeconds,
+	TimeMilliSeconds
 }

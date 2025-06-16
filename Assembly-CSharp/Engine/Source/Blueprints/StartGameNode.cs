@@ -5,22 +5,17 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class StartGameNode : FlowControlNode
-  {
-    [Port("Project Name")]
-    private ValueInput<string> projectNameInput;
-    [Port("Out")]
-    private FlowOutput output;
+namespace Engine.Source.Blueprints;
 
-    [Port("In")]
-    private void In()
-    {
-      InstanceByRequest<GameDataService>.Instance.SetCurrentGameData(projectNameInput.value);
-      ServiceLocator.GetService<GameLauncher>().RestartGame();
-      output.Call();
-    }
-  }
+[Category("Engine")]
+public class StartGameNode : FlowControlNode {
+	[Port("Project Name")] private ValueInput<string> projectNameInput;
+	[Port("Out")] private FlowOutput output;
+
+	[Port("In")]
+	private void In() {
+		InstanceByRequest<GameDataService>.Instance.SetCurrentGameData(projectNameInput.value);
+		ServiceLocator.GetService<GameLauncher>().RestartGame();
+		output.Call();
+	}
 }

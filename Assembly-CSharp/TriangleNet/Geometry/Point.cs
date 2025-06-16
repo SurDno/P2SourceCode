@@ -1,71 +1,66 @@
 ﻿using System;
 
-namespace TriangleNet.Geometry
-{
-  public class Point : IComparable<Point>, IEquatable<Point>
-  {
-    internal double[] attributes;
-    internal int id;
-    internal int mark;
-    internal double x;
-    internal double y;
+namespace TriangleNet.Geometry;
 
-    public int ID => id;
+public class Point : IComparable<Point>, IEquatable<Point> {
+	internal double[] attributes;
+	internal int id;
+	internal int mark;
+	internal double x;
+	internal double y;
 
-    public double X => x;
+	public int ID => id;
 
-    public double Y => y;
+	public double X => x;
 
-    public int Boundary => mark;
+	public double Y => y;
 
-    public double[] Attributes => attributes;
+	public int Boundary => mark;
 
-    public Point()
-      : this(0.0, 0.0, 0)
-    {
-    }
+	public double[] Attributes => attributes;
 
-    public Point(double x, double y)
-      : this(x, y, 0)
-    {
-    }
+	public Point()
+		: this(0.0, 0.0, 0) { }
 
-    public Point(double x, double y, int mark)
-    {
-      this.x = x;
-      this.y = y;
-      this.mark = mark;
-    }
+	public Point(double x, double y)
+		: this(x, y, 0) { }
 
-    public int CompareTo(Point other)
-    {
-      return x == other.x && y == other.y ? 0 : (x < other.x || x == other.x && y < other.y ? -1 : 1);
-    }
+	public Point(double x, double y, int mark) {
+		this.x = x;
+		this.y = y;
+		this.mark = mark;
+	}
 
-    public bool Equals(Point p) => (object) p != null && x == p.x && y == p.y;
+	public int CompareTo(Point other) {
+		return x == other.x && y == other.y ? 0 : x < other.x || (x == other.x && y < other.y) ? -1 : 1;
+	}
 
-    public static bool operator ==(Point a, Point b)
-    {
-      if (a == (object) b)
-        return true;
-      return (object) a != null && (object) b != null && a.Equals(b);
-    }
+	public bool Equals(Point p) {
+		return (object)p != null && x == p.x && y == p.y;
+	}
 
-    public static bool operator !=(Point a, Point b) => !(a == b);
+	public static bool operator ==(Point a, Point b) {
+		if (a == (object)b)
+			return true;
+		return (object)a != null && (object)b != null && a.Equals(b);
+	}
 
-    public override bool Equals(object obj)
-    {
-      if (obj == null)
-        return false;
-      Point point = obj as Point;
-      return (object) point != null && x == point.x && y == point.y;
-    }
+	public static bool operator !=(Point a, Point b) {
+		return !(a == b);
+	}
 
-    public override int GetHashCode() => x.GetHashCode() ^ y.GetHashCode();
+	public override bool Equals(object obj) {
+		if (obj == null)
+			return false;
+		var point = obj as Point;
+		return (object)point != null && x == point.x && y == point.y;
+	}
 
-    public override string ToString()
-    {
-      return string.Format("[{0},{1}]", x, y);
-    }
-  }
+	public override int GetHashCode() {
+		return x.GetHashCode() ^ y.GetHashCode();
+	}
+
+	public override string ToString() {
+		return string.Format("[{0},{1}]", x, y);
+	}
 }

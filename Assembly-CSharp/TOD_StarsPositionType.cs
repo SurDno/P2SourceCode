@@ -1,5 +1,4 @@
-﻿public enum TOD_StarsPositionType
-{
-  Static,
-  Rotating,
+﻿public enum TOD_StarsPositionType {
+	Static,
+	Rotating
 }

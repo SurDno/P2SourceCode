@@ -9,129 +9,109 @@ using Inspectors;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class FocusModeInteractable : MonoBehaviour, IEntityAttachable
-{
-  [Inspected]
-  private IEntity owner;
-  [Inspected]
-  private InteractableComponent interactableComponent;
-  private FocusEffect effect;
-  private bool interactionAvailable = true;
-  private bool compassEnabled = true;
-  private bool visible = true;
+public class FocusModeInteractable : MonoBehaviour, IEntityAttachable {
+	[Inspected] private IEntity owner;
+	[Inspected] private InteractableComponent interactableComponent;
+	private FocusEffect effect;
+	private bool interactionAvailable = true;
+	private bool compassEnabled = true;
+	private bool visible = true;
 
-  void IEntityAttachable.Attach(IEntity owner) => SetOwner(owner);
+	void IEntityAttachable.Attach(IEntity owner) {
+		SetOwner(owner);
+	}
 
-  void IEntityAttachable.Detach() => SetOwner(null);
+	void IEntityAttachable.Detach() {
+		SetOwner(null);
+	}
 
-  private void OnEnable()
-  {
-    QuestCompassService service = ServiceLocator.GetService<QuestCompassService>();
-    if (service == null)
-      return;
-    OnEnableChanged(service.IsEnabled);
-    service.OnEnableChanged += OnEnableChanged;
-  }
+	private void OnEnable() {
+		var service = ServiceLocator.GetService<QuestCompassService>();
+		if (service == null)
+			return;
+		OnEnableChanged(service.IsEnabled);
+		service.OnEnableChanged += OnEnableChanged;
+	}
 
-  private void OnDisable()
-  {
-    QuestCompassService service = ServiceLocator.GetService<QuestCompassService>();
-    if (service == null)
-      return;
-    service.OnEnableChanged -= OnEnableChanged;
-    OnEnableChanged(false);
-  }
+	private void OnDisable() {
+		var service = ServiceLocator.GetService<QuestCompassService>();
+		if (service == null)
+			return;
+		service.OnEnableChanged -= OnEnableChanged;
+		OnEnableChanged(false);
+	}
 
-  private void SetOwner(IEntity value)
-  {
-    if (owner == value)
-      return;
-    owner = value;
-    SetInteractableComponent(owner?.GetComponent<InteractableComponent>());
-  }
+	private void SetOwner(IEntity value) {
+		if (owner == value)
+			return;
+		owner = value;
+		SetInteractableComponent(owner?.GetComponent<InteractableComponent>());
+	}
 
-  private void SetInteractableComponent(InteractableComponent value)
-  {
-    if (interactableComponent == value)
-      return;
-    interactableComponent = value;
-    CheckInteraction();
-  }
+	private void SetInteractableComponent(InteractableComponent value) {
+		if (interactableComponent == value)
+			return;
+		interactableComponent = value;
+		CheckInteraction();
+	}
 
-  private void CheckInteraction()
-  {
-    if (interactableComponent == null || !interactableComponent.IsEnabled || !interactableComponent.Owner.IsEnabledInHierarchy)
-    {
-      SetInteractionAvailable(false);
-    }
-    else
-    {
-      IEntity player = ServiceLocator.GetService<ISimulation>()?.Player;
-      if (player == null)
-      {
-        SetInteractionAvailable(false);
-      }
-      else
-      {
-        bool flag = false;
-        foreach (InteractItemInfo validateItem in interactableComponent.GetValidateItems(player))
-        {
-          if (!validateItem.Invalid && !(validateItem.Item.Blueprint.Id == Guid.Empty))
-          {
-            flag = true;
-            break;
-          }
-        }
-        SetInteractionAvailable(flag);
-      }
-    }
-  }
+	private void CheckInteraction() {
+		if (interactableComponent == null || !interactableComponent.IsEnabled ||
+		    !interactableComponent.Owner.IsEnabledInHierarchy)
+			SetInteractionAvailable(false);
+		else {
+			var player = ServiceLocator.GetService<ISimulation>()?.Player;
+			if (player == null)
+				SetInteractionAvailable(false);
+			else {
+				var flag = false;
+				foreach (var validateItem in interactableComponent.GetValidateItems(player))
+					if (!validateItem.Invalid && !(validateItem.Item.Blueprint.Id == Guid.Empty)) {
+						flag = true;
+						break;
+					}
 
-  private void SetInteractionAvailable(bool value)
-  {
-    if (interactionAvailable == value)
-      return;
-    interactionAvailable = value;
-    UpdateVisibility();
-  }
+				SetInteractionAvailable(flag);
+			}
+		}
+	}
 
-  private void OnEnableChanged(bool value)
-  {
-    if (compassEnabled == value)
-      return;
-    compassEnabled = value;
-    if (value)
-      CheckInteraction();
-    UpdateVisibility();
-  }
+	private void SetInteractionAvailable(bool value) {
+		if (interactionAvailable == value)
+			return;
+		interactionAvailable = value;
+		UpdateVisibility();
+	}
 
-  private void SetVisibility(bool value)
-  {
-    if (visible == value)
-      return;
-    visible = value;
-    if (effect == null)
-    {
-      effect = GetComponent<FocusEffect>();
-      if (visible)
-      {
-        if (!(effect == null))
-          return;
-        effect = gameObject.AddComponent<FocusEffect>();
-      }
-      else
-      {
-        if (!(effect != null))
-          return;
-        effect.SetActive(false);
-      }
-    }
-    else
-      effect.SetActive(visible);
-  }
+	private void OnEnableChanged(bool value) {
+		if (compassEnabled == value)
+			return;
+		compassEnabled = value;
+		if (value)
+			CheckInteraction();
+		UpdateVisibility();
+	}
 
-  private void UpdateVisibility()
-  {
-    SetVisibility(interactionAvailable && compassEnabled);
-  }
+	private void SetVisibility(bool value) {
+		if (visible == value)
+			return;
+		visible = value;
+		if (effect == null) {
+			effect = GetComponent<FocusEffect>();
+			if (visible) {
+				if (!(effect == null))
+					return;
+				effect = gameObject.AddComponent<FocusEffect>();
+			} else {
+				if (!(effect != null))
+					return;
+				effect.SetActive(false);
+			}
+		} else
+			effect.SetActive(visible);
+	}
+
+	private void UpdateVisibility() {
+		SetVisibility(interactionAvailable && compassEnabled);
+	}
 }

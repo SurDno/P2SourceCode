@@ -1,13 +1,11 @@
 ﻿using Engine.Common.Commons;
 
-namespace Engine.Common.Services
-{
-  public interface INotificationService
-  {
-    void AddNotify(NotificationEnum type, params object[] values);
+namespace Engine.Common.Services;
 
-    void BlockType(NotificationEnum type);
+public interface INotificationService {
+	void AddNotify(NotificationEnum type, params object[] values);
 
-    void UnblockType(NotificationEnum type);
-  }
+	void BlockType(NotificationEnum type);
+
+	void UnblockType(NotificationEnum type);
 }

@@ -8,76 +8,65 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class Notification : UIControl, INotification
-  {
-    [SerializeField]
-    private CanvasGroup canvasGroup;
-    [SerializeField]
-    private AudioClip clip;
-    [SerializeField]
-    private AudioMixerGroup mixer;
-    [SerializeField]
-    private float time;
-    [SerializeField]
-    private float fade;
-    private float progress;
-    private UIService ui;
-    private bool play;
-    private float alpha = -1f;
+namespace Engine.Impl.UI.Controls;
 
-    [Inspected]
-    public bool Complete { get; private set; }
+public class Notification : UIControl, INotification {
+	[SerializeField] private CanvasGroup canvasGroup;
+	[SerializeField] private AudioClip clip;
+	[SerializeField] private AudioMixerGroup mixer;
+	[SerializeField] private float time;
+	[SerializeField] private float fade;
+	private float progress;
+	private UIService ui;
+	private bool play;
+	private float alpha = -1f;
 
-    [Inspected]
-    public NotificationEnum Type { get; private set; }
+	[Inspected] public bool Complete { get; private set; }
 
-    private void Update()
-    {
-      if (Complete || !(ui.Active is HudWindow))
-        return;
-      if (!play)
-      {
-        SimplePlayerWindowSwapper.SetNotificationTempWindow(Type);
-        Play();
-        play = true;
-      }
-      progress += Time.deltaTime;
-      if (progress >= (double) time)
-      {
-        SetAlpha(0.0f);
-        Complete = true;
-        SimplePlayerWindowSwapper.SetNotificationTempWindow(NotificationEnum.None);
-      }
-      else
-        SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
-    }
+	[Inspected] public NotificationEnum Type { get; private set; }
 
-    private void Play()
-    {
-      if (clip == null || mixer == null)
-        return;
-      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
-    }
+	private void Update() {
+		if (Complete || !(ui.Active is HudWindow))
+			return;
+		if (!play) {
+			SimplePlayerWindowSwapper.SetNotificationTempWindow(Type);
+			Play();
+			play = true;
+		}
 
-    protected override void Awake()
-    {
-      base.Awake();
-      ui = ServiceLocator.GetService<UIService>();
-      SetAlpha(0.0f);
-    }
+		progress += Time.deltaTime;
+		if (progress >= (double)time) {
+			SetAlpha(0.0f);
+			Complete = true;
+			SimplePlayerWindowSwapper.SetNotificationTempWindow(NotificationEnum.None);
+		} else
+			SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
+	}
 
-    public void Initialise(NotificationEnum type, object[] values) => Type = type;
+	private void Play() {
+		if (clip == null || mixer == null)
+			return;
+		SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
+	}
 
-    public void Shutdown() => Destroy(gameObject);
+	protected override void Awake() {
+		base.Awake();
+		ui = ServiceLocator.GetService<UIService>();
+		SetAlpha(0.0f);
+	}
 
-    private void SetAlpha(float value)
-    {
-      if (alpha == (double) value)
-        return;
-      alpha = value;
-      canvasGroup.alpha = value;
-    }
-  }
+	public void Initialise(NotificationEnum type, object[] values) {
+		Type = type;
+	}
+
+	public void Shutdown() {
+		Destroy(gameObject);
+	}
+
+	private void SetAlpha(float value) {
+		if (alpha == (double)value)
+			return;
+		alpha = value;
+		canvasGroup.alpha = value;
+	}
 }

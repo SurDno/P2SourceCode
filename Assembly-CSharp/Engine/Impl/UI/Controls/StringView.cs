@@ -1,34 +1,28 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public abstract class StringView : MonoBehaviour
-  {
-    [SerializeField]
-    private string stringValue;
+namespace Engine.Impl.UI.Controls;
 
-    public string StringValue
-    {
-      get => stringValue;
-      set
-      {
-        if (stringValue == value)
-          return;
-        stringValue = value;
-        ApplyStringValue();
-      }
-    }
+public abstract class StringView : MonoBehaviour {
+	[SerializeField] private string stringValue;
 
-    private void OnValidate()
-    {
-      if (Application.isPlaying)
-        return;
-      ApplyStringValue();
-      SkipAnimation();
-    }
+	public string StringValue {
+		get => stringValue;
+		set {
+			if (stringValue == value)
+				return;
+			stringValue = value;
+			ApplyStringValue();
+		}
+	}
 
-    protected abstract void ApplyStringValue();
+	private void OnValidate() {
+		if (Application.isPlaying)
+			return;
+		ApplyStringValue();
+		SkipAnimation();
+	}
 
-    public abstract void SkipAnimation();
-  }
+	protected abstract void ApplyStringValue();
+
+	public abstract void SkipAnimation();
 }

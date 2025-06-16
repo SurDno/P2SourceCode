@@ -1,11 +1,9 @@
 ﻿using Engine.Common;
 
-namespace Engine.Source.Commons
-{
-  public interface ITemplateSetter
-  {
-    IObject Template { set; }
+namespace Engine.Source.Commons;
 
-    bool IsTemplate { set; }
-  }
+public interface ITemplateSetter {
+	IObject Template { set; }
+
+	bool IsTemplate { set; }
 }

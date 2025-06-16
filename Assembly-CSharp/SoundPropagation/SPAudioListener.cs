@@ -1,69 +1,57 @@
 ﻿using UnityEngine;
 
-namespace SoundPropagation
-{
-  public class SPAudioListener : MonoBehaviour
-  {
-    public static SPAudioListener Instance;
-    public LayerMask LayerMask;
-    [Range(0.0f, 1f)]
-    public float Directionality;
-    private Vector3 position;
-    private Vector3 direction;
-    private SPCell cell;
-    private int lastFrame = -1;
+namespace SoundPropagation;
 
-    public SPCell Cell
-    {
-      get
-      {
-        Check();
-        return cell;
-      }
-    }
+public class SPAudioListener : MonoBehaviour {
+	public static SPAudioListener Instance;
+	public LayerMask LayerMask;
+	[Range(0.0f, 1f)] public float Directionality;
+	private Vector3 position;
+	private Vector3 direction;
+	private SPCell cell;
+	private int lastFrame = -1;
 
-    private void Check()
-    {
-      int frameCount = Time.frameCount;
-      if (lastFrame == frameCount)
-        return;
-      position = transform.position;
-      direction = transform.forward * -Directionality;
-      cell = SPCell.Find(position, LayerMask);
-      lastFrame = frameCount;
-    }
+	public SPCell Cell {
+		get {
+			Check();
+			return cell;
+		}
+	}
 
-    public Vector3 Direction
-    {
-      get
-      {
-        Check();
-        return direction;
-      }
-    }
+	private void Check() {
+		var frameCount = Time.frameCount;
+		if (lastFrame == frameCount)
+			return;
+		position = transform.position;
+		direction = transform.forward * -Directionality;
+		cell = SPCell.Find(position, LayerMask);
+		lastFrame = frameCount;
+	}
 
-    private void OnDisable()
-    {
-      cell = null;
-      if (!(Instance == this))
-        return;
-      Instance = null;
-    }
+	public Vector3 Direction {
+		get {
+			Check();
+			return direction;
+		}
+	}
 
-    private void OnEnable()
-    {
-      if (!(Instance == null))
-        return;
-      Instance = this;
-    }
+	private void OnDisable() {
+		cell = null;
+		if (!(Instance == this))
+			return;
+		Instance = null;
+	}
 
-    public Vector3 Position
-    {
-      get
-      {
-        Check();
-        return position;
-      }
-    }
-  }
+	private void OnEnable() {
+		if (!(Instance == null))
+			return;
+		Instance = this;
+	}
+
+	public Vector3 Position {
+		get {
+			Check();
+			return position;
+		}
+	}
 }

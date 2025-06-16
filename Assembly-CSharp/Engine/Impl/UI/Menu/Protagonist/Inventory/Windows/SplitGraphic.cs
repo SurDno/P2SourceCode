@@ -7,183 +7,159 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows
-{
-  [DisallowMultipleComponent]
-  [RequireComponent(typeof (CanvasRenderer))]
-  public class SplitGraphic : 
-    BaseGraphic,
-    IPointerClickHandler,
-    IEventSystemHandler,
-    IPointerDownHandler
-  {
-    private IStorableComponent actor;
-    private bool isCanceled;
-    private IStorableComponent target;
-    [SerializeField]
-    private Slider unitySlider;
-    [SerializeField]
-    private Image itemImage;
-    [SerializeField]
-    private Text itemAmountText;
-    [SerializeField]
-    private Button buttonSelect;
-    [SerializeField]
-    private Button buttonCancel;
-    private bool isReverted;
-    [SerializeField]
-    private GameObject controls;
+namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Windows;
 
-    public bool IsReverted
-    {
-      get => isReverted;
-      set => isReverted = value;
-    }
+[DisallowMultipleComponent]
+[RequireComponent(typeof(CanvasRenderer))]
+public class SplitGraphic :
+	BaseGraphic,
+	IPointerClickHandler,
+	IEventSystemHandler,
+	IPointerDownHandler {
+	private IStorableComponent actor;
+	private bool isCanceled;
+	private IStorableComponent target;
+	[SerializeField] private Slider unitySlider;
+	[SerializeField] private Image itemImage;
+	[SerializeField] private Text itemAmountText;
+	[SerializeField] private Button buttonSelect;
+	[SerializeField] private Button buttonCancel;
+	private bool isReverted;
+	[SerializeField] private GameObject controls;
 
-    public IStorableComponent Actor
-    {
-      get => actor;
-      set
-      {
-        actor = value;
-        target = null;
-        ResetSlider();
-        if (actor == null)
-          return;
-        itemImage.sprite = ((StorableComponent) actor).Placeholder.ImageInventorySlot.Value;
-      }
-    }
+	public bool IsReverted {
+		get => isReverted;
+		set => isReverted = value;
+	}
 
-    public IStorableComponent Target => target;
+	public IStorableComponent Actor {
+		get => actor;
+		set {
+			actor = value;
+			target = null;
+			ResetSlider();
+			if (actor == null)
+				return;
+			itemImage.sprite = ((StorableComponent)actor).Placeholder.ImageInventorySlot.Value;
+		}
+	}
 
-    public bool IsCanceled => isCanceled;
+	public IStorableComponent Target => target;
 
-    protected override void Awake()
-    {
-      base.Awake();
-      buttonSelect.onClick.AddListener(Select);
-      buttonCancel.onClick.AddListener(Cancel);
-      unitySlider.onValueChanged.AddListener(OnSliderValueChange);
-    }
+	public bool IsCanceled => isCanceled;
 
-    protected override void OnEnable()
-    {
-      base.OnEnable();
-      if (EventSystem.current == null)
-        return;
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Cancel, BasicListener);
-      InputService.Instance.onJoystickUsedChanged += OnJoystick;
-      OnJoystick(InputService.Instance.JoystickUsed);
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Submit, BasicListener);
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickLeft, BasicListener);
-      ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickRight, BasicListener);
-    }
+	protected override void Awake() {
+		base.Awake();
+		buttonSelect.onClick.AddListener(Select);
+		buttonCancel.onClick.AddListener(Cancel);
+		unitySlider.onValueChanged.AddListener(OnSliderValueChange);
+	}
 
-    private bool BasicListener(GameActionType type, bool down)
-    {
-      if (!InputService.Instance.JoystickUsed)
-        return false;
-      if (type == GameActionType.Submit & down)
-      {
-        Select();
-        return true;
-      }
-      if (type == GameActionType.LStickLeft & down)
-      {
-        --unitySlider.value;
-        return true;
-      }
-      if (type == GameActionType.LStickRight & down)
-      {
-        ++unitySlider.value;
-        return true;
-      }
-      if (type == GameActionType.Cancel & down)
-        Cancel();
-      return false;
-    }
+	protected override void OnEnable() {
+		base.OnEnable();
+		if (EventSystem.current == null)
+			return;
+		ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Cancel, BasicListener);
+		InputService.Instance.onJoystickUsedChanged += OnJoystick;
+		OnJoystick(InputService.Instance.JoystickUsed);
+		ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.Submit, BasicListener);
+		ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickLeft, BasicListener);
+		ServiceLocator.GetService<GameActionService>()?.AddListener(GameActionType.LStickRight, BasicListener);
+	}
 
-    private void OnJoystick(bool joystick)
-    {
-      buttonCancel.gameObject.SetActive(!joystick);
-      buttonSelect.gameObject.SetActive(!joystick);
-      controls.SetActive(joystick);
-    }
+	private bool BasicListener(GameActionType type, bool down) {
+		if (!InputService.Instance.JoystickUsed)
+			return false;
+		if ((type == GameActionType.Submit) & down) {
+			Select();
+			return true;
+		}
 
-    protected override void OnDisable()
-    {
-      base.OnDisable();
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Cancel, BasicListener);
-      InputService.Instance.onJoystickUsedChanged -= OnJoystick;
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Submit, BasicListener);
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickLeft, BasicListener);
-      ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickRight, BasicListener);
-    }
+		if ((type == GameActionType.LStickLeft) & down) {
+			--unitySlider.value;
+			return true;
+		}
 
-    public void OnPointerDown(PointerEventData eventData)
-    {
-    }
+		if ((type == GameActionType.LStickRight) & down) {
+			++unitySlider.value;
+			return true;
+		}
 
-    public void OnPointerClick(PointerEventData eventData)
-    {
-    }
+		if ((type == GameActionType.Cancel) & down)
+			Cancel();
+		return false;
+	}
 
-    private void OnSliderValueChange(float value) => UpdateCount();
+	private void OnJoystick(bool joystick) {
+		buttonCancel.gameObject.SetActive(!joystick);
+		buttonSelect.gameObject.SetActive(!joystick);
+		controls.SetActive(joystick);
+	}
 
-    private void Select()
-    {
-      int count = Mathf.RoundToInt(unitySlider.value);
-      if (isReverted)
-        count = actor.Count - count;
-      isCanceled = false;
-      if (actor == null || actor.IsDisposed)
-        isCanceled = true;
-      else if (count == 0)
-        isCanceled = true;
-      else
-        target = actor.Count != count ? actor.Split(count) : actor;
-      IsEnabled = false;
-      IsReverted = false;
-    }
+	protected override void OnDisable() {
+		base.OnDisable();
+		ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Cancel, BasicListener);
+		InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+		ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.Submit, BasicListener);
+		ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickLeft, BasicListener);
+		ServiceLocator.GetService<GameActionService>()?.RemoveListener(GameActionType.LStickRight, BasicListener);
+	}
 
-    private void Cancel()
-    {
-      isCanceled = true;
-      IsEnabled = false;
-      IsReverted = false;
-    }
+	public void OnPointerDown(PointerEventData eventData) { }
 
-    protected void ResetSlider()
-    {
-      if (actor == null || actor.IsDisposed)
-        return;
-      unitySlider.minValue = 1f;
-      unitySlider.maxValue = actor.Count - 1f;
-      unitySlider.value = 1f;
-      UpdateCount();
-    }
+	public void OnPointerClick(PointerEventData eventData) { }
 
-    public void UpdateCount()
-    {
-      if (actor == null || actor.IsDisposed)
-        return;
-      itemAmountText.text = "× " + Mathf.RoundToInt(unitySlider.value);
-    }
+	private void OnSliderValueChange(float value) {
+		UpdateCount();
+	}
 
-    public static SplitGraphic Instantiate(GameObject prefab)
-    {
-      GameObject gameObject = Object.Instantiate(prefab);
-      gameObject.name = prefab.name;
-      return gameObject.GetComponent<SplitGraphic>();
-    }
+	private void Select() {
+		var count = Mathf.RoundToInt(unitySlider.value);
+		if (isReverted)
+			count = actor.Count - count;
+		isCanceled = false;
+		if (actor == null || actor.IsDisposed)
+			isCanceled = true;
+		else if (count == 0)
+			isCanceled = true;
+		else
+			target = actor.Count != count ? actor.Split(count) : actor;
+		IsEnabled = false;
+		IsReverted = false;
+	}
 
-    private bool CancelListener(GameActionType type, bool down)
-    {
-      if (!down)
-        return false;
-      isCanceled = true;
-      IsEnabled = false;
-      return true;
-    }
-  }
+	private void Cancel() {
+		isCanceled = true;
+		IsEnabled = false;
+		IsReverted = false;
+	}
+
+	protected void ResetSlider() {
+		if (actor == null || actor.IsDisposed)
+			return;
+		unitySlider.minValue = 1f;
+		unitySlider.maxValue = actor.Count - 1f;
+		unitySlider.value = 1f;
+		UpdateCount();
+	}
+
+	public void UpdateCount() {
+		if (actor == null || actor.IsDisposed)
+			return;
+		itemAmountText.text = "× " + Mathf.RoundToInt(unitySlider.value);
+	}
+
+	public static SplitGraphic Instantiate(GameObject prefab) {
+		var gameObject = Object.Instantiate(prefab);
+		gameObject.name = prefab.name;
+		return gameObject.GetComponent<SplitGraphic>();
+	}
+
+	private bool CancelListener(GameActionType type, bool down) {
+		if (!down)
+			return false;
+		isCanceled = true;
+		IsEnabled = false;
+		return true;
+	}
 }

@@ -1,20 +1,24 @@
 ﻿using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class TriggerNode : FlowControlNode
-  {
-    private bool value;
+namespace Engine.Source.Blueprints.Effects;
 
-    [Port("Set")]
-    public void Set() => value = true;
+[Category("Effects")]
+public class TriggerNode : FlowControlNode {
+	private bool value;
 
-    [Port("Reset")]
-    public void Reset() => value = false;
+	[Port("Set")]
+	public void Set() {
+		value = true;
+	}
 
-    [Port("Value")]
-    private bool Value() => value;
-  }
+	[Port("Reset")]
+	public void Reset() {
+		value = false;
+	}
+
+	[Port("Value")]
+	private bool Value() {
+		return value;
+	}
 }

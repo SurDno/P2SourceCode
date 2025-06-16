@@ -5,46 +5,43 @@ using Engine.Common;
 using Engine.Common.Services;
 using UnityEngine;
 
-namespace Engine.Source.Connections
-{
-  [Serializable]
-  public class SceneAssetLink
-  {
-    [SerializeField]
-    private string id;
+namespace Engine.Source.Connections;
 
-    public Guid Id => DefaultConverter.ParseGuid(id);
+[Serializable]
+public class SceneAssetLink {
+	[SerializeField] private string id;
 
-    public string Path => AssetDatabaseService.Instance.GetPath(Id);
+	public Guid Id => DefaultConverter.ParseGuid(id);
 
-    public IScene GetTemplate()
-    {
-      Guid guid = DefaultConverter.ParseGuid(id);
-      return ServiceLocator.GetService<ITemplateService>().GetTemplate<IScene>(guid);
-    }
+	public string Path => AssetDatabaseService.Instance.GetPath(Id);
 
-    public void SetTemplate(IScene obj)
-    {
-      id = obj == null || !(obj.Id != Guid.Empty) ? "" : obj.Id.ToString();
-    }
+	public IScene GetTemplate() {
+		var guid = DefaultConverter.ParseGuid(id);
+		return ServiceLocator.GetService<ITemplateService>().GetTemplate<IScene>(guid);
+	}
 
-    public override int GetHashCode() => id != null ? id.GetHashCode() : 0;
+	public void SetTemplate(IScene obj) {
+		id = obj == null || !(obj.Id != Guid.Empty) ? "" : obj.Id.ToString();
+	}
 
-    public override bool Equals(object obj)
-    {
-      if (obj == null)
-        return false;
-      SceneAssetLink sceneAssetLink = obj as SceneAssetLink;
-      return (object) sceneAssetLink != null && id == sceneAssetLink.id;
-    }
+	public override int GetHashCode() {
+		return id != null ? id.GetHashCode() : 0;
+	}
 
-    public static bool operator ==(SceneAssetLink a, SceneAssetLink b)
-    {
-      if (a == (object) b)
-        return true;
-      return (object) a != null && (object) b != null && a.Equals(b);
-    }
+	public override bool Equals(object obj) {
+		if (obj == null)
+			return false;
+		var sceneAssetLink = obj as SceneAssetLink;
+		return (object)sceneAssetLink != null && id == sceneAssetLink.id;
+	}
 
-    public static bool operator !=(SceneAssetLink a, SceneAssetLink b) => !(a == b);
-  }
+	public static bool operator ==(SceneAssetLink a, SceneAssetLink b) {
+		if (a == (object)b)
+			return true;
+		return (object)a != null && (object)b != null && a.Equals(b);
+	}
+
+	public static bool operator !=(SceneAssetLink a, SceneAssetLink b) {
+		return !(a == b);
+	}
 }

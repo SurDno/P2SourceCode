@@ -1,11 +1,9 @@
-﻿namespace Engine.Common.Services
-{
-  public interface IOptimizationService
-  {
-    bool FrameHasSpike { get; set; }
+﻿namespace Engine.Common.Services;
 
-    bool LazyFsm { get; }
+public interface IOptimizationService {
+	bool FrameHasSpike { get; set; }
 
-    bool IsUnity { get; }
-  }
+	bool LazyFsm { get; }
+
+	bool IsUnity { get; }
 }

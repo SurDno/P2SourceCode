@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.Effects.Values
-{
-  public interface IAbilityValue
-  {
-  }
-}
+﻿namespace Engine.Source.Effects.Values;
+
+public interface IAbilityValue { }

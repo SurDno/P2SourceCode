@@ -6,18 +6,13 @@ using Engine.Source.Connections;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons
-{
-  [Factory(typeof (IMapTooltipResource))]
-  [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class MapTooltipResource : EngineObject, IMapTooltipResource, IObject
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected UnityAsset<Texture> image;
+namespace Engine.Source.Commons;
 
-    public UnityAsset<Texture> Image => image;
-  }
+[Factory(typeof(IMapTooltipResource))]
+[GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class MapTooltipResource : EngineObject, IMapTooltipResource, IObject {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected UnityAsset<Texture> image;
+
+	public UnityAsset<Texture> Image => image;
 }

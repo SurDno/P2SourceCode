@@ -1,27 +1,23 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public abstract class ProgressView : ProgressViewBase
-  {
-    [SerializeField]
-    [Range(0.0f, 1f)]
-    private float progress;
+namespace Engine.Impl.UI.Controls;
 
-    public override float Progress
-    {
-      get => progress;
-      set
-      {
-        if (progress == (double) value)
-          return;
-        progress = value;
-        ApplyProgress();
-      }
-    }
+public abstract class ProgressView : ProgressViewBase {
+	[SerializeField] [Range(0.0f, 1f)] private float progress;
 
-    protected virtual void OnValidate() => ApplyProgress();
+	public override float Progress {
+		get => progress;
+		set {
+			if (progress == (double)value)
+				return;
+			progress = value;
+			ApplyProgress();
+		}
+	}
 
-    protected abstract void ApplyProgress();
-  }
+	protected virtual void OnValidate() {
+		ApplyProgress();
+	}
+
+	protected abstract void ApplyProgress();
 }

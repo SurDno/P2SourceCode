@@ -3,132 +3,118 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using SteamNative;
 
-namespace Facepunch.Steamworks
-{
-  public class Networking : IDisposable
-  {
-    private static byte[] ReceiveBuffer = new byte[65536];
-    public OnRecievedP2PData OnP2PData;
-    public Func<ulong, bool> OnIncomingConnection;
-    public Action<ulong, SessionError> OnConnectionFailed;
-    private List<int> ListenChannels = new List<int>();
-    private Stopwatch UpdateTimer = Stopwatch.StartNew();
-    internal SteamNetworking networking;
+namespace Facepunch.Steamworks;
 
-    internal Networking(BaseSteamworks steamworks, SteamNetworking networking)
-    {
-      this.networking = networking;
-      P2PSessionRequest_t.RegisterCallback(steamworks, onP2PConnectionRequest);
-      P2PSessionConnectFail_t.RegisterCallback(steamworks, onP2PConnectionFailed);
-    }
+public class Networking : IDisposable {
+	private static byte[] ReceiveBuffer = new byte[65536];
+	public OnRecievedP2PData OnP2PData;
+	public Func<ulong, bool> OnIncomingConnection;
+	public Action<ulong, SessionError> OnConnectionFailed;
+	private List<int> ListenChannels = new();
+	private Stopwatch UpdateTimer = Stopwatch.StartNew();
+	internal SteamNetworking networking;
 
-    public void Dispose()
-    {
-      networking = null;
-      OnIncomingConnection = null;
-      OnConnectionFailed = null;
-      OnP2PData = null;
-      ListenChannels.Clear();
-    }
+	internal Networking(BaseSteamworks steamworks, SteamNetworking networking) {
+		this.networking = networking;
+		P2PSessionRequest_t.RegisterCallback(steamworks, onP2PConnectionRequest);
+		P2PSessionConnectFail_t.RegisterCallback(steamworks, onP2PConnectionFailed);
+	}
 
-    public void Update()
-    {
-      if (OnP2PData == null || UpdateTimer.Elapsed.TotalSeconds < 1.0 / 60.0)
-        return;
-      UpdateTimer.Reset();
-      UpdateTimer.Start();
-      using (List<int>.Enumerator enumerator = ListenChannels.GetEnumerator())
-      {
-label_6:
-        if (!enumerator.MoveNext())
-          return;
-        int current = enumerator.Current;
-        while (ReadP2PPacket(current))
-          ;
-        goto label_6;
-      }
-    }
+	public void Dispose() {
+		networking = null;
+		OnIncomingConnection = null;
+		OnConnectionFailed = null;
+		OnP2PData = null;
+		ListenChannels.Clear();
+	}
 
-    public void SetListenChannel(int ChannelId, bool Listen)
-    {
-      ListenChannels.RemoveAll(x => x == ChannelId);
-      if (!Listen)
-        return;
-      ListenChannels.Add(ChannelId);
-    }
+	public void Update() {
+		if (OnP2PData == null || UpdateTimer.Elapsed.TotalSeconds < 1.0 / 60.0)
+			return;
+		UpdateTimer.Reset();
+		UpdateTimer.Start();
+		using (var enumerator = ListenChannels.GetEnumerator()) {
+			label_6:
+			if (!enumerator.MoveNext())
+				return;
+			var current = enumerator.Current;
+			while (ReadP2PPacket(current))
+				;
+			goto label_6;
+		}
+	}
 
-    private void onP2PConnectionRequest(P2PSessionRequest_t o, bool b)
-    {
-      if (OnIncomingConnection != null)
-      {
-        if (OnIncomingConnection(o.SteamIDRemote))
-          networking.AcceptP2PSessionWithUser(o.SteamIDRemote);
-        else
-          networking.CloseP2PSessionWithUser(o.SteamIDRemote);
-      }
-      else
-        networking.CloseP2PSessionWithUser(o.SteamIDRemote);
-    }
+	public void SetListenChannel(int ChannelId, bool Listen) {
+		ListenChannels.RemoveAll(x => x == ChannelId);
+		if (!Listen)
+			return;
+		ListenChannels.Add(ChannelId);
+	}
 
-    private void onP2PConnectionFailed(P2PSessionConnectFail_t o, bool b)
-    {
-      if (OnConnectionFailed == null)
-        return;
-      OnConnectionFailed(o.SteamIDRemote, (SessionError) o.P2PSessionError);
-    }
+	private void onP2PConnectionRequest(P2PSessionRequest_t o, bool b) {
+		if (OnIncomingConnection != null) {
+			if (OnIncomingConnection(o.SteamIDRemote))
+				networking.AcceptP2PSessionWithUser(o.SteamIDRemote);
+			else
+				networking.CloseP2PSessionWithUser(o.SteamIDRemote);
+		} else
+			networking.CloseP2PSessionWithUser(o.SteamIDRemote);
+	}
 
-    public unsafe bool SendP2PPacket(
-      ulong steamid,
-      byte[] data,
-      int length,
-      SendType eP2PSendType = SendType.Reliable,
-      int nChannel = 0)
-    {
-      fixed (byte* pubData = data)
-        return networking.SendP2PPacket(steamid, (IntPtr) pubData, (uint) length, (P2PSend) eP2PSendType, nChannel);
-    }
+	private void onP2PConnectionFailed(P2PSessionConnectFail_t o, bool b) {
+		if (OnConnectionFailed == null)
+			return;
+		OnConnectionFailed(o.SteamIDRemote, (SessionError)o.P2PSessionError);
+	}
 
-    private unsafe bool ReadP2PPacket(int channel)
-    {
-      uint pcubMsgSize = 0;
-      if (!networking.IsP2PPacketAvailable(out pcubMsgSize, channel))
-        return false;
-      if (ReceiveBuffer.Length < pcubMsgSize)
-        ReceiveBuffer = new byte[(int) pcubMsgSize + 1024];
-      fixed (byte* pubDest = ReceiveBuffer)
-      {
-        CSteamID psteamIDRemote = 1UL;
-        if (!networking.ReadP2PPacket((IntPtr) pubDest, pcubMsgSize, out pcubMsgSize, out psteamIDRemote, channel) || pcubMsgSize == 0U)
-          return false;
-        OnRecievedP2PData onP2Pdata = OnP2PData;
-        if (onP2Pdata != null)
-          onP2Pdata(psteamIDRemote, ReceiveBuffer, (int) pcubMsgSize, channel);
-        return true;
-      }
-    }
+	public unsafe bool SendP2PPacket(
+		ulong steamid,
+		byte[] data,
+		int length,
+		SendType eP2PSendType = SendType.Reliable,
+		int nChannel = 0) {
+		fixed (byte* pubData = data) {
+			return networking.SendP2PPacket(steamid, (IntPtr)pubData, (uint)length, (P2PSend)eP2PSendType, nChannel);
+		}
+	}
 
-    public delegate void OnRecievedP2PData(
-      ulong steamid,
-      byte[] data,
-      int dataLength,
-      int channel);
+	private unsafe bool ReadP2PPacket(int channel) {
+		uint pcubMsgSize = 0;
+		if (!networking.IsP2PPacketAvailable(out pcubMsgSize, channel))
+			return false;
+		if (ReceiveBuffer.Length < pcubMsgSize)
+			ReceiveBuffer = new byte[(int)pcubMsgSize + 1024];
+		fixed (byte* pubDest = ReceiveBuffer) {
+			CSteamID psteamIDRemote = 1UL;
+			if (!networking.ReadP2PPacket((IntPtr)pubDest, pcubMsgSize, out pcubMsgSize, out psteamIDRemote, channel) ||
+			    pcubMsgSize == 0U)
+				return false;
+			var onP2Pdata = OnP2PData;
+			if (onP2Pdata != null)
+				onP2Pdata(psteamIDRemote, ReceiveBuffer, (int)pcubMsgSize, channel);
+			return true;
+		}
+	}
 
-    public enum SessionError : byte
-    {
-      None,
-      NotRunningApp,
-      NoRightsToApp,
-      DestinationNotLoggedIn,
-      Timeout,
-      Max,
-    }
+	public delegate void OnRecievedP2PData(
+		ulong steamid,
+		byte[] data,
+		int dataLength,
+		int channel);
 
-    public enum SendType
-    {
-      Unreliable,
-      UnreliableNoDelay,
-      Reliable,
-      ReliableWithBuffering,
-    }
-  }
+	public enum SessionError : byte {
+		None,
+		NotRunningApp,
+		NoRightsToApp,
+		DestinationNotLoggedIn,
+		Timeout,
+		Max
+	}
+
+	public enum SendType {
+		Unreliable,
+		UnreliableNoDelay,
+		Reliable,
+		ReliableWithBuffering
+	}
 }

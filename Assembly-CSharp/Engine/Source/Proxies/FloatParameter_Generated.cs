@@ -8,76 +8,68 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (FloatParameter))]
-  public class FloatParameter_Generated : 
-    FloatParameter,
-    IComputeNeedSave,
-    INeedSave,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead,
-    ISerializeStateSave,
-    ISerializeStateLoad
-  {
-    public bool NeedSave { get; private set; } = true;
+namespace Engine.Source.Proxies;
 
-    public void ComputeNeedSave(object target2)
-    {
-      NeedSave = true;
-      FloatParameter_Generated parameterGenerated = (FloatParameter_Generated) target2;
-      if (parameterGenerated.name != name || parameterGenerated.value != (double) value || parameterGenerated.minValue != (double) minValue || parameterGenerated.maxValue != (double) maxValue)
-        return;
-      NeedSave = false;
-    }
+[FactoryProxy(typeof(FloatParameter))]
+public class FloatParameter_Generated :
+	FloatParameter,
+	IComputeNeedSave,
+	INeedSave,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead,
+	ISerializeStateSave,
+	ISerializeStateLoad {
+	public bool NeedSave { get; private set; } = true;
 
-    public object Clone()
-    {
-      FloatParameter_Generated instance = Activator.CreateInstance<FloatParameter_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+	public void ComputeNeedSave(object target2) {
+		NeedSave = true;
+		var parameterGenerated = (FloatParameter_Generated)target2;
+		if (parameterGenerated.name != name || parameterGenerated.value != (double)value ||
+		    parameterGenerated.minValue != (double)minValue || parameterGenerated.maxValue != (double)maxValue)
+			return;
+		NeedSave = false;
+	}
 
-    public void CopyTo(object target2)
-    {
-      FloatParameter_Generated parameterGenerated = (FloatParameter_Generated) target2;
-      parameterGenerated.name = name;
-      parameterGenerated.value = value;
-      parameterGenerated.minValue = minValue;
-      parameterGenerated.maxValue = maxValue;
-    }
+	public object Clone() {
+		var instance = Activator.CreateInstance<FloatParameter_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.Write(writer, "Value", value);
-      DefaultDataWriteUtility.Write(writer, "MinValue", minValue);
-      DefaultDataWriteUtility.Write(writer, "MaxValue", maxValue);
-    }
+	public void CopyTo(object target2) {
+		var parameterGenerated = (FloatParameter_Generated)target2;
+		parameterGenerated.name = name;
+		parameterGenerated.value = value;
+		parameterGenerated.minValue = minValue;
+		parameterGenerated.maxValue = maxValue;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
-      value = DefaultDataReadUtility.Read(reader, "Value", value);
-      minValue = DefaultDataReadUtility.Read(reader, "MinValue", minValue);
-      maxValue = DefaultDataReadUtility.Read(reader, "MaxValue", maxValue);
-    }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.Write(writer, "Value", value);
+		DefaultDataWriteUtility.Write(writer, "MinValue", minValue);
+		DefaultDataWriteUtility.Write(writer, "MaxValue", maxValue);
+	}
 
-    public void StateSave(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.Write(writer, "Value", value);
-      DefaultDataWriteUtility.Write(writer, "MinValue", minValue);
-      DefaultDataWriteUtility.Write(writer, "MaxValue", maxValue);
-    }
+	public void DataRead(IDataReader reader, Type type) {
+		name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
+		value = DefaultDataReadUtility.Read(reader, "Value", value);
+		minValue = DefaultDataReadUtility.Read(reader, "MinValue", minValue);
+		maxValue = DefaultDataReadUtility.Read(reader, "MaxValue", maxValue);
+	}
 
-    public void StateLoad(IDataReader reader, Type type)
-    {
-      value = DefaultDataReadUtility.Read(reader, "Value", value);
-      minValue = DefaultDataReadUtility.Read(reader, "MinValue", minValue);
-      maxValue = DefaultDataReadUtility.Read(reader, "MaxValue", maxValue);
-    }
-  }
+	public void StateSave(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.Write(writer, "Value", value);
+		DefaultDataWriteUtility.Write(writer, "MinValue", minValue);
+		DefaultDataWriteUtility.Write(writer, "MaxValue", maxValue);
+	}
+
+	public void StateLoad(IDataReader reader, Type type) {
+		value = DefaultDataReadUtility.Read(reader, "Value", value);
+		minValue = DefaultDataReadUtility.Read(reader, "MinValue", minValue);
+		maxValue = DefaultDataReadUtility.Read(reader, "MaxValue", maxValue);
+	}
 }

@@ -2,29 +2,35 @@
 using Engine.Common;
 using Inspectors;
 
-namespace Engine.Source.Connections
-{
-  public struct Typed<T> where T : class, IObject
-  {
-    private Guid id;
+namespace Engine.Source.Connections;
 
-    [Inspected]
-    public Guid Id => id;
+public struct Typed<T> where T : class, IObject {
+	private Guid id;
 
-    public Typed(Guid id) => this.id = id;
+	[Inspected] public Guid Id => id;
 
-    public T Value
-    {
-      get => TemplateUtility.GetTemplate<T>(Id);
-      set => id = value != null ? value.Id : Guid.Empty;
-    }
+	public Typed(Guid id) {
+		this.id = id;
+	}
 
-    public override int GetHashCode() => id.GetHashCode();
+	public T Value {
+		get => TemplateUtility.GetTemplate<T>(Id);
+		set => id = value != null ? value.Id : Guid.Empty;
+	}
 
-    public override bool Equals(object a) => a is Typed<T> typed && this == typed;
+	public override int GetHashCode() {
+		return id.GetHashCode();
+	}
 
-    public static bool operator ==(Typed<T> a, Typed<T> b) => a.Id == b.Id;
+	public override bool Equals(object a) {
+		return a is Typed<T> typed && this == typed;
+	}
 
-    public static bool operator !=(Typed<T> a, Typed<T> b) => a.Id != b.Id;
-  }
+	public static bool operator ==(Typed<T> a, Typed<T> b) {
+		return a.Id == b.Id;
+	}
+
+	public static bool operator !=(Typed<T> a, Typed<T> b) {
+		return a.Id != b.Id;
+	}
 }

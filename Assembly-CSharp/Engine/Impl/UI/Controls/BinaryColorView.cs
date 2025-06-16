@@ -1,34 +1,28 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public abstract class BinaryColorView : MonoBehaviour, IValueView<Color>
-  {
-    [SerializeField]
-    private Color valueA = Color.white;
-    [SerializeField]
-    private Color valueB = Color.white;
+namespace Engine.Impl.UI.Controls;
 
-    public Color GetValue(int id) => id <= 0 ? valueA : valueB;
+public abstract class BinaryColorView : MonoBehaviour, IValueView<Color> {
+	[SerializeField] private Color valueA = Color.white;
+	[SerializeField] private Color valueB = Color.white;
 
-    public void SetValue(int id, Color value, bool instant)
-    {
-      if (id <= 0)
-      {
-        if (!instant && valueA == value)
-          return;
-        valueA = value;
-        ApplyValues(instant);
-      }
-      else
-      {
-        if (!instant && valueB == value)
-          return;
-        valueB = value;
-        ApplyValues(instant);
-      }
-    }
+	public Color GetValue(int id) {
+		return id <= 0 ? valueA : valueB;
+	}
 
-    protected abstract void ApplyValues(bool instant);
-  }
+	public void SetValue(int id, Color value, bool instant) {
+		if (id <= 0) {
+			if (!instant && valueA == value)
+				return;
+			valueA = value;
+			ApplyValues(instant);
+		} else {
+			if (!instant && valueB == value)
+				return;
+			valueB = value;
+			ApplyValues(instant);
+		}
+	}
+
+	protected abstract void ApplyValues(bool instant);
 }

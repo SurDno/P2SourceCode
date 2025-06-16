@@ -1,32 +1,32 @@
 ﻿using ParadoxNotion.Design;
 using ParadoxNotion.FlowCanvas.Module;
 
-namespace FlowCanvas.Nodes
-{
-  [Category("Flow Controllers/Togglers")]
-  [Description("Flip Flops between the 2 outputs each time In is called")]
-  [ContextDefinedOutputs(typeof (bool))]
-  public class FlipFlop : FlowControlNode
-  {
-    public bool isFlip = true;
-    private bool original;
+namespace FlowCanvas.Nodes;
 
-    public override string name => base.name + " " + (isFlip ? "[FLIP]" : "[FLOP]");
+[Category("Flow Controllers/Togglers")]
+[Description("Flip Flops between the 2 outputs each time In is called")]
+[ContextDefinedOutputs(typeof(bool))]
+public class FlipFlop : FlowControlNode {
+	public bool isFlip = true;
+	private bool original;
 
-    public override void OnGraphStarted() => original = isFlip;
+	public override string name => base.name + " " + (isFlip ? "[FLIP]" : "[FLOP]");
 
-    public override void OnGraphStoped() => isFlip = original;
+	public override void OnGraphStarted() {
+		original = isFlip;
+	}
 
-    protected override void RegisterPorts()
-    {
-      FlowOutput flipF = AddFlowOutput("Flip");
-      FlowOutput flopF = AddFlowOutput("Flop");
-      AddFlowInput("In", () =>
-      {
-        Call(isFlip ? flipF : flopF);
-        isFlip = !isFlip;
-      });
-      AddValueOutput("Is Flip", () => isFlip);
-    }
-  }
+	public override void OnGraphStoped() {
+		isFlip = original;
+	}
+
+	protected override void RegisterPorts() {
+		var flipF = AddFlowOutput("Flip");
+		var flopF = AddFlowOutput("Flop");
+		AddFlowInput("In", () => {
+			Call(isFlip ? flipF : flopF);
+			isFlip = !isFlip;
+		});
+		AddValueOutput("Is Flip", () => isFlip);
+	}
 }

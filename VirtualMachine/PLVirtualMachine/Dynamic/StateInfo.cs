@@ -5,61 +5,48 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public class StateInfo : ISerializeStateSave, IDynamicLoadSerializable
-  {
-    public IState state;
-    public StateStack stateStack;
+namespace PLVirtualMachine.Dynamic;
 
-    public StateInfo()
-    {
-    }
+public class StateInfo : ISerializeStateSave, IDynamicLoadSerializable {
+	public IState state;
+	public StateStack stateStack;
 
-    public StateInfo(IState state)
-    {
-      this.state = state;
-      stateStack = null;
-    }
+	public StateInfo() { }
 
-    public StateInfo(StateStack stateStack)
-    {
-      state = null;
-      this.stateStack = stateStack;
-    }
+	public StateInfo(IState state) {
+		this.state = state;
+		stateStack = null;
+	}
 
-    public void StateSave(IDataWriter writer)
-    {
-      SaveManagerUtility.Save(writer, "State", State != null ? State.BaseGuid : 0UL);
-      SaveManagerUtility.Save(writer, "StateName", State != null ? State.Name : "");
-      SaveManagerUtility.SaveDynamicSerializable(writer, "StateStack", stateStack);
-    }
+	public StateInfo(StateStack stateStack) {
+		state = null;
+		this.stateStack = stateStack;
+	}
 
-    public void LoadFromXML(XmlElement xmlNode)
-    {
-      for (int i = 0; i < xmlNode.ChildNodes.Count; ++i)
-      {
-        XmlElement childNode = (XmlElement) xmlNode.ChildNodes[i];
-        if (childNode.Name == "State")
-        {
-          ulong id = VMSaveLoadManager.ReadUlong(childNode);
-          if (id != 0UL)
-          {
-            IObject objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(id);
-            if (objectByGuid != null)
-              state = (IState) objectByGuid;
-          }
-        }
-        else if (childNode.Name == "StateStack" && childNode.ChildNodes.Count > 0)
-        {
-          stateStack = new StateStack();
-          stateStack.LoadFromXML(childNode);
-        }
-      }
-    }
+	public void StateSave(IDataWriter writer) {
+		SaveManagerUtility.Save(writer, "State", State != null ? State.BaseGuid : 0UL);
+		SaveManagerUtility.Save(writer, "StateName", State != null ? State.Name : "");
+		SaveManagerUtility.SaveDynamicSerializable(writer, "StateStack", stateStack);
+	}
 
-    public IState State => state;
+	public void LoadFromXML(XmlElement xmlNode) {
+		for (var i = 0; i < xmlNode.ChildNodes.Count; ++i) {
+			var childNode = (XmlElement)xmlNode.ChildNodes[i];
+			if (childNode.Name == "State") {
+				var id = VMSaveLoadManager.ReadUlong(childNode);
+				if (id != 0UL) {
+					var objectByGuid = IStaticDataContainer.StaticDataContainer.GetObjectByGuid(id);
+					if (objectByGuid != null)
+						state = (IState)objectByGuid;
+				}
+			} else if (childNode.Name == "StateStack" && childNode.ChildNodes.Count > 0) {
+				stateStack = new StateStack();
+				stateStack.LoadFromXML(childNode);
+			}
+		}
+	}
 
-    public StateStack Stack => stateStack;
-  }
+	public IState State => state;
+
+	public StateStack Stack => stateStack;
 }

@@ -5,36 +5,30 @@ using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (NotBoolOperation))]
-  public class NotBoolOperation_Generated : 
-    NotBoolOperation,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      NotBoolOperation_Generated instance = Activator.CreateInstance<NotBoolOperation_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-      ((NotBoolOperation_Generated) target2).value = CloneableObjectUtility.Clone(value);
-    }
+[FactoryProxy(typeof(NotBoolOperation))]
+public class NotBoolOperation_Generated :
+	NotBoolOperation,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<NotBoolOperation_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "Value", value);
-    }
+	public void CopyTo(object target2) {
+		((NotBoolOperation_Generated)target2).value = CloneableObjectUtility.Clone(value);
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      value = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Value");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "Value", value);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		value = DefaultDataReadUtility.ReadSerialize<IValue<bool>>(reader, "Value");
+	}
 }

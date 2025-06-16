@@ -8,44 +8,41 @@ using Engine.Common.Services;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [TaskCategory("Pathologic/GroupBehaviour")]
-  [TaskIcon("{SkinColor}SequenceIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (CombatFinishOrder))]
-  public class CombatFinishOrder : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    public override void OnStart()
-    {
-      CombatService service = ServiceLocator.GetService<CombatService>();
-      if (service == null || Owner == null)
-        return;
-      EnemyBase component = Owner.GetComponent<EnemyBase>();
-      if (component == null)
-        return;
-      service.IndividualFinishOrder(component);
-    }
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public override TaskStatus OnUpdate() => TaskStatus.Success;
+[TaskCategory("Pathologic/GroupBehaviour")]
+[TaskIcon("{SkinColor}SequenceIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(CombatFinishOrder))]
+public class CombatFinishOrder : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	public override void OnStart() {
+		var service = ServiceLocator.GetService<CombatService>();
+		if (service == null || Owner == null)
+			return;
+		var component = Owner.GetComponent<EnemyBase>();
+		if (component == null)
+			return;
+		service.IndividualFinishOrder(component);
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    }
+	public override TaskStatus OnUpdate() {
+		return TaskStatus.Success;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+	}
 }

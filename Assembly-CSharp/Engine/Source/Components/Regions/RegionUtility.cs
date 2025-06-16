@@ -6,61 +6,55 @@ using Engine.Common.Types;
 using Engine.Impl.Services;
 using UnityEngine;
 
-namespace Engine.Source.Components.Regions
-{
-  public static class RegionUtility
-  {
-    private static Dictionary<RegionEnum, RegionComponent> regions = new Dictionary<RegionEnum, RegionComponent>();
+namespace Engine.Source.Components.Regions;
 
-    public static RegionComponent GetRegionByName(RegionEnum name)
-    {
-      RegionComponent regionByName;
-      regions.TryGetValue(name, out regionByName);
-      return regionByName;
-    }
+public static class RegionUtility {
+	private static Dictionary<RegionEnum, RegionComponent> regions = new();
 
-    public static RegionComponent GetRegionByPosition(Vector3 position)
-    {
-      RegionEnum name = RegionLocator.GetRegionName(position);
-      if (name == RegionEnum.None)
-        name = ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName;
-      RegionComponent regionByName = GetRegionByName(name);
-      if (regionByName == null)
-      {
-        Debug.LogWarning("Region not found, name = " + name + " , position : " + position);
-        regionByName = GetRegionByName(ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName);
-      }
-      return regionByName;
-    }
+	public static RegionComponent GetRegionByName(RegionEnum name) {
+		RegionComponent regionByName;
+		regions.TryGetValue(name, out regionByName);
+		return regionByName;
+	}
 
-    public static string GetRegionTitle(IRegionComponent region)
-    {
-      string regionTitle = string.Empty;
-      IMapItemComponent component = region.GetComponent<IMapItemComponent>();
-      if (component != null)
-      {
-        LocalizedText title = component.Title;
-        if (title != LocalizedText.Empty)
-          regionTitle = ServiceLocator.GetService<LocalizationService>().GetText(title);
-      }
-      if (string.IsNullOrEmpty(regionTitle))
-        regionTitle = region.Region.ToString();
-      return regionTitle;
-    }
+	public static RegionComponent GetRegionByPosition(Vector3 position) {
+		var name = RegionLocator.GetRegionName(position);
+		if (name == RegionEnum.None)
+			name = ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName;
+		var regionByName = GetRegionByName(name);
+		if (regionByName == null) {
+			Debug.LogWarning("Region not found, name = " + name + " , position : " + position);
+			regionByName = GetRegionByName(ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName);
+		}
 
-    public static void AddRegion(RegionEnum name, RegionComponent region)
-    {
-      if (name == RegionEnum.None)
-        Debug.LogError("Region type : " + name + " , region : " + region.Owner.GetInfo());
-      if (regions.ContainsKey(name))
-        Debug.LogError("Region type : " + name + " , already exist, current : " + regions[name].Owner.GetInfo() + " , new : " + region.Owner.GetInfo());
-      else
-        regions.Add(name, region);
-    }
+		return regionByName;
+	}
 
-    public static void RemoveRegion(RegionEnum name, RegionComponent region)
-    {
-      regions.Remove(name);
-    }
-  }
+	public static string GetRegionTitle(IRegionComponent region) {
+		var regionTitle = string.Empty;
+		var component = region.GetComponent<IMapItemComponent>();
+		if (component != null) {
+			var title = component.Title;
+			if (title != LocalizedText.Empty)
+				regionTitle = ServiceLocator.GetService<LocalizationService>().GetText(title);
+		}
+
+		if (string.IsNullOrEmpty(regionTitle))
+			regionTitle = region.Region.ToString();
+		return regionTitle;
+	}
+
+	public static void AddRegion(RegionEnum name, RegionComponent region) {
+		if (name == RegionEnum.None)
+			Debug.LogError("Region type : " + name + " , region : " + region.Owner.GetInfo());
+		if (regions.ContainsKey(name))
+			Debug.LogError("Region type : " + name + " , already exist, current : " + regions[name].Owner.GetInfo() +
+			               " , new : " + region.Owner.GetInfo());
+		else
+			regions.Add(name, region);
+	}
+
+	public static void RemoveRegion(RegionEnum name, RegionComponent region) {
+		regions.Remove(name);
+	}
 }

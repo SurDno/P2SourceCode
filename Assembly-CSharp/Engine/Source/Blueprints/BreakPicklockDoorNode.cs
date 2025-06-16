@@ -8,40 +8,34 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class BreakPicklockDoorNode : FlowControlNode
-  {
-    private ValueInput<IDoorComponent> doorInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        IDoorComponent door = doorInput.value;
-        if (door != null && door.LockState.Value == LockState.Locked)
-        {
-          IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-          if (player != null)
-          {
-            StorageComponent component = player.GetComponent<StorageComponent>();
-            if (component != null)
-            {
-              IStorableComponent storable = component.Items.FirstOrDefault(o => door.Picklocks.Select(p => p.Id).Contains(o.Owner.TemplateId));
-              if (storable != null)
-              {
-                door.LockState.Value = LockState.Unlocked;
-                StorableComponentUtility.Use(storable);
-              }
-            }
-          }
-        }
-        output.Call();
-      });
-      doorInput = AddValueInput<IDoorComponent>("Door");
-    }
-  }
+[Category("Engine")]
+public class BreakPicklockDoorNode : FlowControlNode {
+	private ValueInput<IDoorComponent> doorInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			var door = doorInput.value;
+			if (door != null && door.LockState.Value == LockState.Locked) {
+				var player = ServiceLocator.GetService<ISimulation>().Player;
+				if (player != null) {
+					var component = player.GetComponent<StorageComponent>();
+					if (component != null) {
+						var storable = component.Items.FirstOrDefault(o =>
+							door.Picklocks.Select(p => p.Id).Contains(o.Owner.TemplateId));
+						if (storable != null) {
+							door.LockState.Value = LockState.Unlocked;
+							StorableComponentUtility.Use(storable);
+						}
+					}
+				}
+			}
+
+			output.Call();
+		});
+		doorInput = AddValueInput<IDoorComponent>("Door");
+	}
 }

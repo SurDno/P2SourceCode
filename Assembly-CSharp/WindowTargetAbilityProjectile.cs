@@ -9,13 +9,12 @@ using Engine.Source.Components;
 
 [Factory]
 [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-public class WindowTargetAbilityProjectile : IAbilityProjectile
-{
-  public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets)
-  {
-    List<EffectsComponent> effectsComponentList = new List<EffectsComponent>();
-    if (ServiceLocator.GetService<UIService>().Active is ITargetInventoryWindow)
-      effectsComponentList.Add((ServiceLocator.GetService<UIService>().Active as ITargetInventoryWindow).GetUseTarget().GetComponent<EffectsComponent>());
-    targets.Targets = effectsComponentList;
-  }
+public class WindowTargetAbilityProjectile : IAbilityProjectile {
+	public void ComputeTargets(IEntity self, IEntity item, OutsideAbilityTargets targets) {
+		var effectsComponentList = new List<EffectsComponent>();
+		if (ServiceLocator.GetService<UIService>().Active is ITargetInventoryWindow)
+			effectsComponentList.Add((ServiceLocator.GetService<UIService>().Active as ITargetInventoryWindow)
+				.GetUseTarget().GetComponent<EffectsComponent>());
+		targets.Targets = effectsComponentList;
+	}
 }

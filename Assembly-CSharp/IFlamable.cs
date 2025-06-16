@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-public interface IFlamable
-{
-  GameObject gameObject { get; }
+public interface IFlamable {
+	GameObject gameObject { get; }
 }

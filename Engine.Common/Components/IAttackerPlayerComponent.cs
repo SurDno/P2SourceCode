@@ -1,34 +1,32 @@
 ﻿using System;
 using Engine.Common.Components.AttackerPlayer;
 
-namespace Engine.Common.Components
-{
-  public interface IAttackerPlayerComponent : IComponent
-  {
-    event Action<WeaponKind> WeaponUnholsterEndEvent;
+namespace Engine.Common.Components;
 
-    event Action<WeaponKind> WeaponHolsterStartEvent;
+public interface IAttackerPlayerComponent : IComponent {
+	event Action<WeaponKind> WeaponUnholsterEndEvent;
 
-    void SetWeapon(WeaponKind weaponKind);
+	event Action<WeaponKind> WeaponHolsterStartEvent;
 
-    void ResetWeapon();
+	void SetWeapon(WeaponKind weaponKind);
 
-    WeaponKind CurrentWeapon { get; }
+	void ResetWeapon();
 
-    IEntity CurrentWeaponItem { get; }
+	WeaponKind CurrentWeapon { get; }
 
-    void HandsUnholster();
+	IEntity CurrentWeaponItem { get; }
 
-    void HandsHolster();
+	void HandsUnholster();
 
-    void WeaponHandsUnholster();
+	void HandsHolster();
 
-    void WeaponFirearmUnholster();
+	void WeaponHandsUnholster();
 
-    void WeaponMeleeUnholster();
+	void WeaponFirearmUnholster();
 
-    void WeaponLampUnholster();
+	void WeaponMeleeUnholster();
 
-    bool IsUnholstered { get; }
-  }
+	void WeaponLampUnholster();
+
+	bool IsUnholstered { get; }
 }

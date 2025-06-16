@@ -1,9 +1,7 @@
-﻿namespace TriangleNet
-{
-  internal enum FindDirectionResult
-  {
-    Within,
-    Leftcollinear,
-    Rightcollinear,
-  }
+﻿namespace TriangleNet;
+
+internal enum FindDirectionResult {
+	Within,
+	Leftcollinear,
+	Rightcollinear
 }

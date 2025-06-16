@@ -1,6 +1,3 @@
-﻿namespace FlowCanvas.Nodes
-{
-  public abstract class CallableFunctionNodeBase : SimplexNode
-  {
-  }
-}
+﻿namespace FlowCanvas.Nodes;
+
+public abstract class CallableFunctionNodeBase : SimplexNode { }

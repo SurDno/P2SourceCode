@@ -1,20 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Engine.Common.Components
-{
-  public interface IDetectorComponent : IComponent
-  {
-    bool IsEnabled { get; set; }
+namespace Engine.Common.Components;
 
-    HashSet<IDetectableComponent> Visible { get; }
+public interface IDetectorComponent : IComponent {
+	bool IsEnabled { get; set; }
 
-    HashSet<IDetectableComponent> Hearing { get; }
+	HashSet<IDetectableComponent> Visible { get; }
 
-    event Action<IDetectableComponent> OnSee;
+	HashSet<IDetectableComponent> Hearing { get; }
 
-    event Action<IDetectableComponent> OnStopSee;
+	event Action<IDetectableComponent> OnSee;
 
-    event Action<IDetectableComponent> OnHear;
-  }
+	event Action<IDetectableComponent> OnStopSee;
+
+	event Action<IDetectableComponent> OnHear;
 }

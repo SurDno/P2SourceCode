@@ -4,12 +4,14 @@ using Inspectors;
 using UnityEngine;
 
 [DisallowMultipleComponent]
-public class EngineGameObject : MonoBehaviour, IEntityAttachable
-{
-  [Inspected]
-  public IEntity Owner { get; private set; }
+public class EngineGameObject : MonoBehaviour, IEntityAttachable {
+	[Inspected] public IEntity Owner { get; private set; }
 
-  public void Attach(IEntity owner) => Owner = owner;
+	public void Attach(IEntity owner) {
+		Owner = owner;
+	}
 
-  public void Detach() => Owner = null;
+	public void Detach() {
+		Owner = null;
+	}
 }

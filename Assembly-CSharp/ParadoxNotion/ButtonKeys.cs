@@ -1,9 +1,7 @@
-﻿namespace ParadoxNotion
-{
-  public enum ButtonKeys
-  {
-    Left,
-    Right,
-    Middle,
-  }
+﻿namespace ParadoxNotion;
+
+public enum ButtonKeys {
+	Left,
+	Right,
+	Middle
 }

@@ -1,9 +1,7 @@
-﻿namespace Engine.Source.Components
-{
-  public interface IPlayerActivated
-  {
-    void PlayerActivated();
+﻿namespace Engine.Source.Components;
 
-    void PlayerDeactivated();
-  }
+public interface IPlayerActivated {
+	void PlayerActivated();
+
+	void PlayerDeactivated();
 }

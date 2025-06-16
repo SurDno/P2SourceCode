@@ -1,19 +1,17 @@
 ﻿using System;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IWorldObject : IEngineTemplated
-  {
-    HierarchyGuid WorldPositionGuid { get; }
+namespace PLVirtualMachine.Common;
 
-    bool IsPhysic { get; }
+public interface IWorldObject : IEngineTemplated {
+	HierarchyGuid WorldPositionGuid { get; }
 
-    Guid EngineBaseTemplateGuid { get; }
+	bool IsPhysic { get; }
 
-    bool DirectEngineCreated { get; }
+	Guid EngineBaseTemplateGuid { get; }
 
-    bool IsEngineRoot { get; }
+	bool DirectEngineCreated { get; }
 
-    bool Instantiated { get; }
-  }
+	bool IsEngineRoot { get; }
+
+	bool Instantiated { get; }
 }

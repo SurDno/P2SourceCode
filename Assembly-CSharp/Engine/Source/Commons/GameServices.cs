@@ -9,40 +9,38 @@ using Engine.Source.Services;
 using Scripts.Utility;
 using Debug = UnityEngine.Debug;
 
-namespace Engine.Source.Commons
-{
-  public static class GameServices
-  {
-    private static List<IInitialisable> services;
+namespace Engine.Source.Commons;
 
-    public static void Initialize()
-    {
-      GameServiceAttribute.CreateServices();
-      foreach (object service in ServiceLocator.GetServices())
-      {
-        Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ").Append(TypeUtility.GetTypeName(service.GetType())));
-        MetaService.GetContainer(service.GetType()).GetHandler(FromLocatorAttribute.Id).Compute(service, null);
-      }
-      services = GameServiceAttribute.GetServices().Select(o => o as IInitialisable).Where(o => o != null).ToList();
-      services = ServiceLocatorUtility.SortServices<IInitialisable, DependAttribute>(services);
-      Stopwatch stopwatch = new Stopwatch();
-      for (int index = 0; index < services.Count; ++index)
-      {
-        IInitialisable service = services[index];
-        Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise game service : ").Append(TypeUtility.GetTypeName(service.GetType())));
-        stopwatch.Restart();
-        service.Initialise();
-        stopwatch.Stop();
-        Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise game service complete : ").Append(TypeUtility.GetTypeName(service.GetType())).Append(" , elapsed : ").Append(stopwatch.Elapsed));
-      }
-    }
+public static class GameServices {
+	private static List<IInitialisable> services;
 
-    public static void Terminate()
-    {
-      for (int index = services.Count - 1; index >= 0; --index)
-        services[index].Terminate();
-      services = null;
-      GameServiceAttribute.DestroyServices();
-    }
-  }
+	public static void Initialize() {
+		GameServiceAttribute.CreateServices();
+		foreach (var service in ServiceLocator.GetServices()) {
+			Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" ")
+				.Append(TypeUtility.GetTypeName(service.GetType())));
+			MetaService.GetContainer(service.GetType()).GetHandler(FromLocatorAttribute.Id).Compute(service, null);
+		}
+
+		services = GameServiceAttribute.GetServices().Select(o => o as IInitialisable).Where(o => o != null).ToList();
+		services = ServiceLocatorUtility.SortServices<IInitialisable, DependAttribute>(services);
+		var stopwatch = new Stopwatch();
+		for (var index = 0; index < services.Count; ++index) {
+			var service = services[index];
+			Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise game service : ")
+				.Append(TypeUtility.GetTypeName(service.GetType())));
+			stopwatch.Restart();
+			service.Initialise();
+			stopwatch.Stop();
+			Debug.Log(ObjectInfoUtility.GetStream().Append("[Engine]").Append(" Initialise game service complete : ")
+				.Append(TypeUtility.GetTypeName(service.GetType())).Append(" , elapsed : ").Append(stopwatch.Elapsed));
+		}
+	}
+
+	public static void Terminate() {
+		for (var index = services.Count - 1; index >= 0; --index)
+			services[index].Terminate();
+		services = null;
+		GameServiceAttribute.DestroyServices();
+	}
 }

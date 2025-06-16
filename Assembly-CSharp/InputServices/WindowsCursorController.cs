@@ -4,93 +4,83 @@ using Engine.Source.Commons;
 using Inspectors;
 using UnityEngine;
 
-namespace InputServices
-{
-  public class WindowsCursorController : ICursorController, IUpdatable
-  {
-    private bool visible = true;
-    private bool free = true;
+namespace InputServices;
 
-    [DllImport("User32.dll")]
-    public static extern long SetCursorPos(int x, int y);
+public class WindowsCursorController : ICursorController, IUpdatable {
+	private bool visible = true;
+	private bool free = true;
 
-    [DllImport("user32.dll")]
-    [return: MarshalAs(UnmanagedType.Bool)]
-    public static extern bool GetCursorPos(out POINT lpPoint);
+	[DllImport("User32.dll")]
+	public static extern long SetCursorPos(int x, int y);
 
-    [Inspected(Mutable = true)]
-    public bool Visible
-    {
-      get => visible;
-      set
-      {
-        visible = value;
-        UpdateCursor();
-      }
-    }
+	[DllImport("user32.dll")]
+	[return: MarshalAs(UnmanagedType.Bool)]
+	public static extern bool GetCursorPos(out POINT lpPoint);
 
-    [Inspected(Mutable = true)]
-    public bool Free
-    {
-      get => free;
-      set
-      {
-        free = value;
-        UpdateCursor();
-      }
-    }
+	[Inspected(Mutable = true)]
+	public bool Visible {
+		get => visible;
+		set {
+			visible = value;
+			UpdateCursor();
+		}
+	}
 
-    public Vector2 Position => Input.mousePosition;
+	[Inspected(Mutable = true)]
+	public bool Free {
+		get => free;
+		set {
+			free = value;
+			UpdateCursor();
+		}
+	}
 
-    public WindowsCursorController()
-    {
-      Cursor.SetCursor(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DefaultCursor, new Vector2(0.0f, 0.0f), CursorMode.Auto);
-      InstanceByRequest<EngineApplication>.Instance.OnApplicationFocusEvent += OnApplicationFocus;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+	public Vector2 Position => Input.mousePosition;
 
-    public void Move(float diffX, float diffY)
-    {
-      POINT lpPoint;
-      GetCursorPos(out lpPoint);
-      lpPoint.X += (int) diffX;
-      lpPoint.Y -= (int) diffY;
-      SetCursorPos(lpPoint.X, lpPoint.Y);
-    }
+	public WindowsCursorController() {
+		Cursor.SetCursor(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DefaultCursor, new Vector2(0.0f, 0.0f),
+			CursorMode.Auto);
+		InstanceByRequest<EngineApplication>.Instance.OnApplicationFocusEvent += OnApplicationFocus;
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    private void UpdateCursor()
-    {
-      Cursor.visible = visible && !InputService.Instance.JoystickUsed;
-      CursorLockMode cursorLockMode = Cursor.visible || free && !InputService.Instance.JoystickUsed ? CursorLockMode.None : CursorLockMode.Locked;
-      if (Cursor.lockState == cursorLockMode)
-        return;
-      Cursor.lockState = cursorLockMode;
-    }
+	public void Move(float diffX, float diffY) {
+		POINT lpPoint;
+		GetCursorPos(out lpPoint);
+		lpPoint.X += (int)diffX;
+		lpPoint.Y -= (int)diffY;
+		SetCursorPos(lpPoint.X, lpPoint.Y);
+	}
 
-    private void OnApplicationFocus(bool focus)
-    {
-      if (!focus)
-        return;
-      UpdateCursor();
-    }
+	private void UpdateCursor() {
+		Cursor.visible = visible && !InputService.Instance.JoystickUsed;
+		var cursorLockMode = Cursor.visible || (free && !InputService.Instance.JoystickUsed)
+			? CursorLockMode.None
+			: CursorLockMode.Locked;
+		if (Cursor.lockState == cursorLockMode)
+			return;
+		Cursor.lockState = cursorLockMode;
+	}
 
-    public void ComputeUpdate()
-    {
-      if (!Input.anyKeyDown)
-        return;
-      UpdateCursor();
-    }
+	private void OnApplicationFocus(bool focus) {
+		if (!focus)
+			return;
+		UpdateCursor();
+	}
 
-    public struct POINT
-    {
-      public int X;
-      public int Y;
+	public void ComputeUpdate() {
+		if (!Input.anyKeyDown)
+			return;
+		UpdateCursor();
+	}
 
-      public POINT(int x, int y)
-      {
-        X = x;
-        Y = y;
-      }
-    }
-  }
+	public struct POINT {
+		public int X;
+		public int Y;
+
+		public POINT(int x, int y) {
+			X = x;
+			Y = y;
+		}
+	}
 }

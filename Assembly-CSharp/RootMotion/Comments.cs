@@ -1,10 +1,7 @@
 ﻿using UnityEngine;
 
-namespace RootMotion
-{
-  public class Comments : MonoBehaviour
-  {
-    [Multiline]
-    public string text;
-  }
+namespace RootMotion;
+
+public class Comments : MonoBehaviour {
+	[Multiline] public string text;
 }

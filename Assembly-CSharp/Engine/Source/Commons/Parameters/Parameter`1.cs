@@ -6,107 +6,88 @@ using Engine.Common.Services;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons.Parameters
-{
-  public abstract class Parameter<T> : 
-    ParameterListener,
-    IParameter<T>,
-    IParameter,
-    IComputeParameter
-    where T : struct
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [CopyableProxy]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterNameEnum name;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy()]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected T value;
-    private T storedValue;
-    private bool mutableChecked;
+namespace Engine.Source.Commons.Parameters;
 
-    [Inspected(Header = true)]
-    public ParameterNameEnum Name => name;
+public abstract class Parameter<T> :
+	ParameterListener,
+	IParameter<T>,
+	IParameter,
+	IComputeParameter
+	where T : struct {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[CopyableProxy]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterNameEnum name;
 
-    [Inspected(Header = true, Mutable = true)]
-    public T Value
-    {
-      get => value;
-      set
-      {
-        CheckMutable();
-        this.value = value;
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy()]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected T value;
 
-    [Inspected]
-    public T BaseValue
-    {
-      get => value;
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	private T storedValue;
+	private bool mutableChecked;
 
-    [Inspected]
-    public T MinValue
-    {
-      get => value;
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	[Inspected(Header = true)] public ParameterNameEnum Name => name;
 
-    [Inspected]
-    public T MaxValue
-    {
-      get => value;
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	[Inspected(Header = true, Mutable = true)]
+	public T Value {
+		get => value;
+		set {
+			CheckMutable();
+			this.value = value;
+		}
+	}
 
-    [Inspected]
-    public bool Resetable => false;
+	[Inspected]
+	public T BaseValue {
+		get => value;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    public object ValueData => Value;
+	[Inspected]
+	public T MinValue {
+		get => value;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    private void CheckMutable()
-    {
-      if (mutableChecked)
-        return;
-      mutableChecked = true;
-      storedValue = value;
-      ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
-    }
+	[Inspected]
+	public T MaxValue {
+		get => value;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    protected abstract bool Compare(T a, T b);
+	[Inspected] public bool Resetable => false;
 
-    void IComputeParameter.ResetResetable()
-    {
-    }
+	public object ValueData => Value;
 
-    void IComputeParameter.CorrectValue()
-    {
-    }
+	private void CheckMutable() {
+		if (mutableChecked)
+			return;
+		mutableChecked = true;
+		storedValue = value;
+		ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
+	}
 
-    void IComputeParameter.ComputeEvent()
-    {
-      mutableChecked = false;
-      if (Compare(storedValue, value))
-        return;
-      ChangeParameterInvoke(this);
-    }
-  }
+	protected abstract bool Compare(T a, T b);
+
+	void IComputeParameter.ResetResetable() { }
+
+	void IComputeParameter.CorrectValue() { }
+
+	void IComputeParameter.ComputeEvent() {
+		mutableChecked = false;
+		if (Compare(storedValue, value))
+			return;
+		ChangeParameterInvoke(this);
+	}
 }

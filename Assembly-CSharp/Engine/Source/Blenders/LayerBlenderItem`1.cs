@@ -7,117 +7,98 @@ using Engine.Source.Commons;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Blenders
-{
-  public abstract class LayerBlenderItem<T> : EngineObject, ILayerBlenderItem<T>, IUpdatable where T : class, IObject, IBlendable<T>
-  {
-    [Inspected]
-    private ISmoothBlender<T> blender;
-    [Inspected]
-    private float fromOpacity;
-    [Inspected]
-    private float currentOpacity;
-    [Inspected]
-    private float targetOpacity;
-    [Inspected]
-    private TimeSpan startTime;
-    [Inspected]
-    private TimeSpan interval;
-    [Inspected]
-    private bool compute;
-    [Inspected]
-    private float progress;
+namespace Engine.Source.Blenders;
 
-    public ISmoothBlender<T> Blender
-    {
-      get => blender;
-      set
-      {
-        if (blender != null)
-          blender.OnChanged -= BlenderOnChanged;
-        blender = value;
-        if (blender != null)
-          blender.OnChanged += BlenderOnChanged;
-        Action<ILayerBlenderItem<T>> onChanged = OnChanged;
-        if (onChanged == null)
-          return;
-        onChanged(this);
-      }
-    }
+public abstract class LayerBlenderItem<T> : EngineObject, ILayerBlenderItem<T>, IUpdatable
+	where T : class, IObject, IBlendable<T> {
+	[Inspected] private ISmoothBlender<T> blender;
+	[Inspected] private float fromOpacity;
+	[Inspected] private float currentOpacity;
+	[Inspected] private float targetOpacity;
+	[Inspected] private TimeSpan startTime;
+	[Inspected] private TimeSpan interval;
+	[Inspected] private bool compute;
+	[Inspected] private float progress;
 
-    private void BlenderOnChanged(ISmoothBlender<T> obj)
-    {
-      Action<ILayerBlenderItem<T>> onChanged = OnChanged;
-      if (onChanged == null)
-        return;
-      onChanged(this);
-    }
+	public ISmoothBlender<T> Blender {
+		get => blender;
+		set {
+			if (blender != null)
+				blender.OnChanged -= BlenderOnChanged;
+			blender = value;
+			if (blender != null)
+				blender.OnChanged += BlenderOnChanged;
+			var onChanged = OnChanged;
+			if (onChanged == null)
+				return;
+			onChanged(this);
+		}
+	}
 
-    [Inspected]
-    public float Opacity => currentOpacity;
+	private void BlenderOnChanged(ISmoothBlender<T> obj) {
+		var onChanged = OnChanged;
+		if (onChanged == null)
+			return;
+		onChanged(this);
+	}
 
-    [Inspected]
-    public float TargetOpacity => compute ? targetOpacity : currentOpacity;
+	[Inspected] public float Opacity => currentOpacity;
 
-    public void SetOpacity(float value) => SetOpacity(value, TimeSpan.Zero);
+	[Inspected] public float TargetOpacity => compute ? targetOpacity : currentOpacity;
 
-    public void SetOpacity(float value, TimeSpan interval)
-    {
-      Stop();
-      startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
-      this.interval = interval;
-      targetOpacity = value;
-      compute = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+	public void SetOpacity(float value) {
+		SetOpacity(value, TimeSpan.Zero);
+	}
 
-    private void Stop()
-    {
-      if (!compute)
-        return;
-      compute = false;
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-      fromOpacity = currentOpacity;
-      startTime = TimeSpan.Zero;
-      interval = TimeSpan.Zero;
-      targetOpacity = 0.0f;
-      progress = 0.0f;
-      Action<ILayerBlenderItem<T>> onChanged = OnChanged;
-      if (onChanged == null)
-        return;
-      onChanged(this);
-    }
+	public void SetOpacity(float value, TimeSpan interval) {
+		Stop();
+		startTime = ServiceLocator.GetService<TimeService>().AbsoluteGameTime;
+		this.interval = interval;
+		targetOpacity = value;
+		compute = true;
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    public override void Dispose()
-    {
-      Stop();
-      base.Dispose();
-    }
+	private void Stop() {
+		if (!compute)
+			return;
+		compute = false;
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+		fromOpacity = currentOpacity;
+		startTime = TimeSpan.Zero;
+		interval = TimeSpan.Zero;
+		targetOpacity = 0.0f;
+		progress = 0.0f;
+		var onChanged = OnChanged;
+		if (onChanged == null)
+			return;
+		onChanged(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      if (!compute)
-        return;
-      TimeSpan timeSpan = ServiceLocator.GetService<TimeService>().AbsoluteGameTime - startTime;
-      if (timeSpan >= interval)
-      {
-        currentOpacity = targetOpacity;
-        Stop();
-      }
-      else
-      {
-        float num = Mathf.Clamp01((float) (timeSpan.TotalSeconds / interval.TotalSeconds));
-        if (num == (double) progress)
-          return;
-        progress = num;
-        currentOpacity = Mathf.LerpUnclamped(fromOpacity, targetOpacity, progress);
-        Action<ILayerBlenderItem<T>> onChanged = OnChanged;
-        if (onChanged == null)
-          return;
-        onChanged(this);
-      }
-    }
+	public override void Dispose() {
+		Stop();
+		base.Dispose();
+	}
 
-    public event Action<ILayerBlenderItem<T>> OnChanged;
-  }
+	public void ComputeUpdate() {
+		if (!compute)
+			return;
+		var timeSpan = ServiceLocator.GetService<TimeService>().AbsoluteGameTime - startTime;
+		if (timeSpan >= interval) {
+			currentOpacity = targetOpacity;
+			Stop();
+		} else {
+			var num = Mathf.Clamp01((float)(timeSpan.TotalSeconds / interval.TotalSeconds));
+			if (num == (double)progress)
+				return;
+			progress = num;
+			currentOpacity = Mathf.LerpUnclamped(fromOpacity, targetOpacity, progress);
+			var onChanged = OnChanged;
+			if (onChanged == null)
+				return;
+			onChanged(this);
+		}
+	}
+
+	public event Action<ILayerBlenderItem<T>> OnChanged;
 }

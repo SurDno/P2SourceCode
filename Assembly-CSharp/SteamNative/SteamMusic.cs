@@ -1,63 +1,71 @@
 ﻿using System;
 using Facepunch.Steamworks;
 
-namespace SteamNative
-{
-  internal class SteamMusic : IDisposable
-  {
-    internal Platform.Interface platform;
-    internal BaseSteamworks steamworks;
+namespace SteamNative;
 
-    internal SteamMusic(BaseSteamworks steamworks, IntPtr pointer)
-    {
-      this.steamworks = steamworks;
-      if (Platform.IsWindows64)
-        platform = (Platform.Interface) new Platform.Win64(pointer);
-      else if (Platform.IsWindows32)
-        platform = (Platform.Interface) new Platform.Win32(pointer);
-      else if (Platform.IsLinux32)
-        platform = (Platform.Interface) new Platform.Linux32(pointer);
-      else if (Platform.IsLinux64)
-      {
-        platform = (Platform.Interface) new Platform.Linux64(pointer);
-      }
-      else
-      {
-        if (!Platform.IsOsx)
-          return;
-        platform = (Platform.Interface) new Platform.Mac(pointer);
-      }
-    }
+internal class SteamMusic : IDisposable {
+	internal Platform.Interface platform;
+	internal BaseSteamworks steamworks;
 
-    public bool IsValid => platform != null && platform.IsValid;
+	internal SteamMusic(BaseSteamworks steamworks, IntPtr pointer) {
+		this.steamworks = steamworks;
+		if (Platform.IsWindows64)
+			platform = (Platform.Interface)new Platform.Win64(pointer);
+		else if (Platform.IsWindows32)
+			platform = (Platform.Interface)new Platform.Win32(pointer);
+		else if (Platform.IsLinux32)
+			platform = (Platform.Interface)new Platform.Linux32(pointer);
+		else if (Platform.IsLinux64)
+			platform = (Platform.Interface)new Platform.Linux64(pointer);
+		else {
+			if (!Platform.IsOsx)
+				return;
+			platform = (Platform.Interface)new Platform.Mac(pointer);
+		}
+	}
 
-    public virtual void Dispose()
-    {
-      if (platform == null)
-        return;
-      platform.Dispose();
-      platform = (Platform.Interface) null;
-    }
+	public bool IsValid => platform != null && platform.IsValid;
 
-    public bool BIsEnabled() => platform.ISteamMusic_BIsEnabled();
+	public virtual void Dispose() {
+		if (platform == null)
+			return;
+		platform.Dispose();
+		platform = (Platform.Interface)null;
+	}
 
-    public bool BIsPlaying() => platform.ISteamMusic_BIsPlaying();
+	public bool BIsEnabled() {
+		return platform.ISteamMusic_BIsEnabled();
+	}
 
-    public AudioPlayback_Status GetPlaybackStatus()
-    {
-      return platform.ISteamMusic_GetPlaybackStatus();
-    }
+	public bool BIsPlaying() {
+		return platform.ISteamMusic_BIsPlaying();
+	}
 
-    public float GetVolume() => platform.ISteamMusic_GetVolume();
+	public AudioPlayback_Status GetPlaybackStatus() {
+		return platform.ISteamMusic_GetPlaybackStatus();
+	}
 
-    public void Pause() => platform.ISteamMusic_Pause();
+	public float GetVolume() {
+		return platform.ISteamMusic_GetVolume();
+	}
 
-    public void Play() => platform.ISteamMusic_Play();
+	public void Pause() {
+		platform.ISteamMusic_Pause();
+	}
 
-    public void PlayNext() => platform.ISteamMusic_PlayNext();
+	public void Play() {
+		platform.ISteamMusic_Play();
+	}
 
-    public void PlayPrevious() => platform.ISteamMusic_PlayPrevious();
+	public void PlayNext() {
+		platform.ISteamMusic_PlayNext();
+	}
 
-    public void SetVolume(float flVolume) => platform.ISteamMusic_SetVolume(flVolume);
-  }
+	public void PlayPrevious() {
+		platform.ISteamMusic_PlayPrevious();
+	}
+
+	public void SetVolume(float flVolume) {
+		platform.ISteamMusic_SetVolume(flVolume);
+	}
 }

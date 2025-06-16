@@ -1,9 +1,7 @@
-﻿namespace Engine.Common.Services
-{
-  public interface IForcedDialogService
-  {
-    void AddForcedDialog(IEntity character, float distance);
+﻿namespace Engine.Common.Services;
 
-    void RemoveForcedDialog(IEntity character);
-  }
+public interface IForcedDialogService {
+	void AddForcedDialog(IEntity character, float distance);
+
+	void RemoveForcedDialog(IEntity character);
 }

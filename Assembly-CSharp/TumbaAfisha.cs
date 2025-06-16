@@ -1,56 +1,53 @@
 ﻿using Engine.Common.Services;
 using UnityEngine;
 
-internal class TumbaAfisha : EngineDependent
-{
-  [SerializeField]
-  private Material afishaMaterialDefault;
-  [Tooltip("Day numeration starts with 1")]
-  [SerializeField]
-  private TumbaAfishaEntry[] afishaMaterialOverrides;
-  private MeshRenderer meshRenderer;
-  private bool connected;
-  private float updateTimeLeft;
-  private int currentDay = -1;
+internal class TumbaAfisha : EngineDependent {
+	[SerializeField] private Material afishaMaterialDefault;
 
-  private void Awake() => meshRenderer = GetComponent<MeshRenderer>();
+	[Tooltip("Day numeration starts with 1")] [SerializeField]
+	private TumbaAfishaEntry[] afishaMaterialOverrides;
 
-  private void Update()
-  {
-    if (!connected)
-      return;
-    updateTimeLeft -= Time.deltaTime;
-    if (updateTimeLeft > 0.0)
-      return;
-    updateTimeLeft = 1f;
-    int days = ServiceLocator.GetService<ITimeService>().GameTime.Days;
-    if (currentDay == days)
-      return;
-    currentDay = days;
-    UpdateMaterial(days);
-  }
+	private MeshRenderer meshRenderer;
+	private bool connected;
+	private float updateTimeLeft;
+	private int currentDay = -1;
 
-  protected override void OnConnectToEngine()
-  {
-    connected = meshRenderer != null;
-  }
+	private void Awake() {
+		meshRenderer = GetComponent<MeshRenderer>();
+	}
 
-  protected override void OnDisconnectFromEngine() => connected = false;
+	private void Update() {
+		if (!connected)
+			return;
+		updateTimeLeft -= Time.deltaTime;
+		if (updateTimeLeft > 0.0)
+			return;
+		updateTimeLeft = 1f;
+		var days = ServiceLocator.GetService<ITimeService>().GameTime.Days;
+		if (currentDay == days)
+			return;
+		currentDay = days;
+		UpdateMaterial(days);
+	}
 
-  private void UpdateMaterial(int day)
-  {
-    if (meshRenderer == null)
-      return;
-    meshRenderer.material = GetMaterial(day);
-  }
+	protected override void OnConnectToEngine() {
+		connected = meshRenderer != null;
+	}
 
-  private Material GetMaterial(int day)
-  {
-    for (int index = 0; index < afishaMaterialOverrides.Length; ++index)
-    {
-      if (afishaMaterialOverrides[index].Day == day)
-        return afishaMaterialOverrides[index].AfishaMaterial;
-    }
-    return afishaMaterialDefault;
-  }
+	protected override void OnDisconnectFromEngine() {
+		connected = false;
+	}
+
+	private void UpdateMaterial(int day) {
+		if (meshRenderer == null)
+			return;
+		meshRenderer.material = GetMaterial(day);
+	}
+
+	private Material GetMaterial(int day) {
+		for (var index = 0; index < afishaMaterialOverrides.Length; ++index)
+			if (afishaMaterialOverrides[index].Day == day)
+				return afishaMaterialOverrides[index].AfishaMaterial;
+		return afishaMaterialDefault;
+	}
 }

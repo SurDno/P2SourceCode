@@ -1,12 +1,11 @@
 ﻿using Engine.Impl.UI.Menu;
 
-public interface IBaseConsoleController
-{
-  void SetViewToOperate(UIWindow window);
+public interface IBaseConsoleController {
+	void SetViewToOperate(UIWindow window);
 
-  void ComputeJoystick();
+	void ComputeJoystick();
 
-  void ProcessMouseEvent();
+	void ProcessMouseEvent();
 
-  void SetFocusToFirstElement();
+	void SetFocusToFirstElement();
 }

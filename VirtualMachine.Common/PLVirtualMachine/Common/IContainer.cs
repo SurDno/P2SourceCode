@@ -1,16 +1,14 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IContainer : 
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable
-  {
-    EObjectCategory GetCategory();
+﻿namespace PLVirtualMachine.Common;
 
-    IContainer Owner { get; }
+public interface IContainer :
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable {
+	EObjectCategory GetCategory();
 
-    void Clear();
-  }
+	IContainer Owner { get; }
+
+	void Clear();
 }

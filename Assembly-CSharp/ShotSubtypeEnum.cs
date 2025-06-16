@@ -1,7 +1,6 @@
-﻿public enum ShotSubtypeEnum
-{
-  None,
-  FireLamp,
-  NoMatches,
-  WeaponBroken,
+﻿public enum ShotSubtypeEnum {
+	None,
+	FireLamp,
+	NoMatches,
+	WeaponBroken
 }

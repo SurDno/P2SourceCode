@@ -6,73 +6,66 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.Serialization;
 using PLVirtualMachine.Data.SaveLoad;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public class StateStack : ISerializeStateSave, IDynamicLoadSerializable
-  {
-    private Stack<StatePoint> stateStack = new Stack<StatePoint>();
-    private EStateStackType stackType;
+namespace PLVirtualMachine.Dynamic;
 
-    public StateStack(EStateStackType stackType = EStateStackType.STATESTACK_TYPE_MAIN)
-    {
-      this.stackType = stackType;
-    }
+public class StateStack : ISerializeStateSave, IDynamicLoadSerializable {
+	private Stack<StatePoint> stateStack = new();
+	private EStateStackType stackType;
 
-    public StateStack(StateStack memStack)
-    {
-      if (memStack.Stack == null)
-        return;
-      stateStack = new Stack<StatePoint>(memStack.Stack.Reverse());
-    }
+	public StateStack(EStateStackType stackType = EStateStackType.STATESTACK_TYPE_MAIN) {
+		this.stackType = stackType;
+	}
 
-    public void StateSave(IDataWriter writer)
-    {
-      SaveManagerUtility.SaveDynamicSerializableList(writer, "StatePoints", stateStack);
-    }
+	public StateStack(StateStack memStack) {
+		if (memStack.Stack == null)
+			return;
+		stateStack = new Stack<StatePoint>(memStack.Stack.Reverse());
+	}
 
-    public void LoadFromXML(XmlElement objNode)
-    {
-      for (int i = 0; i < objNode.ChildNodes.Count; ++i)
-      {
-        if (objNode.ChildNodes[i].Name == "StatePoints")
-        {
-          XmlElement childNode = (XmlElement) objNode.ChildNodes[i];
-          List<StatePoint> statePointList = new List<StatePoint>();
-          List<StatePoint> list = statePointList;
-          VMSaveLoadManager.LoadDynamiSerializableList(childNode, list);
-          stateStack.Clear();
-          for (int index = statePointList.Count - 1; index >= 0; --index)
-            stateStack.Push(statePointList[index]);
-        }
-      }
-    }
+	public void StateSave(IDataWriter writer) {
+		SaveManagerUtility.SaveDynamicSerializableList(writer, "StatePoints", stateStack);
+	}
 
-    public void Push(StatePoint newStatePoint) => stateStack.Push(newStatePoint);
+	public void LoadFromXML(XmlElement objNode) {
+		for (var i = 0; i < objNode.ChildNodes.Count; ++i)
+			if (objNode.ChildNodes[i].Name == "StatePoints") {
+				var childNode = (XmlElement)objNode.ChildNodes[i];
+				var statePointList = new List<StatePoint>();
+				var list = statePointList;
+				VMSaveLoadManager.LoadDynamiSerializableList(childNode, list);
+				stateStack.Clear();
+				for (var index = statePointList.Count - 1; index >= 0; --index)
+					stateStack.Push(statePointList[index]);
+			}
+	}
 
-    public StatePoint Peek()
-    {
-      return stateStack.Count == 0 ? null : stateStack.Peek();
-    }
+	public void Push(StatePoint newStatePoint) {
+		stateStack.Push(newStatePoint);
+	}
 
-    public StatePoint Pop()
-    {
-      return stateStack.Count == 0 ? null : stateStack.Pop();
-    }
+	public StatePoint Peek() {
+		return stateStack.Count == 0 ? null : stateStack.Peek();
+	}
 
-    public int Count => stateStack.Count;
+	public StatePoint Pop() {
+		return stateStack.Count == 0 ? null : stateStack.Pop();
+	}
 
-    public Stack<StatePoint> Stack => stateStack;
+	public int Count => stateStack.Count;
 
-    public EStateStackType StackType => stackType;
+	public Stack<StatePoint> Stack => stateStack;
 
-    public void Clear() => stateStack.Clear();
+	public EStateStackType StackType => stackType;
 
-    public void Init() => Clear();
+	public void Clear() {
+		stateStack.Clear();
+	}
 
-    public bool Modified => true;
+	public void Init() {
+		Clear();
+	}
 
-    public void OnModify()
-    {
-    }
-  }
+	public bool Modified => true;
+
+	public void OnModify() { }
 }

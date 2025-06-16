@@ -15,166 +15,152 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-namespace Engine.Services.Engine.Assets
-{
-  [RuntimeService(typeof (AssetLoader))]
-  public class AssetLoader : IUpdatable, IInitialisable
-  {
-    [Inspected]
-    private List<AssetState> assets = new List<AssetState>();
-    private bool initialise;
+namespace Engine.Services.Engine.Assets;
 
-    public bool IsEmpty => assets.Count == 0;
+[RuntimeService(typeof(AssetLoader))]
+public class AssetLoader : IUpdatable, IInitialisable {
+	[Inspected] private List<AssetState> assets = new();
+	private bool initialise;
 
-    public void Initialise()
-    {
-      initialise = true;
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+	public bool IsEmpty => assets.Count == 0;
 
-    public void Terminate()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-      initialise = false;
-    }
+	public void Initialise() {
+		initialise = true;
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      if (ServiceCache.OptimizationService.FrameHasSpike)
-        return;
-      for (int index1 = 0; index1 < assets.Count; ++index1)
-      {
-        AssetState asset = assets[index1];
-        if (asset.NeedDispose)
-        {
-          asset.Asset.Dispose(asset.DisposeReason);
-          asset.NeedDispose = false;
-        }
-        asset.Asset.Update();
-        if (asset.Asset.IsError)
-        {
-          assets.RemoveAt(index1);
-          Func<bool, IEnumerator> onLoad = asset.OnLoad;
-          IEnumerator enumerator = onLoad != null ? onLoad(false) : null;
-          do
-            ;
-          while (enumerator.MoveNext());
-          Action onDispose = asset.OnDispose;
-          if (onDispose != null)
-            onDispose();
-          ServiceCache.OptimizationService.FrameHasSpike = true;
-          break;
-        }
-        if (asset.Asset.IsReadyToDispose)
-        {
-          assets.RemoveAt(index1);
-          Action onDispose = asset.OnDispose;
-          if (onDispose != null)
-            onDispose();
-          ServiceCache.OptimizationService.FrameHasSpike = true;
-          break;
-        }
-        if (!asset.Asset.IsDisposed && asset.Asset.IsLoaded)
-        {
-          Profiler.BeginSample("AssetLoader Processing " + asset.Asset.Path);
-          if (asset.Processor == null && asset.OnLoad != null)
-            asset.Processor = asset.OnLoad(true);
-          if (asset.Processor == null)
-          {
-            assets.RemoveAt(index1);
-          }
-          else
-          {
-            int num = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.SmoothHierarchyMapping ? 12 : int.MaxValue;
-            for (int index2 = 0; index2 < num; ++index2)
-            {
-              if (!asset.Processor.MoveNext())
-              {
-                asset.Processor = null;
-                assets.RemoveAt(index1);
-                ServiceCache.OptimizationService.FrameHasSpike = true;
-                break;
-              }
-            }
-          }
-          Profiler.EndSample();
-          break;
-        }
-      }
-    }
+	public void Terminate() {
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+		initialise = false;
+	}
 
-    public PrefabAsset CreatePrefabAsset(
-      UnityAsset<GameObject> resource,
-      Func<bool, IEnumerator> load)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      string path = AssetDatabaseService.Instance.GetPath(resource.Id);
-      if (path.IsNullOrEmpty())
-        return null;
-      PrefabAsset prefabAsset = new PrefabAsset(path);
-      assets.Add(new AssetState {
-        Asset = prefabAsset,
-        OnLoad = load
-      });
-      return prefabAsset;
-    }
+	public void ComputeUpdate() {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		if (ServiceCache.OptimizationService.FrameHasSpike)
+			return;
+		for (var index1 = 0; index1 < assets.Count; ++index1) {
+			var asset = assets[index1];
+			if (asset.NeedDispose) {
+				asset.Asset.Dispose(asset.DisposeReason);
+				asset.NeedDispose = false;
+			}
 
-    public SceneAsset CreateSceneAsset(
-      IScene reference,
-      Func<bool, IEnumerator> load,
-      string context)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      if (reference == null)
-        return null;
-      SceneAsset sceneAsset = new SceneAsset(reference, context);
-      assets.Add(new AssetState {
-        Asset = sceneAsset,
-        OnLoad = load
-      });
-      return sceneAsset;
-    }
+			asset.Asset.Update();
+			if (asset.Asset.IsError) {
+				assets.RemoveAt(index1);
+				var onLoad = asset.OnLoad;
+				var enumerator = onLoad != null ? onLoad(false) : null;
+				do {
+					;
+				} while (enumerator.MoveNext());
 
-    public void DisposeAsset(IAsset asset, Action dispose, string reason)
-    {
-      if (!initialise)
-        throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
-      int num = -1;
-      for (int index = 0; index < assets.Count; ++index)
-      {
-        AssetState asset1 = assets[index];
-        if (asset1.Asset == asset)
-        {
-          asset1.OnDispose = dispose;
-          if (asset1.Processor != null)
-          {
-            AssetState assetState = new AssetState {
-              Asset = asset
-            };
-            assetState.OnDispose = dispose;
-            assetState.NeedDispose = true;
-            assetState.DisposeReason = reason;
-            assets.Add(assetState);
-            return;
-          }
-          num = index;
-          break;
-        }
-      }
-      if (num == -1)
-      {
-        AssetState assetState = new AssetState {
-          Asset = asset
-        };
-        int count = assets.Count;
-        assetState.OnDispose = dispose;
-        assets.Add(assetState);
-      }
-      asset.Dispose(reason);
-    }
-  }
+				var onDispose = asset.OnDispose;
+				if (onDispose != null)
+					onDispose();
+				ServiceCache.OptimizationService.FrameHasSpike = true;
+				break;
+			}
+
+			if (asset.Asset.IsReadyToDispose) {
+				assets.RemoveAt(index1);
+				var onDispose = asset.OnDispose;
+				if (onDispose != null)
+					onDispose();
+				ServiceCache.OptimizationService.FrameHasSpike = true;
+				break;
+			}
+
+			if (!asset.Asset.IsDisposed && asset.Asset.IsLoaded) {
+				Profiler.BeginSample("AssetLoader Processing " + asset.Asset.Path);
+				if (asset.Processor == null && asset.OnLoad != null)
+					asset.Processor = asset.OnLoad(true);
+				if (asset.Processor == null)
+					assets.RemoveAt(index1);
+				else {
+					var num = ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.SmoothHierarchyMapping
+						? 12
+						: int.MaxValue;
+					for (var index2 = 0; index2 < num; ++index2)
+						if (!asset.Processor.MoveNext()) {
+							asset.Processor = null;
+							assets.RemoveAt(index1);
+							ServiceCache.OptimizationService.FrameHasSpike = true;
+							break;
+						}
+				}
+
+				Profiler.EndSample();
+				break;
+			}
+		}
+	}
+
+	public PrefabAsset CreatePrefabAsset(
+		UnityAsset<GameObject> resource,
+		Func<bool, IEnumerator> load) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		var path = AssetDatabaseService.Instance.GetPath(resource.Id);
+		if (path.IsNullOrEmpty())
+			return null;
+		var prefabAsset = new PrefabAsset(path);
+		assets.Add(new AssetState {
+			Asset = prefabAsset,
+			OnLoad = load
+		});
+		return prefabAsset;
+	}
+
+	public SceneAsset CreateSceneAsset(
+		IScene reference,
+		Func<bool, IEnumerator> load,
+		string context) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		if (reference == null)
+			return null;
+		var sceneAsset = new SceneAsset(reference, context);
+		assets.Add(new AssetState {
+			Asset = sceneAsset,
+			OnLoad = load
+		});
+		return sceneAsset;
+	}
+
+	public void DisposeAsset(IAsset asset, Action dispose, string reason) {
+		if (!initialise)
+			throw new Exception(GetType().Name + "." + MethodBase.GetCurrentMethod().Name);
+		var num = -1;
+		for (var index = 0; index < assets.Count; ++index) {
+			var asset1 = assets[index];
+			if (asset1.Asset == asset) {
+				asset1.OnDispose = dispose;
+				if (asset1.Processor != null) {
+					var assetState = new AssetState {
+						Asset = asset
+					};
+					assetState.OnDispose = dispose;
+					assetState.NeedDispose = true;
+					assetState.DisposeReason = reason;
+					assets.Add(assetState);
+					return;
+				}
+
+				num = index;
+				break;
+			}
+		}
+
+		if (num == -1) {
+			var assetState = new AssetState {
+				Asset = asset
+			};
+			var count = assets.Count;
+			assetState.OnDispose = dispose;
+			assets.Add(assetState);
+		}
+
+		asset.Dispose(reason);
+	}
 }

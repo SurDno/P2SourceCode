@@ -1,19 +1,17 @@
 ﻿using System;
 
-namespace SRDebugger.Services
-{
-  public interface IDebugPanelService
-  {
-    bool IsLoaded { get; }
+namespace SRDebugger.Services;
 
-    bool IsVisible { get; set; }
+public interface IDebugPanelService {
+	bool IsLoaded { get; }
 
-    DefaultTabs? ActiveTab { get; }
+	bool IsVisible { get; set; }
 
-    event Action<IDebugPanelService, bool> VisibilityChanged;
+	DefaultTabs? ActiveTab { get; }
 
-    void Unload();
+	event Action<IDebugPanelService, bool> VisibilityChanged;
 
-    void OpenTab(DefaultTabs tab);
-  }
+	void Unload();
+
+	void OpenTab(DefaultTabs tab);
 }

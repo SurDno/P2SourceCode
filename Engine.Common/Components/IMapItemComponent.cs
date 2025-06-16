@@ -5,44 +5,42 @@ using Engine.Common.Maps;
 using Engine.Common.MindMap;
 using Engine.Common.Types;
 
-namespace Engine.Common.Components
-{
-  public interface IMapItemComponent : IComponent
-  {
-    bool IsEnabled { get; set; }
+namespace Engine.Common.Components;
 
-    LocalizedText Title { get; set; }
+public interface IMapItemComponent : IComponent {
+	bool IsEnabled { get; set; }
 
-    LocalizedText Text { get; set; }
+	LocalizedText Title { get; set; }
 
-    LocalizedText TooltipText { get; set; }
+	LocalizedText Text { get; set; }
 
-    IMapPlaceholder Resource { get; set; }
+	LocalizedText TooltipText { get; set; }
 
-    IMapTooltipResource TooltipResource { get; set; }
+	IMapPlaceholder Resource { get; set; }
 
-    bool Discovered { get; set; }
+	IMapTooltipResource TooltipResource { get; set; }
 
-    IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
+	bool Discovered { get; set; }
 
-    IParameterValue<bool> SavePointIcon { get; }
+	IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
 
-    IParameterValue<bool> SleepIcon { get; }
+	IParameterValue<bool> SavePointIcon { get; }
 
-    IParameterValue<bool> CraftIcon { get; }
+	IParameterValue<bool> SleepIcon { get; }
 
-    IParameterValue<bool> StorageIcon { get; }
+	IParameterValue<bool> CraftIcon { get; }
 
-    IParameterValue<bool> MerchantIcon { get; }
+	IParameterValue<bool> StorageIcon { get; }
 
-    IEntity BoundCharacter { get; set; }
+	IParameterValue<bool> MerchantIcon { get; }
 
-    IEnumerable<IMMNode> Nodes { get; }
+	IEntity BoundCharacter { get; set; }
 
-    void AddNode(IMMNode node);
+	IEnumerable<IMMNode> Nodes { get; }
 
-    void RemoveNode(IMMNode node);
+	void AddNode(IMMNode node);
 
-    void ClearNodes();
-  }
+	void RemoveNode(IMMNode node);
+
+	void ClearNodes();
 }

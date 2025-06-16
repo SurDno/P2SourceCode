@@ -2,18 +2,16 @@
 using Engine.Common.Commons;
 using Engine.Common.Components.Regions;
 
-namespace Engine.Common.Services
-{
-  public interface ISpreadingService
-  {
-    event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoadedOnce;
+namespace Engine.Common.Services;
 
-    event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoaded;
+public interface ISpreadingService {
+	event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoadedOnce;
 
-    event Action<IEntity> OnRegionLoadedOnce;
+	event Action<IEntity, IEntity, BuildingEnum, DiseasedStateEnum> OnFurnitureLoaded;
 
-    event Action<IEntity> OnRegionLoaded;
+	event Action<IEntity> OnRegionLoadedOnce;
 
-    void Reset();
-  }
+	event Action<IEntity> OnRegionLoaded;
+
+	void Reset();
 }

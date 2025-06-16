@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace Engine.Common.Commons
-{
-  [AttributeUsage(AttributeTargets.Field)]
-  public class GroupAttribute : Attribute
-  {
-    public string Value { get; private set; }
+namespace Engine.Common.Commons;
 
-    public GroupAttribute(string value) => Value = value;
-  }
+[AttributeUsage(AttributeTargets.Field)]
+public class GroupAttribute : Attribute {
+	public string Value { get; private set; }
+
+	public GroupAttribute(string value) {
+		Value = value;
+	}
 }

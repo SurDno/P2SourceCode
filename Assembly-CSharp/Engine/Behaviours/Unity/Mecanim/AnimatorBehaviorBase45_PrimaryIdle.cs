@@ -1,16 +1,13 @@
 ﻿using UnityEngine;
 
-namespace Engine.Behaviours.Unity.Mecanim
-{
-  public class AnimatorBehaviorBase45_PrimaryIdle : StateMachineBehaviour
-  {
-    public override void OnStateEnter(
-      Animator animator,
-      AnimatorStateInfo stateInfo,
-      int layerIndex)
-    {
-      bool flag = Random.value < (double) AnimatorState45.GetAnimatorState(animator).PrimaryIdleProbability;
-      animator.SetBool("Movable.Idle.PrimaryIdle", flag);
-    }
-  }
+namespace Engine.Behaviours.Unity.Mecanim;
+
+public class AnimatorBehaviorBase45_PrimaryIdle : StateMachineBehaviour {
+	public override void OnStateEnter(
+		Animator animator,
+		AnimatorStateInfo stateInfo,
+		int layerIndex) {
+		var flag = Random.value < (double)AnimatorState45.GetAnimatorState(animator).PrimaryIdleProbability;
+		animator.SetBool("Movable.Idle.PrimaryIdle", flag);
+	}
 }

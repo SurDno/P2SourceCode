@@ -4,25 +4,20 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class CheckMemoryNode : FlowControlNode
-  {
-    [Port("Context")]
-    private ValueInput<MemoryStrategyContextEnum> contextInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () => StartCoroutine(Compute(output)));
-    }
+[Category("Engine")]
+public class CheckMemoryNode : FlowControlNode {
+	[Port("Context")] private ValueInput<MemoryStrategyContextEnum> contextInput;
 
-    private IEnumerator Compute(FlowOutput output)
-    {
-      yield return MemoryStrategy.Instance.Compute(contextInput.value);
-      output.Call();
-    }
-  }
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => StartCoroutine(Compute(output)));
+	}
+
+	private IEnumerator Compute(FlowOutput output) {
+		yield return MemoryStrategy.Instance.Compute(contextInput.value);
+		output.Call();
+	}
 }

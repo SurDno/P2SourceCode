@@ -1,8 +1,7 @@
-﻿public enum POIServiceCharacterStateEnum
-{
-  None,
-  Free,
-  SingleActivity,
-  GroupActivity,
-  Dialog,
+﻿public enum POIServiceCharacterStateEnum {
+	None,
+	Free,
+	SingleActivity,
+	GroupActivity,
+	Dialog
 }

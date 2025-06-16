@@ -4,39 +4,33 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class IsDeadEventNode : EventNode<FlowScriptController>
-  {
-    private FlowOutput deadOutput;
-    private FlowOutput resurrectOutput;
+namespace Engine.Source.Blueprints;
 
-    public override void OnGraphStarted()
-    {
-      base.OnGraphStarted();
-      ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged += OnIsDeadChanged;
-    }
+[Category("Engine")]
+public class IsDeadEventNode : EventNode<FlowScriptController> {
+	private FlowOutput deadOutput;
+	private FlowOutput resurrectOutput;
 
-    public override void OnGraphStoped()
-    {
-      ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged -= OnIsDeadChanged;
-      base.OnGraphStoped();
-    }
+	public override void OnGraphStarted() {
+		base.OnGraphStarted();
+		ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged += OnIsDeadChanged;
+	}
 
-    private void OnIsDeadChanged(bool visible)
-    {
-      if (visible)
-        deadOutput.Call();
-      else
-        resurrectOutput.Call();
-    }
+	public override void OnGraphStoped() {
+		ServiceLocator.GetService<IsDeadListener>().OnIsDeadChanged -= OnIsDeadChanged;
+		base.OnGraphStoped();
+	}
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      deadOutput = AddFlowOutput("Dead");
-      resurrectOutput = AddFlowOutput("Resurrect");
-    }
-  }
+	private void OnIsDeadChanged(bool visible) {
+		if (visible)
+			deadOutput.Call();
+		else
+			resurrectOutput.Call();
+	}
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		deadOutput = AddFlowOutput("Dead");
+		resurrectOutput = AddFlowOutput("Resurrect");
+	}
 }

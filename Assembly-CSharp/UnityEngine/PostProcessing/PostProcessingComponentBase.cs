@@ -1,21 +1,17 @@
-﻿namespace UnityEngine.PostProcessing
-{
-  public abstract class PostProcessingComponentBase
-  {
-    public PostProcessingContext context;
+﻿namespace UnityEngine.PostProcessing;
 
-    public virtual DepthTextureMode GetCameraFlags() => DepthTextureMode.None;
+public abstract class PostProcessingComponentBase {
+	public PostProcessingContext context;
 
-    public abstract bool active { get; }
+	public virtual DepthTextureMode GetCameraFlags() {
+		return DepthTextureMode.None;
+	}
 
-    public virtual void OnEnable()
-    {
-    }
+	public abstract bool active { get; }
 
-    public virtual void OnDisable()
-    {
-    }
+	public virtual void OnEnable() { }
 
-    public abstract PostProcessingModel GetModel();
-  }
+	public virtual void OnDisable() { }
+
+	public abstract PostProcessingModel GetModel();
 }

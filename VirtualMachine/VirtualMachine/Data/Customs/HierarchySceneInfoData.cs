@@ -7,58 +7,48 @@ using PLVirtualMachine.Data;
 using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 
-namespace VirtualMachine.Data.Customs
-{
-  [DataFactory("HierarchySceneInfoData")]
-  public class HierarchySceneInfoData : IStub, IEditorDataReader
-  {
-    [FieldData("Scenes")]
-    protected List<ulong> scenes = new List<ulong>();
-    [FieldData("Childs")]
-    protected List<ulong> childs = new List<ulong>();
-    [FieldData("SimpleChilds")]
-    protected List<ulong> simpleChilds = new List<ulong>();
+namespace VirtualMachine.Data.Customs;
 
-    public List<ulong> Scenes => scenes;
+[DataFactory("HierarchySceneInfoData")]
+public class HierarchySceneInfoData : IStub, IEditorDataReader {
+	[FieldData("Scenes")] protected List<ulong> scenes = new();
+	[FieldData("Childs")] protected List<ulong> childs = new();
+	[FieldData("SimpleChilds")] protected List<ulong> simpleChilds = new();
 
-    public List<ulong> Childs => childs;
+	public List<ulong> Scenes => scenes;
 
-    public List<ulong> SimpleChilds => simpleChilds;
+	public List<ulong> Childs => childs;
 
-    public void Clear()
-    {
-      scenes.Clear();
-      childs.Clear();
-      simpleChilds.Clear();
-    }
+	public List<ulong> SimpleChilds => simpleChilds;
 
-    public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
-    {
-      while (xml.Read()) {
-        if (xml.NodeType == XmlNodeType.Element)
-        {
-          switch (xml.Name)
-          {
-            case "Scenes":
-              scenes = EditorDataReadUtility.ReadValueList(xml, scenes);
-              continue;
-            case "Childs":
-              childs = EditorDataReadUtility.ReadValueList(xml, childs);
-              continue;
-            case "SimpleChilds":
-              simpleChilds = EditorDataReadUtility.ReadValueList(xml, simpleChilds);
-              continue;
-            default:
-              if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
-                Logger.AddError(typeContext + " : " + xml.Name);
-              XmlReaderUtility.SkipNode(xml);
-              continue;
-          }
-        }
+	public void Clear() {
+		scenes.Clear();
+		childs.Clear();
+		simpleChilds.Clear();
+	}
 
-        if (xml.NodeType == XmlNodeType.EndElement)
-          break;
-      }
-    }
-  }
+	public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext) {
+		while (xml.Read()) {
+			if (xml.NodeType == XmlNodeType.Element)
+				switch (xml.Name) {
+					case "Scenes":
+						scenes = EditorDataReadUtility.ReadValueList(xml, scenes);
+						continue;
+					case "Childs":
+						childs = EditorDataReadUtility.ReadValueList(xml, childs);
+						continue;
+					case "SimpleChilds":
+						simpleChilds = EditorDataReadUtility.ReadValueList(xml, simpleChilds);
+						continue;
+					default:
+						if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
+							Logger.AddError(typeContext + " : " + xml.Name);
+						XmlReaderUtility.SkipNode(xml);
+						continue;
+				}
+
+			if (xml.NodeType == XmlNodeType.EndElement)
+				break;
+		}
+	}
 }

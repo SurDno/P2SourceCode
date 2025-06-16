@@ -6,37 +6,32 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 
-namespace BehaviorDesigner.Runtime.Tasks.Pathologic.PlagueCloud
-{
-  [TaskDescription("Enable PlagueCloud attack stance.")]
-  [TaskCategory("Pathologic/PlagueCloud")]
-  [TaskIcon("Pathologic_PlagueCloudIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (StanceInvisible))]
-  public class StanceInvisible : PlagueCloudBase, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    public override global::PlagueCloud.VisibilityType GetVisibilityType()
-    {
-      return global::PlagueCloud.VisibilityType.Invisible;
-    }
+namespace BehaviorDesigner.Runtime.Tasks.Pathologic.PlagueCloud;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    }
+[TaskDescription("Enable PlagueCloud attack stance.")]
+[TaskCategory("Pathologic/PlagueCloud")]
+[TaskIcon("Pathologic_PlagueCloudIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(StanceInvisible))]
+public class StanceInvisible : PlagueCloudBase, IStub, ISerializeDataWrite, ISerializeDataRead {
+	public override global::PlagueCloud.VisibilityType GetVisibilityType() {
+		return global::PlagueCloud.VisibilityType.Invisible;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+	}
 }

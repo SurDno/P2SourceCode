@@ -1,19 +1,17 @@
 ﻿using System;
 
-namespace Engine.Common.Components
-{
-  public interface ILocationComponent : IComponent
-  {
-    bool IsHibernation { get; }
+namespace Engine.Common.Components;
 
-    IEntity Player { get; }
+public interface ILocationComponent : IComponent {
+	bool IsHibernation { get; }
 
-    bool IsIndoor { get; }
+	IEntity Player { get; }
 
-    ILocationComponent LogicLocation { get; }
+	bool IsIndoor { get; }
 
-    event Action<ILocationComponent> OnHibernationChanged;
+	ILocationComponent LogicLocation { get; }
 
-    event Action OnPlayerChanged;
-  }
+	event Action<ILocationComponent> OnHibernationChanged;
+
+	event Action OnPlayerChanged;
 }

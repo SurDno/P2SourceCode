@@ -1,29 +1,24 @@
 ﻿using Engine.Common;
 using UnityEngine;
 
-namespace Engine.Source.Services.CameraServices
-{
-  public class RagdollCameraController : ICameraController
-  {
-    private float smoothTime = 0.05f;
-    private float speedSmoothTime = 0.5f;
+namespace Engine.Source.Services.CameraServices;
 
-    public void Initialise()
-    {
-    }
+public class RagdollCameraController : ICameraController {
+	private float smoothTime = 0.05f;
+	private float speedSmoothTime = 0.5f;
 
-    public void Shutdown()
-    {
-    }
+	public void Initialise() { }
 
-    public void Update(IEntity target, GameObject gameObjectTarget)
-    {
-      if (gameObjectTarget == null)
-        return;
-      smoothTime += speedSmoothTime * Time.deltaTime;
-      Transform cameraTransform = GameCamera.Instance.CameraTransform;
-      cameraTransform.position = Vector3.Lerp(cameraTransform.position, gameObjectTarget.transform.position, Time.deltaTime / smoothTime);
-      cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, gameObjectTarget.transform.rotation, Time.deltaTime / smoothTime);
-    }
-  }
+	public void Shutdown() { }
+
+	public void Update(IEntity target, GameObject gameObjectTarget) {
+		if (gameObjectTarget == null)
+			return;
+		smoothTime += speedSmoothTime * Time.deltaTime;
+		var cameraTransform = GameCamera.Instance.CameraTransform;
+		cameraTransform.position = Vector3.Lerp(cameraTransform.position, gameObjectTarget.transform.position,
+			Time.deltaTime / smoothTime);
+		cameraTransform.rotation = Quaternion.Slerp(cameraTransform.rotation, gameObjectTarget.transform.rotation,
+			Time.deltaTime / smoothTime);
+	}
 }

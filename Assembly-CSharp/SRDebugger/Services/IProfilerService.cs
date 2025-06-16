@@ -1,15 +1,13 @@
 ﻿using CircularBuffer;
 
-namespace SRDebugger.Services
-{
-  public interface IProfilerService
-  {
-    float AverageFrameTime { get; }
+namespace SRDebugger.Services;
 
-    float LastFrameTime { get; }
+public interface IProfilerService {
+	float AverageFrameTime { get; }
 
-    void SetCustom(double value);
+	float LastFrameTime { get; }
 
-    CircularBuffer<ProfilerFrame> FrameBuffer { get; }
-  }
+	void SetCustom(double value);
+
+	CircularBuffer<ProfilerFrame> FrameBuffer { get; }
 }

@@ -1,14 +1,12 @@
 ﻿using Engine.Common.Commons;
 using Engine.Source.Services.Notifications;
 
-namespace Engine.Source.UI
-{
-  public interface IHudWindow : IWindow
-  {
-    InteractableWindow InteractableInterface { get; }
+namespace Engine.Source.UI;
 
-    INotification Create(NotificationEnum type);
+public interface IHudWindow : IWindow {
+	InteractableWindow InteractableInterface { get; }
 
-    void SetVisibility(bool visible, bool ignoreTextNotifications = false);
-  }
+	INotification Create(NotificationEnum type);
+
+	void SetVisibility(bool visible, bool ignoreTextNotifications = false);
 }

@@ -1,15 +1,13 @@
-﻿namespace Engine.Common.Services
-{
-  public interface ISteppeHerbService
-  {
-    int BrownTwyreAmount { get; set; }
+﻿namespace Engine.Common.Services;
 
-    int BloodTwyreAmount { get; set; }
+public interface ISteppeHerbService {
+	int BrownTwyreAmount { get; set; }
 
-    int BlackTwyreAmount { get; set; }
+	int BloodTwyreAmount { get; set; }
 
-    int SweveryAmount { get; set; }
+	int BlackTwyreAmount { get; set; }
 
-    void Reset();
-  }
+	int SweveryAmount { get; set; }
+
+	void Reset();
 }

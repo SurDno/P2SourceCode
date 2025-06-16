@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IEngineInstanced : IEngineTemplated
-  {
-    Guid EngineGuid { get; }
+namespace PLVirtualMachine.Common;
 
-    IBlueprint EditorTemplate { get; }
-  }
+public interface IEngineInstanced : IEngineTemplated {
+	Guid EngineGuid { get; }
+
+	IBlueprint EditorTemplate { get; }
 }

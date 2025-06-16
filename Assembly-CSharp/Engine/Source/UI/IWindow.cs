@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace Engine.Source.UI
-{
-  public interface IWindow
-  {
-    event Action<IWindow> DisableWindowEvent;
+namespace Engine.Source.UI;
 
-    bool IsEnabled { get; }
-  }
+public interface IWindow {
+	event Action<IWindow> DisableWindowEvent;
+
+	bool IsEnabled { get; }
 }

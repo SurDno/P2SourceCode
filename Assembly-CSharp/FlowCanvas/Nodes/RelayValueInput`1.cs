@@ -1,20 +1,19 @@
 ﻿using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace FlowCanvas.Nodes
-{
-  [Description("Can be used with a RelayOutput of the same (T) type to get the input port value.")]
-  [Category("Flow Controllers/Relay")]
-  public class RelayValueInput<T> : FlowControlNode
-  {
-    [Tooltip("The identifier name of the relay")]
-    public string identifier = "MyRelayValueName";
+namespace FlowCanvas.Nodes;
 
-    [HideInInspector]
-    public ValueInput<T> port { get; private set; }
+[Description("Can be used with a RelayOutput of the same (T) type to get the input port value.")]
+[Category("Flow Controllers/Relay")]
+public class RelayValueInput<T> : FlowControlNode {
+	[Tooltip("The identifier name of the relay")]
+	public string identifier = "MyRelayValueName";
 
-    public override string name => string.Format("@ {0}", identifier);
+	[HideInInspector] public ValueInput<T> port { get; private set; }
 
-    protected override void RegisterPorts() => port = AddValueInput<T>("Value");
-  }
+	public override string name => string.Format("@ {0}", identifier);
+
+	protected override void RegisterPorts() {
+		port = AddValueInput<T>("Value");
+	}
 }

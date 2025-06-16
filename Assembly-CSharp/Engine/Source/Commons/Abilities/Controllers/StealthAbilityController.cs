@@ -2,33 +2,31 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 
-namespace Engine.Source.Commons.Abilities.Controllers
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class StealthAbilityController : IAbilityController
-  {
-    private IControllerComponent controller;
-    private AbilityItem abilityItem;
+namespace Engine.Source.Commons.Abilities.Controllers;
 
-    public void Initialise(AbilityItem abilityItem)
-    {
-      this.abilityItem = abilityItem;
-      controller = this.abilityItem.Ability.Owner.GetComponent<IControllerComponent>();
-      if (controller == null)
-        return;
-      controller.IsStelth.ChangeValueEvent += OnStelthEnableChanged;
-      OnStelthEnableChanged(controller.IsStelth.Value);
-    }
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class StealthAbilityController : IAbilityController {
+	private IControllerComponent controller;
+	private AbilityItem abilityItem;
 
-    public void Shutdown()
-    {
-      if (controller == null)
-        return;
-      controller.IsStelth.ChangeValueEvent -= OnStelthEnableChanged;
-      controller = null;
-    }
+	public void Initialise(AbilityItem abilityItem) {
+		this.abilityItem = abilityItem;
+		controller = this.abilityItem.Ability.Owner.GetComponent<IControllerComponent>();
+		if (controller == null)
+			return;
+		controller.IsStelth.ChangeValueEvent += OnStelthEnableChanged;
+		OnStelthEnableChanged(controller.IsStelth.Value);
+	}
 
-    private void OnStelthEnableChanged(bool enabled) => abilityItem.Active = enabled;
-  }
+	public void Shutdown() {
+		if (controller == null)
+			return;
+		controller.IsStelth.ChangeValueEvent -= OnStelthEnableChanged;
+		controller = null;
+	}
+
+	private void OnStelthEnableChanged(bool enabled) {
+		abilityItem.Active = enabled;
+	}
 }

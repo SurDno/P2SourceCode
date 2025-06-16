@@ -1,5 +1,3 @@
 ﻿using UnityEngine;
 
-public class EditorSceneLoader : ScriptableObject
-{
-}
+public class EditorSceneLoader : ScriptableObject { }

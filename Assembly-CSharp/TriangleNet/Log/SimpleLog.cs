@@ -1,37 +1,37 @@
 ﻿using System.Collections.Generic;
 
-namespace TriangleNet.Log
-{
-  public sealed class SimpleLog : ILog<SimpleLogItem>
-  {
-    private static readonly SimpleLog instance = new SimpleLog();
-    private LogLevel level = LogLevel.Info;
-    private List<SimpleLogItem> log = new List<SimpleLogItem>();
+namespace TriangleNet.Log;
 
-    public static ILog<SimpleLogItem> Instance => instance;
+public sealed class SimpleLog : ILog<SimpleLogItem> {
+	private static readonly SimpleLog instance = new();
+	private LogLevel level = LogLevel.Info;
+	private List<SimpleLogItem> log = new();
 
-    private SimpleLog()
-    {
-    }
+	public static ILog<SimpleLogItem> Instance => instance;
 
-    public void Add(SimpleLogItem item) => log.Add(item);
+	private SimpleLog() { }
 
-    public void Clear() => log.Clear();
+	public void Add(SimpleLogItem item) {
+		log.Add(item);
+	}
 
-    public void Info(string message) => log.Add(new SimpleLogItem(LogLevel.Info, message));
+	public void Clear() {
+		log.Clear();
+	}
 
-    public void Warning(string message, string location)
-    {
-      log.Add(new SimpleLogItem(LogLevel.Warning, message, location));
-    }
+	public void Info(string message) {
+		log.Add(new SimpleLogItem(LogLevel.Info, message));
+	}
 
-    public void Error(string message, string location)
-    {
-      log.Add(new SimpleLogItem(LogLevel.Error, message, location));
-    }
+	public void Warning(string message, string location) {
+		log.Add(new SimpleLogItem(LogLevel.Warning, message, location));
+	}
 
-    public IList<SimpleLogItem> Data => log;
+	public void Error(string message, string location) {
+		log.Add(new SimpleLogItem(LogLevel.Error, message, location));
+	}
 
-    public LogLevel Level => level;
-  }
+	public IList<SimpleLogItem> Data => log;
+
+	public LogLevel Level => level;
 }

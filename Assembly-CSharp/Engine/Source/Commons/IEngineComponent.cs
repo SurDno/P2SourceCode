@@ -1,15 +1,13 @@
 ﻿using Engine.Common;
 
-namespace Engine.Source.Commons
-{
-  public interface IEngineComponent
-  {
-    void OnChangeEnabled();
+namespace Engine.Source.Commons;
 
-    void PrepareAdded();
+public interface IEngineComponent {
+	void OnChangeEnabled();
 
-    void PostRemoved();
+	void PrepareAdded();
 
-    IEntity Owner { set; }
-  }
+	void PostRemoved();
+
+	IEntity Owner { set; }
 }

@@ -6,40 +6,34 @@ using Engine.Common.Commons.Converters;
 using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (NpcPrepunchEffect))]
-  public class NpcPrepunchEffect_Generated : 
-    NpcPrepunchEffect,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      NpcPrepunchEffect_Generated instance = Activator.CreateInstance<NpcPrepunchEffect_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-      NpcPrepunchEffect_Generated prepunchEffectGenerated = (NpcPrepunchEffect_Generated) target2;
-      prepunchEffectGenerated.name = name;
-      prepunchEffectGenerated.queue = queue;
-    }
+[FactoryProxy(typeof(NpcPrepunchEffect))]
+public class NpcPrepunchEffect_Generated :
+	NpcPrepunchEffect,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<NpcPrepunchEffect_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.Write(writer, "Name", name);
-      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
-    }
+	public void CopyTo(object target2) {
+		var prepunchEffectGenerated = (NpcPrepunchEffect_Generated)target2;
+		prepunchEffectGenerated.name = name;
+		prepunchEffectGenerated.queue = queue;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      name = DefaultDataReadUtility.Read(reader, "Name", name);
-      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.Write(writer, "Name", name);
+		DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		name = DefaultDataReadUtility.Read(reader, "Name", name);
+		queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+	}
 }

@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class TaskCategoryAttribute : Attribute
-  {
-    private readonly string mCategory;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public string Category => mCategory;
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public class TaskCategoryAttribute : Attribute {
+	private readonly string mCategory;
 
-    public TaskCategoryAttribute(string category) => mCategory = category;
-  }
+	public string Category => mCategory;
+
+	public TaskCategoryAttribute(string category) {
+		mCategory = category;
+	}
 }

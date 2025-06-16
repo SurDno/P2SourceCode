@@ -3,31 +3,24 @@ using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.GameLogic
-{
-  [VMType("ITextRef")]
-  [VMFactory(typeof (ITextRef))]
-  public class VMTextRef : BaseRef, ITextRef, IRef, IVariable, INamed, IVMStringSerializable
-  {
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_TEXT;
-    }
+namespace PLVirtualMachine.GameLogic;
 
-    public override VMType Type => new VMType(typeof (ITextRef));
+[VMType("ITextRef")]
+[VMFactory(typeof(ITextRef))]
+public class VMTextRef : BaseRef, ITextRef, IRef, IVariable, INamed, IVMStringSerializable {
+	public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_TEXT;
 
-    public IGameString Text
-    {
-      get
-      {
-        if (StaticInstance == null && BaseGuid > 0UL)
-          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
-        return (IGameString) StaticInstance;
-      }
-    }
+	public override VMType Type => new(typeof(ITextRef));
 
-    public override bool Empty => Text == null && base.Empty;
+	public IGameString Text {
+		get {
+			if (StaticInstance == null && BaseGuid > 0UL)
+				LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+			return (IGameString)StaticInstance;
+		}
+	}
 
-    protected override Type NeedInstanceType => typeof (IGameString);
-  }
+	public override bool Empty => Text == null && base.Empty;
+
+	protected override Type NeedInstanceType => typeof(IGameString);
 }

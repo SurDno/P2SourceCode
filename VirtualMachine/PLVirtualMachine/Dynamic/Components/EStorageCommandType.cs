@@ -1,10 +1,8 @@
-﻿namespace PLVirtualMachine.Dynamic.Components
-{
-  public enum EStorageCommandType
-  {
-    StorageCommandTypeAddItem,
-    StorageCommandTypeRandomAddItem,
-    StorageCommandClear,
-    StorageCommandTypeNone,
-  }
+﻿namespace PLVirtualMachine.Dynamic.Components;
+
+public enum EStorageCommandType {
+	StorageCommandTypeAddItem,
+	StorageCommandTypeRandomAddItem,
+	StorageCommandClear,
+	StorageCommandTypeNone
 }

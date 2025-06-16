@@ -1,6 +1,5 @@
-﻿public enum TOD_ColorSpaceType
-{
-  Auto,
-  Linear,
-  Gamma,
+﻿public enum TOD_ColorSpaceType {
+	Auto,
+	Linear,
+	Gamma
 }

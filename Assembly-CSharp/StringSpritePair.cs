@@ -2,8 +2,7 @@
 using UnityEngine;
 
 [Serializable]
-public struct StringSpritePair
-{
-  public string Key;
-  public Sprite Value;
+public struct StringSpritePair {
+	public string Key;
+	public Sprite Value;
 }

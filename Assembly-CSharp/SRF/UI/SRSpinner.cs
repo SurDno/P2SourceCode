@@ -4,63 +4,54 @@ using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-namespace SRF.UI
-{
-  [AddComponentMenu("SRF/UI/Spinner")]
-  public class SRSpinner : Selectable, IDragHandler, IEventSystemHandler, IBeginDragHandler
-  {
-    private float _dragDelta;
-    [SerializeField]
-    private SpinEvent _onSpinDecrement = new SpinEvent();
-    [SerializeField]
-    private SpinEvent _onSpinIncrement = new SpinEvent();
-    public float DragThreshold = 20f;
+namespace SRF.UI;
 
-    public SpinEvent OnSpinIncrement
-    {
-      get => _onSpinIncrement;
-      set => _onSpinIncrement = value;
-    }
+[AddComponentMenu("SRF/UI/Spinner")]
+public class SRSpinner : Selectable, IDragHandler, IEventSystemHandler, IBeginDragHandler {
+	private float _dragDelta;
+	[SerializeField] private SpinEvent _onSpinDecrement = new();
+	[SerializeField] private SpinEvent _onSpinIncrement = new();
+	public float DragThreshold = 20f;
 
-    public SpinEvent OnSpinDecrement
-    {
-      get => _onSpinDecrement;
-      set => _onSpinDecrement = value;
-    }
+	public SpinEvent OnSpinIncrement {
+		get => _onSpinIncrement;
+		set => _onSpinIncrement = value;
+	}
 
-    public void OnBeginDrag(PointerEventData eventData) => _dragDelta = 0.0f;
+	public SpinEvent OnSpinDecrement {
+		get => _onSpinDecrement;
+		set => _onSpinDecrement = value;
+	}
 
-    public void OnDrag(PointerEventData eventData)
-    {
-      if (!interactable)
-        return;
-      _dragDelta += eventData.delta.x;
-      if (Mathf.Abs(_dragDelta) <= (double) DragThreshold)
-        return;
-      float num = Mathf.Sign(_dragDelta);
-      int amount = Mathf.FloorToInt(Mathf.Abs(_dragDelta) / DragThreshold);
-      if (num > 0.0)
-        OnIncrement(amount);
-      else
-        OnDecrement(amount);
-      _dragDelta -= amount * DragThreshold * num;
-    }
+	public void OnBeginDrag(PointerEventData eventData) {
+		_dragDelta = 0.0f;
+	}
 
-    private void OnIncrement(int amount)
-    {
-      for (int index = 0; index < amount; ++index)
-        OnSpinIncrement.Invoke();
-    }
+	public void OnDrag(PointerEventData eventData) {
+		if (!interactable)
+			return;
+		_dragDelta += eventData.delta.x;
+		if (Mathf.Abs(_dragDelta) <= (double)DragThreshold)
+			return;
+		var num = Mathf.Sign(_dragDelta);
+		var amount = Mathf.FloorToInt(Mathf.Abs(_dragDelta) / DragThreshold);
+		if (num > 0.0)
+			OnIncrement(amount);
+		else
+			OnDecrement(amount);
+		_dragDelta -= amount * DragThreshold * num;
+	}
 
-    private void OnDecrement(int amount)
-    {
-      for (int index = 0; index < amount; ++index)
-        OnSpinDecrement.Invoke();
-    }
+	private void OnIncrement(int amount) {
+		for (var index = 0; index < amount; ++index)
+			OnSpinIncrement.Invoke();
+	}
 
-    [Serializable]
-    public class SpinEvent : UnityEvent
-    {
-    }
-  }
+	private void OnDecrement(int amount) {
+		for (var index = 0; index < amount; ++index)
+			OnSpinDecrement.Invoke();
+	}
+
+	[Serializable]
+	public class SpinEvent : UnityEvent { }
 }

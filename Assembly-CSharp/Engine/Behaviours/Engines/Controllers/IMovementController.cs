@@ -1,26 +1,24 @@
 ﻿using Engine.Behaviours.Components;
 using UnityEngine;
 
-namespace Engine.Behaviours.Engines.Controllers
-{
-  public interface IMovementController
-  {
-    bool IsPaused { get; set; }
+namespace Engine.Behaviours.Engines.Controllers;
 
-    bool GeometryVisible { set; }
+public interface IMovementController {
+	bool IsPaused { get; set; }
 
-    void Initialize(GameObject gameObject);
+	bool GeometryVisible { set; }
 
-    void StartMovement(Vector3 direction, EngineBehavior.GaitType gait);
+	void Initialize(GameObject gameObject);
 
-    bool Move(Vector3 direction, float remainingDistance, EngineBehavior.GaitType gait);
+	void StartMovement(Vector3 direction, EngineBehavior.GaitType gait);
 
-    bool Rotate(Vector3 direction);
+	bool Move(Vector3 direction, float remainingDistance, EngineBehavior.GaitType gait);
 
-    void OnAnimatorMove();
+	bool Rotate(Vector3 direction);
 
-    void Update();
+	void OnAnimatorMove();
 
-    void FixedUpdate();
-  }
+	void Update();
+
+	void FixedUpdate();
 }

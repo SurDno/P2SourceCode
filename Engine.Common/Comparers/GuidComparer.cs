@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Engine.Common.Comparers
-{
-  public class GuidComparer : IEqualityComparer<Guid>
-  {
-    public static readonly GuidComparer Instance = new GuidComparer();
+namespace Engine.Common.Comparers;
 
-    public bool Equals(Guid x, Guid y) => x == y;
+public class GuidComparer : IEqualityComparer<Guid> {
+	public static readonly GuidComparer Instance = new();
 
-    public int GetHashCode(Guid obj) => obj.GetHashCode();
-  }
+	public bool Equals(Guid x, Guid y) {
+		return x == y;
+	}
+
+	public int GetHashCode(Guid obj) {
+		return obj.GetHashCode();
+	}
 }

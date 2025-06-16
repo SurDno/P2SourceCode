@@ -1,28 +1,23 @@
 ﻿using System;
 
-namespace PLVirtualMachine
-{
-  public static class DelayTimer
-  {
-    private static TimeSpan delay;
-    private static DateTime time;
+namespace PLVirtualMachine;
 
-    public static void Begin(TimeSpan delay)
-    {
-      DelayTimer.delay = delay;
-      time = DateTime.UtcNow;
-    }
+public static class DelayTimer {
+	private static TimeSpan delay;
+	private static DateTime time;
 
-    public static bool Check
-    {
-      get
-      {
-        DateTime utcNow = DateTime.UtcNow;
-        if (!(time + delay < utcNow))
-          return false;
-        time = utcNow;
-        return true;
-      }
-    }
-  }
+	public static void Begin(TimeSpan delay) {
+		DelayTimer.delay = delay;
+		time = DateTime.UtcNow;
+	}
+
+	public static bool Check {
+		get {
+			var utcNow = DateTime.UtcNow;
+			if (!(time + delay < utcNow))
+				return false;
+			time = utcNow;
+			return true;
+		}
+	}
 }

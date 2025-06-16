@@ -6,33 +6,30 @@ using Engine.Source.Effects.Values;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (Vector3AbilityValue))]
-  public class Vector3AbilityValue_Generated : 
-    Vector3AbilityValue,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      Vector3AbilityValue_Generated instance = Activator.CreateInstance<Vector3AbilityValue_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2) => ((Vector3AbilityValue_Generated) target2).value = value;
+[FactoryProxy(typeof(Vector3AbilityValue))]
+public class Vector3AbilityValue_Generated :
+	Vector3AbilityValue,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<Vector3AbilityValue_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      UnityDataWriteUtility.Write(writer, "Value", value);
-    }
+	public void CopyTo(object target2) {
+		((Vector3AbilityValue_Generated)target2).value = value;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      value = UnityDataReadUtility.Read(reader, "Value", value);
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		UnityDataWriteUtility.Write(writer, "Value", value);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		value = UnityDataReadUtility.Read(reader, "Value", value);
+	}
 }

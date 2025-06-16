@@ -1,13 +1,11 @@
 ﻿using System;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public interface IAssyncUpdateable
-  {
-    void Update(TimeSpan delta);
+namespace PLVirtualMachine.Dynamic;
 
-    bool Active { get; }
+public interface IAssyncUpdateable {
+	void Update(TimeSpan delta);
 
-    void Clear();
-  }
+	bool Active { get; }
+
+	void Clear();
 }

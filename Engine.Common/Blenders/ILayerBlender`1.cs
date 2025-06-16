@@ -1,18 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Engine.Common.Blenders
-{
-  public interface ILayerBlender<T> where T : class, IObject, IBlendable<T>
-  {
-    T Current { get; }
+namespace Engine.Common.Blenders;
 
-    IEnumerable<ILayerBlenderItem<T>> Items { get; }
+public interface ILayerBlender<T> where T : class, IObject, IBlendable<T> {
+	T Current { get; }
 
-    void AddItem(ILayerBlenderItem<T> item);
+	IEnumerable<ILayerBlenderItem<T>> Items { get; }
 
-    void RemoveItem(ILayerBlenderItem<T> item);
+	void AddItem(ILayerBlenderItem<T> item);
 
-    event Action<ILayerBlender<T>> OnChanged;
-  }
+	void RemoveItem(ILayerBlenderItem<T> item);
+
+	event Action<ILayerBlender<T>> OnChanged;
 }

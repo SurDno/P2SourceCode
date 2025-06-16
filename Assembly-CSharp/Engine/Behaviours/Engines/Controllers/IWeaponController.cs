@@ -3,46 +3,44 @@ using Engine.Common;
 using Engine.Common.Components.AttackerPlayer;
 using UnityEngine;
 
-namespace Engine.Behaviours.Engines.Controllers
-{
-  public interface IWeaponController
-  {
-    event Action WeaponHolsterStartEvent;
+namespace Engine.Behaviours.Engines.Controllers;
 
-    event Action WeaponUnholsterEndEvent;
+public interface IWeaponController {
+	event Action WeaponHolsterStartEvent;
 
-    event Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> WeaponShootEvent;
+	event Action WeaponUnholsterEndEvent;
 
-    bool GeometryVisible { set; get; }
+	event Action<IEntity, ShotType, ReactionType, ShotSubtypeEnum> WeaponShootEvent;
 
-    void SetItem(IEntity item);
+	bool GeometryVisible { set; get; }
 
-    IEntity GetItem();
+	void SetItem(IEntity item);
 
-    void Initialise(IEntity entity, GameObject gameObject, Animator animator);
+	IEntity GetItem();
 
-    void Activate(bool geometryVisible);
+	void Initialise(IEntity entity, GameObject gameObject, Animator animator);
 
-    void Shutdown();
+	void Activate(bool geometryVisible);
 
-    void Reset();
+	void Shutdown();
 
-    bool Validate(GameObject gameObject, IEntity item);
+	void Reset();
 
-    void FixedUpdate(IEntity target);
+	bool Validate(GameObject gameObject, IEntity item);
 
-    void Update(IEntity target);
+	void FixedUpdate(IEntity target);
 
-    void UpdateSilent(IEntity target);
+	void Update(IEntity target);
 
-    void LateUpdate(IEntity target);
+	void UpdateSilent(IEntity target);
 
-    void OnAnimatorEvent(string data);
+	void LateUpdate(IEntity target);
 
-    void OnEnable();
+	void OnAnimatorEvent(string data);
 
-    void OnDisable();
+	void OnEnable();
 
-    void Reaction();
-  }
+	void OnDisable();
+
+	void Reaction();
 }

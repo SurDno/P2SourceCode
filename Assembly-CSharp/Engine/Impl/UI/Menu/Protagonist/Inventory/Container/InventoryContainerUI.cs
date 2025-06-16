@@ -8,99 +8,83 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container
-{
-  public abstract class InventoryContainerUI : UIControl
-  {
-    protected Dictionary<Cell, InventoryCellUI> cells = new Dictionary<Cell, InventoryCellUI>();
-    [SerializeField]
-    [FormerlySerializedAs("_Content")]
-    protected UIControl content;
-    [SerializeField]
-    [FormerlySerializedAs("_Grid")]
-    protected UIControl grid;
-    [SerializeField]
-    [FormerlySerializedAs("_ImageBackground")]
-    protected Image imageBackground;
-    [SerializeField]
-    protected Image imageForeground;
-    [SerializeField]
-    protected Color iconAvailiableColor;
-    [SerializeField]
-    protected Color iconNotAvailiableColor;
-    [SerializeField]
-    protected Image imageIcon;
-    [SerializeField]
-    protected Image imageDisease;
-    [SerializeField]
-    protected Image imageLock;
-    [SerializeField]
-    protected HoldableButton2 button;
-    [SerializeField]
-    [FormerlySerializedAs("_Storables")]
-    protected UIControl storables;
-    [SerializeField]
-    private bool clickEnabled = true;
+namespace Engine.Impl.UI.Menu.Protagonist.Inventory.Container;
 
-    public bool ClickEnabled
-    {
-      get => clickEnabled;
-      set => clickEnabled = value;
-    }
+public abstract class InventoryContainerUI : UIControl {
+	protected Dictionary<Cell, InventoryCellUI> cells = new();
 
-    public event Action<InventoryContainerUI> OpenBegin;
+	[SerializeField] [FormerlySerializedAs("_Content")]
+	protected UIControl content;
 
-    public event Action<InventoryContainerUI, bool> OpenEnd;
+	[SerializeField] [FormerlySerializedAs("_Grid")]
+	protected UIControl grid;
 
-    protected void FireOpenBegin()
-    {
-      Action<InventoryContainerUI> openBegin = OpenBegin;
-      if (openBegin == null)
-        return;
-      openBegin(this);
-    }
+	[SerializeField] [FormerlySerializedAs("_ImageBackground")]
+	protected Image imageBackground;
 
-    protected void FireOpenEnd(bool complete)
-    {
-      Action<InventoryContainerUI, bool> openEnd = OpenEnd;
-      if (openEnd == null)
-        return;
-      openEnd(this, complete);
-    }
+	[SerializeField] protected Image imageForeground;
+	[SerializeField] protected Color iconAvailiableColor;
+	[SerializeField] protected Color iconNotAvailiableColor;
+	[SerializeField] protected Image imageIcon;
+	[SerializeField] protected Image imageDisease;
+	[SerializeField] protected Image imageLock;
+	[SerializeField] protected HoldableButton2 button;
 
-    public IInventoryComponent InventoryContainer { get; protected set; }
+	[SerializeField] [FormerlySerializedAs("_Storables")]
+	protected UIControl storables;
 
-    public IDictionary<Cell, InventoryCellUI> Cells
-    {
-      get => cells;
-    }
+	[SerializeField] private bool clickEnabled = true;
 
-    public UIControl Content => content;
+	public bool ClickEnabled {
+		get => clickEnabled;
+		set => clickEnabled = value;
+	}
 
-    public UIControl Grid => grid;
+	public event Action<InventoryContainerUI> OpenBegin;
 
-    public UIControl Storables => storables;
+	public event Action<InventoryContainerUI, bool> OpenEnd;
 
-    public Image ImageBackground => imageBackground;
+	protected void FireOpenBegin() {
+		var openBegin = OpenBegin;
+		if (openBegin == null)
+			return;
+		openBegin(this);
+	}
 
-    public Image ImageForeground => imageForeground;
+	protected void FireOpenEnd(bool complete) {
+		var openEnd = OpenEnd;
+		if (openEnd == null)
+			return;
+		openEnd(this, complete);
+	}
 
-    public Image ImageIcon => imageIcon;
+	public IInventoryComponent InventoryContainer { get; protected set; }
 
-    public Image ImageDisease => imageDisease;
+	public IDictionary<Cell, InventoryCellUI> Cells => cells;
 
-    public Image ImageLock => imageLock;
+	public UIControl Content => content;
 
-    public HoldableButton2 Button => button;
+	public UIControl Grid => grid;
 
-    public void SetIconEnabled(bool b)
-    {
-      imageIcon.color = b ? iconAvailiableColor : iconNotAvailiableColor;
-    }
+	public UIControl Storables => storables;
 
-    public void SetLockEnabled(bool b)
-    {
-      imageLock.color = b ? iconAvailiableColor : iconNotAvailiableColor;
-    }
-  }
+	public Image ImageBackground => imageBackground;
+
+	public Image ImageForeground => imageForeground;
+
+	public Image ImageIcon => imageIcon;
+
+	public Image ImageDisease => imageDisease;
+
+	public Image ImageLock => imageLock;
+
+	public HoldableButton2 Button => button;
+
+	public void SetIconEnabled(bool b) {
+		imageIcon.color = b ? iconAvailiableColor : iconNotAvailiableColor;
+	}
+
+	public void SetLockEnabled(bool b) {
+		imageLock.color = b ? iconAvailiableColor : iconNotAvailiableColor;
+	}
 }

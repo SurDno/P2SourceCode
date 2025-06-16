@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace Engine.Source.Connections
-{
-  public interface IEngineSerializable
-  {
-    Guid Id { get; set; }
+namespace Engine.Source.Connections;
 
-    Type Type { get; }
-  }
+public interface IEngineSerializable {
+	Guid Id { get; set; }
+
+	Type Type { get; }
 }

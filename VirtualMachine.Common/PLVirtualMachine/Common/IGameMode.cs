@@ -1,21 +1,19 @@
 ﻿using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IGameMode : IObject, IEditorBaseTemplate
-  {
-    string Name { get; }
+namespace PLVirtualMachine.Common;
 
-    bool IsMain { get; }
+public interface IGameMode : IObject, IEditorBaseTemplate {
+	string Name { get; }
 
-    GameTime StartGameTime { get; }
+	bool IsMain { get; }
 
-    GameTime StartSolarTime { get; }
+	GameTime StartGameTime { get; }
 
-    float GameTimeSpeed { get; }
+	GameTime StartSolarTime { get; }
 
-    float SolarTimeSpeed { get; }
+	float GameTimeSpeed { get; }
 
-    CommonVariable PlayCharacterVariable { get; }
-  }
+	float SolarTimeSpeed { get; }
+
+	CommonVariable PlayCharacterVariable { get; }
 }

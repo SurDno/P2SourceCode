@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.UI
-{
-  public interface IStartLanguageSettingsWindow : IWindow, IMainMenu, IPauseMenu
-  {
-  }
-}
+﻿namespace Engine.Source.UI;
+
+public interface IStartLanguageSettingsWindow : IWindow, IMainMenu, IPauseMenu { }

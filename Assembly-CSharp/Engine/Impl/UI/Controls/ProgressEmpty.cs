@@ -1,13 +1,7 @@
-﻿namespace Engine.Impl.UI.Controls
-{
-  public class ProgressEmpty : ProgressView
-  {
-    public override void SkipAnimation()
-    {
-    }
+﻿namespace Engine.Impl.UI.Controls;
 
-    protected override void ApplyProgress()
-    {
-    }
-  }
+public class ProgressEmpty : ProgressView {
+	public override void SkipAnimation() { }
+
+	protected override void ApplyProgress() { }
 }

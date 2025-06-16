@@ -1,9 +1,8 @@
-﻿public enum CompareEnum
-{
-  Unknown,
-  Equal,
-  More,
-  MoreEqual,
-  Less,
-  LessEqual,
+﻿public enum CompareEnum {
+	Unknown,
+	Equal,
+	More,
+	MoreEqual,
+	Less,
+	LessEqual
 }

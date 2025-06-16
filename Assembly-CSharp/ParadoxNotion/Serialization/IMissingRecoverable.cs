@@ -1,9 +1,7 @@
-﻿namespace ParadoxNotion.Serialization
-{
-  public interface IMissingRecoverable
-  {
-    string missingType { get; set; }
+﻿namespace ParadoxNotion.Serialization;
 
-    string recoveryState { get; set; }
-  }
+public interface IMissingRecoverable {
+	string missingType { get; set; }
+
+	string recoveryState { get; set; }
 }

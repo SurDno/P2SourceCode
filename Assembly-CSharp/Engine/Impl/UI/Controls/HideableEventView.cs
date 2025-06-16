@@ -1,29 +1,27 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class HideableEventView : EventView
-  {
-    [SerializeField]
-    private HideableView hideableView;
-    [SerializeField]
-    private float length = 1f;
+namespace Engine.Impl.UI.Controls;
 
-    public void Hide() => hideableView.Visible = false;
+public class HideableEventView : EventView {
+	[SerializeField] private HideableView hideableView;
+	[SerializeField] private float length = 1f;
 
-    public void Show() => hideableView.Visible = true;
+	public void Hide() {
+		hideableView.Visible = false;
+	}
 
-    public override void Invoke()
-    {
-      Show();
-      CancelInvoke("Hide");
-      Invoke("Hide", length);
-    }
+	public void Show() {
+		hideableView.Visible = true;
+	}
 
-    private void OnDisable()
-    {
-      CancelInvoke("Hide");
-      Hide();
-    }
-  }
+	public override void Invoke() {
+		Show();
+		CancelInvoke("Hide");
+		Invoke("Hide", length);
+	}
+
+	private void OnDisable() {
+		CancelInvoke("Hide");
+		Hide();
+	}
 }

@@ -7,54 +7,48 @@ using Engine.Source.Services.Notifications;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class SimpleNotification : UIControl, INotification
-  {
-    [SerializeField]
-    private CanvasGroup canvasGroup;
-    [SerializeField]
-    private float time;
-    [SerializeField]
-    private float fade;
-    private float progress;
-    private UIService ui;
-    private float alpha = -1f;
+namespace Engine.Impl.UI.Controls;
 
-    [Inspected]
-    public bool Complete { get; private set; }
+public class SimpleNotification : UIControl, INotification {
+	[SerializeField] private CanvasGroup canvasGroup;
+	[SerializeField] private float time;
+	[SerializeField] private float fade;
+	private float progress;
+	private UIService ui;
+	private float alpha = -1f;
 
-    [Inspected]
-    public NotificationEnum Type { get; private set; }
+	[Inspected] public bool Complete { get; private set; }
 
-    private void Update()
-    {
-      if (!(ui.Active is HudWindow))
-        return;
-      progress += Time.deltaTime;
-      if (progress > (double) time)
-        Complete = true;
-      else
-        SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
-    }
+	[Inspected] public NotificationEnum Type { get; private set; }
 
-    protected override void Awake()
-    {
-      base.Awake();
-      ui = ServiceLocator.GetService<UIService>();
-      SetAlpha(0.0f);
-    }
+	private void Update() {
+		if (!(ui.Active is HudWindow))
+			return;
+		progress += Time.deltaTime;
+		if (progress > (double)time)
+			Complete = true;
+		else
+			SetAlpha(SoundUtility.ComputeFade(progress, time, fade));
+	}
 
-    public void Initialise(NotificationEnum type, object[] values) => Type = type;
+	protected override void Awake() {
+		base.Awake();
+		ui = ServiceLocator.GetService<UIService>();
+		SetAlpha(0.0f);
+	}
 
-    public void Shutdown() => Destroy(gameObject);
+	public void Initialise(NotificationEnum type, object[] values) {
+		Type = type;
+	}
 
-    private void SetAlpha(float value)
-    {
-      if (alpha == (double) value)
-        return;
-      alpha = value;
-      canvasGroup.alpha = value;
-    }
-  }
+	public void Shutdown() {
+		Destroy(gameObject);
+	}
+
+	private void SetAlpha(float value) {
+		if (alpha == (double)value)
+			return;
+		alpha = value;
+		canvasGroup.alpha = value;
+	}
 }

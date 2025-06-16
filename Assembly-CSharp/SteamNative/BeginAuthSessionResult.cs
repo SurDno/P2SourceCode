@@ -1,12 +1,10 @@
-﻿namespace SteamNative
-{
-  internal enum BeginAuthSessionResult
-  {
-    OK,
-    InvalidTicket,
-    DuplicateRequest,
-    InvalidVersion,
-    GameMismatch,
-    ExpiredTicket,
-  }
+﻿namespace SteamNative;
+
+internal enum BeginAuthSessionResult {
+	OK,
+	InvalidTicket,
+	DuplicateRequest,
+	InvalidVersion,
+	GameMismatch,
+	ExpiredTicket
 }

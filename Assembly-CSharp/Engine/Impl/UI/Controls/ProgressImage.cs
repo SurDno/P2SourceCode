@@ -1,22 +1,16 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class ProgressImage : ProgressView
-  {
-    [SerializeField]
-    private Image image;
+namespace Engine.Impl.UI.Controls;
 
-    public override void SkipAnimation()
-    {
-    }
+public class ProgressImage : ProgressView {
+	[SerializeField] private Image image;
 
-    protected override void ApplyProgress()
-    {
-      if (!(image != null))
-        return;
-      image.fillAmount = Progress;
-    }
-  }
+	public override void SkipAnimation() { }
+
+	protected override void ApplyProgress() {
+		if (!(image != null))
+			return;
+		image.fillAmount = Progress;
+	}
 }

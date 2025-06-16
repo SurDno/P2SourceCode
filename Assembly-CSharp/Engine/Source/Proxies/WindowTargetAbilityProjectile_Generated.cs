@@ -3,33 +3,24 @@ using Cofe.Proxies;
 using Cofe.Serializations.Data;
 using Engine.Common.Commons.Cloneable;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (WindowTargetAbilityProjectile))]
-  public class WindowTargetAbilityProjectile_Generated : 
-    WindowTargetAbilityProjectile,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      WindowTargetAbilityProjectile_Generated instance = Activator.CreateInstance<WindowTargetAbilityProjectile_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-    }
+[FactoryProxy(typeof(WindowTargetAbilityProjectile))]
+public class WindowTargetAbilityProjectile_Generated :
+	WindowTargetAbilityProjectile,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<WindowTargetAbilityProjectile_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-    }
+	public void CopyTo(object target2) { }
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-    }
-  }
+	public void DataWrite(IDataWriter writer) { }
+
+	public void DataRead(IDataReader reader, Type type) { }
 }

@@ -1,28 +1,19 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class HideableSplited : HideableView
-  {
-    [SerializeField]
-    private HideableView[] views = new HideableView[0];
+namespace Engine.Impl.UI.Controls;
 
-    public override void SkipAnimation()
-    {
-      foreach (HideableView view in views)
-      {
-        if (view != null)
-          view.SkipAnimation();
-      }
-    }
+public class HideableSplited : HideableView {
+	[SerializeField] private HideableView[] views = new HideableView[0];
 
-    protected override void ApplyVisibility()
-    {
-      foreach (HideableView view in views)
-      {
-        if (view != null)
-          view.Visible = Visible;
-      }
-    }
-  }
+	public override void SkipAnimation() {
+		foreach (var view in views)
+			if (view != null)
+				view.SkipAnimation();
+	}
+
+	protected override void ApplyVisibility() {
+		foreach (var view in views)
+			if (view != null)
+				view.Visible = Visible;
+	}
 }

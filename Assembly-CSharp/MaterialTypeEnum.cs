@@ -1,6 +1,5 @@
-﻿public enum MaterialTypeEnum
-{
-  Standard,
-  Skin,
-  Translucent,
+﻿public enum MaterialTypeEnum {
+	Standard,
+	Skin,
+	Translucent
 }

@@ -5,33 +5,29 @@ using SRF.Service;
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SRDebugger.UI.Profiler
-{
-  public class ProfilerMemoryLabel : SRMonoBehaviour
-  {
-    [SerializeField]
-    private Text _text;
-    private IProfilerService _profilerService;
-    private float updateFrequency = 1f;
-    private float nextUpdate;
+namespace SRDebugger.UI.Profiler;
 
-    private void Update()
-    {
-      if (Time.realtimeSinceStartup <= (double) nextUpdate)
-        return;
-      Refresh();
-    }
+public class ProfilerMemoryLabel : SRMonoBehaviour {
+	[SerializeField] private Text _text;
+	private IProfilerService _profilerService;
+	private float updateFrequency = 1f;
+	private float nextUpdate;
 
-    private void Refresh()
-    {
-      nextUpdate = Time.realtimeSinceStartup + updateFrequency;
-      long reservedMemoryLong = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong();
-      _text.text = "Total : " + OptimizationUtility.GetMemoryText(UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong()) + " / " + OptimizationUtility.GetMemoryText(reservedMemoryLong);
-    }
+	private void Update() {
+		if (Time.realtimeSinceStartup <= (double)nextUpdate)
+			return;
+		Refresh();
+	}
 
-    protected void Awake()
-    {
-      _profilerService = SRServiceManager.GetService<IProfilerService>();
-    }
-  }
+	private void Refresh() {
+		nextUpdate = Time.realtimeSinceStartup + updateFrequency;
+		var reservedMemoryLong = UnityEngine.Profiling.Profiler.GetTotalReservedMemoryLong();
+		_text.text = "Total : " +
+		             OptimizationUtility.GetMemoryText(UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong()) +
+		             " / " + OptimizationUtility.GetMemoryText(reservedMemoryLong);
+	}
+
+	protected void Awake() {
+		_profilerService = SRServiceManager.GetService<IProfilerService>();
+	}
 }

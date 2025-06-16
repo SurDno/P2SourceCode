@@ -3,33 +3,24 @@ using Engine.Impl.UI.Controls;
 using Engine.Source.Components.BoundCharacters;
 using UnityEngine;
 
-namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters
-{
-  public class BoundCharactersGroupView : MonoBehaviour
-  {
-    [SerializeField]
-    private BoundCharacterView characterViewPrefab;
-    [SerializeField]
-    private StringView nameView;
-    [SerializeField]
-    private RectTransform layout;
+namespace Engine.Source.UI.Menu.Protagonist.BoundCharacters;
 
-    public void SetGroup(BoundCharacterGroup group)
-    {
-      if (group != 0)
-      {
-        nameView.StringValue = "{UI.Menu.Protagonist.BoundCharacterGroup." + group + "}";
-        nameView.gameObject.SetActive(true);
-      }
-      else
-        nameView.gameObject.SetActive(false);
-    }
+public class BoundCharactersGroupView : MonoBehaviour {
+	[SerializeField] private BoundCharacterView characterViewPrefab;
+	[SerializeField] private StringView nameView;
+	[SerializeField] private RectTransform layout;
 
-    public BoundCharacterView AddCharacter(BoundCharacterComponent character)
-    {
-      BoundCharacterView boundCharacterView = Instantiate(characterViewPrefab, layout, false);
-      boundCharacterView.SetCharacter(character);
-      return boundCharacterView;
-    }
-  }
+	public void SetGroup(BoundCharacterGroup group) {
+		if (group != 0) {
+			nameView.StringValue = "{UI.Menu.Protagonist.BoundCharacterGroup." + group + "}";
+			nameView.gameObject.SetActive(true);
+		} else
+			nameView.gameObject.SetActive(false);
+	}
+
+	public BoundCharacterView AddCharacter(BoundCharacterComponent character) {
+		var boundCharacterView = Instantiate(characterViewPrefab, layout, false);
+		boundCharacterView.SetCharacter(character);
+		return boundCharacterView;
+	}
 }

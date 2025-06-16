@@ -8,66 +8,57 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (LiquidTypeParameter))]
-  public class LiquidTypeParameter_Generated : 
-    LiquidTypeParameter,
-    IComputeNeedSave,
-    INeedSave,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead,
-    ISerializeStateSave,
-    ISerializeStateLoad
-  {
-    public bool NeedSave { get; private set; } = true;
+namespace Engine.Source.Proxies;
 
-    public void ComputeNeedSave(object target2)
-    {
-      NeedSave = true;
-      LiquidTypeParameter_Generated parameterGenerated = (LiquidTypeParameter_Generated) target2;
-      if (parameterGenerated.name != name || parameterGenerated.value != value)
-        return;
-      NeedSave = false;
-    }
+[FactoryProxy(typeof(LiquidTypeParameter))]
+public class LiquidTypeParameter_Generated :
+	LiquidTypeParameter,
+	IComputeNeedSave,
+	INeedSave,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead,
+	ISerializeStateSave,
+	ISerializeStateLoad {
+	public bool NeedSave { get; private set; } = true;
 
-    public object Clone()
-    {
-      LiquidTypeParameter_Generated instance = Activator.CreateInstance<LiquidTypeParameter_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+	public void ComputeNeedSave(object target2) {
+		NeedSave = true;
+		var parameterGenerated = (LiquidTypeParameter_Generated)target2;
+		if (parameterGenerated.name != name || parameterGenerated.value != value)
+			return;
+		NeedSave = false;
+	}
 
-    public void CopyTo(object target2)
-    {
-      LiquidTypeParameter_Generated parameterGenerated = (LiquidTypeParameter_Generated) target2;
-      parameterGenerated.name = name;
-      parameterGenerated.value = value;
-    }
+	public object Clone() {
+		var instance = Activator.CreateInstance<LiquidTypeParameter_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
-    }
+	public void CopyTo(object target2) {
+		var parameterGenerated = (LiquidTypeParameter_Generated)target2;
+		parameterGenerated.name = name;
+		parameterGenerated.value = value;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
-      value = DefaultDataReadUtility.ReadEnum<LiquidTypeEnum>(reader, "Value");
-    }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
+	}
 
-    public void StateSave(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
-    }
+	public void DataRead(IDataReader reader, Type type) {
+		name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
+		value = DefaultDataReadUtility.ReadEnum<LiquidTypeEnum>(reader, "Value");
+	}
 
-    public void StateLoad(IDataReader reader, Type type)
-    {
-      value = DefaultDataReadUtility.ReadEnum<LiquidTypeEnum>(reader, "Value");
-    }
-  }
+	public void StateSave(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
+	}
+
+	public void StateLoad(IDataReader reader, Type type) {
+		value = DefaultDataReadUtility.ReadEnum<LiquidTypeEnum>(reader, "Value");
+	}
 }

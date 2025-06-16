@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 
-public class PivotHead : MonoBehaviour
-{
-  public Transform Head;
+public class PivotHead : MonoBehaviour {
+	public Transform Head;
 }

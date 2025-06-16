@@ -4,83 +4,77 @@ using System.Threading;
 using Facepunch.Steamworks.Interop;
 using SteamNative;
 
-namespace Facepunch.Steamworks
-{
-  public class BaseSteamworks : IDisposable
-  {
-    internal NativeInterface native;
-    private List<CallbackHandle> CallbackHandles = new List<CallbackHandle>();
+namespace Facepunch.Steamworks;
 
-    public uint AppId { get; internal set; }
+public class BaseSteamworks : IDisposable {
+	internal NativeInterface native;
+	private List<CallbackHandle> CallbackHandles = new();
 
-    public Networking Networking { get; internal set; }
+	public uint AppId { get; internal set; }
 
-    public Inventory Inventory { get; internal set; }
+	public Networking Networking { get; internal set; }
 
-    public Workshop Workshop { get; internal set; }
+	public Inventory Inventory { get; internal set; }
 
-    internal event Action OnUpdate;
+	public Workshop Workshop { get; internal set; }
 
-    public virtual void Dispose()
-    {
-      foreach (CallbackHandle callbackHandle in CallbackHandles)
-        callbackHandle.Dispose();
-      CallbackHandles.Clear();
-      if (Workshop != null)
-      {
-        Workshop.Dispose();
-        Workshop = null;
-      }
-      if (Inventory != null)
-      {
-        Inventory.Dispose();
-        Inventory = null;
-      }
-      if (Networking != null)
-      {
-        Networking.Dispose();
-        Networking = null;
-      }
-      if (native == null)
-        return;
-      native.Dispose();
-      native = null;
-    }
+	internal event Action OnUpdate;
 
-    protected void SetupCommonInterfaces()
-    {
-      Networking = new Networking(this, native.networking);
-      Inventory = new Inventory(this, native.inventory, IsGameServer);
-      Workshop = new Workshop(this, native.ugc, native.remoteStorage);
-    }
+	public virtual void Dispose() {
+		foreach (var callbackHandle in CallbackHandles)
+			callbackHandle.Dispose();
+		CallbackHandles.Clear();
+		if (Workshop != null) {
+			Workshop.Dispose();
+			Workshop = null;
+		}
 
-    public bool IsValid => native != null;
+		if (Inventory != null) {
+			Inventory.Dispose();
+			Inventory = null;
+		}
 
-    internal virtual bool IsGameServer => false;
+		if (Networking != null) {
+			Networking.Dispose();
+			Networking = null;
+		}
 
-    internal void RegisterCallbackHandle(CallbackHandle handle) => CallbackHandles.Add(handle);
+		if (native == null)
+			return;
+		native.Dispose();
+		native = null;
+	}
 
-    public virtual void Update()
-    {
-      Inventory.Update();
-      Networking.Update();
-      RunUpdateCallbacks();
-    }
+	protected void SetupCommonInterfaces() {
+		Networking = new Networking(this, native.networking);
+		Inventory = new Inventory(this, native.inventory, IsGameServer);
+		Workshop = new Workshop(this, native.ugc, native.remoteStorage);
+	}
 
-    public void RunUpdateCallbacks()
-    {
-      if (OnUpdate == null)
-        return;
-      OnUpdate();
-    }
+	public bool IsValid => native != null;
 
-    public void UpdateWhile(Func<bool> func)
-    {
-      while (func())
-      {
-        Update();
-        Thread.Sleep(1);
-      }
-    }
-  }
+	internal virtual bool IsGameServer => false;
+
+	internal void RegisterCallbackHandle(CallbackHandle handle) {
+		CallbackHandles.Add(handle);
+	}
+
+	public virtual void Update() {
+		Inventory.Update();
+		Networking.Update();
+		RunUpdateCallbacks();
+	}
+
+	public void RunUpdateCallbacks() {
+		if (OnUpdate == null)
+			return;
+		OnUpdate();
+	}
+
+	public void UpdateWhile(Func<bool> func) {
+		while (func()) {
+			Update();
+			Thread.Sleep(1);
+		}
+	}
 }

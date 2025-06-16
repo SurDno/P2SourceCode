@@ -2,20 +2,17 @@
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  [FactoryProxy(typeof (VMTags))]
-  public class Tags : VMTags, IInitialiseComponentFromHierarchy, IInitialiseEvents
-  {
-    public override string GetComponentTypeName() => "TagsComponent";
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
-    {
-    }
+[FactoryProxy(typeof(VMTags))]
+public class Tags : VMTags, IInitialiseComponentFromHierarchy, IInitialiseEvents {
+	public override string GetComponentTypeName() {
+		return "TagsComponent";
+	}
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
-      string name = target.Name;
-    }
-  }
+	public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject) { }
+
+	public void InitialiseEvent(DynamicEvent target) {
+		var name = target.Name;
+	}
 }

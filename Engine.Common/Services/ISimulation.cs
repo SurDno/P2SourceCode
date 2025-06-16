@@ -1,21 +1,19 @@
 ﻿using System;
 
-namespace Engine.Common.Services
-{
-  public interface ISimulation
-  {
-    IEntity Hierarchy { get; }
+namespace Engine.Common.Services;
 
-    IEntity Objects { get; }
+public interface ISimulation {
+	IEntity Hierarchy { get; }
 
-    IEntity Storables { get; }
+	IEntity Objects { get; }
 
-    IEntity Others { get; }
+	IEntity Storables { get; }
 
-    IEntity Player { get; }
+	IEntity Others { get; }
 
-    IEntity Get(Guid id);
+	IEntity Player { get; }
 
-    void Add(IEntity entity, IEntity parent);
-  }
+	IEntity Get(Guid id);
+
+	void Add(IEntity entity, IEntity parent);
 }

@@ -1,10 +1,8 @@
-﻿namespace TriangleNet
-{
-  internal enum InsertVertexResult
-  {
-    Successful,
-    Encroaching,
-    Violating,
-    Duplicate,
-  }
+﻿namespace TriangleNet;
+
+internal enum InsertVertexResult {
+	Successful,
+	Encroaching,
+	Violating,
+	Duplicate
 }

@@ -5,42 +5,31 @@ using Engine.Source.Services.Inputs;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components.Interactable
-{
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class InteractItem : IInteractItem
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected(Header = true)]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected InteractType type;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected UnityAsset<GameObject> blueprint;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected GameActionType action;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected string title;
+namespace Engine.Source.Components.Interactable;
 
-    public InteractType Type => type;
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class InteractItem : IInteractItem {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy]
+	[Inspected(Header = true)]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected InteractType type;
 
-    public UnityAsset<GameObject> Blueprint => blueprint;
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected UnityAsset<GameObject> blueprint;
 
-    public GameActionType Action => action;
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected GameActionType action;
 
-    public string Title => title;
-  }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected string title;
+
+	public InteractType Type => type;
+
+	public UnityAsset<GameObject> Blueprint => blueprint;
+
+	public GameActionType Action => action;
+
+	public string Title => title;
 }

@@ -1,30 +1,28 @@
 ﻿using System.Collections.Generic;
 using Engine.Common.MindMap;
 
-namespace Engine.Common.Services
-{
-  public interface IMMService
-  {
-    IMMPage CurrentGlobalPage { get; set; }
+namespace Engine.Common.Services;
 
-    IMMPage CurrentPage { get; set; }
+public interface IMMService {
+	IMMPage CurrentGlobalPage { get; set; }
 
-    void AddPage(IMMPage page);
+	IMMPage CurrentPage { get; set; }
 
-    void ClearPages();
+	void AddPage(IMMPage page);
 
-    IMMPage GetPage(int index);
+	void ClearPages();
 
-    void RemovePage(IMMPage page);
+	IMMPage GetPage(int index);
 
-    void RemovePageAt(int index);
+	void RemovePage(IMMPage page);
 
-    void SetPage(int index, IMMPage page);
+	void RemovePageAt(int index);
 
-    IEnumerable<IMMContent> Contents { get; }
+	void SetPage(int index, IMMPage page);
 
-    void AddContent(IMMContent content);
+	IEnumerable<IMMContent> Contents { get; }
 
-    void RemoveContent(IMMContent content);
-  }
+	void AddContent(IMMContent content);
+
+	void RemoveContent(IMMContent content);
 }

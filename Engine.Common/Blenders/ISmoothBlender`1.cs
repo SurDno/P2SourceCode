@@ -1,13 +1,11 @@
 ﻿using System;
 
-namespace Engine.Common.Blenders
-{
-  public interface ISmoothBlender<T> where T : class, IObject, IBlendable<T>
-  {
-    T Current { get; }
+namespace Engine.Common.Blenders;
 
-    event Action<ISmoothBlender<T>> OnChanged;
+public interface ISmoothBlender<T> where T : class, IObject, IBlendable<T> {
+	T Current { get; }
 
-    void BlendTo(T value, TimeSpan interval);
-  }
+	event Action<ISmoothBlender<T>> OnChanged;
+
+	void BlendTo(T value, TimeSpan interval);
 }

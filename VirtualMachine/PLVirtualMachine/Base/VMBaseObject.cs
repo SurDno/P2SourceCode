@@ -1,51 +1,52 @@
 ﻿using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 
-namespace PLVirtualMachine.Base
-{
-  public abstract class VMBaseObject : 
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable
-  {
-    private ulong guid;
-    [FieldData("Name")]
-    protected string name = "";
-    [FieldData("Parent", DataFieldType.Reference)]
-    protected IContainer parent;
+namespace PLVirtualMachine.Base;
 
-    public VMBaseObject(ulong guid) => this.guid = guid;
+public abstract class VMBaseObject :
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable {
+	private ulong guid;
+	[FieldData("Name")] protected string name = "";
 
-    public abstract EObjectCategory GetCategory();
+	[FieldData("Parent", DataFieldType.Reference)]
+	protected IContainer parent;
 
-    public bool IsVirtual => guid == 0UL;
+	public VMBaseObject(ulong guid) {
+		this.guid = guid;
+	}
 
-    public string Name => name;
+	public abstract EObjectCategory GetCategory();
 
-    public ulong BaseGuid => guid;
+	public bool IsVirtual => guid == 0UL;
 
-    public virtual string GuidStr => BaseGuid.ToString();
+	public string Name => name;
 
-    public IContainer Parent => parent;
+	public ulong BaseGuid => guid;
 
-    public virtual IContainer Owner => Parent;
+	public virtual string GuidStr => BaseGuid.ToString();
 
-    public virtual void Update() => IsUpdated = true;
+	public IContainer Parent => parent;
 
-    public bool IsUpdated { get; private set; }
+	public virtual IContainer Owner => Parent;
 
-    public virtual bool IsEqual(IObject other)
-    {
-      return other != null && (long) BaseGuid == (long) other.BaseGuid;
-    }
+	public virtual void Update() {
+		IsUpdated = true;
+	}
 
-    public virtual void OnPostLoad()
-    {
-    }
+	public bool IsUpdated { get; private set; }
 
-    public virtual void Clear() => parent = null;
-  }
+	public virtual bool IsEqual(IObject other) {
+		return other != null && (long)BaseGuid == (long)other.BaseGuid;
+	}
+
+	public virtual void OnPostLoad() { }
+
+	public virtual void Clear() {
+		parent = null;
+	}
 }

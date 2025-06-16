@@ -1,4 +1,3 @@
-﻿public interface INpcStateRagdoll
-{
-  float GetActualRagdollWeight();
+﻿public interface INpcStateRagdoll {
+	float GetActualRagdollWeight();
 }

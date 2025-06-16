@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.UI
-{
-  public interface IMainMenu
-  {
-  }
-}
+﻿namespace Engine.Source.UI;
+
+public interface IMainMenu { }

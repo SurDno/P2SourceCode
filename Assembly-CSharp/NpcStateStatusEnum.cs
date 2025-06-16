@@ -1,6 +1,5 @@
-﻿public enum NpcStateStatusEnum
-{
-  Running,
-  Success,
-  Failed,
+﻿public enum NpcStateStatusEnum {
+	Running,
+	Success,
+	Failed
 }

@@ -1,91 +1,85 @@
 ﻿using SRF;
 using UnityEngine;
 
-namespace SRDebugger.UI.Other
-{
-  public class HandleManager : SRMonoBehaviour
-  {
-    private bool _hasSet;
-    public GameObject BottomHandle;
-    public GameObject BottomLeftHandle;
-    public GameObject BottomRightHandle;
-    public PinAlignment DefaultAlignment;
-    public GameObject LeftHandle;
-    public GameObject RightHandle;
-    public GameObject TopHandle;
-    public GameObject TopLeftHandle;
-    public GameObject TopRightHandle;
+namespace SRDebugger.UI.Other;
 
-    private void Start()
-    {
-      if (_hasSet)
-        return;
-      SetAlignment(DefaultAlignment);
-    }
+public class HandleManager : SRMonoBehaviour {
+	private bool _hasSet;
+	public GameObject BottomHandle;
+	public GameObject BottomLeftHandle;
+	public GameObject BottomRightHandle;
+	public PinAlignment DefaultAlignment;
+	public GameObject LeftHandle;
+	public GameObject RightHandle;
+	public GameObject TopHandle;
+	public GameObject TopLeftHandle;
+	public GameObject TopRightHandle;
 
-    public void SetAlignment(PinAlignment alignment)
-    {
-      _hasSet = true;
-      switch (alignment)
-      {
-        case PinAlignment.TopLeft:
-        case PinAlignment.TopRight:
-          SetActive(BottomHandle, true);
-          SetActive(TopHandle, false);
-          SetActive(TopLeftHandle, false);
-          SetActive(TopRightHandle, false);
-          break;
-        case PinAlignment.BottomLeft:
-        case PinAlignment.BottomRight:
-          SetActive(BottomHandle, false);
-          SetActive(TopHandle, true);
-          SetActive(BottomLeftHandle, false);
-          SetActive(BottomRightHandle, false);
-          break;
-      }
-      switch (alignment)
-      {
-        case PinAlignment.TopLeft:
-        case PinAlignment.BottomLeft:
-          SetActive(LeftHandle, false);
-          SetActive(RightHandle, true);
-          SetActive(TopLeftHandle, false);
-          SetActive(BottomLeftHandle, false);
-          break;
-        case PinAlignment.TopRight:
-        case PinAlignment.BottomRight:
-          SetActive(LeftHandle, true);
-          SetActive(RightHandle, false);
-          SetActive(TopRightHandle, false);
-          SetActive(BottomRightHandle, false);
-          break;
-      }
-      switch (alignment)
-      {
-        case PinAlignment.TopLeft:
-          SetActive(BottomLeftHandle, false);
-          SetActive(BottomRightHandle, true);
-          break;
-        case PinAlignment.TopRight:
-          SetActive(BottomLeftHandle, true);
-          SetActive(BottomRightHandle, false);
-          break;
-        case PinAlignment.BottomLeft:
-          SetActive(TopLeftHandle, false);
-          SetActive(TopRightHandle, true);
-          break;
-        case PinAlignment.BottomRight:
-          SetActive(TopLeftHandle, true);
-          SetActive(TopRightHandle, false);
-          break;
-      }
-    }
+	private void Start() {
+		if (_hasSet)
+			return;
+		SetAlignment(DefaultAlignment);
+	}
 
-    private void SetActive(GameObject obj, bool active)
-    {
-      if (obj == null)
-        return;
-      obj.SetActive(active);
-    }
-  }
+	public void SetAlignment(PinAlignment alignment) {
+		_hasSet = true;
+		switch (alignment) {
+			case PinAlignment.TopLeft:
+			case PinAlignment.TopRight:
+				SetActive(BottomHandle, true);
+				SetActive(TopHandle, false);
+				SetActive(TopLeftHandle, false);
+				SetActive(TopRightHandle, false);
+				break;
+			case PinAlignment.BottomLeft:
+			case PinAlignment.BottomRight:
+				SetActive(BottomHandle, false);
+				SetActive(TopHandle, true);
+				SetActive(BottomLeftHandle, false);
+				SetActive(BottomRightHandle, false);
+				break;
+		}
+
+		switch (alignment) {
+			case PinAlignment.TopLeft:
+			case PinAlignment.BottomLeft:
+				SetActive(LeftHandle, false);
+				SetActive(RightHandle, true);
+				SetActive(TopLeftHandle, false);
+				SetActive(BottomLeftHandle, false);
+				break;
+			case PinAlignment.TopRight:
+			case PinAlignment.BottomRight:
+				SetActive(LeftHandle, true);
+				SetActive(RightHandle, false);
+				SetActive(TopRightHandle, false);
+				SetActive(BottomRightHandle, false);
+				break;
+		}
+
+		switch (alignment) {
+			case PinAlignment.TopLeft:
+				SetActive(BottomLeftHandle, false);
+				SetActive(BottomRightHandle, true);
+				break;
+			case PinAlignment.TopRight:
+				SetActive(BottomLeftHandle, true);
+				SetActive(BottomRightHandle, false);
+				break;
+			case PinAlignment.BottomLeft:
+				SetActive(TopLeftHandle, false);
+				SetActive(TopRightHandle, true);
+				break;
+			case PinAlignment.BottomRight:
+				SetActive(TopLeftHandle, true);
+				SetActive(TopRightHandle, false);
+				break;
+		}
+	}
+
+	private void SetActive(GameObject obj, bool active) {
+		if (obj == null)
+			return;
+		obj.SetActive(active);
+	}
 }

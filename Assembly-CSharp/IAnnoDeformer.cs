@@ -1,8 +1,7 @@
-﻿public interface IAnnoDeformer
-{
-  void Blend(string sLabel, float weight);
+﻿public interface IAnnoDeformer {
+	void Blend(string sLabel, float weight);
 
-  void Start();
+	void Start();
 
-  void End();
+	void End();
 }

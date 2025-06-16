@@ -1,24 +1,22 @@
 ﻿using System.Collections.Generic;
 using Engine.Common.Types;
 
-namespace Engine.Common.MindMap
-{
-  public interface IMMPage
-  {
-    bool Global { get; set; }
+namespace Engine.Common.MindMap;
 
-    LocalizedText Title { get; set; }
+public interface IMMPage {
+	bool Global { get; set; }
 
-    IEnumerable<IMMNode> Nodes { get; }
+	LocalizedText Title { get; set; }
 
-    void AddNode(IMMNode node);
+	IEnumerable<IMMNode> Nodes { get; }
 
-    void RemoveNode(IMMNode node);
+	void AddNode(IMMNode node);
 
-    IEnumerable<IMMLink> Links { get; }
+	void RemoveNode(IMMNode node);
 
-    void AddLink(IMMLink link);
+	IEnumerable<IMMLink> Links { get; }
 
-    void RemoveLink(IMMLink link);
-  }
+	void AddLink(IMMLink link);
+
+	void RemoveLink(IMMLink link);
 }

@@ -1,63 +1,51 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public class HierarchySimpleChildInfo : 
-    IHierarchyObject,
-    IEngineInstanced,
-    IEngineTemplated,
-    INamed
-  {
-    private IWorldBlueprint simpeChildTemplate;
-    private HierarchyGuid hierarchyGuid = HierarchyGuid.Empty;
-    private IWorldHierarchyObject hierarchyParent;
-    private Guid engineGuid = Guid.Empty;
+namespace PLVirtualMachine.Common;
 
-    public HierarchySimpleChildInfo(IWorldBlueprint simpleChiTemplate)
-    {
-      simpeChildTemplate = simpleChiTemplate;
-    }
+public class HierarchySimpleChildInfo :
+	IHierarchyObject,
+	IEngineInstanced,
+	IEngineTemplated,
+	INamed {
+	private IWorldBlueprint simpeChildTemplate;
+	private HierarchyGuid hierarchyGuid = HierarchyGuid.Empty;
+	private IWorldHierarchyObject hierarchyParent;
+	private Guid engineGuid = Guid.Empty;
 
-    public ulong BaseGuid
-    {
-      get => simpeChildTemplate != null ? simpeChildTemplate.BaseGuid : 0UL;
-    }
+	public HierarchySimpleChildInfo(IWorldBlueprint simpleChiTemplate) {
+		simpeChildTemplate = simpleChiTemplate;
+	}
 
-    public string Name => simpeChildTemplate.Name;
+	public ulong BaseGuid => simpeChildTemplate != null ? simpeChildTemplate.BaseGuid : 0UL;
 
-    public Guid EngineGuid => engineGuid;
+	public string Name => simpeChildTemplate.Name;
 
-    public Guid EngineTemplateGuid => simpeChildTemplate.EngineTemplateGuid;
+	public Guid EngineGuid => engineGuid;
 
-    public HierarchyGuid HierarchyGuid => hierarchyGuid;
+	public Guid EngineTemplateGuid => simpeChildTemplate.EngineTemplateGuid;
 
-    public IBlueprint EditorTemplate => simpeChildTemplate;
+	public HierarchyGuid HierarchyGuid => hierarchyGuid;
 
-    public void SetParent(IWorldHierarchyObject parent)
-    {
-      hierarchyParent = parent;
-      hierarchyGuid = new HierarchyGuid(parent.HierarchyGuid, BaseGuid);
-    }
+	public IBlueprint EditorTemplate => simpeChildTemplate;
 
-    public void InitInstanceGuid(Guid instanceGuid) => engineGuid = instanceGuid;
+	public void SetParent(IWorldHierarchyObject parent) {
+		hierarchyParent = parent;
+		hierarchyGuid = new HierarchyGuid(parent.HierarchyGuid, BaseGuid);
+	}
 
-    public IEnumerable<IHierarchyObject> HierarchyChilds
-    {
-      get
-      {
-        yield break;
-      }
-    }
+	public void InitInstanceGuid(Guid instanceGuid) {
+		engineGuid = instanceGuid;
+	}
 
-    public void AddHierarchyChild(IHierarchyObject child)
-    {
-    }
+	public IEnumerable<IHierarchyObject> HierarchyChilds {
+		get { yield break; }
+	}
 
-    public void ClearHierarchy()
-    {
-      simpeChildTemplate = null;
-      hierarchyParent = null;
-    }
-  }
+	public void AddHierarchyChild(IHierarchyObject child) { }
+
+	public void ClearHierarchy() {
+		simpeChildTemplate = null;
+		hierarchyParent = null;
+	}
 }

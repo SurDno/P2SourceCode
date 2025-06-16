@@ -1,9 +1,7 @@
-﻿namespace AssetDatabases
-{
-  public interface IAsyncLoad
-  {
-    bool IsDone { get; }
+﻿namespace AssetDatabases;
 
-    object Asset { get; }
-  }
+public interface IAsyncLoad {
+	bool IsDone { get; }
+
+	object Asset { get; }
 }

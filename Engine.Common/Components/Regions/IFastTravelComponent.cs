@@ -1,16 +1,14 @@
 ﻿using System;
 using Engine.Common.Components.Parameters;
 
-namespace Engine.Common.Components.Regions
-{
-  public interface IFastTravelComponent : IComponent
-  {
-    event Action<FastTravelPointEnum, TimeSpan> TravelToPoint;
+namespace Engine.Common.Components.Regions;
 
-    IParameterValue<bool> CanFastTravel { get; }
+public interface IFastTravelComponent : IComponent {
+	event Action<FastTravelPointEnum, TimeSpan> TravelToPoint;
 
-    IParameterValue<FastTravelPointEnum> FastTravelPointIndex { get; }
+	IParameterValue<bool> CanFastTravel { get; }
 
-    IParameterValue<int> FastTravelPrice { get; }
-  }
+	IParameterValue<FastTravelPointEnum> FastTravelPointIndex { get; }
+
+	IParameterValue<int> FastTravelPrice { get; }
 }

@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common.EngineAPI
-{
-  public class APIMethodInfo
-  {
-    public readonly string MethodName;
-    public APIParamInfo ReturnParam;
-    public readonly List<APIParamInfo> InputParams = new List<APIParamInfo>();
+namespace PLVirtualMachine.Common.EngineAPI;
 
-    public APIMethodInfo(string methodName) => MethodName = methodName;
-  }
+public class APIMethodInfo {
+	public readonly string MethodName;
+	public APIParamInfo ReturnParam;
+	public readonly List<APIParamInfo> InputParams = new();
+
+	public APIMethodInfo(string methodName) {
+		MethodName = methodName;
+	}
 }

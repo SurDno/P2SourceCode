@@ -1,23 +1,21 @@
 ﻿using Engine.Source.Services.Inputs;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public abstract class GameActionViewBase : GameActionView
-  {
-    [SerializeField]
-    private GameActionType value;
+namespace Engine.Impl.UI.Controls;
 
-    public override GameActionType GetValue() => value;
+public abstract class GameActionViewBase : GameActionView {
+	[SerializeField] private GameActionType value;
 
-    public override void SetValue(GameActionType value, bool instant)
-    {
-      if (this.value == value)
-        return;
-      this.value = value;
-      ApplyValue(instant);
-    }
+	public override GameActionType GetValue() {
+		return value;
+	}
 
-    protected abstract void ApplyValue(bool instant);
-  }
+	public override void SetValue(GameActionType value, bool instant) {
+		if (this.value == value)
+			return;
+		this.value = value;
+		ApplyValue(instant);
+	}
+
+	protected abstract void ApplyValue(bool instant);
 }

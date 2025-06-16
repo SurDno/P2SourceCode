@@ -8,33 +8,30 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class KeyOpeningDoorNode : FlowControlNode
-  {
-    private ValueInput<IDoorComponent> gateInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        IDoorComponent door = gateInput.value;
-        if (door != null && door.LockState.Value == LockState.Locked)
-        {
-          IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-          if (player != null)
-          {
-            StorageComponent component = player.GetComponent<StorageComponent>();
-            if (component != null && component.Items.FirstOrDefault(o => door.Keys.Select(p => p.Id).Contains(o.Owner.TemplateId)) != null)
-              door.LockState.Value = LockState.Unlocked;
-          }
-        }
-        output.Call();
-      });
-      gateInput = AddValueInput<IDoorComponent>("Door");
-    }
-  }
+[Category("Engine")]
+public class KeyOpeningDoorNode : FlowControlNode {
+	private ValueInput<IDoorComponent> gateInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			var door = gateInput.value;
+			if (door != null && door.LockState.Value == LockState.Locked) {
+				var player = ServiceLocator.GetService<ISimulation>().Player;
+				if (player != null) {
+					var component = player.GetComponent<StorageComponent>();
+					if (component != null &&
+					    component.Items.FirstOrDefault(o => door.Keys.Select(p => p.Id).Contains(o.Owner.TemplateId)) !=
+					    null)
+						door.LockState.Value = LockState.Unlocked;
+				}
+			}
+
+			output.Call();
+		});
+		gateInput = AddValueInput<IDoorComponent>("Door");
+	}
 }

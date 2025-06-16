@@ -2,15 +2,14 @@
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Sounds
-{
-  [Category("Sounds")]
-  public class DummyNode : FlowControlNode
-  {
-    [Port("Value")]
-    private ValueInput<bool> valueInput;
+namespace Engine.Source.Blueprints.Sounds;
 
-    [Port("Value")]
-    private bool Value() => valueInput.value;
-  }
+[Category("Sounds")]
+public class DummyNode : FlowControlNode {
+	[Port("Value")] private ValueInput<bool> valueInput;
+
+	[Port("Value")]
+	private bool Value() {
+		return valueInput.value;
+	}
 }

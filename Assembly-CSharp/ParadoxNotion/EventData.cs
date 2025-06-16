@@ -1,13 +1,15 @@
-﻿namespace ParadoxNotion
-{
-  public class EventData
-  {
-    public string name;
+﻿namespace ParadoxNotion;
 
-    public object value => GetValue();
+public class EventData {
+	public string name;
 
-    protected virtual object GetValue() => null;
+	public object value => GetValue();
 
-    public EventData(string name) => this.name = name;
-  }
+	protected virtual object GetValue() {
+		return null;
+	}
+
+	public EventData(string name) {
+		this.name = name;
+	}
 }

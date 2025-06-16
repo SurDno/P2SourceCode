@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IOnAfterLoaded
-  {
-    void OnAfterLoad();
+﻿namespace PLVirtualMachine.Common;
 
-    void OnPostLoad();
-  }
+public interface IOnAfterLoaded {
+	void OnAfterLoad();
+
+	void OnPostLoad();
 }

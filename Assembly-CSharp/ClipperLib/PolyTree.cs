@@ -1,32 +1,31 @@
 ﻿using System.Collections.Generic;
 
-namespace ClipperLib
-{
-  public class PolyTree : PolyNode
-  {
-    internal List<PolyNode> m_AllPolys = new List<PolyNode>();
+namespace ClipperLib;
 
-    public int Total
-    {
-      get
-      {
-        int count = m_AllPolys.Count;
-        if (count > 0 && m_Childs[0] != m_AllPolys[0])
-          --count;
-        return count;
-      }
-    }
+public class PolyTree : PolyNode {
+	internal List<PolyNode> m_AllPolys = new();
 
-    ~PolyTree() => Clear();
+	public int Total {
+		get {
+			var count = m_AllPolys.Count;
+			if (count > 0 && m_Childs[0] != m_AllPolys[0])
+				--count;
+			return count;
+		}
+	}
 
-    public void Clear()
-    {
-      for (int index = 0; index < m_AllPolys.Count; ++index)
-        m_AllPolys[index] = null;
-      m_AllPolys.Clear();
-      m_Childs.Clear();
-    }
+	~PolyTree() {
+		Clear();
+	}
 
-    public PolyNode GetFirst() => m_Childs.Count > 0 ? m_Childs[0] : null;
-  }
+	public void Clear() {
+		for (var index = 0; index < m_AllPolys.Count; ++index)
+			m_AllPolys[index] = null;
+		m_AllPolys.Clear();
+		m_Childs.Clear();
+	}
+
+	public PolyNode GetFirst() {
+		return m_Childs.Count > 0 ? m_Childs[0] : null;
+	}
 }

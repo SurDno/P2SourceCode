@@ -4,28 +4,22 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class FloatSumParametersNode : FlowControlNode
-  {
-    [Port("Value")]
-    private ValueInput<IList<IParameter<float>>> parametersInput;
+namespace Engine.Source.Blueprints.Effects;
 
-    [Port("Value")]
-    private float Value()
-    {
-      float num = 0.0f;
-      IList<IParameter<float>> parameterList = parametersInput.value;
-      if (parameterList != null)
-      {
-        for (int index = 0; index < parameterList.Count; ++index)
-        {
-          IParameter<float> parameter = parameterList[index];
-          num += parameter.Value;
-        }
-      }
-      return num;
-    }
-  }
+[Category("Effects")]
+public class FloatSumParametersNode : FlowControlNode {
+	[Port("Value")] private ValueInput<IList<IParameter<float>>> parametersInput;
+
+	[Port("Value")]
+	private float Value() {
+		var num = 0.0f;
+		var parameterList = parametersInput.value;
+		if (parameterList != null)
+			for (var index = 0; index < parameterList.Count; ++index) {
+				var parameter = parameterList[index];
+				num += parameter.Value;
+			}
+
+		return num;
+	}
 }

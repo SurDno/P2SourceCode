@@ -1,5 +1,4 @@
-﻿public enum TOD_SkyQualityType
-{
-  PerVertex,
-  PerPixel,
+﻿public enum TOD_SkyQualityType {
+	PerVertex,
+	PerPixel
 }

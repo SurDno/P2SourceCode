@@ -1,8 +1,5 @@
 ﻿using Engine.Common;
 
-namespace Engine.Source.Inventory
-{
-  public interface IInventoryGridLimited : IInventoryGridBase, IObject
-  {
-  }
-}
+namespace Engine.Source.Inventory;
+
+public interface IInventoryGridLimited : IInventoryGridBase, IObject { }

@@ -10,279 +10,262 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.VMSpecialAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("Speaking", typeof (ISpeakingComponent))]
-  public class VMSpeaking : VMEngineComponent<ISpeakingComponent>
-  {
-    public const string ComponentName = "Speaking";
-    protected bool contextTalkingAvailable;
-    protected IStateRef currentTalking;
-    protected List<IFiniteStateMachine> passedOnlyOnceTalkigs = new List<IFiniteStateMachine>();
-    private static IFiniteStateMachine activeTalkingGlobal;
-    private static VMBaseEntity activeTalkingOwner;
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    public static string BeginTalkingEventName => "BeginTalkingEvent";
+[Info("Speaking", typeof(ISpeakingComponent))]
+public class VMSpeaking : VMEngineComponent<ISpeakingComponent> {
+	public const string ComponentName = "Speaking";
+	protected bool contextTalkingAvailable;
+	protected IStateRef currentTalking;
+	protected List<IFiniteStateMachine> passedOnlyOnceTalkigs = new();
+	private static IFiniteStateMachine activeTalkingGlobal;
+	private static VMBaseEntity activeTalkingOwner;
 
-    [Event("Begin talking", "", true)]
-    [SpecialEvent(ESpecialEventName.SEN_BEGIN_TALKING)]
-    public event Action BeginTalkingEvent;
+	public static string BeginTalkingEventName => "BeginTalkingEvent";
 
-    [Event("End talking", "talking graph:TalkingGraph", false)]
-    public event Action<IStateRef> EndTalkingEvent;
+	[Event("Begin talking", "", true)]
+	[SpecialEvent(ESpecialEventName.SEN_BEGIN_TALKING)]
+	public event Action BeginTalkingEvent;
 
-    [Event("", "text_guid", true)]
-    [SpecialEvent(ESpecialEventName.SEN_SPEECH_REPLY)]
-    public event Action<ulong> OnSpeechReplyEvent;
+	[Event("End talking", "talking graph:TalkingGraph", false)]
+	public event Action<IStateRef> EndTalkingEvent;
 
-    [Property("Talking", "TalkingGraph", false)]
-    public IStateRef CurrentTalking
-    {
-      get => currentTalking;
-      set
-      {
-        currentTalking = value;
-        OnModify();
-        if (currentTalking != null)
-          EnableOnlyOnceTalking((IFiniteStateMachine) currentTalking.State);
-        UpdateSpeakAvailable();
-      }
-    }
+	[Event("", "text_guid", true)]
+	[SpecialEvent(ESpecialEventName.SEN_SPEECH_REPLY)]
+	public event Action<ulong> OnSpeechReplyEvent;
 
-    [Property("Initial phrase", "", false)]
-    public ILipSyncObject InitialPhrase
-    {
-      get
-      {
-        Logger.AddError(string.Format("GetInitialPhrase is not supported at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
-        return null;
-      }
-      set
-      {
-        Component.ClearInitialPhrases();
-        Component.AddInitialPhrase(value);
-      }
-    }
+	[Property("Talking", "TalkingGraph", false)]
+	public IStateRef CurrentTalking {
+		get => currentTalking;
+		set {
+			currentTalking = value;
+			OnModify();
+			if (currentTalking != null)
+				EnableOnlyOnceTalking((IFiniteStateMachine)currentTalking.State);
+			UpdateSpeakAvailable();
+		}
+	}
 
-    [Method("Clear Initial Phrases", "", "")]
-    public void ClearInitialPhrases() => Component.ClearInitialPhrases();
+	[Property("Initial phrase", "", false)]
+	public ILipSyncObject InitialPhrase {
+		get {
+			Logger.AddError(string.Format("GetInitialPhrase is not supported at {0}",
+				EngineAPIManager.Instance.CurrentFSMStateInfo));
+			return null;
+		}
+		set {
+			Component.ClearInitialPhrases();
+			Component.AddInitialPhrase(value);
+		}
+	}
 
-    [Method("Add Initial Phrase", "lipsync", "")]
-    public void AddInitialPhrase(ILipSyncObject lipsync)
-    {
-      Component.AddInitialPhrase(lipsync);
-    }
+	[Method("Clear Initial Phrases", "", "")]
+	public void ClearInitialPhrases() {
+		Component.ClearInitialPhrases();
+	}
 
-    [Method("Remove Initial Phrase", "lipsync", "")]
-    public void RemoveInitialPhrase(ILipSyncObject lipsync)
-    {
-      Component.RemoveInitialPhrase(lipsync);
-    }
+	[Method("Add Initial Phrase", "lipsync", "")]
+	public void AddInitialPhrase(ILipSyncObject lipsync) {
+		Component.AddInitialPhrase(lipsync);
+	}
 
-    [Method("Add Forced Dialog", "distance", "")]
-    public void AddForcedDialog(float distance)
-    {
-      ServiceLocator.GetService<IForcedDialogService>().AddForcedDialog(Component.Owner, distance);
-    }
+	[Method("Remove Initial Phrase", "lipsync", "")]
+	public void RemoveInitialPhrase(ILipSyncObject lipsync) {
+		Component.RemoveInitialPhrase(lipsync);
+	}
 
-    [Method("Remove Forced Dialog", "", "")]
-    public void RemoveForcedDialog()
-    {
-      ServiceLocator.GetService<IForcedDialogService>().RemoveForcedDialog(Component.Owner);
-    }
+	[Method("Add Forced Dialog", "distance", "")]
+	public void AddForcedDialog(float distance) {
+		ServiceLocator.GetService<IForcedDialogService>().AddForcedDialog(Component.Owner, distance);
+	}
 
-    [Method("Cancel talkng", "", "")]
-    public void CancelTalking() => ActiveTalking = null;
+	[Method("Remove Forced Dialog", "", "")]
+	public void RemoveForcedDialog() {
+		ServiceLocator.GetService<IForcedDialogService>().RemoveForcedDialog(Component.Owner);
+	}
 
-    [Method("Remove talkng", "", "")]
-    public void RemoveTalking() => CurrentTalking = null;
+	[Method("Cancel talkng", "", "")]
+	public void CancelTalking() {
+		ActiveTalking = null;
+	}
 
-    public void ExitTalking()
-    {
-      if (activeTalkingGlobal == null)
-        return;
-      ITalkingGraph actualTalking = GetActualTalking(activeTalkingGlobal);
-      if (actualTalking == null)
-      {
-        Logger.AddError(string.Format("Invalid talking exit at {0} talking: cannot define actual talking !!! at {1}", Parent.Name, EngineAPIManager.Instance.CurrentFSMStateInfo));
-        Component.ExitTalking();
-      }
-      else
-      {
-        if (actualTalking.OnlyOnce)
-        {
-          DisableOnlyOnceTalking(actualTalking);
-          CurrentTalking = null;
-        }
-        ITalkingGraph exitTalking = actualTalking;
-        ActiveTalking = null;
-        DoExitTalking(exitTalking);
-      }
-    }
+	[Method("Remove talkng", "", "")]
+	public void RemoveTalking() {
+		CurrentTalking = null;
+	}
 
-    public bool SpeakAvailable => Component != null && Component.SpeakAvailable;
+	public void ExitTalking() {
+		if (activeTalkingGlobal == null)
+			return;
+		var actualTalking = GetActualTalking(activeTalkingGlobal);
+		if (actualTalking == null) {
+			Logger.AddError(string.Format(
+				"Invalid talking exit at {0} talking: cannot define actual talking !!! at {1}", Parent.Name,
+				EngineAPIManager.Instance.CurrentFSMStateInfo));
+			Component.ExitTalking();
+		} else {
+			if (actualTalking.OnlyOnce) {
+				DisableOnlyOnceTalking(actualTalking);
+				CurrentTalking = null;
+			}
 
-    public void SetContextTalkingAvailable(bool isTalkingAvailable)
-    {
-      contextTalkingAvailable = isTalkingAvailable;
-      OnModify();
-      UpdateSpeakAvailable();
-    }
+			var exitTalking = actualTalking;
+			ActiveTalking = null;
+			DoExitTalking(exitTalking);
+		}
+	}
 
-    public virtual void OnBeginTalking()
-    {
-      if (currentTalking != null)
-      {
-        if (currentTalking.State != null && !typeof (ITalkingGraph).IsAssignableFrom(currentTalking.State.GetType()))
-        {
-          Logger.AddError(string.Format("Invalid CurrentTalking param at {0} speaking component: it must be talking graph", Parent.Name));
-          return;
-        }
-        ActiveTalking = (IFiniteStateMachine) currentTalking.State;
-      }
-      BeginTalkingEvent();
-      if (activeTalkingGlobal != null)
-        return;
-      DoExitTalking();
-    }
+	public bool SpeakAvailable => Component != null && Component.SpeakAvailable;
 
-    public virtual void OnSpeechReply(ulong replyGuid) => OnSpeechReplyEvent(replyGuid);
+	public void SetContextTalkingAvailable(bool isTalkingAvailable) {
+		contextTalkingAvailable = isTalkingAvailable;
+		OnModify();
+		UpdateSpeakAvailable();
+	}
 
-    public bool MakePlayerSpeech(
-      ulong speechTextGuid,
-      List<KeyValuePair<ulong, bool>> replyTextGuids,
-      VMBaseEntity author = null)
-    {
-      LocalizedText engineTextInstance1 = EngineAPIManager.CreateEngineTextInstance(speechTextGuid);
-      List<DialogString> replies = new List<DialogString>();
-      for (int index = 0; index < replyTextGuids.Count; ++index)
-      {
-        KeyValuePair<ulong, bool> replyTextGuid = replyTextGuids[index];
-        LocalizedText engineTextInstance2 = EngineAPIManager.CreateEngineTextInstance(replyTextGuid.Key);
-        DialogString dialogString1 = new DialogString();
-        dialogString1.String = engineTextInstance2;
-        ref DialogString local1 = ref dialogString1;
-        replyTextGuid = replyTextGuids[index];
-        long key = (long) replyTextGuid.Key;
-        local1.Id = (ulong) key;
-        DialogString dialogString2 = dialogString1;
-        ref DialogString local2 = ref dialogString2;
-        replyTextGuid = replyTextGuids[index];
-        int num = replyTextGuid.Value ? 0 : 1;
-        local2.Type = (DialogStringEnum) num;
-        replies.Add(dialogString2);
-      }
-      Component.Speech(engineTextInstance1, replies);
-      return true;
-    }
+	public virtual void OnBeginTalking() {
+		if (currentTalking != null) {
+			if (currentTalking.State != null &&
+			    !typeof(ITalkingGraph).IsAssignableFrom(currentTalking.State.GetType())) {
+				Logger.AddError(string.Format(
+					"Invalid CurrentTalking param at {0} speaking component: it must be talking graph", Parent.Name));
+				return;
+			}
 
-    public IFiniteStateMachine ActiveTalking
-    {
-      get => activeTalkingGlobal;
-      set
-      {
-        activeTalkingGlobal = value;
-        if (activeTalkingGlobal != null)
-          activeTalkingOwner = Parent;
-        else
-          activeTalkingOwner = null;
-      }
-    }
+			ActiveTalking = (IFiniteStateMachine)currentTalking.State;
+		}
 
-    public bool IsActiveTalking
-    {
-      get
-      {
-        if (activeTalkingGlobal == null)
-          return false;
-        if (activeTalkingOwner != null)
-          return activeTalkingOwner == Parent;
-        Logger.AddError(string.Format("Active talking owner consistency error in {0} !!!", Parent.Name));
-        return false;
-      }
-    }
+		BeginTalkingEvent();
+		if (activeTalkingGlobal != null)
+			return;
+		DoExitTalking();
+	}
 
-    public bool IsTalkingOnlyOncePassed(IFiniteStateMachine talking)
-    {
-      return passedOnlyOnceTalkigs.Contains(talking);
-    }
+	public virtual void OnSpeechReply(ulong replyGuid) {
+		OnSpeechReplyEvent(replyGuid);
+	}
 
-    public ITalkingGraph GetActualTalking(IFiniteStateMachine graph)
-    {
-      if (graph == null)
-        return null;
-      if (typeof (ITalkingGraph).IsAssignableFrom(graph.GetType()))
-      {
-        if (!graph.Abstract)
-          return (ITalkingGraph) graph;
-        return CurrentTalking != null && CurrentTalking.State != null ? (ITalkingGraph) CurrentTalking.State : null;
-      }
-      return graph.SubstituteGraph != null ? GetActualTalking(graph.SubstituteGraph) : null;
-    }
+	public bool MakePlayerSpeech(
+		ulong speechTextGuid,
+		List<KeyValuePair<ulong, bool>> replyTextGuids,
+		VMBaseEntity author = null) {
+		var engineTextInstance1 = EngineAPIManager.CreateEngineTextInstance(speechTextGuid);
+		var replies = new List<DialogString>();
+		for (var index = 0; index < replyTextGuids.Count; ++index) {
+			var replyTextGuid = replyTextGuids[index];
+			var engineTextInstance2 = EngineAPIManager.CreateEngineTextInstance(replyTextGuid.Key);
+			var dialogString1 = new DialogString();
+			dialogString1.String = engineTextInstance2;
+			ref var local1 = ref dialogString1;
+			replyTextGuid = replyTextGuids[index];
+			var key = (long)replyTextGuid.Key;
+			local1.Id = (ulong)key;
+			var dialogString2 = dialogString1;
+			ref var local2 = ref dialogString2;
+			replyTextGuid = replyTextGuids[index];
+			var num = replyTextGuid.Value ? 0 : 1;
+			local2.Type = (DialogStringEnum)num;
+			replies.Add(dialogString2);
+		}
 
-    public override void AfterSaveLoading() => UpdateSpeakAvailable();
+		Component.Speech(engineTextInstance1, replies);
+		return true;
+	}
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.OnBeginTalking -= OnBeginTalking;
-      Component.OnSpeechReply -= OnSpeechReply;
-      base.Clear();
-    }
+	public IFiniteStateMachine ActiveTalking {
+		get => activeTalkingGlobal;
+		set {
+			activeTalkingGlobal = value;
+			if (activeTalkingGlobal != null)
+				activeTalkingOwner = Parent;
+			else
+				activeTalkingOwner = null;
+		}
+	}
 
-    public static void ClearAll()
-    {
-      activeTalkingGlobal = null;
-      activeTalkingOwner = null;
-    }
+	public bool IsActiveTalking {
+		get {
+			if (activeTalkingGlobal == null)
+				return false;
+			if (activeTalkingOwner != null)
+				return activeTalkingOwner == Parent;
+			Logger.AddError(string.Format("Active talking owner consistency error in {0} !!!", Parent.Name));
+			return false;
+		}
+	}
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.OnBeginTalking += OnBeginTalking;
-      Component.OnSpeechReply += OnSpeechReply;
-    }
+	public bool IsTalkingOnlyOncePassed(IFiniteStateMachine talking) {
+		return passedOnlyOnceTalkigs.Contains(talking);
+	}
 
-    private static IStateRef GetRealRefByGuid(ulong baseGuid)
-    {
-      IStateRef instance = (IStateRef) Activator.CreateInstance(BaseSerializer.GetRealRefType(typeof (IStateRef)));
-      instance.Initialize(baseGuid);
-      return instance;
-    }
+	public ITalkingGraph GetActualTalking(IFiniteStateMachine graph) {
+		if (graph == null)
+			return null;
+		if (typeof(ITalkingGraph).IsAssignableFrom(graph.GetType())) {
+			if (!graph.Abstract)
+				return (ITalkingGraph)graph;
+			return CurrentTalking != null && CurrentTalking.State != null ? (ITalkingGraph)CurrentTalking.State : null;
+		}
 
-    private void DoExitTalking(IFiniteStateMachine exitTalking = null)
-    {
-      Component.ExitTalking();
-      if (exitTalking == null)
-        return;
-      EndTalkingEvent(GetRealRefByGuid(exitTalking.BaseGuid));
-    }
+		return graph.SubstituteGraph != null ? GetActualTalking(graph.SubstituteGraph) : null;
+	}
 
-    private void UpdateSpeakAvailable()
-    {
-      bool flag = false;
-      if (currentTalking != null && currentTalking.State != null)
-        flag = true;
-      if (Component != null)
-        Component.SpeakAvailable = flag || contextTalkingAvailable;
-      else
-        Logger.AddError(string.Format("Speaking component engine instance not inited at {0}", Parent.Name));
-    }
+	public override void AfterSaveLoading() {
+		UpdateSpeakAvailable();
+	}
 
-    private void EnableOnlyOnceTalking(IFiniteStateMachine talking)
-    {
-      if (talking != null && passedOnlyOnceTalkigs.Contains(talking))
-        passedOnlyOnceTalkigs.Remove(talking);
-      OnModify();
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.OnBeginTalking -= OnBeginTalking;
+		Component.OnSpeechReply -= OnSpeechReply;
+		base.Clear();
+	}
 
-    private void DisableOnlyOnceTalking(IFiniteStateMachine talking)
-    {
-      if (!passedOnlyOnceTalkigs.Contains(talking))
-        passedOnlyOnceTalkigs.Add(talking);
-      OnModify();
-    }
-  }
+	public static void ClearAll() {
+		activeTalkingGlobal = null;
+		activeTalkingOwner = null;
+	}
+
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.OnBeginTalking += OnBeginTalking;
+		Component.OnSpeechReply += OnSpeechReply;
+	}
+
+	private static IStateRef GetRealRefByGuid(ulong baseGuid) {
+		var instance = (IStateRef)Activator.CreateInstance(BaseSerializer.GetRealRefType(typeof(IStateRef)));
+		instance.Initialize(baseGuid);
+		return instance;
+	}
+
+	private void DoExitTalking(IFiniteStateMachine exitTalking = null) {
+		Component.ExitTalking();
+		if (exitTalking == null)
+			return;
+		EndTalkingEvent(GetRealRefByGuid(exitTalking.BaseGuid));
+	}
+
+	private void UpdateSpeakAvailable() {
+		var flag = false;
+		if (currentTalking != null && currentTalking.State != null)
+			flag = true;
+		if (Component != null)
+			Component.SpeakAvailable = flag || contextTalkingAvailable;
+		else
+			Logger.AddError(string.Format("Speaking component engine instance not inited at {0}", Parent.Name));
+	}
+
+	private void EnableOnlyOnceTalking(IFiniteStateMachine talking) {
+		if (talking != null && passedOnlyOnceTalkigs.Contains(talking))
+			passedOnlyOnceTalkigs.Remove(talking);
+		OnModify();
+	}
+
+	private void DisableOnlyOnceTalking(IFiniteStateMachine talking) {
+		if (!passedOnlyOnceTalkigs.Contains(talking))
+			passedOnlyOnceTalkigs.Add(talking);
+		OnModify();
+	}
 }

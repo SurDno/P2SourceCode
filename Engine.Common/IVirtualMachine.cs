@@ -3,32 +3,30 @@ using System.Collections;
 using System.Xml;
 using Cofe.Serializations.Data;
 
-namespace Engine.Common
-{
-  public interface IVirtualMachine
-  {
-    bool IsInitialized { get; }
+namespace Engine.Common;
 
-    bool IsLoaded { get; }
+public interface IVirtualMachine {
+	bool IsInitialized { get; }
 
-    bool IsDataLoaded { get; }
+	bool IsLoaded { get; }
 
-    IEnumerator Initialize(bool debug, float maxEventQueueTimePerFrame = 0.0f);
+	bool IsDataLoaded { get; }
 
-    void Terminate();
+	IEnumerator Initialize(bool debug, float maxEventQueueTimePerFrame = 0.0f);
 
-    IEnumerator LoadData(string fileName, int threadCount, int capacity);
+	void Terminate();
 
-    void UnloadData();
+	IEnumerator LoadData(string fileName, int threadCount, int capacity);
 
-    IEnumerator Load();
+	void UnloadData();
 
-    IEnumerator Load(XmlElement element);
+	IEnumerator Load();
 
-    void Save(IDataWriter writer);
+	IEnumerator Load(XmlElement element);
 
-    void Unload();
+	void Save(IDataWriter writer);
 
-    void Update(TimeSpan delta);
-  }
+	void Unload();
+
+	void Update(TimeSpan delta);
 }

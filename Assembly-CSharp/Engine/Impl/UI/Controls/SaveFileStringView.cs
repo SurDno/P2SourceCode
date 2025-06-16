@@ -1,27 +1,21 @@
 ﻿using Engine.Source.Services.Profiles;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class SaveFileStringView : StringView
-  {
-    [SerializeField]
-    private StringView view;
-    [SerializeField]
-    private string format;
+namespace Engine.Impl.UI.Controls;
 
-    public override void SkipAnimation()
-    {
-      if (!(view != null))
-        return;
-      view.SkipAnimation();
-    }
+public class SaveFileStringView : StringView {
+	[SerializeField] private StringView view;
+	[SerializeField] private string format;
 
-    protected override void ApplyStringValue()
-    {
-      if (!(view != null))
-        return;
-      view.StringValue = ProfilesUtility.ConvertSaveName(StringValue, format);
-    }
-  }
+	public override void SkipAnimation() {
+		if (!(view != null))
+			return;
+		view.SkipAnimation();
+	}
+
+	protected override void ApplyStringValue() {
+		if (!(view != null))
+			return;
+		view.StringValue = ProfilesUtility.ConvertSaveName(StringValue, format);
+	}
 }

@@ -4,43 +4,42 @@ using Cofe.Serializations.Converters;
 using Engine.Common;
 using UnityEngine;
 
-namespace Engine.Source.Connections
-{
-  [Serializable]
-  public struct IEntitySerializable : IEngineSerializable
-  {
-    [SerializeField]
-    private string id;
+namespace Engine.Source.Connections;
 
-    public Guid Id
-    {
-      get => DefaultConverter.ParseGuid(id);
-      set => id = value != Guid.Empty ? value.ToString() : "";
-    }
+[Serializable]
+public struct IEntitySerializable : IEngineSerializable {
+	[SerializeField] private string id;
 
-    public Type Type => typeof (IEntity);
+	public Guid Id {
+		get => DefaultConverter.ParseGuid(id);
+		set => id = value != Guid.Empty ? value.ToString() : "";
+	}
 
-    public IEntity Value
-    {
-      get => TemplateUtility.GetTemplate<IEntity>(Id);
-      set => Id = value != null ? value.Id : Guid.Empty;
-    }
+	public Type Type => typeof(IEntity);
 
-    public override int GetHashCode() => string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
+	public IEntity Value {
+		get => TemplateUtility.GetTemplate<IEntity>(Id);
+		set => Id = value != null ? value.Id : Guid.Empty;
+	}
 
-    public override bool Equals(object a)
-    {
-      return a is IEntitySerializable ientitySerializable && this == ientitySerializable;
-    }
+	public override int GetHashCode() {
+		return string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
+	}
 
-    public static bool operator ==(IEntitySerializable a, IEntitySerializable b) => a.id == b.id;
+	public override bool Equals(object a) {
+		return a is IEntitySerializable ientitySerializable && this == ientitySerializable;
+	}
 
-    public static bool operator !=(IEntitySerializable a, IEntitySerializable b) => !(a == b);
+	public static bool operator ==(IEntitySerializable a, IEntitySerializable b) {
+		return a.id == b.id;
+	}
 
-    public override string ToString()
-    {
-      IEntity entity = Value;
-      return entity != null ? Path.GetFileNameWithoutExtension(entity.Source) : "";
-    }
-  }
+	public static bool operator !=(IEntitySerializable a, IEntitySerializable b) {
+		return !(a == b);
+	}
+
+	public override string ToString() {
+		var entity = Value;
+		return entity != null ? Path.GetFileNameWithoutExtension(entity.Source) : "";
+	}
 }

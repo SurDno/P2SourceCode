@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IObject : IEditorBaseTemplate
-  {
-    bool IsEqual(IObject other);
+﻿namespace PLVirtualMachine.Common;
 
-    string GuidStr { get; }
-  }
+public interface IObject : IEditorBaseTemplate {
+	bool IsEqual(IObject other);
+
+	string GuidStr { get; }
 }

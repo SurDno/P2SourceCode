@@ -1,8 +1,6 @@
-﻿namespace SteamNative
-{
-  internal enum FailureType
-  {
-    FlushedCallbackQueue,
-    PipeFail,
-  }
+﻿namespace SteamNative;
+
+internal enum FailureType {
+	FlushedCallbackQueue,
+	PipeFail
 }

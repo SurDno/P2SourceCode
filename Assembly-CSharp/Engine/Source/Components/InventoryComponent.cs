@@ -13,149 +13,126 @@ using Engine.Source.Inventory;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Required(typeof (ParametersComponent))]
-  [Factory(typeof (IInventoryComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class InventoryComponent : 
-    EngineComponent,
-    IInventoryComponent,
-    IComponent,
-    IChangeParameterListener
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected Typed<InventoryContainerResource> containerResource;
-    private InventoryContainerResource container;
-    private ParametersComponent parametersComponent;
+namespace Engine.Source.Components;
 
-    private ParametersComponent ParametersComponent
-    {
-      get
-      {
-        if (parametersComponent == null)
-          parametersComponent = Owner.GetComponent<ParametersComponent>();
-        return parametersComponent;
-      }
-    }
+[Required(typeof(ParametersComponent))]
+[Factory(typeof(IInventoryComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class InventoryComponent :
+	EngineComponent,
+	IInventoryComponent,
+	IComponent,
+	IChangeParameterListener {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected Typed<InventoryContainerResource> containerResource;
 
-    [Inspected]
-    public IParameter<bool> Enabled
-    {
-      get => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Enabled);
-    }
+	private InventoryContainerResource container;
+	private ParametersComponent parametersComponent;
 
-    [Inspected]
-    public IParameter<bool> Available
-    {
-      get => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Available);
-    }
+	private ParametersComponent ParametersComponent {
+		get {
+			if (parametersComponent == null)
+				parametersComponent = Owner.GetComponent<ParametersComponent>();
+			return parametersComponent;
+		}
+	}
 
-    [Inspected]
-    public IParameter<float> Disease
-    {
-      get => ParametersComponent.GetOrCreateByName<float>(ParameterNameEnum.Disease);
-    }
+	[Inspected]
+	public IParameter<bool> Enabled => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Enabled);
 
-    [Inspected]
-    public IParameter<ContainerOpenStateEnum> OpenState
-    {
-      get
-      {
-        return ParametersComponent.GetOrCreateByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
-      }
-    }
+	[Inspected]
+	public IParameter<bool> Available => ParametersComponent.GetOrCreateByName<bool>(ParameterNameEnum.Available);
 
-    public IStorageComponent Storage { get; private set; }
+	[Inspected]
+	public IParameter<float> Disease => ParametersComponent.GetOrCreateByName<float>(ParameterNameEnum.Disease);
 
-    public Typed<IInventoryGridBase> TypedGrid => container.grid;
+	[Inspected]
+	public IParameter<ContainerOpenStateEnum> OpenState =>
+		ParametersComponent.GetOrCreateByName<ContainerOpenStateEnum>(ParameterNameEnum.OpenState);
 
-    public Sprite ImageBackground => container.imageBackground.Value;
+	public IStorageComponent Storage { get; private set; }
 
-    public Sprite ImageForeground => container.imageForeground.Value;
+	public Typed<IInventoryGridBase> TypedGrid => container.grid;
 
-    public Sprite ImageInstrument => container.imageInstrument.Value;
+	public Sprite ImageBackground => container.imageBackground.Value;
 
-    public Sprite ImageLock => container.imageLock.Value;
+	public Sprite ImageForeground => container.imageForeground.Value;
 
-    public Sprite ImageNotAvailable => container.imageNotAvailable.Value;
+	public Sprite ImageInstrument => container.imageInstrument.Value;
 
-    public IInventoryGridBase Grid => container.grid.Value;
+	public Sprite ImageLock => container.imageLock.Value;
 
-    public ContainerCellKind Kind => container.kind;
+	public Sprite ImageNotAvailable => container.imageNotAvailable.Value;
 
-    public Position Position => container.position;
+	public IInventoryGridBase Grid => container.grid.Value;
 
-    public Position Pivot => container.pivot;
+	public ContainerCellKind Kind => container.kind;
 
-    public Position Anchor => container.anchor;
+	public Position Position => container.position;
 
-    public SlotKind SlotKind => container.slotKind;
+	public Position Pivot => container.pivot;
 
-    public IEnumerable<StorableGroup> Limitations
-    {
-      get => container.limitations;
-    }
+	public Position Anchor => container.anchor;
 
-    public IEnumerable<StorableGroup> Except => container.except;
+	public SlotKind SlotKind => container.slotKind;
 
-    public InventoryGroup Group => container.group;
+	public IEnumerable<StorableGroup> Limitations => container.limitations;
 
-    public StorableGroup Instrument => container.instrument;
+	public IEnumerable<StorableGroup> Except => container.except;
 
-    public List<InventoryContainerOpenResource> OpenResources => container.openResources;
+	public InventoryGroup Group => container.group;
 
-    public float Difficulty => container.difficulty;
+	public StorableGroup Instrument => container.instrument;
 
-    public float InstrumentDamage => container.instrumentDamage;
+	public List<InventoryContainerOpenResource> OpenResources => container.openResources;
 
-    public float OpenTime => container.openTime;
+	public float Difficulty => container.difficulty;
 
-    public AudioClip OpenCompleteAudio => container.openCompleteAudio.Value;
+	public float InstrumentDamage => container.instrumentDamage;
 
-    public AudioClip OpenProgressAudio => container.openProgressAudio.Value;
+	public float OpenTime => container.openTime;
 
-    public AudioClip OpenStartAudio => container.openStartAudio.Value;
+	public AudioClip OpenCompleteAudio => container.openCompleteAudio.Value;
 
-    public AudioClip OpenCancelAudio => container.openCancelAudio.Value;
+	public AudioClip OpenProgressAudio => container.openProgressAudio.Value;
 
-    public override void OnAdded()
-    {
-      base.OnAdded();
-      container = containerResource.Value;
-      Storage = Owner.Parent.GetComponent<IStorageComponent>();
-      ((StorageComponent) Storage).AddContainer(this);
-      Enabled?.AddListener(this);
-      Available?.AddListener(this);
-      OpenState?.AddListener(this);
-      Disease?.AddListener(this);
-    }
+	public AudioClip OpenStartAudio => container.openStartAudio.Value;
 
-    public override void OnRemoved()
-    {
-      Disease?.RemoveListener(this);
-      OpenState?.RemoveListener(this);
-      Available?.RemoveListener(this);
-      Enabled?.RemoveListener(this);
-      base.OnRemoved();
-      ((StorageComponent) Storage).RemoveContainer(this);
-      Storage = null;
-    }
+	public AudioClip OpenCancelAudio => container.openCancelAudio.Value;
 
-    [OnLoaded]
-    private void OnLoaded() => OnInvalidate();
+	public override void OnAdded() {
+		base.OnAdded();
+		container = containerResource.Value;
+		Storage = Owner.Parent.GetComponent<IStorageComponent>();
+		((StorageComponent)Storage).AddContainer(this);
+		Enabled?.AddListener(this);
+		Available?.AddListener(this);
+		OpenState?.AddListener(this);
+		Disease?.AddListener(this);
+	}
 
-    private void OnInvalidate()
-    {
-      if (Storage == null)
-        return;
-      ((StorageComponent) Storage).FireChangeInventoryEvent(this);
-    }
+	public override void OnRemoved() {
+		Disease?.RemoveListener(this);
+		OpenState?.RemoveListener(this);
+		Available?.RemoveListener(this);
+		Enabled?.RemoveListener(this);
+		base.OnRemoved();
+		((StorageComponent)Storage).RemoveContainer(this);
+		Storage = null;
+	}
 
-    public void OnParameterChanged(IParameter parameter) => OnInvalidate();
-  }
+	[OnLoaded]
+	private void OnLoaded() {
+		OnInvalidate();
+	}
+
+	private void OnInvalidate() {
+		if (Storage == null)
+			return;
+		((StorageComponent)Storage).FireChangeInventoryEvent(this);
+	}
+
+	public void OnParameterChanged(IParameter parameter) {
+		OnInvalidate();
+	}
 }

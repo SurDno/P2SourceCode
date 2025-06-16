@@ -1,13 +1,11 @@
 ﻿using Engine.Common;
 
-namespace Engine.Source.Commons
-{
-  public interface IUpdater
-  {
-    void AddUpdatable(IUpdatable up);
+namespace Engine.Source.Commons;
 
-    void RemoveUpdatable(IUpdatable up);
+public interface IUpdater {
+	void AddUpdatable(IUpdatable up);
 
-    void ComputeUpdate();
-  }
+	void RemoveUpdatable(IUpdatable up);
+
+	void ComputeUpdate();
 }

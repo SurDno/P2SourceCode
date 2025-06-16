@@ -1,26 +1,24 @@
 ﻿using System;
 using Engine.Common.Commons;
 
-namespace Engine.Common.Components
-{
-  public interface IBlueprintComponent : IComponent
-  {
-    event Action<IBlueprintComponent> CompleteEvent;
+namespace Engine.Common.Components;
 
-    event Action<IBlueprintComponent> AttachEvent;
+public interface IBlueprintComponent : IComponent {
+	event Action<IBlueprintComponent> CompleteEvent;
 
-    IBlueprintObject Blueprint { get; set; }
+	event Action<IBlueprintComponent> AttachEvent;
 
-    bool IsStarted { get; }
+	IBlueprintObject Blueprint { get; set; }
 
-    bool IsAttached { get; }
+	bool IsStarted { get; }
 
-    void Start();
+	bool IsAttached { get; }
 
-    void Start(IEntity owner);
+	void Start();
 
-    void Stop();
+	void Start(IEntity owner);
 
-    void SendEvent(string name);
-  }
+	void Stop();
+
+	void SendEvent(string name);
 }

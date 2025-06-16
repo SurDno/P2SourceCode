@@ -1,45 +1,34 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class ProgressPosition : ProgressView
-  {
-    [SerializeField]
-    private Vector3 minPosition = Vector3.zero;
-    [SerializeField]
-    private Vector3 maxPosition = Vector3.zero;
+namespace Engine.Impl.UI.Controls;
 
-    public Vector3 MinPosition
-    {
-      get => minPosition;
-      set
-      {
-        if (minPosition == value)
-          return;
-        minPosition = value;
-        ApplyProgress();
-      }
-    }
+public class ProgressPosition : ProgressView {
+	[SerializeField] private Vector3 minPosition = Vector3.zero;
+	[SerializeField] private Vector3 maxPosition = Vector3.zero;
 
-    public Vector3 MaxPosition
-    {
-      get => maxPosition;
-      set
-      {
-        if (maxPosition == value)
-          return;
-        maxPosition = value;
-        ApplyProgress();
-      }
-    }
+	public Vector3 MinPosition {
+		get => minPosition;
+		set {
+			if (minPosition == value)
+				return;
+			minPosition = value;
+			ApplyProgress();
+		}
+	}
 
-    public override void SkipAnimation()
-    {
-    }
+	public Vector3 MaxPosition {
+		get => maxPosition;
+		set {
+			if (maxPosition == value)
+				return;
+			maxPosition = value;
+			ApplyProgress();
+		}
+	}
 
-    protected override void ApplyProgress()
-    {
-      transform.localPosition = Vector3.Lerp(minPosition, maxPosition, Progress);
-    }
-  }
+	public override void SkipAnimation() { }
+
+	protected override void ApplyProgress() {
+		transform.localPosition = Vector3.Lerp(minPosition, maxPosition, Progress);
+	}
 }

@@ -1,9 +1,7 @@
-﻿namespace UnityHeapCrawler
-{
-  public enum SizeFormat
-  {
-    Short,
-    Precise,
-    Combined,
-  }
+﻿namespace UnityHeapCrawler;
+
+public enum SizeFormat {
+	Short,
+	Precise,
+	Combined
 }

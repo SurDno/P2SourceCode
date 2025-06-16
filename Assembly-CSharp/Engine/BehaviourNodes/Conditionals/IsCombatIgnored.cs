@@ -14,62 +14,60 @@ using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace Engine.BehaviourNodes.Conditionals
-{
-  [TaskDescription("Is NPC burning? (use null Target to check self)")]
-  [TaskCategory("Pathologic")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (IsCombatIgnored))]
-  public class IsCombatIgnored : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public SharedTransform Target;
-    private GameObject cacheGameObject;
-    private IParameter<bool> cacheParameter;
+namespace Engine.BehaviourNodes.Conditionals;
 
-    public override TaskStatus OnUpdate()
-    {
-      GameObject gameObject = Target.Value == null ? this.gameObject : Target.Value.gameObject;
-      if (gameObject != cacheGameObject)
-      {
-        cacheGameObject = gameObject;
-        cacheParameter = null;
-        IEntity entity = !(Target.Value == null) ? EntityUtility.GetEntity(Target.Value.gameObject) : EntityUtility.GetEntity(this.gameObject);
-        if (entity == null)
-        {
-          Debug.LogWarning(this.gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, this.gameObject);
-          return TaskStatus.Failure;
-        }
-        ParametersComponent component = entity.GetComponent<ParametersComponent>();
-        if (component == null)
-          return TaskStatus.Failure;
-        cacheParameter = component.GetByName<bool>(ParameterNameEnum.IsCombatIgnored);
-      }
-      return cacheParameter == null ? TaskStatus.Failure : (cacheParameter.Value ? TaskStatus.Success : TaskStatus.Failure);
-    }
+[TaskDescription("Is NPC burning? (use null Target to check self)")]
+[TaskCategory("Pathologic")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(IsCombatIgnored))]
+public class IsCombatIgnored : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedTransform Target;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
-    }
+	private GameObject cacheGameObject;
+	private IParameter<bool> cacheParameter;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
-    }
-  }
+	public override TaskStatus OnUpdate() {
+		var gameObject = Target.Value == null ? this.gameObject : Target.Value.gameObject;
+		if (gameObject != cacheGameObject) {
+			cacheGameObject = gameObject;
+			cacheParameter = null;
+			var entity = !(Target.Value == null)
+				? EntityUtility.GetEntity(Target.Value.gameObject)
+				: EntityUtility.GetEntity(this.gameObject);
+			if (entity == null) {
+				Debug.LogWarning(
+					this.gameObject.name + " : entity not found, method : " + GetType().Name + ":" +
+					MethodBase.GetCurrentMethod().Name, this.gameObject);
+				return TaskStatus.Failure;
+			}
+
+			var component = entity.GetComponent<ParametersComponent>();
+			if (component == null)
+				return TaskStatus.Failure;
+			cacheParameter = component.GetByName<bool>(ParameterNameEnum.IsCombatIgnored);
+		}
+
+		return cacheParameter == null ? TaskStatus.Failure :
+			cacheParameter.Value ? TaskStatus.Success : TaskStatus.Failure;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+	}
 }

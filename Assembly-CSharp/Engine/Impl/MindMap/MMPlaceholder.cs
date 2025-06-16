@@ -7,18 +7,13 @@ using Engine.Source.Connections;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Impl.MindMap
-{
-  [Factory(typeof (IMMPlaceholder))]
-  [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class MMPlaceholder : EngineObject, IMMPlaceholder, IObject
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected UnityAsset<Texture> image;
+namespace Engine.Impl.MindMap;
 
-    public UnityAsset<Texture> Image => image;
-  }
+[Factory(typeof(IMMPlaceholder))]
+[GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class MMPlaceholder : EngineObject, IMMPlaceholder, IObject {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected UnityAsset<Texture> image;
+
+	public UnityAsset<Texture> Image => image;
 }

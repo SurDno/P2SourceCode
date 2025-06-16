@@ -2,32 +2,24 @@
 using Engine.Source.Components.BoundCharacters;
 using Inspectors;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (BoundCharactersService))]
-  public class BoundCharactersService
-  {
-    [Inspected]
-    private List<BoundCharacterComponent> items = new List<BoundCharacterComponent>();
+namespace Engine.Source.Services;
 
-    public IEnumerable<BoundCharacterComponent> Items
-    {
-      get => items;
-    }
+[GameService(typeof(BoundCharactersService))]
+public class BoundCharactersService {
+	[Inspected] private List<BoundCharacterComponent> items = new();
 
-    public void AddKeyCharacter(BoundCharacterComponent item)
-    {
-      if (items.Contains(item))
-        return;
-      items.Add(item);
-    }
+	public IEnumerable<BoundCharacterComponent> Items => items;
 
-    public void RemoveKeyCharacter(BoundCharacterComponent item)
-    {
-      int index = items.IndexOf(item);
-      if (index == -1)
-        return;
-      items.RemoveAt(index);
-    }
-  }
+	public void AddKeyCharacter(BoundCharacterComponent item) {
+		if (items.Contains(item))
+			return;
+		items.Add(item);
+	}
+
+	public void RemoveKeyCharacter(BoundCharacterComponent item) {
+		var index = items.IndexOf(item);
+		if (index == -1)
+			return;
+		items.RemoveAt(index);
+	}
 }

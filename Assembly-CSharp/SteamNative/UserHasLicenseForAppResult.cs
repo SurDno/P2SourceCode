@@ -1,9 +1,7 @@
-﻿namespace SteamNative
-{
-  internal enum UserHasLicenseForAppResult
-  {
-    HasLicense,
-    DoesNotHaveLicense,
-    NoAuth,
-  }
+﻿namespace SteamNative;
+
+internal enum UserHasLicenseForAppResult {
+	HasLicense,
+	DoesNotHaveLicense,
+	NoAuth
 }

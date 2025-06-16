@@ -4,29 +4,17 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Settings.External;
 using Inspectors;
 
-namespace Engine.Source.Difficulties
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class ExternalDifficultySettings : ExternalSettingsInstance<ExternalDifficultySettings>
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<DifficultyItemData> Items = new List<DifficultyItemData>();
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<DifficultyGroupData> Groups = new List<DifficultyGroupData>();
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    public List<DifficultyPresetData> Presets = new List<DifficultyPresetData>();
-  }
+namespace Engine.Source.Difficulties;
+
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class ExternalDifficultySettings : ExternalSettingsInstance<ExternalDifficultySettings> {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	public List<DifficultyItemData> Items = new();
+
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	public List<DifficultyGroupData> Groups = new();
+
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	public List<DifficultyPresetData> Presets = new();
 }

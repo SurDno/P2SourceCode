@@ -1,5 +1,3 @@
 ﻿using UnityEngine;
 
-public class EngineGameObjectContainer : MonoBehaviour
-{
-}
+public class EngineGameObjectContainer : MonoBehaviour { }

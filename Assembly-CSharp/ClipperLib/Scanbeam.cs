@@ -1,8 +1,6 @@
-﻿namespace ClipperLib
-{
-  internal class Scanbeam
-  {
-    internal Scanbeam Next;
-    internal long Y;
-  }
+﻿namespace ClipperLib;
+
+internal class Scanbeam {
+	internal Scanbeam Next;
+	internal long Y;
 }

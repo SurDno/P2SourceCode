@@ -3,28 +3,25 @@ using Engine.Source.Utility;
 using InputServices;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class ControlIconsManager : MonoBehaviour
-  {
-    public static ControlIconsManager Instance;
-    [SerializeField]
-    private StringSpriteMap xboxMap;
-    [SerializeField]
-    private StringSpriteMap psMap;
+namespace Engine.Impl.UI.Controls;
 
-    private void Awake()
-    {
-      if (Instance != null)
-        Destroy(Instance.gameObject);
-      Instance = this;
-    }
+public class ControlIconsManager : MonoBehaviour {
+	public static ControlIconsManager Instance;
+	[SerializeField] private StringSpriteMap xboxMap;
+	[SerializeField] private StringSpriteMap psMap;
 
-    public Sprite GetIconSprite(GameActionType type, out bool isHold)
-    {
-      return xboxMap.GetValue(InputUtility.GetHotKeyNameByAction(type, InputService.Instance.JoystickUsed, out isHold));
-    }
+	private void Awake() {
+		if (Instance != null)
+			Destroy(Instance.gameObject);
+		Instance = this;
+	}
 
-    public Sprite GetIconSprite(string name) => xboxMap.GetValue(name);
-  }
+	public Sprite GetIconSprite(GameActionType type, out bool isHold) {
+		return xboxMap.GetValue(
+			InputUtility.GetHotKeyNameByAction(type, InputService.Instance.JoystickUsed, out isHold));
+	}
+
+	public Sprite GetIconSprite(string name) {
+		return xboxMap.GetValue(name);
+	}
 }

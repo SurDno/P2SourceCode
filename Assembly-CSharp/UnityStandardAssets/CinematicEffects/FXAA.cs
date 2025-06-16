@@ -2,194 +2,187 @@
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace UnityStandardAssets.CinematicEffects
-{
-  [Serializable]
-  public class FXAA : IAntiAliasing
-  {
-    private Shader m_Shader;
-    private Material m_Material;
-    [SerializeField]
-    [HideInInspector]
-    public Preset preset = Preset.defaultPreset;
-    public static Preset[] availablePresets = new Preset[5]
-    {
-      Preset.extremePerformancePreset,
-      Preset.performancePreset,
-      Preset.defaultPreset,
-      Preset.qualityPreset,
-      Preset.extremeQualityPreset
-    };
+namespace UnityStandardAssets.CinematicEffects;
 
-    private Shader shader
-    {
-      get
-      {
-        if (m_Shader == null)
-          m_Shader = Shader.Find("Hidden/Fast Approximate Anti-aliasing");
-        return m_Shader;
-      }
-    }
+[Serializable]
+public class FXAA : IAntiAliasing {
+	private Shader m_Shader;
+	private Material m_Material;
+	[SerializeField] [HideInInspector] public Preset preset = Preset.defaultPreset;
 
-    public Material material
-    {
-      get
-      {
-        if (m_Material == null)
-          m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(shader);
-        return m_Material;
-      }
-    }
+	public static Preset[] availablePresets = new Preset[5] {
+		Preset.extremePerformancePreset,
+		Preset.performancePreset,
+		Preset.defaultPreset,
+		Preset.qualityPreset,
+		Preset.extremeQualityPreset
+	};
 
-    public bool validSourceFormat { get; private set; }
+	private Shader shader {
+		get {
+			if (m_Shader == null)
+				m_Shader = Shader.Find("Hidden/Fast Approximate Anti-aliasing");
+			return m_Shader;
+		}
+	}
 
-    public void OnEnable(AntiAliasing owner)
-    {
-      if (ImageEffectHelper.IsSupported(shader, true, false, owner))
-        return;
-      owner.enabled = false;
-    }
+	public Material material {
+		get {
+			if (m_Material == null)
+				m_Material = ImageEffectHelper.CheckShaderAndCreateMaterial(shader);
+			return m_Material;
+		}
+	}
 
-    public void OnDisable()
-    {
-      if (!(m_Material != null))
-        return;
-      Object.DestroyImmediate(m_Material);
-    }
+	public bool validSourceFormat { get; private set; }
 
-    public void OnPreCull(Camera camera)
-    {
-    }
+	public void OnEnable(AntiAliasing owner) {
+		if (ImageEffectHelper.IsSupported(shader, true, false, owner))
+			return;
+		owner.enabled = false;
+	}
 
-    public void OnPostRender(Camera camera)
-    {
-    }
+	public void OnDisable() {
+		if (!(m_Material != null))
+			return;
+		Object.DestroyImmediate(m_Material);
+	}
 
-    public void OnRenderImage(Camera camera, RenderTexture source, RenderTexture destination)
-    {
-      material.SetVector("_QualitySettings", new Vector3(preset.qualitySettings.subpixelAliasingRemovalAmount, preset.qualitySettings.edgeDetectionThreshold, preset.qualitySettings.minimumRequiredLuminance));
-      material.SetVector("_ConsoleSettings", new Vector4(preset.consoleSettings.subpixelSpreadAmount, preset.consoleSettings.edgeSharpnessAmount, preset.consoleSettings.edgeDetectionThreshold, preset.consoleSettings.minimumRequiredLuminance));
-      Graphics.Blit(source, destination, material, 0);
-    }
+	public void OnPreCull(Camera camera) { }
 
-    [Serializable]
-    public struct QualitySettings
-    {
-      [Tooltip("The amount of desired sub-pixel aliasing removal. Effects the sharpeness of the output.")]
-      [Range(0.0f, 1f)]
-      public float subpixelAliasingRemovalAmount;
-      [Tooltip("The minimum amount of local contrast required to qualify a region as containing an edge.")]
-      [Range(0.063f, 0.333f)]
-      public float edgeDetectionThreshold;
-      [Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
-      [Range(0.0f, 0.0833f)]
-      public float minimumRequiredLuminance;
-    }
+	public void OnPostRender(Camera camera) { }
 
-    [Serializable]
-    public struct ConsoleSettings
-    {
-      [Tooltip("The amount of spread applied to the sampling coordinates while sampling for subpixel information.")]
-      [Range(0.33f, 0.5f)]
-      public float subpixelSpreadAmount;
-      [Tooltip("This value dictates how sharp the edges in the image are kept; a higher value implies sharper edges.")]
-      [Range(2f, 8f)]
-      public float edgeSharpnessAmount;
-      [Tooltip("The minimum amount of local contrast required to qualify a region as containing an edge.")]
-      [Range(0.125f, 0.25f)]
-      public float edgeDetectionThreshold;
-      [Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
-      [Range(0.04f, 0.06f)]
-      public float minimumRequiredLuminance;
-    }
+	public void OnRenderImage(Camera camera, RenderTexture source, RenderTexture destination) {
+		material.SetVector("_QualitySettings",
+			new Vector3(preset.qualitySettings.subpixelAliasingRemovalAmount,
+				preset.qualitySettings.edgeDetectionThreshold, preset.qualitySettings.minimumRequiredLuminance));
+		material.SetVector("_ConsoleSettings",
+			new Vector4(preset.consoleSettings.subpixelSpreadAmount, preset.consoleSettings.edgeSharpnessAmount,
+				preset.consoleSettings.edgeDetectionThreshold, preset.consoleSettings.minimumRequiredLuminance));
+		Graphics.Blit(source, destination, material, 0);
+	}
 
-    [Serializable]
-    public struct Preset
-    {
-      [Layout]
-      public QualitySettings qualitySettings;
-      [Layout]
-      public ConsoleSettings consoleSettings;
-      private static readonly Preset s_ExtremePerformance = new Preset {
-        qualitySettings = new QualitySettings {
-          subpixelAliasingRemovalAmount = 0.0f,
-          edgeDetectionThreshold = 0.333f,
-          minimumRequiredLuminance = 0.0833f
-        },
-        consoleSettings = new ConsoleSettings {
-          subpixelSpreadAmount = 0.33f,
-          edgeSharpnessAmount = 8f,
-          edgeDetectionThreshold = 0.25f,
-          minimumRequiredLuminance = 0.06f
-        }
-      };
-      private static readonly Preset s_Performance = new Preset {
-        qualitySettings = new QualitySettings {
-          subpixelAliasingRemovalAmount = 0.25f,
-          edgeDetectionThreshold = 0.25f,
-          minimumRequiredLuminance = 0.0833f
-        },
-        consoleSettings = new ConsoleSettings {
-          subpixelSpreadAmount = 0.33f,
-          edgeSharpnessAmount = 8f,
-          edgeDetectionThreshold = 0.125f,
-          minimumRequiredLuminance = 0.06f
-        }
-      };
-      private static readonly Preset s_Default = new Preset {
-        qualitySettings = new QualitySettings {
-          subpixelAliasingRemovalAmount = 0.75f,
-          edgeDetectionThreshold = 0.166f,
-          minimumRequiredLuminance = 0.0833f
-        },
-        consoleSettings = new ConsoleSettings {
-          subpixelSpreadAmount = 0.5f,
-          edgeSharpnessAmount = 8f,
-          edgeDetectionThreshold = 0.125f,
-          minimumRequiredLuminance = 0.05f
-        }
-      };
-      private static readonly Preset s_Quality = new Preset {
-        qualitySettings = new QualitySettings {
-          subpixelAliasingRemovalAmount = 1f,
-          edgeDetectionThreshold = 0.125f,
-          minimumRequiredLuminance = 1f / 16f
-        },
-        consoleSettings = new ConsoleSettings {
-          subpixelSpreadAmount = 0.5f,
-          edgeSharpnessAmount = 4f,
-          edgeDetectionThreshold = 0.125f,
-          minimumRequiredLuminance = 0.04f
-        }
-      };
-      private static readonly Preset s_ExtremeQuality = new Preset {
-        qualitySettings = new QualitySettings {
-          subpixelAliasingRemovalAmount = 1f,
-          edgeDetectionThreshold = 0.063f,
-          minimumRequiredLuminance = 0.0312f
-        },
-        consoleSettings = new ConsoleSettings {
-          subpixelSpreadAmount = 0.5f,
-          edgeSharpnessAmount = 2f,
-          edgeDetectionThreshold = 0.125f,
-          minimumRequiredLuminance = 0.04f
-        }
-      };
+	[Serializable]
+	public struct QualitySettings {
+		[Tooltip("The amount of desired sub-pixel aliasing removal. Effects the sharpeness of the output.")]
+		[Range(0.0f, 1f)]
+		public float subpixelAliasingRemovalAmount;
 
-      public static Preset extremePerformancePreset => s_ExtremePerformance;
+		[Tooltip("The minimum amount of local contrast required to qualify a region as containing an edge.")]
+		[Range(0.063f, 0.333f)]
+		public float edgeDetectionThreshold;
 
-      public static Preset performancePreset => s_Performance;
+		[Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
+		[Range(0.0f, 0.0833f)]
+		public float minimumRequiredLuminance;
+	}
 
-      public static Preset defaultPreset => s_Default;
+	[Serializable]
+	public struct ConsoleSettings {
+		[Tooltip("The amount of spread applied to the sampling coordinates while sampling for subpixel information.")]
+		[Range(0.33f, 0.5f)]
+		public float subpixelSpreadAmount;
 
-      public static Preset qualityPreset => s_Quality;
+		[Tooltip(
+			"This value dictates how sharp the edges in the image are kept; a higher value implies sharper edges.")]
+		[Range(2f, 8f)]
+		public float edgeSharpnessAmount;
 
-      public static Preset extremeQualityPreset => s_ExtremeQuality;
+		[Tooltip("The minimum amount of local contrast required to qualify a region as containing an edge.")]
+		[Range(0.125f, 0.25f)]
+		public float edgeDetectionThreshold;
 
-      [AttributeUsage(AttributeTargets.Field)]
-      public class LayoutAttribute : PropertyAttribute
-      {
-      }
-    }
-  }
+		[Tooltip("Local contrast adaptation value to disallow the algorithm from executing on the darker regions.")]
+		[Range(0.04f, 0.06f)]
+		public float minimumRequiredLuminance;
+	}
+
+	[Serializable]
+	public struct Preset {
+		[Layout] public QualitySettings qualitySettings;
+		[Layout] public ConsoleSettings consoleSettings;
+
+		private static readonly Preset s_ExtremePerformance = new() {
+			qualitySettings = new QualitySettings {
+				subpixelAliasingRemovalAmount = 0.0f,
+				edgeDetectionThreshold = 0.333f,
+				minimumRequiredLuminance = 0.0833f
+			},
+			consoleSettings = new ConsoleSettings {
+				subpixelSpreadAmount = 0.33f,
+				edgeSharpnessAmount = 8f,
+				edgeDetectionThreshold = 0.25f,
+				minimumRequiredLuminance = 0.06f
+			}
+		};
+
+		private static readonly Preset s_Performance = new() {
+			qualitySettings = new QualitySettings {
+				subpixelAliasingRemovalAmount = 0.25f,
+				edgeDetectionThreshold = 0.25f,
+				minimumRequiredLuminance = 0.0833f
+			},
+			consoleSettings = new ConsoleSettings {
+				subpixelSpreadAmount = 0.33f,
+				edgeSharpnessAmount = 8f,
+				edgeDetectionThreshold = 0.125f,
+				minimumRequiredLuminance = 0.06f
+			}
+		};
+
+		private static readonly Preset s_Default = new() {
+			qualitySettings = new QualitySettings {
+				subpixelAliasingRemovalAmount = 0.75f,
+				edgeDetectionThreshold = 0.166f,
+				minimumRequiredLuminance = 0.0833f
+			},
+			consoleSettings = new ConsoleSettings {
+				subpixelSpreadAmount = 0.5f,
+				edgeSharpnessAmount = 8f,
+				edgeDetectionThreshold = 0.125f,
+				minimumRequiredLuminance = 0.05f
+			}
+		};
+
+		private static readonly Preset s_Quality = new() {
+			qualitySettings = new QualitySettings {
+				subpixelAliasingRemovalAmount = 1f,
+				edgeDetectionThreshold = 0.125f,
+				minimumRequiredLuminance = 1f / 16f
+			},
+			consoleSettings = new ConsoleSettings {
+				subpixelSpreadAmount = 0.5f,
+				edgeSharpnessAmount = 4f,
+				edgeDetectionThreshold = 0.125f,
+				minimumRequiredLuminance = 0.04f
+			}
+		};
+
+		private static readonly Preset s_ExtremeQuality = new() {
+			qualitySettings = new QualitySettings {
+				subpixelAliasingRemovalAmount = 1f,
+				edgeDetectionThreshold = 0.063f,
+				minimumRequiredLuminance = 0.0312f
+			},
+			consoleSettings = new ConsoleSettings {
+				subpixelSpreadAmount = 0.5f,
+				edgeSharpnessAmount = 2f,
+				edgeDetectionThreshold = 0.125f,
+				minimumRequiredLuminance = 0.04f
+			}
+		};
+
+		public static Preset extremePerformancePreset => s_ExtremePerformance;
+
+		public static Preset performancePreset => s_Performance;
+
+		public static Preset defaultPreset => s_Default;
+
+		public static Preset qualityPreset => s_Quality;
+
+		public static Preset extremeQualityPreset => s_ExtremeQuality;
+
+		[AttributeUsage(AttributeTargets.Field)]
+		public class LayoutAttribute : PropertyAttribute { }
+	}
 }

@@ -1,56 +1,51 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public abstract class HideableView : FloatView
-  {
-    [SerializeField]
-    private bool visible = true;
+namespace Engine.Impl.UI.Controls;
 
-    public event Action OnChangeEvent;
+public abstract class HideableView : FloatView {
+	[SerializeField] private bool visible = true;
 
-    public event Action OnSkipAnimationEvent;
+	public event Action OnChangeEvent;
 
-    public event VisibilityChanged OnVisibilityChanged;
+	public event Action OnSkipAnimationEvent;
 
-    public bool Visible
-    {
-      get => visible;
-      set
-      {
-        if (visible == value)
-          return;
-        visible = value;
-        ApplyVisibility();
-        Action onChangeEvent = OnChangeEvent;
-        if (onChangeEvent != null)
-          onChangeEvent();
-        VisibilityChanged visibilityChanged = OnVisibilityChanged;
-        if (visibilityChanged == null)
-          return;
-        visibilityChanged(visible, this);
-      }
-    }
+	public event VisibilityChanged OnVisibilityChanged;
 
-    public override void SkipAnimation()
-    {
-      Action skipAnimationEvent = OnSkipAnimationEvent;
-      if (skipAnimationEvent == null)
-        return;
-      skipAnimationEvent();
-    }
+	public bool Visible {
+		get => visible;
+		set {
+			if (visible == value)
+				return;
+			visible = value;
+			ApplyVisibility();
+			var onChangeEvent = OnChangeEvent;
+			if (onChangeEvent != null)
+				onChangeEvent();
+			var visibilityChanged = OnVisibilityChanged;
+			if (visibilityChanged == null)
+				return;
+			visibilityChanged(visible, this);
+		}
+	}
 
-    public override float FloatValue
-    {
-      get => Convert.ToSingle(Visible);
-      set => Visible = Convert.ToBoolean(value);
-    }
+	public override void SkipAnimation() {
+		var skipAnimationEvent = OnSkipAnimationEvent;
+		if (skipAnimationEvent == null)
+			return;
+		skipAnimationEvent();
+	}
 
-    protected virtual void OnValidate() => ApplyVisibility();
+	public override float FloatValue {
+		get => Convert.ToSingle(Visible);
+		set => Visible = Convert.ToBoolean(value);
+	}
 
-    protected abstract void ApplyVisibility();
+	protected virtual void OnValidate() {
+		ApplyVisibility();
+	}
 
-    public delegate void VisibilityChanged(bool newValue, HideableView view);
-  }
+	protected abstract void ApplyVisibility();
+
+	public delegate void VisibilityChanged(bool newValue, HideableView view);
 }

@@ -1,8 +1,6 @@
-﻿namespace SteamNative
-{
-  internal enum WorkshopFileAction
-  {
-    Played,
-    Completed,
-  }
+﻿namespace SteamNative;
+
+internal enum WorkshopFileAction {
+	Played,
+	Completed
 }

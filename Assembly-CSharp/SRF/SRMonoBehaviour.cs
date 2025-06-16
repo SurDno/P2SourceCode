@@ -1,91 +1,85 @@
 ﻿using System.Diagnostics;
 using UnityEngine;
 
-namespace SRF
-{
-  public abstract class SRMonoBehaviour : MonoBehaviour
-  {
-    private Collider _collider;
-    private Transform _transform;
-    private Rigidbody _rigidBody;
-    private GameObject _gameObject;
+namespace SRF;
 
-    public Transform CachedTransform
-    {
-      [DebuggerStepThrough, DebuggerNonUserCode] get
-      {
-        if (_transform == null)
-          _transform = base.transform;
-        return _transform;
-      }
-    }
+public abstract class SRMonoBehaviour : MonoBehaviour {
+	private Collider _collider;
+	private Transform _transform;
+	private Rigidbody _rigidBody;
+	private GameObject _gameObject;
 
-    public Collider CachedCollider
-    {
-      [DebuggerStepThrough, DebuggerNonUserCode] get
-      {
-        if (_collider == null)
-          _collider = GetComponent<Collider>();
-        return _collider;
-      }
-    }
+	public Transform CachedTransform {
+		[DebuggerStepThrough]
+		[DebuggerNonUserCode]
+		get {
+			if (_transform == null)
+				_transform = base.transform;
+			return _transform;
+		}
+	}
 
-    public Rigidbody CachedRigidBody
-    {
-      [DebuggerStepThrough, DebuggerNonUserCode] get
-      {
-        if (_rigidBody == null)
-          _rigidBody = GetComponent<Rigidbody>();
-        return _rigidBody;
-      }
-    }
+	public Collider CachedCollider {
+		[DebuggerStepThrough]
+		[DebuggerNonUserCode]
+		get {
+			if (_collider == null)
+				_collider = GetComponent<Collider>();
+			return _collider;
+		}
+	}
 
-    public GameObject CachedGameObject
-    {
-      [DebuggerStepThrough, DebuggerNonUserCode] get
-      {
-        if (_gameObject == null)
-          _gameObject = base.gameObject;
-        return _gameObject;
-      }
-    }
+	public Rigidbody CachedRigidBody {
+		[DebuggerStepThrough]
+		[DebuggerNonUserCode]
+		get {
+			if (_rigidBody == null)
+				_rigidBody = GetComponent<Rigidbody>();
+			return _rigidBody;
+		}
+	}
 
-    public new Transform transform => CachedTransform;
+	public GameObject CachedGameObject {
+		[DebuggerStepThrough]
+		[DebuggerNonUserCode]
+		get {
+			if (_gameObject == null)
+				_gameObject = base.gameObject;
+			return _gameObject;
+		}
+	}
 
-    public Collider collider => CachedCollider;
+	public new Transform transform => CachedTransform;
 
-    public Rigidbody rigidbody => CachedRigidBody;
+	public Collider collider => CachedCollider;
 
-    public new GameObject gameObject => CachedGameObject;
+	public Rigidbody rigidbody => CachedRigidBody;
 
-    [DebuggerNonUserCode]
-    [DebuggerStepThrough]
-    protected void AssertNotNull(object value, string fieldName = null)
-    {
-      SRDebugUtil.AssertNotNull(value, fieldName, this);
-    }
+	public new GameObject gameObject => CachedGameObject;
 
-    [DebuggerNonUserCode]
-    [DebuggerStepThrough]
-    protected void Assert(bool condition, string message = null)
-    {
-      SRDebugUtil.Assert(condition, message, this);
-    }
+	[DebuggerNonUserCode]
+	[DebuggerStepThrough]
+	protected void AssertNotNull(object value, string fieldName = null) {
+		SRDebugUtil.AssertNotNull(value, fieldName, this);
+	}
 
-    [Conditional("UNITY_EDITOR")]
-    [DebuggerNonUserCode]
-    [DebuggerStepThrough]
-    protected void EditorAssertNotNull(object value, string fieldName = null)
-    {
-      AssertNotNull(value, fieldName);
-    }
+	[DebuggerNonUserCode]
+	[DebuggerStepThrough]
+	protected void Assert(bool condition, string message = null) {
+		SRDebugUtil.Assert(condition, message, this);
+	}
 
-    [Conditional("UNITY_EDITOR")]
-    [DebuggerNonUserCode]
-    [DebuggerStepThrough]
-    protected void EditorAssert(bool condition, string message = null)
-    {
-      Assert(condition, message);
-    }
-  }
+	[Conditional("UNITY_EDITOR")]
+	[DebuggerNonUserCode]
+	[DebuggerStepThrough]
+	protected void EditorAssertNotNull(object value, string fieldName = null) {
+		AssertNotNull(value, fieldName);
+	}
+
+	[Conditional("UNITY_EDITOR")]
+	[DebuggerNonUserCode]
+	[DebuggerStepThrough]
+	protected void EditorAssert(bool condition, string message = null) {
+		Assert(condition, message);
+	}
 }

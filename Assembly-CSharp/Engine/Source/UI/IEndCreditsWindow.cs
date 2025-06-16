@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.UI
-{
-  public interface IEndCreditsWindow : IWindow
-  {
-  }
-}
+﻿namespace Engine.Source.UI;
+
+public interface IEndCreditsWindow : IWindow { }

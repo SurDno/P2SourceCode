@@ -1,10 +1,8 @@
-﻿namespace SteamNative
-{
-  internal enum GameIDType
-  {
-    App,
-    GameMod,
-    Shortcut,
-    P2P,
-  }
+﻿namespace SteamNative;
+
+internal enum GameIDType {
+	App,
+	GameMod,
+	Shortcut,
+	P2P
 }

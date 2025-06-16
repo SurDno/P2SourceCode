@@ -2,16 +2,14 @@
 using Engine.Common.Components.Interactable;
 using Engine.Common.Types;
 
-namespace Engine.Common.Components
-{
-  public interface IInteractableComponent : IComponent
-  {
-    bool IsEnabled { get; set; }
+namespace Engine.Common.Components;
 
-    LocalizedText Title { get; set; }
+public interface IInteractableComponent : IComponent {
+	bool IsEnabled { get; set; }
 
-    event Action<IEntity, IInteractableComponent, IInteractItem> BeginInteractEvent;
+	LocalizedText Title { get; set; }
 
-    event Action<IEntity, IInteractableComponent, IInteractItem> EndInteractEvent;
-  }
+	event Action<IEntity, IInteractableComponent, IInteractItem> BeginInteractEvent;
+
+	event Action<IEntity, IInteractableComponent, IInteractItem> EndInteractEvent;
 }

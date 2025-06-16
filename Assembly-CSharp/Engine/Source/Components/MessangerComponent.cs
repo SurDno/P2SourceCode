@@ -9,49 +9,41 @@ using Engine.Source.Commons;
 using Engine.Source.Services;
 using Inspectors;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (IMessangerComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class MessangerComponent : EngineComponent, IMessangerComponent, IComponent, INeedSave
-  {
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected]
-    protected bool registred;
-    private int areaMask = -1;
+namespace Engine.Source.Components;
 
-    public bool NeedSave => true;
+[Factory(typeof(IMessangerComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave |
+               TypeEnum.StateLoad)]
+public class MessangerComponent : EngineComponent, IMessangerComponent, IComponent, INeedSave {
+	[StateSaveProxy] [StateLoadProxy()] [Inspected]
+	protected bool registred;
 
-    public override void OnAdded()
-    {
-    }
+	private int areaMask = -1;
 
-    public override void OnRemoved()
-    {
-      if (!registred)
-        return;
-      StopTeleporting();
-    }
+	public bool NeedSave => true;
 
-    public void StartTeleporting()
-    {
-      ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(Owner, areaMask);
-      registred = true;
-    }
+	public override void OnAdded() { }
 
-    public void StopTeleporting()
-    {
-      ServiceLocator.GetService<PostmanTeleportService>().UnregisterPostman(Owner);
-      registred = false;
-    }
+	public override void OnRemoved() {
+		if (!registred)
+			return;
+		StopTeleporting();
+	}
 
-    [OnLoaded]
-    protected void OnLoaded()
-    {
-      if (!registred)
-        return;
-      ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(Owner, areaMask);
-    }
-  }
+	public void StartTeleporting() {
+		ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(Owner, areaMask);
+		registred = true;
+	}
+
+	public void StopTeleporting() {
+		ServiceLocator.GetService<PostmanTeleportService>().UnregisterPostman(Owner);
+		registred = false;
+	}
+
+	[OnLoaded]
+	protected void OnLoaded() {
+		if (!registred)
+			return;
+		ServiceLocator.GetService<PostmanTeleportService>().RegisterPostman(Owner, areaMask);
+	}
 }

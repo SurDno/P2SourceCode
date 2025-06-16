@@ -8,60 +8,54 @@ using Engine.Source.Settings.External;
 using Engine.Source.Utility;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (MemoryStrategyService))]
-  public class MemoryStrategyService : IInitialisable, IUpdatable
-  {
-    private static float timeLeft;
-    private IEnumerator enumerator;
+namespace Engine.Source.Services;
 
-    public static void ResetTime()
-    {
-      timeLeft = Mathf.Max(ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MemoryStrategyTimeEventPeriod, 10f);
-    }
+[GameService(typeof(MemoryStrategyService))]
+public class MemoryStrategyService : IInitialisable, IUpdatable {
+	private static float timeLeft;
+	private IEnumerator enumerator;
 
-    public void ComputeUpdate()
-    {
-      if (enumerator != null)
-      {
-        if (enumerator.MoveNext())
-          return;
-        StartGame();
-        enumerator = null;
-      }
-      timeLeft -= Time.deltaTime;
-      if (timeLeft > 0.0 || InstanceByRequest<EngineApplication>.Instance.IsPaused || !PlayerUtility.IsPlayerCanControlling)
-        return;
-      ResetTime();
-      enumerator = MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.Time);
-      if (enumerator.MoveNext())
-        StopGame();
-      else
-        enumerator = null;
-    }
+	public static void ResetTime() {
+		timeLeft = Mathf.Max(
+			ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MemoryStrategyTimeEventPeriod, 10f);
+	}
 
-    private void StopGame()
-    {
-      InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
-      ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(true);
-    }
+	public void ComputeUpdate() {
+		if (enumerator != null) {
+			if (enumerator.MoveNext())
+				return;
+			StartGame();
+			enumerator = null;
+		}
 
-    private void StartGame()
-    {
-      InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
-      ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(false);
-    }
+		timeLeft -= Time.deltaTime;
+		if (timeLeft > 0.0 || InstanceByRequest<EngineApplication>.Instance.IsPaused ||
+		    !PlayerUtility.IsPlayerCanControlling)
+			return;
+		ResetTime();
+		enumerator = MemoryStrategy.Instance.Compute(MemoryStrategyContextEnum.Time);
+		if (enumerator.MoveNext())
+			StopGame();
+		else
+			enumerator = null;
+	}
 
-    public void Initialise()
-    {
-      ResetTime();
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+	private void StopGame() {
+		InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
+		ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(true);
+	}
 
-    public void Terminate()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-    }
-  }
+	private void StartGame() {
+		InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
+		ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(false);
+	}
+
+	public void Initialise() {
+		ResetTime();
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
+
+	public void Terminate() {
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+	}
 }

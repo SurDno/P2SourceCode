@@ -1,12 +1,7 @@
 ﻿using UnityEngine;
 
-public class DummyAnimatorEvent : MonoBehaviour
-{
-  private void AnimatorEvent()
-  {
-  }
+public class DummyAnimatorEvent : MonoBehaviour {
+	private void AnimatorEvent() { }
 
-  private void OnAnimatorEvent()
-  {
-  }
+	private void OnAnimatorEvent() { }
 }

@@ -1,11 +1,9 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IRealTimeModifiable
-  {
-    void OnModify();
+﻿namespace PLVirtualMachine.Common;
 
-    bool Modified { get; }
+public interface IRealTimeModifiable {
+	void OnModify();
 
-    IRealTimeModifiable ModifiableParent { get; }
-  }
+	bool Modified { get; }
+
+	IRealTimeModifiable ModifiableParent { get; }
 }

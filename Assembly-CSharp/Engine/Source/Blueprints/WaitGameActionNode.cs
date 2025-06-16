@@ -4,38 +4,31 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class WaitGameActionNode : FlowControlNode
-  {
-    [Port("GameAction")]
-    private ValueInput<GameActionType> gameActionInput;
-    private FlowOutput output;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      output = AddFlowOutput("Out");
-    }
+[Category("Engine")]
+public class WaitGameActionNode : FlowControlNode {
+	[Port("GameAction")] private ValueInput<GameActionType> gameActionInput;
+	private FlowOutput output;
 
-    public override void OnGraphStarted()
-    {
-      base.OnGraphStarted();
-      ServiceLocator.GetService<GameActionService>().OnGameAction += WaitGameActionNode_OnGameAction;
-    }
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		output = AddFlowOutput("Out");
+	}
 
-    public override void OnGraphStoped()
-    {
-      ServiceLocator.GetService<GameActionService>().OnGameAction -= WaitGameActionNode_OnGameAction;
-      base.OnGraphStoped();
-    }
+	public override void OnGraphStarted() {
+		base.OnGraphStarted();
+		ServiceLocator.GetService<GameActionService>().OnGameAction += WaitGameActionNode_OnGameAction;
+	}
 
-    private void WaitGameActionNode_OnGameAction(GameActionType type)
-    {
-      if (type != gameActionInput.value || !(graphAgent != null))
-        return;
-      output.Call();
-    }
-  }
+	public override void OnGraphStoped() {
+		ServiceLocator.GetService<GameActionService>().OnGameAction -= WaitGameActionNode_OnGameAction;
+		base.OnGraphStoped();
+	}
+
+	private void WaitGameActionNode_OnGameAction(GameActionType type) {
+		if (type != gameActionInput.value || !(graphAgent != null))
+			return;
+		output.Call();
+	}
 }

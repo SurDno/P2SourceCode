@@ -1,19 +1,17 @@
 ﻿using System;
 
-namespace Engine.Common.Services
-{
-  public interface ITimeService
-  {
-    TimeSpan SolarTime { get; set; }
+namespace Engine.Common.Services;
 
-    float SolarTimeFactor { get; set; }
+public interface ITimeService {
+	TimeSpan SolarTime { get; set; }
 
-    TimeSpan GameTime { get; set; }
+	float SolarTimeFactor { get; set; }
 
-    float GameTimeFactor { get; set; }
+	TimeSpan GameTime { get; set; }
 
-    event Action<TimeSpan> GameTimeChangedEvent;
+	float GameTimeFactor { get; set; }
 
-    float DefaultTimeFactor { get; }
-  }
+	event Action<TimeSpan> GameTimeChangedEvent;
+
+	float DefaultTimeFactor { get; }
 }

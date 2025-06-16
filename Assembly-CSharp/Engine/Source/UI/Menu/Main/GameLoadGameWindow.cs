@@ -2,29 +2,26 @@
 using System.Collections;
 using Engine.Impl.UI.Menu.Main;
 
-namespace Engine.Source.UI.Menu.Main
-{
-  public class GameLoadGameWindow : CancelableSimpleWindow, IGameLoadGameWindow, IWindow, IPauseMenu
-  {
-    public static bool IsActive;
+namespace Engine.Source.UI.Menu.Main;
 
-    public override IEnumerator OnOpened()
-    {
-      IsActive = true;
-      return base.OnOpened();
-    }
+public class GameLoadGameWindow : CancelableSimpleWindow, IGameLoadGameWindow, IWindow, IPauseMenu {
+	public static bool IsActive;
 
-    public override IEnumerator OnClosed()
-    {
-      IsActive = false;
-      return base.OnClosed();
-    }
+	public override IEnumerator OnOpened() {
+		IsActive = true;
+		return base.OnOpened();
+	}
 
-    protected override void RegisterLayer()
-    {
-      RegisterLayer<IGameLoadGameWindow>(this);
-    }
+	public override IEnumerator OnClosed() {
+		IsActive = false;
+		return base.OnClosed();
+	}
 
-    public override Type GetWindowType() => typeof (IGameLoadGameWindow);
-  }
+	protected override void RegisterLayer() {
+		RegisterLayer<IGameLoadGameWindow>(this);
+	}
+
+	public override Type GetWindowType() {
+		return typeof(IGameLoadGameWindow);
+	}
 }

@@ -2,34 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters
-{
-  public class GUIStyleState_DirectConverter : fsDirectConverter<GUIStyleState>
-  {
-    protected override fsResult DoSerialize(
-      GUIStyleState model,
-      Dictionary<string, fsData> serialized)
-    {
-      return fsResult.Success + SerializeMember(serialized, null, "background", model.background) + SerializeMember(serialized, null, "textColor", model.textColor);
-    }
+namespace ParadoxNotion.Serialization.FullSerializer.Internal.DirectConverters;
 
-    protected override fsResult DoDeserialize(
-      Dictionary<string, fsData> data,
-      ref GUIStyleState model)
-    {
-      fsResult success = fsResult.Success;
-      Texture2D background = model.background;
-      fsResult fsResult1 = success + DeserializeMember(data, null, "background", out background);
-      model.background = background;
-      Color textColor = model.textColor;
-      fsResult fsResult2 = fsResult1 + DeserializeMember(data, null, "textColor", out textColor);
-      model.textColor = textColor;
-      return fsResult2;
-    }
+public class GUIStyleState_DirectConverter : fsDirectConverter<GUIStyleState> {
+	protected override fsResult DoSerialize(
+		GUIStyleState model,
+		Dictionary<string, fsData> serialized) {
+		return fsResult.Success + SerializeMember(serialized, null, "background", model.background) +
+		       SerializeMember(serialized, null, "textColor", model.textColor);
+	}
 
-    public override object CreateInstance(fsData data, Type storageType)
-    {
-      return new GUIStyleState();
-    }
-  }
+	protected override fsResult DoDeserialize(
+		Dictionary<string, fsData> data,
+		ref GUIStyleState model) {
+		var success = fsResult.Success;
+		var background = model.background;
+		var fsResult1 = success + DeserializeMember(data, null, "background", out background);
+		model.background = background;
+		var textColor = model.textColor;
+		var fsResult2 = fsResult1 + DeserializeMember(data, null, "textColor", out textColor);
+		model.textColor = textColor;
+		return fsResult2;
+	}
+
+	public override object CreateInstance(fsData data, Type storageType) {
+		return new GUIStyleState();
+	}
 }

@@ -14,30 +14,28 @@ using Engine.Source.Services;
 [TaskCategory("Pathologic")]
 [Factory]
 [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-[FactoryProxy(typeof (PlayerIsInFight))]
-public class PlayerIsInFight : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
-{
-  public override TaskStatus OnUpdate()
-  {
-    CombatService service = ServiceLocator.GetService<CombatService>();
-    return service != null ? (service.PlayerIsFighting ? TaskStatus.Success : TaskStatus.Failure) : TaskStatus.Failure;
-  }
+[FactoryProxy(typeof(PlayerIsInFight))]
+public class PlayerIsInFight : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead {
+	public override TaskStatus OnUpdate() {
+		var service = ServiceLocator.GetService<CombatService>();
+		return service != null
+			? service.PlayerIsFighting ? TaskStatus.Success : TaskStatus.Failure
+			: TaskStatus.Failure;
+	}
 
-  public void DataWrite(IDataWriter writer)
-  {
-    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+	}
 
-  public void DataRead(IDataReader reader, Type type)
-  {
-    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    id = DefaultDataReadUtility.Read(reader, "Id", id);
-    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-  }
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+	}
 }

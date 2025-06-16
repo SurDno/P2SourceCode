@@ -1,29 +1,23 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class ProgressRemappedSettings : ProgressView
-  {
-    [SerializeField]
-    private ProgressRemapped view;
-    [SerializeField]
-    private bool max;
+namespace Engine.Impl.UI.Controls;
 
-    protected override void ApplyProgress()
-    {
-      if (view == null)
-        return;
-      if (max)
-        view.SetMax(Progress);
-      else
-        view.SetMin(Progress);
-    }
+public class ProgressRemappedSettings : ProgressView {
+	[SerializeField] private ProgressRemapped view;
+	[SerializeField] private bool max;
 
-    public override void SkipAnimation()
-    {
-      if (!(view != null))
-        return;
-      view.SkipAnimation();
-    }
-  }
+	protected override void ApplyProgress() {
+		if (view == null)
+			return;
+		if (max)
+			view.SetMax(Progress);
+		else
+			view.SetMin(Progress);
+	}
+
+	public override void SkipAnimation() {
+		if (!(view != null))
+			return;
+		view.SkipAnimation();
+	}
 }

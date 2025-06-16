@@ -10,59 +10,50 @@ using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace Engine.BehaviourNodes.Conditionals
-{
-  [TaskDescription("Is horizontal distance to NPC less than?")]
-  [TaskCategory("Pathologic")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (IsHorizontalDistanceLess))]
-  public class IsHorizontalDistanceLess : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedTransform Target;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public float Distance;
+namespace Engine.BehaviourNodes.Conditionals;
 
-    public override TaskStatus OnUpdate()
-    {
-      if (Target == null || Target.Value == null)
-      {
-        Debug.LogWarningFormat("{0}: target is null", gameObject.name);
-        return TaskStatus.Failure;
-      }
-      return ((Target.Value.transform.position - gameObject.transform.position) with
-      {
-        y = 0.0f
-      }).magnitude < (double) Distance ? TaskStatus.Success : TaskStatus.Failure;
-    }
+[TaskDescription("Is horizontal distance to NPC less than?")]
+[TaskCategory("Pathologic")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(IsHorizontalDistanceLess))]
+public class IsHorizontalDistanceLess : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedTransform Target;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
-      DefaultDataWriteUtility.Write(writer, "Distance", Distance);
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public float Distance;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
-      Distance = DefaultDataReadUtility.Read(reader, "Distance", Distance);
-    }
-  }
+	public override TaskStatus OnUpdate() {
+		if (Target == null || Target.Value == null) {
+			Debug.LogWarningFormat("{0}: target is null", gameObject.name);
+			return TaskStatus.Failure;
+		}
+
+		return ((Target.Value.transform.position - gameObject.transform.position) with {
+			y = 0.0f
+		}).magnitude < (double)Distance
+			? TaskStatus.Success
+			: TaskStatus.Failure;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+		DefaultDataWriteUtility.Write(writer, "Distance", Distance);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+		Distance = DefaultDataReadUtility.Read(reader, "Distance", Distance);
+	}
 }

@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IEngineRTInstance : IEngineInstanced, IEngineTemplated
-  {
-    bool IsDisposed { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    bool Instantiated { get; }
-  }
+public interface IEngineRTInstance : IEngineInstanced, IEngineTemplated {
+	bool IsDisposed { get; }
+
+	bool Instantiated { get; }
 }

@@ -1,11 +1,11 @@
 ﻿using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace FlowCanvas.Nodes
-{
-  [Category("Utilities/Constructors")]
-  public class NewVector3 : PureFunctionNode<Vector3, float, float, float>
-  {
-    public override Vector3 Invoke(float x, float y, float z) => new Vector3(x, y, z);
-  }
+namespace FlowCanvas.Nodes;
+
+[Category("Utilities/Constructors")]
+public class NewVector3 : PureFunctionNode<Vector3, float, float, float> {
+	public override Vector3 Invoke(float x, float y, float z) {
+		return new Vector3(x, y, z);
+	}
 }

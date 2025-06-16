@@ -1,15 +1,13 @@
 ﻿using System;
 
-namespace Engine.Common.Components
-{
-  public interface IIndoorCrowdComponent : IComponent
-  {
-    void AddEntity(IEntity entity);
+namespace Engine.Common.Components;
 
-    void Reset();
+public interface IIndoorCrowdComponent : IComponent {
+	void AddEntity(IEntity entity);
 
-    event Action<IEntity> OnCreateEntity;
+	void Reset();
 
-    event Action<IEntity> OnDeleteEntity;
-  }
+	event Action<IEntity> OnCreateEntity;
+
+	event Action<IEntity> OnDeleteEntity;
 }

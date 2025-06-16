@@ -6,57 +6,47 @@ using Engine.Source.Services.Detectablies;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (DetectorService))]
-  public class DetectorService
-  {
-    [Inspected]
-    private Dictionary<DetectableComponent, DetectableCandidatInfo> detectablies = new Dictionary<DetectableComponent, DetectableCandidatInfo>();
-    private List<DetectableCandidatInfo> cache = new List<DetectableCandidatInfo>();
-    private bool invalidate = true;
+namespace Engine.Source.Services;
 
-    public List<DetectableCandidatInfo> Detectablies
-    {
-      get
-      {
-        if (invalidate)
-        {
-          invalidate = false;
-          cache.Clear();
-          foreach (KeyValuePair<DetectableComponent, DetectableCandidatInfo> detectably in detectablies)
-            cache.Add(detectably.Value);
-        }
-        return cache;
-      }
-    }
+[GameService(typeof(DetectorService))]
+public class DetectorService {
+	[Inspected] private Dictionary<DetectableComponent, DetectableCandidatInfo> detectablies = new();
+	private List<DetectableCandidatInfo> cache = new();
+	private bool invalidate = true;
 
-    public void AddDetectable(DetectableComponent detectable)
-    {
-      invalidate = true;
-      ILocationItemComponent component = detectable.GetComponent<ILocationItemComponent>();
-      if (component == null)
-      {
-        Debug.LogError("ILocationItemComponent not found in " + detectable.Owner.GetInfo());
-      }
-      else
-      {
-        GameObject gameObject = ((IEntityView) detectable.Owner).GameObject;
-        gameObject.GetComponent<Collider>();
-        Vector3 up = Vector3.up;
-        detectablies[detectable] = new DetectableCandidatInfo {
-          Detectable = detectable,
-          LocationItem = component,
-          GameObject = gameObject,
-          Offset = up
-        };
-      }
-    }
+	public List<DetectableCandidatInfo> Detectablies {
+		get {
+			if (invalidate) {
+				invalidate = false;
+				cache.Clear();
+				foreach (var detectably in detectablies)
+					cache.Add(detectably.Value);
+			}
 
-    public void RemoveDetectable(DetectableComponent detectable)
-    {
-      invalidate = true;
-      detectablies.Remove(detectable);
-    }
-  }
+			return cache;
+		}
+	}
+
+	public void AddDetectable(DetectableComponent detectable) {
+		invalidate = true;
+		var component = detectable.GetComponent<ILocationItemComponent>();
+		if (component == null)
+			Debug.LogError("ILocationItemComponent not found in " + detectable.Owner.GetInfo());
+		else {
+			var gameObject = ((IEntityView)detectable.Owner).GameObject;
+			gameObject.GetComponent<Collider>();
+			var up = Vector3.up;
+			detectablies[detectable] = new DetectableCandidatInfo {
+				Detectable = detectable,
+				LocationItem = component,
+				GameObject = gameObject,
+				Offset = up
+			};
+		}
+	}
+
+	public void RemoveDetectable(DetectableComponent detectable) {
+		invalidate = true;
+		detectablies.Remove(detectable);
+	}
 }

@@ -1,32 +1,30 @@
 ﻿using System;
 using Engine.Common.Components.Movable;
 
-namespace Engine.Common.Components
-{
-  public interface INavigationComponent : IComponent
-  {
-    IRegionComponent Region { get; }
+namespace Engine.Common.Components;
 
-    IBuildingComponent Building { get; }
+public interface INavigationComponent : IComponent {
+	IRegionComponent Region { get; }
 
-    AreaEnum Area { get; }
+	IBuildingComponent Building { get; }
 
-    bool HasPrevTeleport { get; }
+	AreaEnum Area { get; }
 
-    event RegionHandler EnterRegionEvent;
+	bool HasPrevTeleport { get; }
 
-    event RegionHandler ExitRegionEvent;
+	event RegionHandler EnterRegionEvent;
 
-    event BuildingHandler EnterBuildingEvent;
+	event RegionHandler ExitRegionEvent;
 
-    event BuildingHandler ExitBuildingEvent;
+	event BuildingHandler EnterBuildingEvent;
 
-    event AreaHandler EnterAreaEvent;
+	event BuildingHandler ExitBuildingEvent;
 
-    event AreaHandler ExitAreaEvent;
+	event AreaHandler EnterAreaEvent;
 
-    event Action<INavigationComponent, IEntity> OnTeleport;
+	event AreaHandler ExitAreaEvent;
 
-    void TeleportTo(IEntity target);
-  }
+	event Action<INavigationComponent, IEntity> OnTeleport;
+
+	void TeleportTo(IEntity target);
 }

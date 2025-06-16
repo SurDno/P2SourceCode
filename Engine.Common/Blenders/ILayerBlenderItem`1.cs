@@ -1,19 +1,17 @@
 ﻿using System;
 
-namespace Engine.Common.Blenders
-{
-  public interface ILayerBlenderItem<T> where T : class, IObject, IBlendable<T>
-  {
-    ISmoothBlender<T> Blender { get; set; }
+namespace Engine.Common.Blenders;
 
-    float Opacity { get; }
+public interface ILayerBlenderItem<T> where T : class, IObject, IBlendable<T> {
+	ISmoothBlender<T> Blender { get; set; }
 
-    float TargetOpacity { get; }
+	float Opacity { get; }
 
-    void SetOpacity(float value);
+	float TargetOpacity { get; }
 
-    void SetOpacity(float value, TimeSpan interval);
+	void SetOpacity(float value);
 
-    event Action<ILayerBlenderItem<T>> OnChanged;
-  }
+	void SetOpacity(float value, TimeSpan interval);
+
+	event Action<ILayerBlenderItem<T>> OnChanged;
 }

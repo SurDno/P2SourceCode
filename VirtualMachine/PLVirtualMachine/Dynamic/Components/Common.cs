@@ -2,28 +2,24 @@
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  [FactoryProxy(typeof (VMCommon))]
-  public class Common : VMCommon, IInitialiseComponentFromHierarchy, IInitialiseEvents
-  {
-    public override string GetComponentTypeName() => nameof (Common);
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
-    {
-    }
+[FactoryProxy(typeof(VMCommon))]
+public class Common : VMCommon, IInitialiseComponentFromHierarchy, IInitialiseEvents {
+	public override string GetComponentTypeName() {
+		return nameof(Common);
+	}
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
-      switch (target.Name)
-      {
-        case "StartEvent":
-          StartEvent += () => target.RaiseFromEngineImpl();
-          break;
-        case "RemoveEvent":
-          RemoveEvent += () => target.RaiseFromEngineImpl();
-          break;
-      }
-    }
-  }
+	public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject) { }
+
+	public void InitialiseEvent(DynamicEvent target) {
+		switch (target.Name) {
+			case "StartEvent":
+				StartEvent += () => target.RaiseFromEngineImpl();
+				break;
+			case "RemoveEvent":
+				RemoveEvent += () => target.RaiseFromEngineImpl();
+				break;
+		}
+	}
 }

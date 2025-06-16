@@ -1,12 +1,10 @@
-﻿namespace SteamNative
-{
-  internal enum Universe
-  {
-    Invalid,
-    Public,
-    Beta,
-    Internal,
-    Dev,
-    Max,
-  }
+﻿namespace SteamNative;
+
+internal enum Universe {
+	Invalid,
+	Public,
+	Beta,
+	Internal,
+	Dev,
+	Max
 }

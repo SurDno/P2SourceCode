@@ -1,7 +1,5 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IBaseAction
-  {
-    bool IsValid { get; }
-  }
+﻿namespace PLVirtualMachine.Common;
+
+public interface IBaseAction {
+	bool IsValid { get; }
 }

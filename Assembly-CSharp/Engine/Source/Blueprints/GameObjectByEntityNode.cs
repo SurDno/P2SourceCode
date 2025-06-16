@@ -4,18 +4,15 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class GameObjectByEntityNode : FlowControlNode
-  {
-    private ValueInput<IEntity> entityInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      entityInput = AddValueInput<IEntity>("Entity");
-      AddValueOutput("GameObject", () => ((IEntityView) entityInput.value)?.GameObject);
-    }
-  }
+[Category("Engine")]
+public class GameObjectByEntityNode : FlowControlNode {
+	private ValueInput<IEntity> entityInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		entityInput = AddValueInput<IEntity>("Entity");
+		AddValueOutput("GameObject", () => ((IEntityView)entityInput.value)?.GameObject);
+	}
 }

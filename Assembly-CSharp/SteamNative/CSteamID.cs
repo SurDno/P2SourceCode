@@ -1,14 +1,13 @@
-﻿namespace SteamNative
-{
-  internal struct CSteamID
-  {
-    public ulong Value;
+﻿namespace SteamNative;
 
-    public static implicit operator CSteamID(ulong value)
-    {
-      return new CSteamID { Value = value };
-    }
+internal struct CSteamID {
+	public ulong Value;
 
-    public static implicit operator ulong(CSteamID value) => value.Value;
-  }
+	public static implicit operator CSteamID(ulong value) {
+		return new CSteamID { Value = value };
+	}
+
+	public static implicit operator ulong(CSteamID value) {
+		return value.Value;
+	}
 }

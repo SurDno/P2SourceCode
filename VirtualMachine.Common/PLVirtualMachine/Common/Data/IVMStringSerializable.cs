@@ -1,9 +1,7 @@
-﻿namespace PLVirtualMachine.Common.Data
-{
-  public interface IVMStringSerializable
-  {
-    string Write();
+﻿namespace PLVirtualMachine.Common.Data;
 
-    void Read(string data);
-  }
+public interface IVMStringSerializable {
+	string Write();
+
+	void Read(string data);
 }

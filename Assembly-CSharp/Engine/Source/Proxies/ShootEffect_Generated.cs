@@ -7,40 +7,34 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Effects;
 using Engine.Source.Effects.Values;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (ShootEffect))]
-  public class ShootEffect_Generated : 
-    ShootEffect,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      ShootEffect_Generated instance = Activator.CreateInstance<ShootEffect_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-      ShootEffect_Generated shootEffectGenerated = (ShootEffect_Generated) target2;
-      shootEffectGenerated.queue = queue;
-      shootEffectGenerated.actionType = actionType;
-    }
+[FactoryProxy(typeof(ShootEffect))]
+public class ShootEffect_Generated :
+	ShootEffect,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<ShootEffect_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
-      DefaultDataWriteUtility.WriteEnum(writer, "Action", actionType);
-    }
+	public void CopyTo(object target2) {
+		var shootEffectGenerated = (ShootEffect_Generated)target2;
+		shootEffectGenerated.queue = queue;
+		shootEffectGenerated.actionType = actionType;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
-      actionType = DefaultDataReadUtility.ReadEnum<ShootEffectEnum>(reader, "Action");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Queue", queue);
+		DefaultDataWriteUtility.WriteEnum(writer, "Action", actionType);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		queue = DefaultDataReadUtility.ReadEnum<ParameterEffectQueueEnum>(reader, "Queue");
+		actionType = DefaultDataReadUtility.ReadEnum<ShootEffectEnum>(reader, "Action");
+	}
 }

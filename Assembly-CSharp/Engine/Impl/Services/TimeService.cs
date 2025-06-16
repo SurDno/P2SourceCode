@@ -16,144 +16,123 @@ using Inspectors;
 using Scripts.Data;
 using UnityEngine;
 
-namespace Engine.Impl.Services
-{
-  [RuntimeService(typeof (TimeService), typeof (ITimeService))]
-  [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class TimeService : ITimeService, IUpdatable, IInitialisable, ISavesController
-  {
-    public const float defaultTimeFactor = 12f;
-    private float solarTimeFactor = 12f;
-    private float gameTimeFactor = 12f;
-    private TimeSpan solarTime;
-    private TimeSpan gameTime;
-    private TimeSpan absoluteGameTime;
-    private TimeSpan realTime;
-    [Inspected]
-    private TimeSpan demoTime = new TimeSpan(2, 1, 0, 0);
+namespace Engine.Impl.Services;
 
-    [Inspected]
-    public TimeSpan SolarTime
-    {
-      get => solarTime;
-      set => solarTime = value;
-    }
+[RuntimeService(typeof(TimeService), typeof(ITimeService))]
+[GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
+public class TimeService : ITimeService, IUpdatable, IInitialisable, ISavesController {
+	public const float defaultTimeFactor = 12f;
+	private float solarTimeFactor = 12f;
+	private float gameTimeFactor = 12f;
+	private TimeSpan solarTime;
+	private TimeSpan gameTime;
+	private TimeSpan absoluteGameTime;
+	private TimeSpan realTime;
+	[Inspected] private TimeSpan demoTime = new(2, 1, 0, 0);
 
-    [Inspected]
-    public float SolarTimeFactor
-    {
-      get => solarTimeFactor;
-      set => solarTimeFactor = value;
-    }
+	[Inspected]
+	public TimeSpan SolarTime {
+		get => solarTime;
+		set => solarTime = value;
+	}
 
-    [Inspected]
-    public TimeSpan GameTime
-    {
-      get => gameTime;
-      set => gameTime = value;
-    }
+	[Inspected]
+	public float SolarTimeFactor {
+		get => solarTimeFactor;
+		set => solarTimeFactor = value;
+	}
 
-    [Inspected]
-    public float GameTimeFactor
-    {
-      get => gameTimeFactor;
-      set => gameTimeFactor = value;
-    }
+	[Inspected]
+	public TimeSpan GameTime {
+		get => gameTime;
+		set => gameTime = value;
+	}
 
-    public event Action<TimeSpan> GameTimeChangedEvent;
+	[Inspected]
+	public float GameTimeFactor {
+		get => gameTimeFactor;
+		set => gameTimeFactor = value;
+	}
 
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected]
-    public TimeSpan AbsoluteGameTime
-    {
-      get => absoluteGameTime;
-      protected set => absoluteGameTime = value;
-    }
+	public event Action<TimeSpan> GameTimeChangedEvent;
 
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected]
-    public TimeSpan RealTime
-    {
-      get => realTime;
-      protected set => realTime = value;
-    }
+	[StateSaveProxy]
+	[StateLoadProxy()]
+	[Inspected]
+	public TimeSpan AbsoluteGameTime {
+		get => absoluteGameTime;
+		protected set => absoluteGameTime = value;
+	}
 
-    [Inspected]
-    public float DefaultTimeFactor => 12f;
+	[StateSaveProxy]
+	[StateLoadProxy()]
+	[Inspected]
+	public TimeSpan RealTime {
+		get => realTime;
+		protected set => realTime = value;
+	}
 
-    public void SetGameTime(TimeSpan time)
-    {
-      Action<TimeSpan> timeChangedEvent = GameTimeChangedEvent;
-      if (timeChangedEvent == null)
-        return;
-      timeChangedEvent(time);
-    }
+	[Inspected] public float DefaultTimeFactor => 12f;
 
-    public TimeSpan Delta { get; private set; }
+	public void SetGameTime(TimeSpan time) {
+		var timeChangedEvent = GameTimeChangedEvent;
+		if (timeChangedEvent == null)
+			return;
+		timeChangedEvent(time);
+	}
 
-    public void Initialise()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-      SolarTime = ScriptableObjectInstance<BuildSettings>.Instance.MainMenuSolarTime.Value;
-    }
+	public TimeSpan Delta { get; private set; }
 
-    public void Terminate()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-    }
+	public void Initialise() {
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+		SolarTime = ScriptableObjectInstance<BuildSettings>.Instance.MainMenuSolarTime.Value;
+	}
 
-    public void ComputeUpdate()
-    {
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused || !InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
-      {
-        Delta = TimeSpan.Zero;
-      }
-      else
-      {
-        Delta = TimeSpan.FromSeconds(Time.deltaTime * (double) GameTimeFactor);
-        absoluteGameTime += Delta;
-        solarTime += TimeSpan.FromSeconds(Time.deltaTime * (double) SolarTimeFactor);
-        realTime += TimeSpan.FromSeconds(Time.deltaTime);
-        ComputeDemo();
-      }
-    }
+	public void Terminate() {
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+	}
 
-    public IEnumerator Load(IErrorLoadingHandler errorHandler)
-    {
-      GameDataInfo data = InstanceByRequest<GameDataService>.Instance.GetCurrentGameData();
-      SolarTime = data.SolarTime.Value;
-      yield break;
-    }
+	public void ComputeUpdate() {
+		if (InstanceByRequest<EngineApplication>.Instance.IsPaused ||
+		    !InstanceByRequest<EngineApplication>.Instance.ViewEnabled)
+			Delta = TimeSpan.Zero;
+		else {
+			Delta = TimeSpan.FromSeconds(Time.deltaTime * (double)GameTimeFactor);
+			absoluteGameTime += Delta;
+			solarTime += TimeSpan.FromSeconds(Time.deltaTime * (double)SolarTimeFactor);
+			realTime += TimeSpan.FromSeconds(Time.deltaTime);
+			ComputeDemo();
+		}
+	}
 
-    public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
-    {
-      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
-      if (node == null)
-      {
-        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
-      }
-      else
-      {
-        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
-        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
-        yield break;
-      }
-    }
+	public IEnumerator Load(IErrorLoadingHandler errorHandler) {
+		var data = InstanceByRequest<GameDataService>.Instance.GetCurrentGameData();
+		SolarTime = data.SolarTime.Value;
+		yield break;
+	}
 
-    public void Unload() => Delta = TimeSpan.Zero;
+	public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler) {
+		var node = element[TypeUtility.GetTypeName(GetType())];
+		if (node == null)
+			errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
+		else {
+			var reader = new XmlNodeDataReader(node, context);
+			((ISerializeStateLoad)this).StateLoad(reader, GetType());
+			yield break;
+		}
+	}
 
-    public void Save(IDataWriter writer, string context)
-    {
-      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
-    }
+	public void Unload() {
+		Delta = TimeSpan.Zero;
+	}
 
-    private void ComputeDemo()
-    {
-      if (!ScriptableObjectInstance<BuildData>.Instance.Demo || !(GameTime > demoTime))
-        return;
-      ServiceLocator.GetService<GameLauncher>().ExitToMainMenu();
-    }
-  }
+	public void Save(IDataWriter writer, string context) {
+		DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
+	}
+
+	private void ComputeDemo() {
+		if (!ScriptableObjectInstance<BuildData>.Instance.Demo || !(GameTime > demoTime))
+			return;
+		ServiceLocator.GetService<GameLauncher>().ExitToMainMenu();
+	}
 }

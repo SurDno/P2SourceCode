@@ -1,13 +1,11 @@
 ﻿using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IVariable : INamed
-  {
-    EContextVariableCategory Category { get; }
+namespace PLVirtualMachine.Common;
 
-    VMType Type { get; }
+public interface IVariable : INamed {
+	EContextVariableCategory Category { get; }
 
-    bool IsEqual(IVariable otherVar);
-  }
+	VMType Type { get; }
+
+	bool IsEqual(IVariable otherVar);
 }

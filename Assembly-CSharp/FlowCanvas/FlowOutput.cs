@@ -1,31 +1,34 @@
 ﻿using System;
 
-namespace FlowCanvas
-{
-  public class FlowOutput : Port
-  {
-    public FlowOutput(FlowNode parent, string name, string id)
-      : base(parent, name, id)
-    {
-    }
+namespace FlowCanvas;
 
-    public FlowHandler pointer { get; set; }
+public class FlowOutput : Port {
+	public FlowOutput(FlowNode parent, string name, string id)
+		: base(parent, name, id) { }
 
-    public override Type type => typeof (void);
+	public FlowHandler pointer { get; set; }
 
-    public void Call()
-    {
-      if (pointer == null || parent.graph.isPaused)
-        return;
-      pointer();
-    }
+	public override Type type => typeof(void);
 
-    public void BindTo(FlowInput target) => pointer = target.pointer;
+	public void Call() {
+		if (pointer == null || parent.graph.isPaused)
+			return;
+		pointer();
+	}
 
-    public void BindTo(FlowHandler call) => pointer = call;
+	public void BindTo(FlowInput target) {
+		pointer = target.pointer;
+	}
 
-    public void UnBind() => pointer = null;
+	public void BindTo(FlowHandler call) {
+		pointer = call;
+	}
 
-    public void Append(FlowHandler action) => pointer += action;
-  }
+	public void UnBind() {
+		pointer = null;
+	}
+
+	public void Append(FlowHandler action) {
+		pointer += action;
+	}
 }

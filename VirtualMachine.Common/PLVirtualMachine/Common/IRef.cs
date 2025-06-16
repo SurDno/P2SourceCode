@@ -1,15 +1,13 @@
 ﻿using PLVirtualMachine.Common.Data;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IRef : IVariable, INamed, IVMStringSerializable
-  {
-    bool Empty { get; }
+namespace PLVirtualMachine.Common;
 
-    bool Exist { get; }
+public interface IRef : IVariable, INamed, IVMStringSerializable {
+	bool Empty { get; }
 
-    IObject StaticInstance { get; }
+	bool Exist { get; }
 
-    ulong BaseGuid { get; }
-  }
+	IObject StaticInstance { get; }
+
+	ulong BaseGuid { get; }
 }

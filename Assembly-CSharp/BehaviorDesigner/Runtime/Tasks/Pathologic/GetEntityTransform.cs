@@ -10,58 +10,48 @@ using Engine.Source.Commons;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks.Pathologic
-{
-  [TaskDescription("Target weapon On")]
-  [TaskCategory("Pathologic/Conversion")]
-  [TaskIcon("Pathologic_InstantIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (GetEntityTransform))]
-  public class GetEntityTransform : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedEntity Target;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public SharedTransform Result;
+namespace BehaviorDesigner.Runtime.Tasks.Pathologic;
 
-    public override TaskStatus OnUpdate()
-    {
-      if (Target == null || Target.Entity == null)
-        return TaskStatus.Failure;
-      IEntityView entity = (IEntityView) Target.Entity;
-      if (entity.GameObject == null)
-        return TaskStatus.Failure;
-      Result.Value = entity.GameObject.transform;
-      return TaskStatus.Success;
-    }
+[TaskDescription("Target weapon On")]
+[TaskCategory("Pathologic/Conversion")]
+[TaskIcon("Pathologic_InstantIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(GetEntityTransform))]
+public class GetEntityTransform : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedEntity Target;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedTransform Result;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
-      Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
-    }
-  }
+	public override TaskStatus OnUpdate() {
+		if (Target == null || Target.Entity == null)
+			return TaskStatus.Failure;
+		var entity = (IEntityView)Target.Entity;
+		if (entity.GameObject == null)
+			return TaskStatus.Failure;
+		Result.Value = entity.GameObject.transform;
+		return TaskStatus.Success;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+		Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+	}
 }

@@ -1,9 +1,7 @@
-﻿namespace SteamNative
-{
-  internal enum SNetSocketConnectionType
-  {
-    NotConnected,
-    UDP,
-    UDPRelay,
-  }
+﻿namespace SteamNative;
+
+internal enum SNetSocketConnectionType {
+	NotConnected,
+	UDP,
+	UDPRelay
 }

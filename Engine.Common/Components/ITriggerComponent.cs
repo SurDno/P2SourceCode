@@ -1,11 +1,9 @@
-﻿namespace Engine.Common.Components
-{
-  public interface ITriggerComponent : IComponent
-  {
-    bool Contains(IEntity entity);
+﻿namespace Engine.Common.Components;
 
-    event TriggerHandler EntityEnterEvent;
+public interface ITriggerComponent : IComponent {
+	bool Contains(IEntity entity);
 
-    event TriggerHandler EntityExitEvent;
-  }
+	event TriggerHandler EntityEnterEvent;
+
+	event TriggerHandler EntityExitEvent;
 }

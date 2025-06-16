@@ -1,10 +1,9 @@
-﻿public enum BlockTypeEnum
-{
-  None,
-  NotBlocking,
-  Block,
-  QuickBlock,
-  Dodge,
-  Stagger,
-  Surrender,
+﻿public enum BlockTypeEnum {
+	None,
+	NotBlocking,
+	Block,
+	QuickBlock,
+	Dodge,
+	Stagger,
+	Surrender
 }

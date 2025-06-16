@@ -6,33 +6,30 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Regions;
 using Engine.Source.Components;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (BuildingComponent))]
-  public class BuildingComponent_Generated : 
-    BuildingComponent,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      BuildingComponent_Generated instance = Activator.CreateInstance<BuildingComponent_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2) => ((BuildingComponent_Generated) target2).building = building;
+[FactoryProxy(typeof(BuildingComponent))]
+public class BuildingComponent_Generated :
+	BuildingComponent,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<BuildingComponent_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Building", building);
-    }
+	public void CopyTo(object target2) {
+		((BuildingComponent_Generated)target2).building = building;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      building = DefaultDataReadUtility.ReadEnum<BuildingEnum>(reader, "Building");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Building", building);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		building = DefaultDataReadUtility.ReadEnum<BuildingEnum>(reader, "Building");
+	}
 }

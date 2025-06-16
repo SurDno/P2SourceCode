@@ -11,252 +11,216 @@ using ParadoxNotion;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace FlowCanvas
-{
-  public abstract class FlowNode : Node, ISerializationCallbackReceiver
-  {
-    [SerializeField]
-    private Dictionary<string, object> _inputPortValues;
-    private Dictionary<string, Port> inputPorts = new Dictionary<string, Port>(StringComparer.Ordinal);
-    protected Dictionary<string, Port> outputPorts = new Dictionary<string, Port>(StringComparer.Ordinal);
+namespace FlowCanvas;
 
-    public override sealed int maxInConnections => -1;
+public abstract class FlowNode : Node, ISerializationCallbackReceiver {
+	[SerializeField] private Dictionary<string, object> _inputPortValues;
+	private Dictionary<string, Port> inputPorts = new(StringComparer.Ordinal);
+	protected Dictionary<string, Port> outputPorts = new(StringComparer.Ordinal);
 
-    public override sealed int maxOutConnections => -1;
+	public sealed override int maxInConnections => -1;
 
-    public override sealed Type outConnectionType => typeof (BinderConnection);
+	public sealed override int maxOutConnections => -1;
 
-    public override sealed bool showCommentsBottom => true;
+	public sealed override Type outConnectionType => typeof(BinderConnection);
 
-    void ISerializationCallbackReceiver.OnBeforeSerialize()
-    {
-      if (_inputPortValues == null)
-        _inputPortValues = new Dictionary<string, object>();
-      foreach (ValueInput valueInput in inputPorts.Values.OfType<ValueInput>())
-      {
-        if (!valueInput.isConnected)
-          _inputPortValues[valueInput.id] = valueInput.serializedValue;
-      }
-    }
+	public sealed override bool showCommentsBottom => true;
 
-    void ISerializationCallbackReceiver.OnAfterDeserialize()
-    {
-    }
+	void ISerializationCallbackReceiver.OnBeforeSerialize() {
+		if (_inputPortValues == null)
+			_inputPortValues = new Dictionary<string, object>();
+		foreach (var valueInput in inputPorts.Values.OfType<ValueInput>())
+			if (!valueInput.isConnected)
+				_inputPortValues[valueInput.id] = valueInput.serializedValue;
+	}
 
-    public override sealed void OnValidate(Graph flowGraph) => GatherPorts();
+	void ISerializationCallbackReceiver.OnAfterDeserialize() { }
 
-    public override sealed void OnParentConnected(int i)
-    {
-    }
+	public sealed override void OnValidate(Graph flowGraph) {
+		GatherPorts();
+	}
 
-    public override sealed void OnChildConnected(int i)
-    {
-    }
+	public sealed override void OnParentConnected(int i) { }
 
-    public override sealed void OnParentDisconnected(int i)
-    {
-    }
+	public sealed override void OnChildConnected(int i) { }
 
-    public override sealed void OnChildDisconnected(int i)
-    {
-    }
+	public sealed override void OnParentDisconnected(int i) { }
 
-    private static void ConnectPorts(Port source, Port target)
-    {
-      BinderConnection.Create(source, target);
-    }
+	public sealed override void OnChildDisconnected(int i) { }
 
-    public void BindPorts()
-    {
-      for (int index = 0; index < outConnections.Count; ++index)
-        ((BinderConnection) outConnections[index]).Bind();
-    }
+	private static void ConnectPorts(Port source, Port target) {
+		BinderConnection.Create(source, target);
+	}
 
-    public void UnBindPorts()
-    {
-      for (int index = 0; index < outConnections.Count; ++index)
-        ((BinderConnection) outConnections[index]).UnBind();
-    }
+	public void BindPorts() {
+		for (var index = 0; index < outConnections.Count; ++index)
+			((BinderConnection)outConnections[index]).Bind();
+	}
 
-    public Port GetInputPort(string id)
-    {
-      Port inputPort = null;
-      inputPorts.TryGetValue(id, out inputPort);
-      return inputPort;
-    }
+	public void UnBindPorts() {
+		for (var index = 0; index < outConnections.Count; ++index)
+			((BinderConnection)outConnections[index]).UnBind();
+	}
 
-    public Port GetOutputPort(string id)
-    {
-      Port outputPort = null;
-      outputPorts.TryGetValue(id, out outputPort);
-      return outputPort;
-    }
+	public Port GetInputPort(string id) {
+		Port inputPort = null;
+		inputPorts.TryGetValue(id, out inputPort);
+		return inputPort;
+	}
 
-    public BinderConnection GetInputConnectionForPortId(string id)
-    {
-      return inConnections.OfType<BinderConnection>().FirstOrDefault(c => c.targetPortId == id);
-    }
+	public Port GetOutputPort(string id) {
+		Port outputPort = null;
+		outputPorts.TryGetValue(id, out outputPort);
+		return outputPort;
+	}
 
-    public BinderConnection GetOutputConnectionForPortId(string id)
-    {
-      return outConnections.OfType<BinderConnection>().FirstOrDefault(c => c.sourcePortId == id);
-    }
+	public BinderConnection GetInputConnectionForPortId(string id) {
+		return inConnections.OfType<BinderConnection>().FirstOrDefault(c => c.targetPortId == id);
+	}
 
-    public Port GetFirstInputOfType(Type type)
-    {
-      return inputPorts.Values.OrderBy(p => !(p.GetType() == typeof (FlowInput)) ? 1 : 0).FirstOrDefault(p => p.type.RTIsAssignableFrom(type));
-    }
+	public BinderConnection GetOutputConnectionForPortId(string id) {
+		return outConnections.OfType<BinderConnection>().FirstOrDefault(c => c.sourcePortId == id);
+	}
 
-    public Port GetFirstOutputOfType(Type type)
-    {
-      return outputPorts.Values.OrderBy(p => !(p.GetType() == typeof (FlowInput)) ? 1 : 0).FirstOrDefault(p => type.RTIsAssignableFrom(p.type));
-    }
+	public Port GetFirstInputOfType(Type type) {
+		return inputPorts.Values.OrderBy(p => !(p.GetType() == typeof(FlowInput)) ? 1 : 0)
+			.FirstOrDefault(p => p.type.RTIsAssignableFrom(type));
+	}
 
-    public void AssignSelfInstancePort()
-    {
-      if (graphAgent == null)
-        return;
-      ValueInput valueInput = inputPorts.Values.OfType<ValueInput>().FirstOrDefault();
-      if (valueInput == null || valueInput.isConnected || !valueInput.isDefaultValue)
-        return;
-      if (valueInput.type == typeof (GameObject))
-        valueInput.serializedValue = graphAgent.gameObject;
-      if (typeof (Component).RTIsAssignableFrom(valueInput.type))
-        valueInput.serializedValue = graphAgent.GetComponent(valueInput.type);
-    }
+	public Port GetFirstOutputOfType(Type type) {
+		return outputPorts.Values.OrderBy(p => !(p.GetType() == typeof(FlowInput)) ? 1 : 0)
+			.FirstOrDefault(p => type.RTIsAssignableFrom(p.type));
+	}
 
-    public void GatherPorts()
-    {
-      inputPorts.Clear();
-      outputPorts.Clear();
-      RegisterPorts();
-      DeserializeInputPortValues();
-      ValidateConnections();
-    }
+	public void AssignSelfInstancePort() {
+		if (graphAgent == null)
+			return;
+		var valueInput = inputPorts.Values.OfType<ValueInput>().FirstOrDefault();
+		if (valueInput == null || valueInput.isConnected || !valueInput.isDefaultValue)
+			return;
+		if (valueInput.type == typeof(GameObject))
+			valueInput.serializedValue = graphAgent.gameObject;
+		if (typeof(Component).RTIsAssignableFrom(valueInput.type))
+			valueInput.serializedValue = graphAgent.GetComponent(valueInput.type);
+	}
 
-    protected virtual void RegisterPorts() => DoReflectionBasedRegistration();
+	public void GatherPorts() {
+		inputPorts.Clear();
+		outputPorts.Clear();
+		RegisterPorts();
+		DeserializeInputPortValues();
+		ValidateConnections();
+	}
 
-    private void DoReflectionBasedRegistration()
-    {
-      MetaService.GetContainer(GetType()).GetHandler(FromLocatorAttribute.Id).Compute(this, null);
-      MetaService.GetContainer(GetType()).GetHandler(PortAttribute.Id).Compute(this, null);
-    }
+	protected virtual void RegisterPorts() {
+		DoReflectionBasedRegistration();
+	}
 
-    private void ValidateConnections()
-    {
-      foreach (Connection connection in outConnections.ToArray())
-      {
-        if (connection is BinderConnection)
-          (connection as BinderConnection).GatherAndValidateSourcePort();
-      }
-      foreach (Connection connection in inConnections.ToArray())
-      {
-        if (connection is BinderConnection)
-          (connection as BinderConnection).GatherAndValidateTargetPort();
-      }
-    }
+	private void DoReflectionBasedRegistration() {
+		MetaService.GetContainer(GetType()).GetHandler(FromLocatorAttribute.Id).Compute(this, null);
+		MetaService.GetContainer(GetType()).GetHandler(PortAttribute.Id).Compute(this, null);
+	}
 
-    private void DeserializeInputPortValues()
-    {
-      if (_inputPortValues == null)
-        return;
-      foreach (KeyValuePair<string, object> inputPortValue in _inputPortValues)
-      {
-        Port port = null;
-        if (inputPorts.TryGetValue(inputPortValue.Key, out port) && port is ValueInput && inputPortValue.Value != null && port.type.RTIsAssignableFrom(inputPortValue.Value.GetType()))
-          (port as ValueInput).serializedValue = inputPortValue.Value;
-      }
-    }
+	private void ValidateConnections() {
+		foreach (var connection in outConnections.ToArray())
+			if (connection is BinderConnection)
+				(connection as BinderConnection).GatherAndValidateSourcePort();
+		foreach (var connection in inConnections.ToArray())
+			if (connection is BinderConnection)
+				(connection as BinderConnection).GatherAndValidateTargetPort();
+	}
 
-    public FlowInput AddFlowInput(string name, FlowHandler pointer, string id = "")
-    {
-      if (string.IsNullOrEmpty(id))
-        id = name;
-      return (FlowInput) (inputPorts[id] = new FlowInput(this, name, id, pointer));
-    }
+	private void DeserializeInputPortValues() {
+		if (_inputPortValues == null)
+			return;
+		foreach (var inputPortValue in _inputPortValues) {
+			Port port = null;
+			if (inputPorts.TryGetValue(inputPortValue.Key, out port) && port is ValueInput &&
+			    inputPortValue.Value != null && port.type.RTIsAssignableFrom(inputPortValue.Value.GetType()))
+				(port as ValueInput).serializedValue = inputPortValue.Value;
+		}
+	}
 
-    public FlowOutput AddFlowOutput(string name, string id = "")
-    {
-      if (string.IsNullOrEmpty(id))
-        id = name;
-      return (FlowOutput) (outputPorts[id] = new FlowOutput(this, name, id));
-    }
+	public FlowInput AddFlowInput(string name, FlowHandler pointer, string id = "") {
+		if (string.IsNullOrEmpty(id))
+			id = name;
+		return (FlowInput)(inputPorts[id] = new FlowInput(this, name, id, pointer));
+	}
 
-    public ValueInput<T> AddValueInput<T>(string name, string id = "")
-    {
-      if (string.IsNullOrEmpty(id))
-        id = name;
-      return (ValueInput<T>) (inputPorts[id] = new ValueInput<T>(this, name, id));
-    }
+	public FlowOutput AddFlowOutput(string name, string id = "") {
+		if (string.IsNullOrEmpty(id))
+			id = name;
+		return (FlowOutput)(outputPorts[id] = new FlowOutput(this, name, id));
+	}
 
-    public ValueOutput<T> AddValueOutput<T>(string name, ValueHandler<T> getter, string id = "")
-    {
-      if (string.IsNullOrEmpty(id))
-        id = name;
-      return (ValueOutput<T>) (outputPorts[id] = new ValueOutput<T>(this, name, id, getter));
-    }
+	public ValueInput<T> AddValueInput<T>(string name, string id = "") {
+		if (string.IsNullOrEmpty(id))
+			id = name;
+		return (ValueInput<T>)(inputPorts[id] = new ValueInput<T>(this, name, id));
+	}
 
-    public ValueInput AddValueInput(string name, Type type, string id = "")
-    {
-      if (string.IsNullOrEmpty(id))
-        id = name;
-      return (ValueInput) (inputPorts[id] = ValueInput.CreateInstance(type, this, name, id));
-    }
+	public ValueOutput<T> AddValueOutput<T>(string name, ValueHandler<T> getter, string id = "") {
+		if (string.IsNullOrEmpty(id))
+			id = name;
+		return (ValueOutput<T>)(outputPorts[id] = new ValueOutput<T>(this, name, id, getter));
+	}
 
-    public ValueOutput AddValueOutputCommon(string name, Type type, object getter, string id = "")
-    {
-      if (string.IsNullOrEmpty(id))
-        id = name;
-      ValueOutput instance = (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType(new Type[1]
-      {
-        type
-      }), this, name, id, getter);
-      outputPorts[id] = instance;
-      return instance;
-    }
+	public ValueInput AddValueInput(string name, Type type, string id = "") {
+		if (string.IsNullOrEmpty(id))
+			id = name;
+		return (ValueInput)(inputPorts[id] = ValueInput.CreateInstance(type, this, name, id));
+	}
 
-    public ValueOutput AddValueOutput(
-      string name,
-      Type type,
-      ValueHandler<object> getter,
-      string id = "")
-    {
-      if (string.IsNullOrEmpty(id))
-        id = name;
-      return (ValueOutput) (outputPorts[id] = ValueOutput.CreateInstance(type, this, name, id, getter));
-    }
+	public ValueOutput AddValueOutputCommon(string name, Type type, object getter, string id = "") {
+		if (string.IsNullOrEmpty(id))
+			id = name;
+		var instance = (ValueOutput)Activator.CreateInstance(typeof(ValueOutput<>).RTMakeGenericType(new Type[1] {
+			type
+		}), this, name, id, getter);
+		outputPorts[id] = instance;
+		return instance;
+	}
 
-    public ValueOutput AddPropertyOutput(PropertyInfo prop, object instance)
-    {
-      if (!prop.CanRead)
-      {
-        Debug.LogError("Property is write only");
-        return null;
-      }
-      NameAttribute attribute = prop.RTGetAttribute<NameAttribute>(false);
-      string key = attribute != null ? attribute.name : prop.Name.SplitCamelCase();
-      Type type = typeof (ValueHandler<>).RTMakeGenericType(new Type[1]
-      {
-        prop.PropertyType
-      });
-      Delegate @delegate = prop.RTGetGetMethod().RTCreateDelegate(type, instance);
-      ValueOutput instance1 = (ValueOutput) Activator.CreateInstance(typeof (ValueOutput<>).RTMakeGenericType(new Type[1]
-      {
-        prop.PropertyType
-      }), this, key, key, @delegate);
-      return (ValueOutput) (outputPorts[key] = instance1);
-    }
+	public ValueOutput AddValueOutput(
+		string name,
+		Type type,
+		ValueHandler<object> getter,
+		string id = "") {
+		if (string.IsNullOrEmpty(id))
+			id = name;
+		return (ValueOutput)(outputPorts[id] = ValueOutput.CreateInstance(type, this, name, id, getter));
+	}
 
-    public void Call(FlowOutput port) => port.Call();
+	public ValueOutput AddPropertyOutput(PropertyInfo prop, object instance) {
+		if (!prop.CanRead) {
+			Debug.LogError("Property is write only");
+			return null;
+		}
 
-    public void Fail(string error = null)
-    {
-      status = Status.Failure;
-      if (error == null)
-        return;
-      Debug.LogError(string.Format("<b>Flow Execution Error:</b> '{0}' - '{1}'", name, error), graph.agent);
-    }
+		var attribute = prop.RTGetAttribute<NameAttribute>(false);
+		var key = attribute != null ? attribute.name : prop.Name.SplitCamelCase();
+		var type = typeof(ValueHandler<>).RTMakeGenericType(new Type[1] {
+			prop.PropertyType
+		});
+		var @delegate = prop.RTGetGetMethod().RTCreateDelegate(type, instance);
+		var instance1 = (ValueOutput)Activator.CreateInstance(typeof(ValueOutput<>).RTMakeGenericType(new Type[1] {
+			prop.PropertyType
+		}), this, key, key, @delegate);
+		return (ValueOutput)(outputPorts[key] = instance1);
+	}
 
-    public void SetStatus(Status status) => this.status = status;
-  }
+	public void Call(FlowOutput port) {
+		port.Call();
+	}
+
+	public void Fail(string error = null) {
+		status = Status.Failure;
+		if (error == null)
+			return;
+		Debug.LogError(string.Format("<b>Flow Execution Error:</b> '{0}' - '{1}'", name, error), graph.agent);
+	}
+
+	public void SetStatus(Status status) {
+		this.status = status;
+	}
 }

@@ -3,154 +3,135 @@ using System.Collections;
 using Engine.Common.Generator;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  public abstract class Task
-  {
-    protected GameObject gameObject;
-    protected Transform transform;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    protected NodeData nodeData;
-    private BehaviorTree owner;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    protected int id = -1;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    protected string friendlyName = "";
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    protected bool instant = true;
-    private int referenceID = -1;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    protected bool disabled;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public virtual void OnAwake()
-    {
-    }
+public abstract class Task {
+	protected GameObject gameObject;
+	protected Transform transform;
 
-    public virtual void OnStart()
-    {
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	protected NodeData nodeData;
 
-    public virtual TaskStatus OnUpdate() => TaskStatus.Success;
+	private BehaviorTree owner;
 
-    public virtual void OnEnd()
-    {
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	protected int id = -1;
 
-    public virtual void OnPause(bool paused)
-    {
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	protected string friendlyName = "";
 
-    public virtual float GetPriority() => 0.0f;
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	protected bool instant = true;
 
-    public virtual float GetUtility() => 0.0f;
+	private int referenceID = -1;
 
-    public virtual void OnBehaviorRestart()
-    {
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()]
+	protected bool disabled;
 
-    public virtual void OnBehaviorComplete()
-    {
-    }
+	public virtual void OnAwake() { }
 
-    public virtual void OnReset()
-    {
-    }
+	public virtual void OnStart() { }
 
-    public virtual void OnDrawGizmos()
-    {
-    }
+	public virtual TaskStatus OnUpdate() {
+		return TaskStatus.Success;
+	}
 
-    protected void StartCoroutine(string methodName)
-    {
-      Owner.StartTaskCoroutine(this, methodName);
-    }
+	public virtual void OnEnd() { }
 
-    protected Coroutine StartCoroutine(IEnumerator routine) => Owner.StartCoroutine(routine);
+	public virtual void OnPause(bool paused) { }
 
-    protected Coroutine StartCoroutine(string methodName, object value)
-    {
-      return Owner.StartTaskCoroutine(this, methodName, value);
-    }
+	public virtual float GetPriority() {
+		return 0.0f;
+	}
 
-    protected void StopCoroutine(string methodName) => Owner.StopTaskCoroutine(methodName);
+	public virtual float GetUtility() {
+		return 0.0f;
+	}
 
-    protected void StopCoroutine(IEnumerator routine) => Owner.StopCoroutine(routine);
+	public virtual void OnBehaviorRestart() { }
 
-    protected void StopAllCoroutines() => Owner.StopAllTaskCoroutines();
+	public virtual void OnBehaviorComplete() { }
 
-    public GameObject GameObject
-    {
-      set => gameObject = value;
-    }
+	public virtual void OnReset() { }
 
-    public Transform Transform
-    {
-      set => transform = value;
-    }
+	public virtual void OnDrawGizmos() { }
 
-    protected T GetComponent<T>() where T : Component => gameObject.GetComponent<T>();
+	protected void StartCoroutine(string methodName) {
+		Owner.StartTaskCoroutine(this, methodName);
+	}
 
-    protected Component GetComponent(Type type) => gameObject.GetComponent(type);
+	protected Coroutine StartCoroutine(IEnumerator routine) {
+		return Owner.StartCoroutine(routine);
+	}
 
-    protected GameObject GetDefaultGameObject(GameObject go)
-    {
-      return go == null ? gameObject : go;
-    }
+	protected Coroutine StartCoroutine(string methodName, object value) {
+		return Owner.StartTaskCoroutine(this, methodName, value);
+	}
 
-    public NodeData NodeData
-    {
-      get => nodeData;
-      set => nodeData = value;
-    }
+	protected void StopCoroutine(string methodName) {
+		Owner.StopTaskCoroutine(methodName);
+	}
 
-    public BehaviorTree Owner
-    {
-      get => owner;
-      set => owner = value;
-    }
+	protected void StopCoroutine(IEnumerator routine) {
+		Owner.StopCoroutine(routine);
+	}
 
-    public int Id
-    {
-      get => id;
-      set => id = value;
-    }
+	protected void StopAllCoroutines() {
+		Owner.StopAllTaskCoroutines();
+	}
 
-    public string FriendlyName
-    {
-      get => friendlyName;
-      set => friendlyName = value;
-    }
+	public GameObject GameObject {
+		set => gameObject = value;
+	}
 
-    public bool IsInstant
-    {
-      get => instant;
-      set => instant = value;
-    }
+	public Transform Transform {
+		set => transform = value;
+	}
 
-    public int ReferenceID
-    {
-      get => referenceID;
-      set => referenceID = value;
-    }
+	protected T GetComponent<T>() where T : Component {
+		return gameObject.GetComponent<T>();
+	}
 
-    public bool Disabled
-    {
-      get => disabled;
-      set => disabled = value;
-    }
-  }
+	protected Component GetComponent(Type type) {
+		return gameObject.GetComponent(type);
+	}
+
+	protected GameObject GetDefaultGameObject(GameObject go) {
+		return go == null ? gameObject : go;
+	}
+
+	public NodeData NodeData {
+		get => nodeData;
+		set => nodeData = value;
+	}
+
+	public BehaviorTree Owner {
+		get => owner;
+		set => owner = value;
+	}
+
+	public int Id {
+		get => id;
+		set => id = value;
+	}
+
+	public string FriendlyName {
+		get => friendlyName;
+		set => friendlyName = value;
+	}
+
+	public bool IsInstant {
+		get => instant;
+		set => instant = value;
+	}
+
+	public int ReferenceID {
+		get => referenceID;
+		set => referenceID = value;
+	}
+
+	public bool Disabled {
+		get => disabled;
+		set => disabled = value;
+	}
 }

@@ -1,8 +1,6 @@
-﻿namespace ParadoxNotion
-{
-  public enum MouseClickEvent
-  {
-    MouseDown,
-    MouseUp,
-  }
+﻿namespace ParadoxNotion;
+
+public enum MouseClickEvent {
+	MouseDown,
+	MouseUp
 }

@@ -2,34 +2,36 @@
 using Engine.Common;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (GroupPointsService))]
-  public class GroupPointsService : IInitialisable
-  {
-    private List<GroupPoint> freePoints;
+namespace Engine.Source.Services;
 
-    public void Initialise() => freePoints = new List<GroupPoint>();
+[GameService(typeof(GroupPointsService))]
+public class GroupPointsService : IInitialisable {
+	private List<GroupPoint> freePoints;
 
-    public void Terminate() => freePoints.Clear();
+	public void Initialise() {
+		freePoints = new List<GroupPoint>();
+	}
 
-    public void AddPoint(GroupPoint point)
-    {
-      if (freePoints.Contains(point))
-        return;
-      freePoints.Add(point);
-    }
+	public void Terminate() {
+		freePoints.Clear();
+	}
 
-    public void RemovePoint(GroupPoint point) => freePoints.Remove(point);
+	public void AddPoint(GroupPoint point) {
+		if (freePoints.Contains(point))
+			return;
+		freePoints.Add(point);
+	}
 
-    public GroupPoint GetFreePoint()
-    {
-      int index = Random.Range(0, freePoints.Count);
-      if (freePoints.Count <= 0)
-        return null;
-      GroupPoint freePoint = freePoints[index];
-      freePoints.RemoveAt(index);
-      return freePoint;
-    }
-  }
+	public void RemovePoint(GroupPoint point) {
+		freePoints.Remove(point);
+	}
+
+	public GroupPoint GetFreePoint() {
+		var index = Random.Range(0, freePoints.Count);
+		if (freePoints.Count <= 0)
+			return null;
+		var freePoint = freePoints[index];
+		freePoints.RemoveAt(index);
+		return freePoint;
+	}
 }

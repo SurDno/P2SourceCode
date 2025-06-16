@@ -11,299 +11,273 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.Audio;
 
-public class HerbRoots : MonoBehaviour, IEntityAttachable
-{
-  [Header("Топология")]
-  [Tooltip("Геометрия корней, она будет подниматься и опускаться")]
-  [SerializeField]
-  private GameObject rootsGeometry;
-  [Tooltip("На сколько нужно погрузить корень под землю (положительное значение)")]
-  [SerializeField]
-  private float verticalOffset = 1f;
-  [Tooltip("Радиус триггера активации")]
-  [SerializeField]
-  private float radius = 5f;
-  [Header("Геймплей")]
-  [Tooltip("Время активации в секундах")]
-  [SerializeField]
-  private float activationStayTime = 25f;
-  [Tooltip("время выползания корней из земли в секундах")]
-  [SerializeField]
-  private float activationTime = 10f;
-  [Header("Звуки привлечения")]
-  [SerializeField]
-  private AudioMixerGroup mixer;
-  [SerializeField]
-  private float attractMinDistance = 1f;
-  [SerializeField]
-  private float attractMaxDistance = 50f;
-  [Tooltip("3д звук, привлекающий внимание к корню")]
-  [SerializeField]
-  private AudioClip attractLoopSound;
-  private float attractLoopSoundVolume;
-  [Header("Звуки внутри триггера")]
-  [SerializeField]
-  private float enterTriggerMinDistance = 2f;
-  [SerializeField]
-  private float enterTriggerMaxDistance = 10f;
-  [Tooltip("3д звук входа в триггер")]
-  [SerializeField]
-  private AudioClip enterTriggerOneshotSound;
-  [Tooltip("3д звук стояния в триггере")]
-  [SerializeField]
-  private AudioClip enterTriggerLoopSound;
-  private float enterTriggerLoopSoundVolume;
-  [Tooltip("3д прорастания корня")]
-  [SerializeField]
-  private AudioClip rootReleaseOneshotSound;
-  [Header("Звуки взаимодействия")]
-  [SerializeField]
-  private AudioClip giveBloodSound;
-  [Inspected]
-  private HerbRootsStateEnum state;
-  private HerbRootsComponent herbRootsComponent;
-  private Vector3 initialPosition;
-  [Inspected]
-  private float activationStayTimeLeft;
-  [Inspected]
-  private float activationTimeLeft;
-  private AudioSource attractAudiosource;
-  private AudioSource enterTriggerAudiosource;
-  private HerbRootsTrigger trigger;
+public class HerbRoots : MonoBehaviour, IEntityAttachable {
+	[Header("Топология")] [Tooltip("Геометрия корней, она будет подниматься и опускаться")] [SerializeField]
+	private GameObject rootsGeometry;
 
-  public float VerticalOffset => verticalOffset;
+	[Tooltip("На сколько нужно погрузить корень под землю (положительное значение)")] [SerializeField]
+	private float verticalOffset = 1f;
 
-  [Inspected]
-  public IEntity Owner { get; private set; }
+	[Tooltip("Радиус триггера активации")] [SerializeField]
+	private float radius = 5f;
 
-  private void Awake()
-  {
-    if (!(rootsGeometry != null))
-      return;
-    initialPosition = transform.position;
-  }
+	[Header("Геймплей")] [Tooltip("Время активации в секундах")] [SerializeField]
+	private float activationStayTime = 25f;
 
-  void IEntityAttachable.Attach(IEntity owner)
-  {
-    Owner = owner;
-    herbRootsComponent = (HerbRootsComponent) owner.GetComponent<IHerbRootsComponent>();
-    if (herbRootsComponent == null)
-    {
-      Debug.LogError(typeof (HerbRootsComponent).Name + " : " + Owner.GetInfo(), gameObject);
-    }
-    else
-    {
-      switch (herbRootsComponent.State)
-      {
-        case HerbRootsComponentStateEnum.Sleeping:
-          SetState(HerbRootsStateEnum.Sleeping);
-          break;
-        case HerbRootsComponentStateEnum.Active:
-          SetState(HerbRootsStateEnum.Active);
-          break;
-        default:
-          SetState(HerbRootsStateEnum.Unknown);
-          break;
-      }
-    }
-  }
+	[Tooltip("время выползания корней из земли в секундах")] [SerializeField]
+	private float activationTime = 10f;
 
-  void IEntityAttachable.Detach()
-  {
-    Owner = null;
-    herbRootsComponent = null;
-  }
+	[Header("Звуки привлечения")] [SerializeField]
+	private AudioMixerGroup mixer;
 
-  private void SetState(HerbRootsStateEnum state)
-  {
-    switch (state)
-    {
-      case HerbRootsStateEnum.Sleeping:
-        activationStayTimeLeft = activationStayTime;
-        if (rootsGeometry != null)
-        {
-          rootsGeometry.transform.position = initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f);
-        }
-        break;
-      case HerbRootsStateEnum.MovingFromEarth:
-        herbRootsComponent?.FireOnActivateStartEvent();
-        activationTimeLeft = activationTime;
-        SoundUtility.PlayAudioClip3D(transform, rootReleaseOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
-        break;
-      case HerbRootsStateEnum.Active:
-        if (rootsGeometry != null)
-          transform.position = initialPosition;
-        herbRootsComponent.SetState(HerbRootsComponentStateEnum.Active);
-        break;
-    }
-    this.state = state;
-  }
+	[SerializeField] private float attractMinDistance = 1f;
+	[SerializeField] private float attractMaxDistance = 50f;
 
-  private void OnEnable()
-  {
-    GameObject gameObject = new GameObject("[Trigger] Player");
-    gameObject.transform.SetParent(transform, false);
-    trigger = gameObject.AddComponent<HerbRootsTrigger>();
-    trigger.Radius = radius;
-    trigger.PlayerEnterEvent += OnPlayerEnter;
-    trigger.PlayerExitEvent += OnPlayerExit;
-    attractAudiosource = this.gameObject.AddComponent<AudioSource>();
-    attractAudiosource.clip = attractLoopSound;
-    attractAudiosource.outputAudioMixerGroup = mixer;
-    attractAudiosource.minDistance = attractMinDistance;
-    attractAudiosource.maxDistance = attractMaxDistance;
-    attractAudiosource.loop = true;
-    attractAudiosource.rolloffMode = AudioRolloffMode.Linear;
-    attractAudiosource.spatialBlend = 1f;
-    attractLoopSoundVolume = 0.0f;
-    attractAudiosource.Stop();
-    enterTriggerAudiosource = this.gameObject.AddComponent<AudioSource>();
-    enterTriggerAudiosource.clip = enterTriggerLoopSound;
-    enterTriggerAudiosource.outputAudioMixerGroup = mixer;
-    enterTriggerAudiosource.minDistance = enterTriggerMinDistance;
-    enterTriggerAudiosource.maxDistance = enterTriggerMaxDistance;
-    enterTriggerAudiosource.loop = true;
-    enterTriggerAudiosource.spatialBlend = 0.5f;
-    enterTriggerLoopSoundVolume = 0.0f;
-    enterTriggerAudiosource.Stop();
-  }
+	[Tooltip("3д звук, привлекающий внимание к корню")] [SerializeField]
+	private AudioClip attractLoopSound;
 
-  private void OnDisable()
-  {
-    trigger.PlayerEnterEvent -= OnPlayerEnter;
-    trigger.PlayerExitEvent -= OnPlayerExit;
-    Destroy(trigger.gameObject);
-    Destroy(attractAudiosource);
-    Destroy(enterTriggerAudiosource);
-  }
+	private float attractLoopSoundVolume;
 
-  public void PlayGiveBloodSound()
-  {
-    SoundUtility.PlayAudioClip2D(giveBloodSound, mixer, 1f, 0.0f);
-  }
+	[Header("Звуки внутри триггера")] [SerializeField]
+	private float enterTriggerMinDistance = 2f;
 
-  private void OnPlayerEnter()
-  {
-    SoundUtility.PlayAudioClip3D(transform, enterTriggerOneshotSound, mixer, 1f, enterTriggerMinDistance, enterTriggerMaxDistance, true, 0.0f);
-    if (state != HerbRootsStateEnum.Sleeping)
-      return;
-    herbRootsComponent?.FireOnTriggerEnterEvent();
-  }
+	[SerializeField] private float enterTriggerMaxDistance = 10f;
 
-  private void OnPlayerExit()
-  {
-    activationStayTimeLeft = activationStayTime;
-    if (state != HerbRootsStateEnum.Sleeping)
-      return;
-    herbRootsComponent?.FireOnTriggerLeaveEvent();
-  }
+	[Tooltip("3д звук входа в триггер")] [SerializeField]
+	private AudioClip enterTriggerOneshotSound;
 
-  private void Update()
-  {
-    УбериМЕняОТсюдава_МЕнТутБытьНидолжно();
-    if (InstanceByRequest<EngineApplication>.Instance.IsPaused || herbRootsComponent == null)
-      return;
-    switch (state)
-    {
-      case HerbRootsStateEnum.Sleeping:
-        if (trigger.IsPlayerInside)
-        {
-          activationStayTimeLeft -= Time.deltaTime;
-          if (activationStayTimeLeft < 0.0)
-            SetState(HerbRootsStateEnum.MovingFromEarth);
-          attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
-          attractAudiosource.volume = attractLoopSoundVolume;
-        }
-        else
-        {
-          activationStayTimeLeft = activationStayTime;
-          attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 1f, Time.deltaTime / 2f);
-          attractAudiosource.volume = attractLoopSoundVolume;
-        }
-        enterTriggerLoopSoundVolume = Mathf.MoveTowards(enterTriggerLoopSoundVolume, Mathf.Sqrt(Mathf.Clamp01((float) (1.0 - activationStayTimeLeft / (double) activationStayTime))), Time.deltaTime / 2f);
-        enterTriggerAudiosource.volume = enterTriggerLoopSoundVolume;
-        if (enterTriggerLoopSoundVolume > 0.05000000074505806 && !enterTriggerAudiosource.isPlaying)
-        {
-          enterTriggerAudiosource.PlayAndCheck();
-        }
-        break;
-      case HerbRootsStateEnum.MovingFromEarth:
-        activationTimeLeft -= Time.deltaTime;
-        if (activationTimeLeft < 0.0)
-        {
-          SetState(HerbRootsStateEnum.Active);
-          break;
-        }
-        float t = (float) (1.0 - activationTimeLeft / (double) activationTime);
-        if (rootsGeometry != null)
-          rootsGeometry.transform.position = Vector3.Lerp(initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f), initialPosition, t);
-        break;
-      case HerbRootsStateEnum.Active:
-        attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
-        attractAudiosource.volume = attractLoopSoundVolume;
-        enterTriggerLoopSoundVolume = Mathf.MoveTowards(enterTriggerLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
-        enterTriggerAudiosource.volume = enterTriggerLoopSoundVolume;
-        break;
-    }
-    if (attractAudiosource.enabled)
-    {
-      if (attractAudiosource.isPlaying)
-      {
-        if (attractLoopSoundVolume < 0.05000000074505806)
-          attractAudiosource.Stop();
-      }
-      else if (attractLoopSoundVolume > 0.05000000074505806)
-        attractAudiosource.PlayAndCheck();
-    }
-    UpdateAudioEnable();
-  }
+	[Tooltip("3д звук стояния в триггере")] [SerializeField]
+	private AudioClip enterTriggerLoopSound;
 
-  private void UpdateAudioEnable()
-  {
-    bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (attractAudiosource.maxDistance * attractAudiosource.maxDistance);
-    if (attractAudiosource.enabled == flag)
-      return;
-    attractAudiosource.enabled = flag;
-  }
+	private float enterTriggerLoopSoundVolume;
 
-  private void УбериМЕняОТсюдава_МЕнТутБытьНидолжно()
-  {
-    if (!HerbRootsGroupDebug.IsGroupVisible)
-      return;
-    HerbRootsGroupDebug.DrawHeader();
-    GizmoService service = ServiceLocator.GetService<GizmoService>();
-    service.DrawCircle(transform.position, radius, Color.blue);
-    string str = string.Format("{0}: - {1}, state = {2}", typeof (HerbRoots).Name, gameObject.name, state);
-    switch (state)
-    {
-      case HerbRootsStateEnum.Sleeping:
-        service.DrawText(string.Format("{0}, timeLeft = {1}", str, activationStayTimeLeft), Color.white);
-        break;
-      case HerbRootsStateEnum.MovingFromEarth:
-        service.DrawText(string.Format("{0}, timeLeft = {1}", str, activationTimeLeft), Color.white);
-        break;
-      case HerbRootsStateEnum.Active:
-        service.DrawText(str ?? "", Color.white);
-        break;
-      default:
-        service.DrawText(str ?? "", Color.red);
-        break;
-    }
-    for (int index = 0; index < transform.childCount; ++index)
-    {
-      Transform child = transform.GetChild(index);
-      if (!(child.GetComponentNonAlloc<HerbRootsSpawnPoint>() == null))
-      {
-        service.DrawBox(child.position + new Vector3(0.025f, 0.0f, 0.025f), child.position + Vector3.up + new Vector3(-0.025f, 0.0f, -0.025f), Color.white);
-        service.DrawCircle(child.position, 0.2f, Color.white);
-        service.DrawBox(child.position + Vector3.up + new Vector3(0.1f, 0.0f, 0.1f), child.position + Vector3.up + new Vector3(-0.1f, 0.0f, -0.1f), Color.red);
-      }
-    }
-  }
+	[Tooltip("3д прорастания корня")] [SerializeField]
+	private AudioClip rootReleaseOneshotSound;
 
-  private void OnDrawGizmos()
-  {
-    Gizmos.color = Color.blue;
-    Gizmos.DrawWireSphere(transform.position, radius);
-  }
+	[Header("Звуки взаимодействия")] [SerializeField]
+	private AudioClip giveBloodSound;
+
+	[Inspected] private HerbRootsStateEnum state;
+	private HerbRootsComponent herbRootsComponent;
+	private Vector3 initialPosition;
+	[Inspected] private float activationStayTimeLeft;
+	[Inspected] private float activationTimeLeft;
+	private AudioSource attractAudiosource;
+	private AudioSource enterTriggerAudiosource;
+	private HerbRootsTrigger trigger;
+
+	public float VerticalOffset => verticalOffset;
+
+	[Inspected] public IEntity Owner { get; private set; }
+
+	private void Awake() {
+		if (!(rootsGeometry != null))
+			return;
+		initialPosition = transform.position;
+	}
+
+	void IEntityAttachable.Attach(IEntity owner) {
+		Owner = owner;
+		herbRootsComponent = (HerbRootsComponent)owner.GetComponent<IHerbRootsComponent>();
+		if (herbRootsComponent == null)
+			Debug.LogError(typeof(HerbRootsComponent).Name + " : " + Owner.GetInfo(), gameObject);
+		else
+			switch (herbRootsComponent.State) {
+				case HerbRootsComponentStateEnum.Sleeping:
+					SetState(HerbRootsStateEnum.Sleeping);
+					break;
+				case HerbRootsComponentStateEnum.Active:
+					SetState(HerbRootsStateEnum.Active);
+					break;
+				default:
+					SetState(HerbRootsStateEnum.Unknown);
+					break;
+			}
+	}
+
+	void IEntityAttachable.Detach() {
+		Owner = null;
+		herbRootsComponent = null;
+	}
+
+	private void SetState(HerbRootsStateEnum state) {
+		switch (state) {
+			case HerbRootsStateEnum.Sleeping:
+				activationStayTimeLeft = activationStayTime;
+				if (rootsGeometry != null)
+					rootsGeometry.transform.position = initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f);
+				break;
+			case HerbRootsStateEnum.MovingFromEarth:
+				herbRootsComponent?.FireOnActivateStartEvent();
+				activationTimeLeft = activationTime;
+				SoundUtility.PlayAudioClip3D(transform, rootReleaseOneshotSound, mixer, 1f, enterTriggerMinDistance,
+					enterTriggerMaxDistance, true, 0.0f);
+				break;
+			case HerbRootsStateEnum.Active:
+				if (rootsGeometry != null)
+					transform.position = initialPosition;
+				herbRootsComponent.SetState(HerbRootsComponentStateEnum.Active);
+				break;
+		}
+
+		this.state = state;
+	}
+
+	private void OnEnable() {
+		var gameObject = new GameObject("[Trigger] Player");
+		gameObject.transform.SetParent(transform, false);
+		trigger = gameObject.AddComponent<HerbRootsTrigger>();
+		trigger.Radius = radius;
+		trigger.PlayerEnterEvent += OnPlayerEnter;
+		trigger.PlayerExitEvent += OnPlayerExit;
+		attractAudiosource = this.gameObject.AddComponent<AudioSource>();
+		attractAudiosource.clip = attractLoopSound;
+		attractAudiosource.outputAudioMixerGroup = mixer;
+		attractAudiosource.minDistance = attractMinDistance;
+		attractAudiosource.maxDistance = attractMaxDistance;
+		attractAudiosource.loop = true;
+		attractAudiosource.rolloffMode = AudioRolloffMode.Linear;
+		attractAudiosource.spatialBlend = 1f;
+		attractLoopSoundVolume = 0.0f;
+		attractAudiosource.Stop();
+		enterTriggerAudiosource = this.gameObject.AddComponent<AudioSource>();
+		enterTriggerAudiosource.clip = enterTriggerLoopSound;
+		enterTriggerAudiosource.outputAudioMixerGroup = mixer;
+		enterTriggerAudiosource.minDistance = enterTriggerMinDistance;
+		enterTriggerAudiosource.maxDistance = enterTriggerMaxDistance;
+		enterTriggerAudiosource.loop = true;
+		enterTriggerAudiosource.spatialBlend = 0.5f;
+		enterTriggerLoopSoundVolume = 0.0f;
+		enterTriggerAudiosource.Stop();
+	}
+
+	private void OnDisable() {
+		trigger.PlayerEnterEvent -= OnPlayerEnter;
+		trigger.PlayerExitEvent -= OnPlayerExit;
+		Destroy(trigger.gameObject);
+		Destroy(attractAudiosource);
+		Destroy(enterTriggerAudiosource);
+	}
+
+	public void PlayGiveBloodSound() {
+		SoundUtility.PlayAudioClip2D(giveBloodSound, mixer, 1f, 0.0f);
+	}
+
+	private void OnPlayerEnter() {
+		SoundUtility.PlayAudioClip3D(transform, enterTriggerOneshotSound, mixer, 1f, enterTriggerMinDistance,
+			enterTriggerMaxDistance, true, 0.0f);
+		if (state != HerbRootsStateEnum.Sleeping)
+			return;
+		herbRootsComponent?.FireOnTriggerEnterEvent();
+	}
+
+	private void OnPlayerExit() {
+		activationStayTimeLeft = activationStayTime;
+		if (state != HerbRootsStateEnum.Sleeping)
+			return;
+		herbRootsComponent?.FireOnTriggerLeaveEvent();
+	}
+
+	private void Update() {
+		УбериМЕняОТсюдава_МЕнТутБытьНидолжно();
+		if (InstanceByRequest<EngineApplication>.Instance.IsPaused || herbRootsComponent == null)
+			return;
+		switch (state) {
+			case HerbRootsStateEnum.Sleeping:
+				if (trigger.IsPlayerInside) {
+					activationStayTimeLeft -= Time.deltaTime;
+					if (activationStayTimeLeft < 0.0)
+						SetState(HerbRootsStateEnum.MovingFromEarth);
+					attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
+					attractAudiosource.volume = attractLoopSoundVolume;
+				} else {
+					activationStayTimeLeft = activationStayTime;
+					attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 1f, Time.deltaTime / 2f);
+					attractAudiosource.volume = attractLoopSoundVolume;
+				}
+
+				enterTriggerLoopSoundVolume = Mathf.MoveTowards(enterTriggerLoopSoundVolume,
+					Mathf.Sqrt(Mathf.Clamp01((float)(1.0 - activationStayTimeLeft / (double)activationStayTime))),
+					Time.deltaTime / 2f);
+				enterTriggerAudiosource.volume = enterTriggerLoopSoundVolume;
+				if (enterTriggerLoopSoundVolume > 0.05000000074505806 && !enterTriggerAudiosource.isPlaying)
+					enterTriggerAudiosource.PlayAndCheck();
+				break;
+			case HerbRootsStateEnum.MovingFromEarth:
+				activationTimeLeft -= Time.deltaTime;
+				if (activationTimeLeft < 0.0) {
+					SetState(HerbRootsStateEnum.Active);
+					break;
+				}
+
+				var t = (float)(1.0 - activationTimeLeft / (double)activationTime);
+				if (rootsGeometry != null)
+					rootsGeometry.transform.position =
+						Vector3.Lerp(initialPosition + new Vector3(0.0f, -verticalOffset, 0.0f), initialPosition, t);
+				break;
+			case HerbRootsStateEnum.Active:
+				attractLoopSoundVolume = Mathf.MoveTowards(attractLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
+				attractAudiosource.volume = attractLoopSoundVolume;
+				enterTriggerLoopSoundVolume = Mathf.MoveTowards(enterTriggerLoopSoundVolume, 0.0f, Time.deltaTime / 2f);
+				enterTriggerAudiosource.volume = enterTriggerLoopSoundVolume;
+				break;
+		}
+
+		if (attractAudiosource.enabled) {
+			if (attractAudiosource.isPlaying) {
+				if (attractLoopSoundVolume < 0.05000000074505806)
+					attractAudiosource.Stop();
+			} else if (attractLoopSoundVolume > 0.05000000074505806)
+				attractAudiosource.PlayAndCheck();
+		}
+
+		UpdateAudioEnable();
+	}
+
+	private void UpdateAudioEnable() {
+		var flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude <
+		           (double)(attractAudiosource.maxDistance * attractAudiosource.maxDistance);
+		if (attractAudiosource.enabled == flag)
+			return;
+		attractAudiosource.enabled = flag;
+	}
+
+	private void УбериМЕняОТсюдава_МЕнТутБытьНидолжно() {
+		if (!HerbRootsGroupDebug.IsGroupVisible)
+			return;
+		HerbRootsGroupDebug.DrawHeader();
+		var service = ServiceLocator.GetService<GizmoService>();
+		service.DrawCircle(transform.position, radius, Color.blue);
+		var str = string.Format("{0}: - {1}, state = {2}", typeof(HerbRoots).Name, gameObject.name, state);
+		switch (state) {
+			case HerbRootsStateEnum.Sleeping:
+				service.DrawText(string.Format("{0}, timeLeft = {1}", str, activationStayTimeLeft), Color.white);
+				break;
+			case HerbRootsStateEnum.MovingFromEarth:
+				service.DrawText(string.Format("{0}, timeLeft = {1}", str, activationTimeLeft), Color.white);
+				break;
+			case HerbRootsStateEnum.Active:
+				service.DrawText(str ?? "", Color.white);
+				break;
+			default:
+				service.DrawText(str ?? "", Color.red);
+				break;
+		}
+
+		for (var index = 0; index < transform.childCount; ++index) {
+			var child = transform.GetChild(index);
+			if (!(child.GetComponentNonAlloc<HerbRootsSpawnPoint>() == null)) {
+				service.DrawBox(child.position + new Vector3(0.025f, 0.0f, 0.025f),
+					child.position + Vector3.up + new Vector3(-0.025f, 0.0f, -0.025f), Color.white);
+				service.DrawCircle(child.position, 0.2f, Color.white);
+				service.DrawBox(child.position + Vector3.up + new Vector3(0.1f, 0.0f, 0.1f),
+					child.position + Vector3.up + new Vector3(-0.1f, 0.0f, -0.1f), Color.red);
+			}
+		}
+	}
+
+	private void OnDrawGizmos() {
+		Gizmos.color = Color.blue;
+		Gizmos.DrawWireSphere(transform.position, radius);
+	}
 }

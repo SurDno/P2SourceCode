@@ -1,28 +1,26 @@
 ﻿using System;
 using Engine.Common.Commons;
 
-namespace Engine.Common.Components
-{
-  public interface IBehaviorComponent : IComponent
-  {
-    event Action<IBehaviorComponent> SuccessEvent;
+namespace Engine.Common.Components;
 
-    event Action<IBehaviorComponent> FailEvent;
+public interface IBehaviorComponent : IComponent {
+	event Action<IBehaviorComponent> SuccessEvent;
 
-    event Action<IBehaviorComponent, string> CustomEvent;
+	event Action<IBehaviorComponent> FailEvent;
 
-    IBehaviorObject BehaviorObject { get; set; }
+	event Action<IBehaviorComponent, string> CustomEvent;
 
-    IBehaviorObject BehaviorObjectForced { get; set; }
+	IBehaviorObject BehaviorObject { get; set; }
 
-    void SetValue(string name, IEntity value);
+	IBehaviorObject BehaviorObjectForced { get; set; }
 
-    void SetBoolValue(string name, bool value);
+	void SetValue(string name, IEntity value);
 
-    void SetIntValue(string name, int value);
+	void SetBoolValue(string name, bool value);
 
-    void SetFloatValue(string name, float value);
+	void SetIntValue(string name, int value);
 
-    void SetBehaviorForced(IBehaviorObject behaviorObject);
-  }
+	void SetFloatValue(string name, float value);
+
+	void SetBehaviorForced(IBehaviorObject behaviorObject);
 }

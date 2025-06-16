@@ -10,61 +10,49 @@ using Engine.Source.Connections;
 using UnityEngine;
 using UnityEngine.Serialization;
 
-public class StorageAnimator : MonoBehaviour, IEntityAttachable
-{
-  [SerializeField]
-  [FormerlySerializedAs("infos")]
-  private List<ContainerInfo> containers = new List<ContainerInfo>();
-  private StorageComponent storage;
+public class StorageAnimator : MonoBehaviour, IEntityAttachable {
+	[SerializeField] [FormerlySerializedAs("infos")]
+	private List<ContainerInfo> containers = new();
 
-  public void Attach(IEntity owner)
-  {
-    storage = owner.GetComponent<StorageComponent>();
-    if (storage == null)
-      return;
-    storage.ChangeInventoryEvent += ChangeInventoryEvent;
-    ComputeContainers();
-  }
+	private StorageComponent storage;
 
-  public void Detach()
-  {
-    if (storage == null)
-      return;
-    storage.ChangeInventoryEvent -= ChangeInventoryEvent;
-    storage = null;
-  }
+	public void Attach(IEntity owner) {
+		storage = owner.GetComponent<StorageComponent>();
+		if (storage == null)
+			return;
+		storage.ChangeInventoryEvent += ChangeInventoryEvent;
+		ComputeContainers();
+	}
 
-  private void ChangeInventoryEvent(IStorageComponent storage, IInventoryComponent container)
-  {
-    ComputeContainers();
-  }
+	public void Detach() {
+		if (storage == null)
+			return;
+		storage.ChangeInventoryEvent -= ChangeInventoryEvent;
+		storage = null;
+	}
 
-  private void ComputeContainers()
-  {
-    foreach (IInventoryComponent container1 in storage.Containers)
-    {
-      IInventoryComponent container = container1;
-      ContainerInfo containerInfo = containers.FirstOrDefault(o =>
-      {
-        if (container.Owner.TemplateId == o.EntityContainer.Id)
-          return true;
-        return container.Owner.Template != null && container.Owner.Template.TemplateId == o.EntityContainer.Id;
-      });
-      if (containerInfo != null)
-      {
-        foreach (ContainerAnimator animator in containerInfo.Animators)
-        {
-          if (animator != null)
-            animator.IsOpened = container.OpenState.Value == ContainerOpenStateEnum.Open;
-        }
-      }
-    }
-  }
+	private void ChangeInventoryEvent(IStorageComponent storage, IInventoryComponent container) {
+		ComputeContainers();
+	}
 
-  [Serializable]
-  public class ContainerInfo
-  {
-    public IEntitySerializable EntityContainer;
-    public ContainerAnimator[] Animators = new ContainerAnimator[0];
-  }
+	private void ComputeContainers() {
+		foreach (var container1 in storage.Containers) {
+			var container = container1;
+			var containerInfo = containers.FirstOrDefault(o => {
+				if (container.Owner.TemplateId == o.EntityContainer.Id)
+					return true;
+				return container.Owner.Template != null && container.Owner.Template.TemplateId == o.EntityContainer.Id;
+			});
+			if (containerInfo != null)
+				foreach (var animator in containerInfo.Animators)
+					if (animator != null)
+						animator.IsOpened = container.OpenState.Value == ContainerOpenStateEnum.Open;
+		}
+	}
+
+	[Serializable]
+	public class ContainerInfo {
+		public IEntitySerializable EntityContainer;
+		public ContainerAnimator[] Animators = new ContainerAnimator[0];
+	}
 }

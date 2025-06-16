@@ -5,90 +5,76 @@ using Engine.Source.Commons;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [GameService(typeof (PickingService))]
-  public class PickingService : IUpdatable, IInitialisable
-  {
-    private const float maxDistance = 10f;
-    private const float sphereCastRadius = 0.1f;
-    private Ray ray;
-    private IEntity targetEntity;
-    private float targetEntityDistance;
-    private GameObject targetGameObject;
-    private float targetGameObjectDistance;
-    private static List<RaycastHit> hits = new List<RaycastHit>();
+namespace Engine.Source.Services;
 
-    [Inspected]
-    public Ray Ray => ray;
+[GameService(typeof(PickingService))]
+public class PickingService : IUpdatable, IInitialisable {
+	private const float maxDistance = 10f;
+	private const float sphereCastRadius = 0.1f;
+	private Ray ray;
+	private IEntity targetEntity;
+	private float targetEntityDistance;
+	private GameObject targetGameObject;
+	private float targetGameObjectDistance;
+	private static List<RaycastHit> hits = new();
 
-    [Inspected]
-    public IEntity TargetEntity => targetEntity;
+	[Inspected] public Ray Ray => ray;
 
-    [Inspected]
-    public float TargetEntityDistance => targetEntityDistance;
+	[Inspected] public IEntity TargetEntity => targetEntity;
 
-    [Inspected]
-    public GameObject TargetGameObject => targetGameObject;
+	[Inspected] public float TargetEntityDistance => targetEntityDistance;
 
-    [Inspected]
-    public float TargetGameObjectDistance => targetGameObjectDistance;
+	[Inspected] public GameObject TargetGameObject => targetGameObject;
 
-    public void Initialise()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+	[Inspected] public float TargetGameObjectDistance => targetGameObjectDistance;
 
-    public void Terminate()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-    }
+	public void Initialise() {
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      Clear();
-      if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
-        return;
-      IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-      if (player == null)
-        return;
-      IEntityView entityView = (IEntityView) player;
-      if (entityView.GameObject == null)
-        return;
-      Transform cameraTransform = GameCamera.Instance.CameraTransform;
-      if (cameraTransform == null)
-        return;
-      ray = new Ray(cameraTransform.position, cameraTransform.forward);
-      targetEntityDistance = float.PositiveInfinity;
-      PhysicsUtility.Raycast(hits, Ray, 10f, -1, QueryTriggerInteraction.Ignore);
-      for (int index = 0; index < hits.Count; ++index)
-      {
-        RaycastHit hit = hits[index];
-        if (!(hit.transform == null))
-        {
-          GameObject gameObject = hit.transform.gameObject;
-          if (!(gameObject == entityView.GameObject))
-          {
-            targetGameObject = gameObject;
-            targetGameObjectDistance = hit.distance;
-            IEntity entity = EntityUtility.GetEntity(gameObject);
-            if (entity == null)
-              break;
-            targetEntity = entity;
-            targetEntityDistance = hit.distance;
-            break;
-          }
-        }
-      }
-    }
+	public void Terminate() {
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+	}
 
-    private void Clear()
-    {
-      ray = new Ray();
-      targetEntity = null;
-      targetEntityDistance = float.PositiveInfinity;
-      targetGameObject = null;
-      targetGameObjectDistance = float.PositiveInfinity;
-    }
-  }
+	public void ComputeUpdate() {
+		Clear();
+		if (InstanceByRequest<EngineApplication>.Instance.IsPaused)
+			return;
+		var player = ServiceLocator.GetService<ISimulation>().Player;
+		if (player == null)
+			return;
+		var entityView = (IEntityView)player;
+		if (entityView.GameObject == null)
+			return;
+		var cameraTransform = GameCamera.Instance.CameraTransform;
+		if (cameraTransform == null)
+			return;
+		ray = new Ray(cameraTransform.position, cameraTransform.forward);
+		targetEntityDistance = float.PositiveInfinity;
+		PhysicsUtility.Raycast(hits, Ray, 10f, -1, QueryTriggerInteraction.Ignore);
+		for (var index = 0; index < hits.Count; ++index) {
+			var hit = hits[index];
+			if (!(hit.transform == null)) {
+				var gameObject = hit.transform.gameObject;
+				if (!(gameObject == entityView.GameObject)) {
+					targetGameObject = gameObject;
+					targetGameObjectDistance = hit.distance;
+					var entity = EntityUtility.GetEntity(gameObject);
+					if (entity == null)
+						break;
+					targetEntity = entity;
+					targetEntityDistance = hit.distance;
+					break;
+				}
+			}
+		}
+	}
+
+	private void Clear() {
+		ray = new Ray();
+		targetEntity = null;
+		targetEntityDistance = float.PositiveInfinity;
+		targetGameObject = null;
+		targetGameObjectDistance = float.PositiveInfinity;
+	}
 }

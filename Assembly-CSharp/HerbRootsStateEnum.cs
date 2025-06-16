@@ -1,7 +1,6 @@
-﻿public enum HerbRootsStateEnum
-{
-  Unknown,
-  Sleeping,
-  MovingFromEarth,
-  Active,
+﻿public enum HerbRootsStateEnum {
+	Unknown,
+	Sleeping,
+	MovingFromEarth,
+	Active
 }

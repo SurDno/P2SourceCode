@@ -10,71 +10,64 @@ using Engine.Source.Components;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class NpcKnockDownEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    protected string name = "";
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    protected float holdTime = 5f;
-    private IParameter<bool> movementBlockParameter;
-    private float startTime;
+namespace Engine.Source.Effects;
 
-    public string Name => name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class NpcKnockDownEffect : IEffect {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy]
+	[Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
+	protected string name = "";
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public IEntity Target { get; set; }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy()]
+	[Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
+	protected float holdTime = 5f;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	private IParameter<bool> movementBlockParameter;
+	private float startTime;
 
-    public void Cleanup()
-    {
-      if (movementBlockParameter == null)
-        return;
-      movementBlockParameter.Value = false;
-    }
+	public string Name => name;
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      EnemyBase component1 = ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
-      EnemyBase component2 = ((IEntityView) Target).GameObject.GetComponent<EnemyBase>();
-      if (!(AbilityItem.AbilityController is CloseCombatAbilityController))
-      {
-        Debug.LogError(typeof (NpcKnockDownEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name);
-        return false;
-      }
-      component2?.KnockDown(component1);
-      startTime = currentRealTime;
-      ParametersComponent component3 = Target.GetComponent<ParametersComponent>();
-      if (component3 != null)
-      {
-        movementBlockParameter = component3.GetByName<bool>(ParameterNameEnum.MovementControlBlock);
-        if (movementBlockParameter != null)
-          movementBlockParameter.Value = true;
-      }
-      return true;
-    }
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      return movementBlockParameter != null && currentRealTime - (double) startTime < holdTime;
-    }
-  }
+	public IEntity Target { get; set; }
+
+	public ParameterEffectQueueEnum Queue => queue;
+
+	public void Cleanup() {
+		if (movementBlockParameter == null)
+			return;
+		movementBlockParameter.Value = false;
+	}
+
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		var component1 = ((IEntityView)AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
+		var component2 = ((IEntityView)Target).GameObject.GetComponent<EnemyBase>();
+		if (!(AbilityItem.AbilityController is CloseCombatAbilityController)) {
+			Debug.LogError(typeof(NpcKnockDownEffect).Name + " requires " + typeof(CloseCombatAbilityController).Name);
+			return false;
+		}
+
+		component2?.KnockDown(component1);
+		startTime = currentRealTime;
+		var component3 = Target.GetComponent<ParametersComponent>();
+		if (component3 != null) {
+			movementBlockParameter = component3.GetByName<bool>(ParameterNameEnum.MovementControlBlock);
+			if (movementBlockParameter != null)
+				movementBlockParameter.Value = true;
+		}
+
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		return movementBlockParameter != null && currentRealTime - (double)startTime < holdTime;
+	}
 }

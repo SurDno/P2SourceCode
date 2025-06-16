@@ -1,6 +1,5 @@
 ﻿using Engine.Common;
 
-public interface ITargetInventoryWindow
-{
-  IEntity GetUseTarget();
+public interface ITargetInventoryWindow {
+	IEntity GetUseTarget();
 }

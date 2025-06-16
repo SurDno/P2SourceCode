@@ -1,31 +1,29 @@
 ﻿using System;
 using System.Reflection;
 
-namespace Inspectors
-{
-  public interface IInspectedProvider : IExpandedProvider
-  {
-    string ElementName { get; set; }
+namespace Inspectors;
 
-    void DrawInspected(
-      string name,
-      Type type,
-      object value,
-      bool mutable,
-      object target,
-      MemberInfo member,
-      Action<object> setter);
+public interface IInspectedProvider : IExpandedProvider {
+	string ElementName { get; set; }
 
-    Guid DrawId { get; }
+	void DrawInspected(
+		string name,
+		Type type,
+		object value,
+		bool mutable,
+		object target,
+		MemberInfo member,
+		Action<object> setter);
 
-    Guid NameId { get; }
+	Guid DrawId { get; }
 
-    void SetHeader(string name);
+	Guid NameId { get; }
 
-    int ContextIndex { get; set; }
+	void SetHeader(string name);
 
-    Action ContextItemMenu { get; set; }
+	int ContextIndex { get; set; }
 
-    object ContextObject { get; set; }
-  }
+	Action ContextItemMenu { get; set; }
+
+	object ContextObject { get; set; }
 }

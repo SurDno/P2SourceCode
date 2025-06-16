@@ -6,99 +6,83 @@ using InputServices;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ConfirmationWindow : MonoBehaviour
-{
-  [SerializeField]
-  private StringView textView;
-  [SerializeField]
-  private Button acceptButton;
-  [SerializeField]
-  private Button cancelButton;
-  private Action onAcceptAction;
-  private Action onCancelAction;
-  [SerializeField]
-  private GameObject consoleAcceptButton;
-  [SerializeField]
-  private GameObject consoleCancelButton;
+public class ConfirmationWindow : MonoBehaviour {
+	[SerializeField] private StringView textView;
+	[SerializeField] private Button acceptButton;
+	[SerializeField] private Button cancelButton;
+	private Action onAcceptAction;
+	private Action onCancelAction;
+	[SerializeField] private GameObject consoleAcceptButton;
+	[SerializeField] private GameObject consoleCancelButton;
 
-  private void Accept()
-  {
-    Action onAcceptAction = this.onAcceptAction;
-    Hide();
-    if (onAcceptAction != null)
-      onAcceptAction();
-    InputService.Instance.ChangeGameSession();
-  }
+	private void Accept() {
+		var onAcceptAction = this.onAcceptAction;
+		Hide();
+		if (onAcceptAction != null)
+			onAcceptAction();
+		InputService.Instance.ChangeGameSession();
+	}
 
-  private void Awake()
-  {
-    acceptButton.onClick.AddListener(Accept);
-    cancelButton.onClick.AddListener(Cancel);
-  }
+	private void Awake() {
+		acceptButton.onClick.AddListener(Accept);
+		cancelButton.onClick.AddListener(Cancel);
+	}
 
-  private void Cancel()
-  {
-    Action onCancelAction = this.onCancelAction;
-    Hide();
-    if (onCancelAction == null)
-      return;
-    onCancelAction();
-  }
+	private void Cancel() {
+		var onCancelAction = this.onCancelAction;
+		Hide();
+		if (onCancelAction == null)
+			return;
+		onCancelAction();
+	}
 
-  public void Hide()
-  {
-    GameActionService service = ServiceLocator.GetService<GameActionService>();
-    service.RemoveListener(GameActionType.Submit, OnSelection);
-    service.RemoveListener(GameActionType.Cancel, OnSelection);
-    onAcceptAction = null;
-    onCancelAction = null;
-    gameObject.SetActive(false);
-    InputService.Instance.onJoystickUsedChanged -= OnJoystick;
-  }
+	public void Hide() {
+		var service = ServiceLocator.GetService<GameActionService>();
+		service.RemoveListener(GameActionType.Submit, OnSelection);
+		service.RemoveListener(GameActionType.Cancel, OnSelection);
+		onAcceptAction = null;
+		onCancelAction = null;
+		gameObject.SetActive(false);
+		InputService.Instance.onJoystickUsedChanged -= OnJoystick;
+	}
 
-  public void Show(string text, Action onAccept, Action onCancel)
-  {
-    textView.StringValue = text;
-    onAcceptAction = onAccept;
-    onCancelAction = onCancel;
-    gameObject.SetActive(true);
-    InputService.Instance.onJoystickUsedChanged += OnJoystick;
-    OnJoystick(InputService.Instance.JoystickUsed);
-  }
+	public void Show(string text, Action onAccept, Action onCancel) {
+		textView.StringValue = text;
+		onAcceptAction = onAccept;
+		onCancelAction = onCancel;
+		gameObject.SetActive(true);
+		InputService.Instance.onJoystickUsedChanged += OnJoystick;
+		OnJoystick(InputService.Instance.JoystickUsed);
+	}
 
-  private bool OnSelection(GameActionType type, bool down)
-  {
-    if (type == GameActionType.Submit & down)
-    {
-      Accept();
-      return true;
-    }
-    if (!(type == GameActionType.Cancel & down))
-      return false;
-    Cancel();
-    return true;
-  }
+	private bool OnSelection(GameActionType type, bool down) {
+		if ((type == GameActionType.Submit) & down) {
+			Accept();
+			return true;
+		}
 
-  private void OnJoystick(bool joystick)
-  {
-    GameActionService service = ServiceLocator.GetService<GameActionService>();
-    if (joystick)
-    {
-      service.AddListener(GameActionType.Submit, OnSelection, true);
-      service.AddListener(GameActionType.Cancel, OnSelection, true);
-      consoleAcceptButton.SetActive(true);
-      consoleCancelButton.SetActive(true);
-      cancelButton.gameObject.SetActive(false);
-      acceptButton.gameObject.SetActive(false);
-    }
-    else
-    {
-      service.RemoveListener(GameActionType.Submit, OnSelection);
-      service.RemoveListener(GameActionType.Cancel, OnSelection);
-      consoleAcceptButton.SetActive(false);
-      consoleCancelButton.SetActive(false);
-      cancelButton.gameObject.SetActive(true);
-      acceptButton.gameObject.SetActive(true);
-    }
-  }
+		if (!((type == GameActionType.Cancel) & down))
+			return false;
+		Cancel();
+		return true;
+	}
+
+	private void OnJoystick(bool joystick) {
+		var service = ServiceLocator.GetService<GameActionService>();
+		if (joystick) {
+			service.AddListener(GameActionType.Submit, OnSelection, true);
+			service.AddListener(GameActionType.Cancel, OnSelection, true);
+			consoleAcceptButton.SetActive(true);
+			consoleCancelButton.SetActive(true);
+			cancelButton.gameObject.SetActive(false);
+			acceptButton.gameObject.SetActive(false);
+		} else {
+			service.RemoveListener(GameActionType.Submit, OnSelection);
+			service.RemoveListener(GameActionType.Cancel, OnSelection);
+			consoleAcceptButton.SetActive(false);
+			consoleCancelButton.SetActive(false);
+			cancelButton.gameObject.SetActive(true);
+			acceptButton.gameObject.SetActive(true);
+		}
+	}
 }

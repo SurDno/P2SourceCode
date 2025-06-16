@@ -1,10 +1,8 @@
-﻿namespace ClipperLib
-{
-  public enum ClipType
-  {
-    ctIntersection,
-    ctUnion,
-    ctDifference,
-    ctXor,
-  }
+﻿namespace ClipperLib;
+
+public enum ClipType {
+	ctIntersection,
+	ctUnion,
+	ctDifference,
+	ctXor
 }

@@ -7,27 +7,22 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Sounds
-{
-  [Category("Sounds")]
-  public class IsDiseasedNode : FlowControlNode
-  {
-    [FromLocator]
-    private ISimulation simulation;
-    [Port("Diseased")]
-    private ValueInput<DiseasedStateEnum> diseasedInput;
+namespace Engine.Source.Blueprints.Sounds;
 
-    [Port("Value")]
-    private bool Value()
-    {
-      IEntity player = simulation.Player;
-      if (player != null)
-      {
-        INavigationComponent component = player.GetComponent<INavigationComponent>();
-        if (component != null && component.Region is RegionComponent region)
-          return diseasedInput.value == DiseasedUtility.GetStateByLevel(region.DiseaseLevel.Value);
-      }
-      return false;
-    }
-  }
+[Category("Sounds")]
+public class IsDiseasedNode : FlowControlNode {
+	[FromLocator] private ISimulation simulation;
+	[Port("Diseased")] private ValueInput<DiseasedStateEnum> diseasedInput;
+
+	[Port("Value")]
+	private bool Value() {
+		var player = simulation.Player;
+		if (player != null) {
+			var component = player.GetComponent<INavigationComponent>();
+			if (component != null && component.Region is RegionComponent region)
+				return diseasedInput.value == DiseasedUtility.GetStateByLevel(region.DiseaseLevel.Value);
+		}
+
+		return false;
+	}
 }

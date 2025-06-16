@@ -4,49 +4,48 @@ using Cofe.Loggers;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  public class OperationTagsInfo : IVMStringSerializable
-  {
-    protected List<string> tagsList = new List<string>();
+namespace PLVirtualMachine.Common;
 
-    public void AddTag(string sTag) => tagsList.Add(sTag);
+public class OperationTagsInfo : IVMStringSerializable {
+	protected List<string> tagsList = new();
 
-    public List<string> TagsList => tagsList;
+	public void AddTag(string sTag) {
+		tagsList.Add(sTag);
+	}
 
-    public bool CheckTag(string sTag) => tagsList.Count <= 0 || tagsList.Contains(sTag);
+	public List<string> TagsList => tagsList;
 
-    protected virtual void ReadTag(string tagDataStr)
-    {
-      if (!(tagDataStr != "&OP&AND&"))
-        return;
-      tagsList.Add(tagDataStr);
-    }
+	public bool CheckTag(string sTag) {
+		return tagsList.Count <= 0 || tagsList.Contains(sTag);
+	}
 
-    public void Read(string data)
-    {
-      switch (data)
-      {
-        case null:
-          Logger.AddError(string.Format("Attempt to read null operation tags info at {0}", EngineAPIManager.Instance.CurrentFSMStateInfo));
-          break;
-        case "":
-          break;
-        case "0":
-          break;
-        default:
-          tagsList.Clear();
-          string[] separator = new string[1]{ ";" };
-          foreach (string tagDataStr in data.Split(separator, StringSplitOptions.RemoveEmptyEntries))
-            ReadTag(tagDataStr);
-          break;
-      }
-    }
+	protected virtual void ReadTag(string tagDataStr) {
+		if (!(tagDataStr != "&OP&AND&"))
+			return;
+		tagsList.Add(tagDataStr);
+	}
 
-    public virtual string Write()
-    {
-      Logger.AddError("Not allowed serialization data struct in virtual machine!");
-      return string.Empty;
-    }
-  }
+	public void Read(string data) {
+		switch (data) {
+			case null:
+				Logger.AddError(string.Format("Attempt to read null operation tags info at {0}",
+					EngineAPIManager.Instance.CurrentFSMStateInfo));
+				break;
+			case "":
+				break;
+			case "0":
+				break;
+			default:
+				tagsList.Clear();
+				var separator = new string[1] { ";" };
+				foreach (var tagDataStr in data.Split(separator, StringSplitOptions.RemoveEmptyEntries))
+					ReadTag(tagDataStr);
+				break;
+		}
+	}
+
+	public virtual string Write() {
+		Logger.AddError("Not allowed serialization data struct in virtual machine!");
+		return string.Empty;
+	}
 }

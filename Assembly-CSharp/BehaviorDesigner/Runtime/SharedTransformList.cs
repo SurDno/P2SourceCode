@@ -9,37 +9,32 @@ using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime
-{
-  [FactoryProxy(typeof (SharedTransformList))]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [Serializable]
-  public class SharedTransformList : 
-    SharedVariable<List<Transform>>,
-    IStub,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.Write(writer, "IsShared", mIsShared);
-      DefaultDataWriteUtility.Write(writer, "Name", mName);
-      BehaviorTreeDataWriteUtility.WriteUnityList(writer, "Value", mValue);
-    }
+namespace BehaviorDesigner.Runtime;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      mIsShared = DefaultDataReadUtility.Read(reader, "IsShared", mIsShared);
-      mName = DefaultDataReadUtility.Read(reader, "Name", mName);
-      mValue = BehaviorTreeDataReadUtility.ReadUnityList(reader, "Value", mValue);
-    }
+[FactoryProxy(typeof(SharedTransformList))]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[Serializable]
+public class SharedTransformList :
+	SharedVariable<List<Transform>>,
+	IStub,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.Write(writer, "IsShared", mIsShared);
+		DefaultDataWriteUtility.Write(writer, "Name", mName);
+		BehaviorTreeDataWriteUtility.WriteUnityList(writer, "Value", mValue);
+	}
 
-    public static implicit operator SharedTransformList(List<Transform> value)
-    {
-      SharedTransformList sharedTransformList = new SharedTransformList();
-      sharedTransformList.mValue = value;
-      return sharedTransformList;
-    }
-  }
+	public void DataRead(IDataReader reader, Type type) {
+		mIsShared = DefaultDataReadUtility.Read(reader, "IsShared", mIsShared);
+		mName = DefaultDataReadUtility.Read(reader, "Name", mName);
+		mValue = BehaviorTreeDataReadUtility.ReadUnityList(reader, "Value", mValue);
+	}
+
+	public static implicit operator SharedTransformList(List<Transform> value) {
+		var sharedTransformList = new SharedTransformList();
+		sharedTransformList.mValue = value;
+		return sharedTransformList;
+	}
 }

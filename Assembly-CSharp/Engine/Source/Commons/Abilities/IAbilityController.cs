@@ -1,9 +1,7 @@
-﻿namespace Engine.Source.Commons.Abilities
-{
-  public interface IAbilityController
-  {
-    void Initialise(AbilityItem abilityItem);
+﻿namespace Engine.Source.Commons.Abilities;
 
-    void Shutdown();
-  }
+public interface IAbilityController {
+	void Initialise(AbilityItem abilityItem);
+
+	void Shutdown();
 }

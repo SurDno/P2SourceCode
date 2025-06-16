@@ -1,12 +1,10 @@
 ﻿using System;
 
-namespace RootMotion
-{
-  [Serializable]
-  public enum Axis
-  {
-    X,
-    Y,
-    Z,
-  }
+namespace RootMotion;
+
+[Serializable]
+public enum Axis {
+	X,
+	Y,
+	Z
 }

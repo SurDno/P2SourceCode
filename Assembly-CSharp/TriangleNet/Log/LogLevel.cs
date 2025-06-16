@@ -1,9 +1,7 @@
-﻿namespace TriangleNet.Log
-{
-  public enum LogLevel
-  {
-    Info,
-    Warning,
-    Error,
-  }
+﻿namespace TriangleNet.Log;
+
+public enum LogLevel {
+	Info,
+	Warning,
+	Error
 }

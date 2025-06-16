@@ -1,9 +1,7 @@
 ﻿using UnityEngine;
 
-namespace Engine.Source.Commons
-{
-  public interface IEntityViewSetter
-  {
-    GameObject GameObject { set; }
-  }
+namespace Engine.Source.Commons;
+
+public interface IEntityViewSetter {
+	GameObject GameObject { set; }
 }

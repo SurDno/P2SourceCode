@@ -1,24 +1,24 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public abstract class SingleColorView : MonoBehaviour, IValueView<Color>
-  {
-    [SerializeField]
-    private Color value = Color.white;
+namespace Engine.Impl.UI.Controls;
 
-    protected Color GetValue() => value;
+public abstract class SingleColorView : MonoBehaviour, IValueView<Color> {
+	[SerializeField] private Color value = Color.white;
 
-    public Color GetValue(int id) => value;
+	protected Color GetValue() {
+		return value;
+	}
 
-    public void SetValue(int id, Color value, bool instant)
-    {
-      if (!instant && this.value == value)
-        return;
-      this.value = value;
-      ApplyValue(instant);
-    }
+	public Color GetValue(int id) {
+		return value;
+	}
 
-    protected abstract void ApplyValue(bool instant);
-  }
+	public void SetValue(int id, Color value, bool instant) {
+		if (!instant && this.value == value)
+			return;
+		this.value = value;
+		ApplyValue(instant);
+	}
+
+	protected abstract void ApplyValue(bool instant);
 }

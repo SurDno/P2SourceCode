@@ -1,28 +1,22 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Menu.Main
-{
-  public class PlatformDependentObjectSwitcher : MonoBehaviour
-  {
-    [SerializeField]
-    private List<GameObject> _pcControls;
-    [SerializeField]
-    private List<GameObject> _consoleControls;
+namespace Engine.Impl.UI.Menu.Main;
 
-    private void Awake()
-    {
-      bool flag = true;
-      SetActiveAllGameObjects(!flag ? _pcControls : _consoleControls, false);
-      SetActiveAllGameObjects(!flag ? _consoleControls : _pcControls, true);
-    }
+public class PlatformDependentObjectSwitcher : MonoBehaviour {
+	[SerializeField] private List<GameObject> _pcControls;
+	[SerializeField] private List<GameObject> _consoleControls;
 
-    private static void SetActiveAllGameObjects(List<GameObject> list, bool isActive)
-    {
-      if (list == null)
-        return;
-      foreach (GameObject gameObject in list)
-        gameObject.SetActive(isActive);
-    }
-  }
+	private void Awake() {
+		var flag = true;
+		SetActiveAllGameObjects(!flag ? _pcControls : _consoleControls, false);
+		SetActiveAllGameObjects(!flag ? _consoleControls : _pcControls, true);
+	}
+
+	private static void SetActiveAllGameObjects(List<GameObject> list, bool isActive) {
+		if (list == null)
+			return;
+		foreach (var gameObject in list)
+			gameObject.SetActive(isActive);
+	}
 }

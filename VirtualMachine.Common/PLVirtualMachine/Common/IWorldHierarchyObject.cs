@@ -1,24 +1,22 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IWorldHierarchyObject : 
-    ILogicObject,
-    IContext,
-    INamed,
-    IWorldObject,
-    IEngineTemplated,
-    IHierarchyObject,
-    IEngineInstanced
-  {
-    void Initialize(IWorldBlueprint templateObject);
+namespace PLVirtualMachine.Common;
 
-    IEnumerable<IHierarchyObject> SimpleChilds { get; }
+public interface IWorldHierarchyObject :
+	ILogicObject,
+	IContext,
+	INamed,
+	IWorldObject,
+	IEngineTemplated,
+	IHierarchyObject,
+	IEngineInstanced {
+	void Initialize(IWorldBlueprint templateObject);
 
-    bool IsPhantom { get; }
+	IEnumerable<IHierarchyObject> SimpleChilds { get; }
 
-    IWorldHierarchyObject Parent { get; set; }
+	bool IsPhantom { get; }
 
-    void ClearHierarchy();
-  }
+	IWorldHierarchyObject Parent { get; set; }
+
+	void ClearHierarchy();
 }

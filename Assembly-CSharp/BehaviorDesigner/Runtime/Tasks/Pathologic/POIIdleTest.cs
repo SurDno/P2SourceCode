@@ -8,113 +8,99 @@ using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks.Pathologic
-{
-  [TaskDescription("POI Idle")]
-  [TaskCategory("Pathologic")]
-  [TaskIcon("Pathologic_IdleIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (POIIdleTest))]
-  public class POIIdleTest : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedFloat InPOITime;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedVector3 POIStartPosition;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public SharedTransform poiObj;
-    private NpcState npcState;
-    private POIAnimationEnum chosenAnimation;
-    private int animationIndex;
-    private int currentAnimationIndex;
-    private int middleAnimationsCount;
+namespace BehaviorDesigner.Runtime.Tasks.Pathologic;
 
-    public override void OnAwake()
-    {
-      npcState = gameObject.GetComponent<NpcState>();
-      if (!(npcState == null))
-        return;
-      Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NpcState).Name + " engine component");
-    }
+[TaskDescription("POI Idle")]
+[TaskCategory("Pathologic")]
+[TaskIcon("Pathologic_IdleIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(POIIdleTest))]
+public class POIIdleTest : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedFloat InPOITime;
 
-    public override void OnStart()
-    {
-      if (npcState == null || !(poiObj.Value != null))
-        return;
-      POIBase component1 = poiObj.Value.GetComponent<POIBase>();
-      POISetup component2 = gameObject.GetComponent<POISetup>();
-      POIAnimationEnum poiAnimationEnum = component2.SupportedAnimations & component1.SupportedAnimations;
-      chosenAnimation = POIAnimationEnum.Unknown;
-      for (int index = 0; index < 32; ++index)
-      {
-        int num = index % 32;
-        if ((poiAnimationEnum & (POIAnimationEnum) (1 << num)) != 0)
-          chosenAnimation = (POIAnimationEnum) (1 << num);
-      }
-      POIAnimationSetupBase animationSetup = component2.GetAnimationSetup(chosenAnimation);
-      currentAnimationIndex = animationIndex;
-      middleAnimationsCount = 1;
-      if (animationSetup is POIAnimationSetupAngle)
-        animationIndex = 1;
-      if (animationSetup.Elements.Count > animationIndex && animationSetup.Elements[animationIndex] is POIAnimationSetupElementSlow)
-        middleAnimationsCount = (animationSetup.Elements[animationIndex] as POIAnimationSetupElementSlow).MiddleAnimationClips.Count;
-      npcState.PointOfInterest(InPOITime.Value, component1, chosenAnimation, animationIndex, middleAnimationsCount);
-      ++animationIndex;
-      if (animationIndex >= animationSetup.Elements.Count)
-        animationIndex = 0;
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedVector3 POIStartPosition;
 
-    public override TaskStatus OnUpdate()
-    {
-      if (npcState.CurrentNpcState != NpcStateEnum.PointOfInterest)
-        return TaskStatus.Failure;
-      switch (npcState.Status)
-      {
-        case NpcStateStatusEnum.Success:
-          return TaskStatus.Success;
-        case NpcStateStatusEnum.Failed:
-          return TaskStatus.Failure;
-        default:
-          return TaskStatus.Running;
-      }
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedTransform poiObj;
 
-    public override void OnEnd()
-    {
-    }
+	private NpcState npcState;
+	private POIAnimationEnum chosenAnimation;
+	private int animationIndex;
+	private int currentAnimationIndex;
+	private int middleAnimationsCount;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "InPOITime", InPOITime);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "POIStartPosition", POIStartPosition);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "PoiObj", poiObj);
-    }
+	public override void OnAwake() {
+		npcState = gameObject.GetComponent<NpcState>();
+		if (!(npcState == null))
+			return;
+		Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof(NpcState).Name + " engine component");
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      InPOITime = BehaviorTreeDataReadUtility.ReadShared(reader, "InPOITime", InPOITime);
-      POIStartPosition = BehaviorTreeDataReadUtility.ReadShared(reader, "POIStartPosition", POIStartPosition);
-      poiObj = BehaviorTreeDataReadUtility.ReadShared(reader, "PoiObj", poiObj);
-    }
-  }
+	public override void OnStart() {
+		if (npcState == null || !(poiObj.Value != null))
+			return;
+		var component1 = poiObj.Value.GetComponent<POIBase>();
+		var component2 = gameObject.GetComponent<POISetup>();
+		var poiAnimationEnum = component2.SupportedAnimations & component1.SupportedAnimations;
+		chosenAnimation = POIAnimationEnum.Unknown;
+		for (var index = 0; index < 32; ++index) {
+			var num = index % 32;
+			if ((poiAnimationEnum & (POIAnimationEnum)(1 << num)) != 0)
+				chosenAnimation = (POIAnimationEnum)(1 << num);
+		}
+
+		var animationSetup = component2.GetAnimationSetup(chosenAnimation);
+		currentAnimationIndex = animationIndex;
+		middleAnimationsCount = 1;
+		if (animationSetup is POIAnimationSetupAngle)
+			animationIndex = 1;
+		if (animationSetup.Elements.Count > animationIndex &&
+		    animationSetup.Elements[animationIndex] is POIAnimationSetupElementSlow)
+			middleAnimationsCount = (animationSetup.Elements[animationIndex] as POIAnimationSetupElementSlow)
+				.MiddleAnimationClips.Count;
+		npcState.PointOfInterest(InPOITime.Value, component1, chosenAnimation, animationIndex, middleAnimationsCount);
+		++animationIndex;
+		if (animationIndex >= animationSetup.Elements.Count)
+			animationIndex = 0;
+	}
+
+	public override TaskStatus OnUpdate() {
+		if (npcState.CurrentNpcState != NpcStateEnum.PointOfInterest)
+			return TaskStatus.Failure;
+		switch (npcState.Status) {
+			case NpcStateStatusEnum.Success:
+				return TaskStatus.Success;
+			case NpcStateStatusEnum.Failed:
+				return TaskStatus.Failure;
+			default:
+				return TaskStatus.Running;
+		}
+	}
+
+	public override void OnEnd() { }
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "InPOITime", InPOITime);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "POIStartPosition", POIStartPosition);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "PoiObj", poiObj);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		InPOITime = BehaviorTreeDataReadUtility.ReadShared(reader, "InPOITime", InPOITime);
+		POIStartPosition = BehaviorTreeDataReadUtility.ReadShared(reader, "POIStartPosition", POIStartPosition);
+		poiObj = BehaviorTreeDataReadUtility.ReadShared(reader, "PoiObj", poiObj);
+	}
 }

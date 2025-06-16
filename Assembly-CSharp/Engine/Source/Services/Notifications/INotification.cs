@@ -1,15 +1,13 @@
 ﻿using Engine.Common.Commons;
 
-namespace Engine.Source.Services.Notifications
-{
-  public interface INotification
-  {
-    bool Complete { get; }
+namespace Engine.Source.Services.Notifications;
 
-    NotificationEnum Type { get; }
+public interface INotification {
+	bool Complete { get; }
 
-    void Initialise(NotificationEnum type, object[] values);
+	NotificationEnum Type { get; }
 
-    void Shutdown();
-  }
+	void Initialise(NotificationEnum type, object[] values);
+
+	void Shutdown();
 }

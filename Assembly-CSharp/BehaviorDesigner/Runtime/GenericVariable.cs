@@ -8,37 +8,30 @@ using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime
-{
-  [FactoryProxy(typeof (GenericVariable))]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [Serializable]
-  public class GenericVariable : IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public string type = "SharedString";
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public SharedVariable value;
+namespace BehaviorDesigner.Runtime;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.Write(writer, "Type", type);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Value", value);
-    }
+[FactoryProxy(typeof(GenericVariable))]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[Serializable]
+public class GenericVariable : IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public string type = "SharedString";
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      this.type = DefaultDataReadUtility.Read(reader, "Type", this.type);
-      value = BehaviorTreeDataReadUtility.ReadShared(reader, "Value", value);
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedVariable value;
 
-    public GenericVariable() => value = new SharedString();
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.Write(writer, "Type", type);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Value", value);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		this.type = DefaultDataReadUtility.Read(reader, "Type", this.type);
+		value = BehaviorTreeDataReadUtility.ReadShared(reader, "Value", value);
+	}
+
+	public GenericVariable() {
+		value = new SharedString();
+	}
 }

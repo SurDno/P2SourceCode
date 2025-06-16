@@ -3,40 +3,34 @@ using Engine.Source.Commons;
 using Engine.Source.Components;
 using UnityEngine;
 
-namespace Engine.Behaviours.Engines
-{
-  public class EngineTriggerEventBehaviour : MonoBehaviour, IEntityAttachable
-  {
-    private TriggerComponent component;
+namespace Engine.Behaviours.Engines;
 
-    public void Attach(IEntity owner)
-    {
-      component = owner.GetComponent<TriggerComponent>();
-      if (component == null)
-        return;
-      component.Attach();
-    }
+public class EngineTriggerEventBehaviour : MonoBehaviour, IEntityAttachable {
+	private TriggerComponent component;
 
-    public void Detach()
-    {
-      if (component == null)
-        return;
-      component.Detach();
-      component = null;
-    }
+	public void Attach(IEntity owner) {
+		component = owner.GetComponent<TriggerComponent>();
+		if (component == null)
+			return;
+		component.Attach();
+	}
 
-    private void OnTriggerEnter(Collider collider)
-    {
-      if (component == null)
-        return;
-      component.Enter(collider.gameObject);
-    }
+	public void Detach() {
+		if (component == null)
+			return;
+		component.Detach();
+		component = null;
+	}
 
-    private void OnTriggerExit(Collider collider)
-    {
-      if (component == null)
-        return;
-      component.Exit(collider.gameObject);
-    }
-  }
+	private void OnTriggerEnter(Collider collider) {
+		if (component == null)
+			return;
+		component.Enter(collider.gameObject);
+	}
+
+	private void OnTriggerExit(Collider collider) {
+		if (component == null)
+			return;
+		component.Exit(collider.gameObject);
+	}
 }

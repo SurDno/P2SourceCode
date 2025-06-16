@@ -1,13 +1,11 @@
-﻿namespace Engine.Common.Components.Parameters
-{
-  public interface IParameter<T> : IParameter where T : struct
-  {
-    T Value { get; set; }
+﻿namespace Engine.Common.Components.Parameters;
 
-    T BaseValue { get; set; }
+public interface IParameter<T> : IParameter where T : struct {
+	T Value { get; set; }
 
-    T MinValue { get; set; }
+	T BaseValue { get; set; }
 
-    T MaxValue { get; set; }
-  }
+	T MinValue { get; set; }
+
+	T MaxValue { get; set; }
 }

@@ -8,58 +8,49 @@ using Engine.Source.Commons.Effects;
 using Engine.Source.Components;
 using Inspectors;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class PlayerReputationEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    private IParameter<float> parameter;
-    private NavigationComponent navigation;
-    private PlayerControllerComponent controller;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class PlayerReputationEffect : IEffect {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	private IParameter<float> parameter;
+	private NavigationComponent navigation;
+	private PlayerControllerComponent controller;
 
-    public IEntity Target { get; set; }
+	public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      parameter = Target.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Reputation);
-      navigation = Target.GetComponent<NavigationComponent>();
-      controller = Target.GetComponent<PlayerControllerComponent>();
-      return true;
-    }
+	public IEntity Target { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      if (navigation == null || controller == null || parameter == null)
-        return false;
-      IRegionComponent region = navigation.Region;
-      if (region == null)
-      {
-        parameter.Value = 0.0f;
-        return true;
-      }
-      parameter.Value = region.Reputation.Value;
-      return true;
-    }
+	public ParameterEffectQueueEnum Queue => queue;
 
-    public void Cleanup()
-    {
-      navigation = null;
-      controller = null;
-      parameter = null;
-    }
-  }
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		parameter = Target.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Reputation);
+		navigation = Target.GetComponent<NavigationComponent>();
+		controller = Target.GetComponent<PlayerControllerComponent>();
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		if (navigation == null || controller == null || parameter == null)
+			return false;
+		var region = navigation.Region;
+		if (region == null) {
+			parameter.Value = 0.0f;
+			return true;
+		}
+
+		parameter.Value = region.Reputation.Value;
+		return true;
+	}
+
+	public void Cleanup() {
+		navigation = null;
+		controller = null;
+		parameter = null;
+	}
 }

@@ -1,43 +1,39 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class HideableColor : HideableView, IValueView<Color>
-  {
-    [SerializeField]
-    private ColorViewHandle view;
-    [SerializeField]
-    private Color falseColor;
-    [SerializeField]
-    private Color trueColor;
+namespace Engine.Impl.UI.Controls;
 
-    public override void SkipAnimation() => ApplyVisibility(true);
+public class HideableColor : HideableView, IValueView<Color> {
+	[SerializeField] private ColorViewHandle view;
+	[SerializeField] private Color falseColor;
+	[SerializeField] private Color trueColor;
 
-    protected override void ApplyVisibility() => ApplyVisibility(false);
+	public override void SkipAnimation() {
+		ApplyVisibility(true);
+	}
 
-    private void ApplyVisibility(bool instant)
-    {
-      view.SetValue(Visible ? trueColor : falseColor, instant);
-    }
+	protected override void ApplyVisibility() {
+		ApplyVisibility(false);
+	}
 
-    Color IValueView<Color>.GetValue(int id) => id <= 0 ? falseColor : trueColor;
+	private void ApplyVisibility(bool instant) {
+		view.SetValue(Visible ? trueColor : falseColor, instant);
+	}
 
-    void IValueView<Color>.SetValue(int id, Color value, bool instant)
-    {
-      if (id <= 0)
-      {
-        if (!instant && falseColor == value)
-          return;
-        falseColor = value;
-        ApplyVisibility(instant);
-      }
-      else
-      {
-        if (!instant && trueColor == value)
-          return;
-        trueColor = value;
-        ApplyVisibility(instant);
-      }
-    }
-  }
+	Color IValueView<Color>.GetValue(int id) {
+		return id <= 0 ? falseColor : trueColor;
+	}
+
+	void IValueView<Color>.SetValue(int id, Color value, bool instant) {
+		if (id <= 0) {
+			if (!instant && falseColor == value)
+				return;
+			falseColor = value;
+			ApplyVisibility(instant);
+		} else {
+			if (!instant && trueColor == value)
+				return;
+			trueColor = value;
+			ApplyVisibility(instant);
+		}
+	}
 }

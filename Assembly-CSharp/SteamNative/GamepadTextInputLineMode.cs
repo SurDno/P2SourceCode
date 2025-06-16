@@ -1,8 +1,6 @@
-﻿namespace SteamNative
-{
-  internal enum GamepadTextInputLineMode
-  {
-    SingleLine,
-    MultipleLines,
-  }
+﻿namespace SteamNative;
+
+internal enum GamepadTextInputLineMode {
+	SingleLine,
+	MultipleLines
 }

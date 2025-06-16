@@ -1,21 +1,19 @@
 ﻿using System;
 
-namespace Engine.Common.Components
-{
-  public interface IHerbRootsComponent : IComponent
-  {
-    void Reset();
+namespace Engine.Common.Components;
 
-    event Action OnTriggerEnterEvent;
+public interface IHerbRootsComponent : IComponent {
+	void Reset();
 
-    event Action OnTriggerLeaveEvent;
+	event Action OnTriggerEnterEvent;
 
-    event Action OnActivateStartEvent;
+	event Action OnTriggerLeaveEvent;
 
-    event Action OnActivateEndEvent;
+	event Action OnActivateStartEvent;
 
-    event Action OnHerbSpawnEvent;
+	event Action OnActivateEndEvent;
 
-    event Action OnLastHerbSpawnEvent;
-  }
+	event Action OnHerbSpawnEvent;
+
+	event Action OnLastHerbSpawnEvent;
 }

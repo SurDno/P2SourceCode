@@ -1,14 +1,16 @@
 ﻿using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 
-namespace Engine.Source.Comparers
-{
-  public class SceneComparer : IEqualityComparer<Scene>
-  {
-    public static readonly SceneComparer Instance = new SceneComparer();
+namespace Engine.Source.Comparers;
 
-    public bool Equals(Scene x, Scene y) => x == y;
+public class SceneComparer : IEqualityComparer<Scene> {
+	public static readonly SceneComparer Instance = new();
 
-    public int GetHashCode(Scene obj) => obj.GetHashCode();
-  }
+	public bool Equals(Scene x, Scene y) {
+		return x == y;
+	}
+
+	public int GetHashCode(Scene obj) {
+		return obj.GetHashCode();
+	}
 }

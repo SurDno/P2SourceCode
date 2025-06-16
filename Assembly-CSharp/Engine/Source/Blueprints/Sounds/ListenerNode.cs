@@ -3,17 +3,13 @@ using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Sounds
-{
-  [Category("Sounds")]
-  public class ListenerNode : FlowControlNode, IUpdatable
-  {
-    [Port("Value")]
-    private ValueInput<float> valueInput;
+namespace Engine.Source.Blueprints.Sounds;
 
-    public void Update()
-    {
-      float num = valueInput.value;
-    }
-  }
+[Category("Sounds")]
+public class ListenerNode : FlowControlNode, IUpdatable {
+	[Port("Value")] private ValueInput<float> valueInput;
+
+	public void Update() {
+		var num = valueInput.value;
+	}
 }

@@ -1,33 +1,31 @@
 ﻿using TriangleNet.Data;
 
-namespace TriangleNet.Geometry
-{
-  public interface ITriangle
-  {
-    int ID { get; }
+namespace TriangleNet.Geometry;
 
-    int P0 { get; }
+public interface ITriangle {
+	int ID { get; }
 
-    int P1 { get; }
+	int P0 { get; }
 
-    int P2 { get; }
+	int P1 { get; }
 
-    bool SupportsNeighbors { get; }
+	int P2 { get; }
 
-    int N0 { get; }
+	bool SupportsNeighbors { get; }
 
-    int N1 { get; }
+	int N0 { get; }
 
-    int N2 { get; }
+	int N1 { get; }
 
-    double Area { get; set; }
+	int N2 { get; }
 
-    int Region { get; }
+	double Area { get; set; }
 
-    Vertex GetVertex(int index);
+	int Region { get; }
 
-    ITriangle GetNeighbor(int index);
+	Vertex GetVertex(int index);
 
-    ISegment GetSegment(int index);
-  }
+	ITriangle GetNeighbor(int index);
+
+	ISegment GetSegment(int index);
 }

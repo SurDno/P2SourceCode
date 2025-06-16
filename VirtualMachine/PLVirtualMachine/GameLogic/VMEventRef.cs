@@ -3,33 +3,28 @@ using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.GameLogic
-{
-  [VMType("IEventRef")]
-  [VMFactory(typeof (IEventRef))]
-  public class VMEventRef : BaseRef, IEventRef, IRef, IVariable, INamed, IVMStringSerializable
-  {
-    public void Initialize(IEvent evnt) => LoadStaticInstance(evnt);
+namespace PLVirtualMachine.GameLogic;
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_EVENT;
-    }
+[VMType("IEventRef")]
+[VMFactory(typeof(IEventRef))]
+public class VMEventRef : BaseRef, IEventRef, IRef, IVariable, INamed, IVMStringSerializable {
+	public void Initialize(IEvent evnt) {
+		LoadStaticInstance(evnt);
+	}
 
-    public IEvent Event
-    {
-      get
-      {
-        if (StaticInstance == null && BaseGuid > 0UL)
-          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
-        return (IEvent) StaticInstance;
-      }
-    }
+	public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_EVENT;
 
-    public override VMType Type => new VMType(typeof (IEventRef));
+	public IEvent Event {
+		get {
+			if (StaticInstance == null && BaseGuid > 0UL)
+				LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+			return (IEvent)StaticInstance;
+		}
+	}
 
-    public override bool Empty => Event == null && base.Empty;
+	public override VMType Type => new(typeof(IEventRef));
 
-    protected override Type NeedInstanceType => typeof (IEvent);
-  }
+	public override bool Empty => Event == null && base.Empty;
+
+	protected override Type NeedInstanceType => typeof(IEvent);
 }

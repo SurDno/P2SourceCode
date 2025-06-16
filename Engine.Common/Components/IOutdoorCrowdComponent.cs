@@ -1,18 +1,16 @@
 ﻿using System;
 using Engine.Common.Components.Crowds;
 
-namespace Engine.Common.Components
-{
-  public interface IOutdoorCrowdComponent : IComponent
-  {
-    OutdoorCrowdLayoutEnum Layout { get; set; }
+namespace Engine.Common.Components;
 
-    void AddEntity(IEntity entity);
+public interface IOutdoorCrowdComponent : IComponent {
+	OutdoorCrowdLayoutEnum Layout { get; set; }
 
-    void Reset();
+	void AddEntity(IEntity entity);
 
-    event Action<IEntity> OnCreateEntity;
+	void Reset();
 
-    event Action<IEntity> OnDeleteEntity;
-  }
+	event Action<IEntity> OnCreateEntity;
+
+	event Action<IEntity> OnDeleteEntity;
 }

@@ -1,5 +1,3 @@
 ﻿using Engine.Source.UI;
 
-public class BoundCharactersActiveWindowCheck : ActiveWindowCheck<IBoundCharactersWindow>
-{
-}
+public class BoundCharactersActiveWindowCheck : ActiveWindowCheck<IBoundCharactersWindow> { }

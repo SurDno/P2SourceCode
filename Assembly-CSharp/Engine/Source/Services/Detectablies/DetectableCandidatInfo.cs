@@ -3,17 +3,11 @@ using Engine.Source.Components;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Services.Detectablies
-{
-  public struct DetectableCandidatInfo
-  {
-    [Inspected]
-    public DetectableComponent Detectable;
-    [Inspected]
-    public ILocationItemComponent LocationItem;
-    [Inspected]
-    public GameObject GameObject;
-    [Inspected]
-    public Vector3 Offset;
-  }
+namespace Engine.Source.Services.Detectablies;
+
+public struct DetectableCandidatInfo {
+	[Inspected] public DetectableComponent Detectable;
+	[Inspected] public ILocationItemComponent LocationItem;
+	[Inspected] public GameObject GameObject;
+	[Inspected] public Vector3 Offset;
 }

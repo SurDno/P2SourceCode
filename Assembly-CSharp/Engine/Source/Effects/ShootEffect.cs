@@ -7,68 +7,59 @@ using Engine.Source.Components;
 using Engine.Source.Effects.Values;
 using Inspectors;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class ShootEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy(Name = "Action")]
-    [DataWriteProxy(Name = "Action")]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ShootEffectEnum actionType;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class ShootEffect : IEffect {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy(Name = "Action")]
+	[DataWriteProxy(Name = "Action")]
+	[CopyableProxy()]
+	[Inspected]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ShootEffectEnum actionType;
 
-    public IEntity Target { get; set; }
+	public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime) => true;
+	public IEntity Target { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      NpcControllerComponent component = Target.GetComponent<NpcControllerComponent>();
-      if (component != null)
-      {
-        PlayerControllerComponent controllerComponent1 = AbilityItem.Self.GetComponent<PlayerControllerComponent>() ?? AbilityItem.Self.GetComponent<ParentComponent>()?.GetRootParent()?.GetComponent<PlayerControllerComponent>();
-        if (controllerComponent1 != null)
-        {
-          if (actionType == ShootEffectEnum.Shoot)
-            controllerComponent1.ComputeShoot(component);
-          if (actionType == ShootEffectEnum.Hit)
-            controllerComponent1.ComputeHit(component);
-          if (actionType == ShootEffectEnum.HitOther)
-            controllerComponent1.ComputeHitAnotherNPC(component);
-        }
-        else
-        {
-          NpcControllerComponent controllerComponent2 = AbilityItem.Self.GetComponent<NpcControllerComponent>() ?? AbilityItem.Self.GetComponent<ParentComponent>()?.GetRootParent()?.GetComponent<NpcControllerComponent>();
-          if (controllerComponent2 != null)
-          {
-            if (actionType == ShootEffectEnum.Shoot)
-              controllerComponent2.ComputeShoot(component);
-            if (actionType == ShootEffectEnum.Hit)
-              controllerComponent2.ComputeHit(component);
-          }
-        }
-      }
-      return false;
-    }
+	public ParameterEffectQueueEnum Queue => queue;
 
-    public void Cleanup()
-    {
-    }
-  }
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		var component = Target.GetComponent<NpcControllerComponent>();
+		if (component != null) {
+			var controllerComponent1 = AbilityItem.Self.GetComponent<PlayerControllerComponent>() ?? AbilityItem.Self
+				.GetComponent<ParentComponent>()?.GetRootParent()?.GetComponent<PlayerControllerComponent>();
+			if (controllerComponent1 != null) {
+				if (actionType == ShootEffectEnum.Shoot)
+					controllerComponent1.ComputeShoot(component);
+				if (actionType == ShootEffectEnum.Hit)
+					controllerComponent1.ComputeHit(component);
+				if (actionType == ShootEffectEnum.HitOther)
+					controllerComponent1.ComputeHitAnotherNPC(component);
+			} else {
+				var controllerComponent2 = AbilityItem.Self.GetComponent<NpcControllerComponent>() ?? AbilityItem.Self
+					.GetComponent<ParentComponent>()?.GetRootParent()?.GetComponent<NpcControllerComponent>();
+				if (controllerComponent2 != null) {
+					if (actionType == ShootEffectEnum.Shoot)
+						controllerComponent2.ComputeShoot(component);
+					if (actionType == ShootEffectEnum.Hit)
+						controllerComponent2.ComputeHit(component);
+				}
+			}
+		}
+
+		return false;
+	}
+
+	public void Cleanup() { }
 }

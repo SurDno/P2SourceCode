@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common.EngineAPI
-{
-  public class ComponentInfo
-  {
-    public readonly string ComponentName;
-    public readonly List<APIMethodInfo> Methods = new List<APIMethodInfo>();
-    public readonly List<APIEventInfo> Events = new List<APIEventInfo>();
-    public readonly List<APIPropertyInfo> Properties = new List<APIPropertyInfo>();
+namespace PLVirtualMachine.Common.EngineAPI;
 
-    public ComponentInfo(string componentName) => ComponentName = componentName;
-  }
+public class ComponentInfo {
+	public readonly string ComponentName;
+	public readonly List<APIMethodInfo> Methods = new();
+	public readonly List<APIEventInfo> Events = new();
+	public readonly List<APIPropertyInfo> Properties = new();
+
+	public ComponentInfo(string componentName) {
+		ComponentName = componentName;
+	}
 }

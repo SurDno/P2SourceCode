@@ -1,40 +1,33 @@
 ﻿using Inspectors;
 
-namespace Engine.Source.Settings
-{
-  public class BoolValue : IValue<bool>
-  {
-    [Inspected]
-    private string name;
-    [Inspected]
-    private bool defaultValue;
-    private bool value;
+namespace Engine.Source.Settings;
 
-    public BoolValue(string name, bool defaultValue = false)
-    {
-      this.name = name;
-      value = PlayerSettings.Instance.GetBool(name, defaultValue);
-      this.defaultValue = defaultValue;
-    }
+public class BoolValue : IValue<bool> {
+	[Inspected] private string name;
+	[Inspected] private bool defaultValue;
+	private bool value;
 
-    [Inspected(Mutable = true)]
-    public bool Value
-    {
-      get => value;
-      set
-      {
-        if (this.value == value)
-          return;
-        this.value = value;
-        PlayerSettings.Instance.SetBool(name, value);
-        PlayerSettings.Instance.Save();
-      }
-    }
+	public BoolValue(string name, bool defaultValue = false) {
+		this.name = name;
+		value = PlayerSettings.Instance.GetBool(name, defaultValue);
+		this.defaultValue = defaultValue;
+	}
 
-    public bool DefaultValue => defaultValue;
+	[Inspected(Mutable = true)]
+	public bool Value {
+		get => value;
+		set {
+			if (this.value == value)
+				return;
+			this.value = value;
+			PlayerSettings.Instance.SetBool(name, value);
+			PlayerSettings.Instance.Save();
+		}
+	}
 
-    public bool MinValue => defaultValue;
+	public bool DefaultValue => defaultValue;
 
-    public bool MaxValue => defaultValue;
-  }
+	public bool MinValue => defaultValue;
+
+	public bool MaxValue => defaultValue;
 }

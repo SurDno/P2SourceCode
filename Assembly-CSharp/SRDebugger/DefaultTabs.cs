@@ -1,11 +1,9 @@
-﻿namespace SRDebugger
-{
-  public enum DefaultTabs
-  {
-    SystemInformation,
-    Logger,
-    Profiler,
-    Console,
-    Inspector,
-  }
+﻿namespace SRDebugger;
+
+public enum DefaultTabs {
+	SystemInformation,
+	Logger,
+	Profiler,
+	Console,
+	Inspector
 }

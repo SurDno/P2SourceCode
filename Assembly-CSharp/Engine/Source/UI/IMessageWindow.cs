@@ -1,7 +1,5 @@
-﻿namespace Engine.Source.UI
-{
-  public interface IMessageWindow : IWindow
-  {
-    void SetMessage(string text);
-  }
+﻿namespace Engine.Source.UI;
+
+public interface IMessageWindow : IWindow {
+	void SetMessage(string text);
 }

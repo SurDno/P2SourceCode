@@ -17,49 +17,42 @@ using Action = BehaviorDesigner.Runtime.Tasks.Action;
 [TaskIcon("Pathologic_SanitarIcon.png")]
 [Factory]
 [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-[FactoryProxy(typeof (FlamethrowerOn))]
-public class FlamethrowerOn : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-{
-  [DataReadProxy]
-  [DataWriteProxy]
-  [CopyableProxy()]
-  [SerializeField]
-  public SharedTransform Target;
-  private PivotSanitar pivot;
+[FactoryProxy(typeof(FlamethrowerOn))]
+public class FlamethrowerOn : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedTransform Target;
 
-  public override TaskStatus OnUpdate()
-  {
-    if (pivot == null)
-    {
-      pivot = gameObject.GetComponent<PivotSanitar>();
-      if (pivot == null)
-      {
-        Debug.LogWarning("Doesn't contain " + typeof (PivotSanitar).Name + " component", gameObject);
-        return TaskStatus.Failure;
-      }
-    }
-    pivot.Flamethrower = true;
-    pivot.TargetObject = Target.Value;
-    return TaskStatus.Success;
-  }
+	private PivotSanitar pivot;
 
-  public void DataWrite(IDataWriter writer)
-  {
-    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
-  }
+	public override TaskStatus OnUpdate() {
+		if (pivot == null) {
+			pivot = gameObject.GetComponent<PivotSanitar>();
+			if (pivot == null) {
+				Debug.LogWarning("Doesn't contain " + typeof(PivotSanitar).Name + " component", gameObject);
+				return TaskStatus.Failure;
+			}
+		}
 
-  public void DataRead(IDataReader reader, Type type)
-  {
-    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    id = DefaultDataReadUtility.Read(reader, "Id", id);
-    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
-  }
+		pivot.Flamethrower = true;
+		pivot.TargetObject = Target.Value;
+		return TaskStatus.Success;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+	}
 }

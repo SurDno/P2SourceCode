@@ -1,9 +1,7 @@
-﻿namespace AmplifyBloom
-{
-  public enum MainThresholdSizeEnum
-  {
-    Full,
-    Half,
-    Quarter,
-  }
+﻿namespace AmplifyBloom;
+
+public enum MainThresholdSizeEnum {
+	Full,
+	Half,
+	Quarter
 }

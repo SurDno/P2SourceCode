@@ -1,53 +1,48 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine
-{
-  internal class BlendSourceVirtualCamera : ICinemachineCamera
-  {
-    public BlendSourceVirtualCamera(CinemachineBlend blend, float deltaTime)
-    {
-      Blend = blend;
-      UpdateCameraState(blend.CamA.State.ReferenceUp, deltaTime);
-    }
+namespace Cinemachine;
 
-    public CinemachineBlend Blend { get; private set; }
+internal class BlendSourceVirtualCamera : ICinemachineCamera {
+	public BlendSourceVirtualCamera(CinemachineBlend blend, float deltaTime) {
+		Blend = blend;
+		UpdateCameraState(blend.CamA.State.ReferenceUp, deltaTime);
+	}
 
-    public string Name => "Blend";
+	public CinemachineBlend Blend { get; private set; }
 
-    public string Description => Blend.Description;
+	public string Name => "Blend";
 
-    public int Priority { get; set; }
+	public string Description => Blend.Description;
 
-    public Transform LookAt { get; set; }
+	public int Priority { get; set; }
 
-    public Transform Follow { get; set; }
+	public Transform LookAt { get; set; }
 
-    public CameraState State { get; private set; }
+	public Transform Follow { get; set; }
 
-    public GameObject VirtualCameraGameObject => null;
+	public CameraState State { get; private set; }
 
-    public ICinemachineCamera LiveChildOrSelf => Blend.CamB;
+	public GameObject VirtualCameraGameObject => null;
 
-    public ICinemachineCamera ParentCamera => null;
+	public ICinemachineCamera LiveChildOrSelf => Blend.CamB;
 
-    public bool IsLiveChild(ICinemachineCamera vcam)
-    {
-      return vcam == Blend.CamA || vcam == Blend.CamB;
-    }
+	public ICinemachineCamera ParentCamera => null;
 
-    public CameraState CalculateNewState(float deltaTime) => State;
+	public bool IsLiveChild(ICinemachineCamera vcam) {
+		return vcam == Blend.CamA || vcam == Blend.CamB;
+	}
 
-    public void UpdateCameraState(Vector3 worldUp, float deltaTime)
-    {
-      Blend.UpdateCameraState(worldUp, deltaTime);
-      State = Blend.State;
-    }
+	public CameraState CalculateNewState(float deltaTime) {
+		return State;
+	}
 
-    public void OnTransitionFromCamera(
-      ICinemachineCamera fromCam,
-      Vector3 worldUp,
-      float deltaTime)
-    {
-    }
-  }
+	public void UpdateCameraState(Vector3 worldUp, float deltaTime) {
+		Blend.UpdateCameraState(worldUp, deltaTime);
+		State = Blend.State;
+	}
+
+	public void OnTransitionFromCamera(
+		ICinemachineCamera fromCam,
+		Vector3 worldUp,
+		float deltaTime) { }
 }

@@ -10,116 +10,109 @@ using VirtualMachine.Common;
 using VirtualMachine.Common.Data;
 using VirtualMachine.Data;
 
-namespace PLVirtualMachine.FSM
-{
-  [TypeData(EDataType.TReply)]
-  [DataFactory("Reply")]
-  public class VMSpeechReply : 
-    VMBaseObject,
-    IStub,
-    IEditorDataReader,
-    ISpeechReply,
-    IObject,
-    IEditorBaseTemplate,
-    IOrderedChild
-  {
-    [FieldData("Text", DataFieldType.Reference)]
-    private VMGameString text;
-    [FieldData("OnlyOnce")]
-    private bool onlyOnce;
-    [FieldData("OnlyOneReply")]
-    private bool onlyOneReply;
-    [FieldData("Default")]
-    private bool isDefault;
-    [FieldData("EnableCondition", DataFieldType.Reference)]
-    private ICondition enableCondition;
-    [FieldData("ActionLine", DataFieldType.Reference)]
-    private IActionLine actionLine;
-    [FieldData("OrderIndex")]
-    private int orderIndex;
+namespace PLVirtualMachine.FSM;
 
-    public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext)
-    {
-      while (xml.Read()) {
-        if (xml.NodeType == XmlNodeType.Element)
-        {
-          switch (xml.Name)
-          {
-            case "ActionLine":
-              actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
-              continue;
-            case "Default":
-              isDefault = EditorDataReadUtility.ReadValue(xml, isDefault);
-              continue;
-            case "EnableCondition":
-              enableCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
-              continue;
-            case "Name":
-              name = EditorDataReadUtility.ReadValue(xml, name);
-              continue;
-            case "OnlyOnce":
-              onlyOnce = EditorDataReadUtility.ReadValue(xml, onlyOnce);
-              continue;
-            case "OnlyOneReply":
-              onlyOneReply = EditorDataReadUtility.ReadValue(xml, onlyOneReply);
-              continue;
-            case "OrderIndex":
-              orderIndex = EditorDataReadUtility.ReadValue(xml, orderIndex);
-              continue;
-            case "Parent":
-              parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
-              continue;
-            case "Text":
-              text = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
-              continue;
-            default:
-              if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
-                Logger.AddError(typeContext + " : " + xml.Name);
-              XmlReaderUtility.SkipNode(xml);
-              continue;
-          }
-        }
+[TypeData(EDataType.TReply)]
+[DataFactory("Reply")]
+public class VMSpeechReply :
+	VMBaseObject,
+	IStub,
+	IEditorDataReader,
+	ISpeechReply,
+	IObject,
+	IEditorBaseTemplate,
+	IOrderedChild {
+	[FieldData("Text", DataFieldType.Reference)]
+	private VMGameString text;
 
-        if (xml.NodeType == XmlNodeType.EndElement)
-          break;
-      }
-    }
+	[FieldData("OnlyOnce")] private bool onlyOnce;
+	[FieldData("OnlyOneReply")] private bool onlyOneReply;
+	[FieldData("Default")] private bool isDefault;
 
-    public VMSpeechReply(ulong guid)
-      : base(guid)
-    {
-    }
+	[FieldData("EnableCondition", DataFieldType.Reference)]
+	private ICondition enableCondition;
 
-    public override EObjectCategory GetCategory() => EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
+	[FieldData("ActionLine", DataFieldType.Reference)]
+	private IActionLine actionLine;
 
-    public IGameString Text => text;
+	[FieldData("OrderIndex")] private int orderIndex;
 
-    public int Order => orderIndex;
+	public virtual void EditorDataRead(XmlReader xml, IDataCreator creator, string typeContext) {
+		while (xml.Read()) {
+			if (xml.NodeType == XmlNodeType.Element)
+				switch (xml.Name) {
+					case "ActionLine":
+						actionLine = EditorDataReadUtility.ReadReference<IActionLine>(xml, creator);
+						continue;
+					case "Default":
+						isDefault = EditorDataReadUtility.ReadValue(xml, isDefault);
+						continue;
+					case "EnableCondition":
+						enableCondition = EditorDataReadUtility.ReadReference<ICondition>(xml, creator);
+						continue;
+					case "Name":
+						name = EditorDataReadUtility.ReadValue(xml, name);
+						continue;
+					case "OnlyOnce":
+						onlyOnce = EditorDataReadUtility.ReadValue(xml, onlyOnce);
+						continue;
+					case "OnlyOneReply":
+						onlyOneReply = EditorDataReadUtility.ReadValue(xml, onlyOneReply);
+						continue;
+					case "OrderIndex":
+						orderIndex = EditorDataReadUtility.ReadValue(xml, orderIndex);
+						continue;
+					case "Parent":
+						parent = EditorDataReadUtility.ReadReference<IContainer>(xml, creator);
+						continue;
+					case "Text":
+						text = EditorDataReadUtility.ReadReference<VMGameString>(xml, creator);
+						continue;
+					default:
+						if (XMLDataLoader.Logs.Add(typeContext + " : " + xml.Name))
+							Logger.AddError(typeContext + " : " + xml.Name);
+						XmlReaderUtility.SkipNode(xml);
+						continue;
+				}
 
-    public bool OnlyOnce => onlyOnce;
+			if (xml.NodeType == XmlNodeType.EndElement)
+				break;
+		}
+	}
 
-    public bool OnlyOneReply => onlyOneReply;
+	public VMSpeechReply(ulong guid)
+		: base(guid) { }
 
-    public bool IsDefault => isDefault;
+	public override EObjectCategory GetCategory() {
+		return EObjectCategory.OBJECT_CATEGORY_GRAPH_ELEMENT;
+	}
 
-    public ICondition EnableCondition => enableCondition;
+	public IGameString Text => text;
 
-    public IActionLine ActionLine => actionLine;
+	public int Order => orderIndex;
 
-    public override void Clear()
-    {
-      base.Clear();
-      if (enableCondition != null)
-      {
-        ((VMPartCondition) enableCondition).Clear();
-        enableCondition = null;
-      }
-      if (actionLine != null)
-      {
-        ((VMActionLine) actionLine).Clear();
-        actionLine = null;
-      }
-      text = null;
-    }
-  }
+	public bool OnlyOnce => onlyOnce;
+
+	public bool OnlyOneReply => onlyOneReply;
+
+	public bool IsDefault => isDefault;
+
+	public ICondition EnableCondition => enableCondition;
+
+	public IActionLine ActionLine => actionLine;
+
+	public override void Clear() {
+		base.Clear();
+		if (enableCondition != null) {
+			((VMPartCondition)enableCondition).Clear();
+			enableCondition = null;
+		}
+
+		if (actionLine != null) {
+			((VMActionLine)actionLine).Clear();
+			actionLine = null;
+		}
+
+		text = null;
+	}
 }

@@ -4,28 +4,26 @@ using Engine.Common.Commons;
 using Engine.Common.Components.Speaking;
 using Engine.Common.Types;
 
-namespace Engine.Common.Components
-{
-  public interface ISpeakingComponent : IComponent
-  {
-    bool IsEnabled { get; }
+namespace Engine.Common.Components;
 
-    bool SpeakAvailable { get; set; }
+public interface ISpeakingComponent : IComponent {
+	bool IsEnabled { get; }
 
-    IEnumerable<ILipSyncObject> InitialPhrases { get; }
+	bool SpeakAvailable { get; set; }
 
-    event Action OnBeginTalking;
+	IEnumerable<ILipSyncObject> InitialPhrases { get; }
 
-    event Action<ulong> OnSpeechReply;
+	event Action OnBeginTalking;
 
-    void Speech(LocalizedText speech, List<DialogString> replies);
+	event Action<ulong> OnSpeechReply;
 
-    void ExitTalking();
+	void Speech(LocalizedText speech, List<DialogString> replies);
 
-    void AddInitialPhrase(ILipSyncObject lipsync);
+	void ExitTalking();
 
-    void RemoveInitialPhrase(ILipSyncObject lipsync);
+	void AddInitialPhrase(ILipSyncObject lipsync);
 
-    void ClearInitialPhrases();
-  }
+	void RemoveInitialPhrase(ILipSyncObject lipsync);
+
+	void ClearInitialPhrases();
 }

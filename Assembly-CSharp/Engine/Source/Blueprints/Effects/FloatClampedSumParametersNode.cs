@@ -5,32 +5,26 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class FloatClampedSumParametersNode : FlowControlNode
-  {
-    [Port("Value")]
-    private ValueInput<IList<IParameter<float>>> parametersInput;
+namespace Engine.Source.Blueprints.Effects;
 
-    [Port("Value")]
-    private float Value()
-    {
-      float num1 = 0.0f;
-      float num2 = 0.0f;
-      float num3 = 0.0f;
-      IList<IParameter<float>> parameterList = parametersInput.value;
-      if (parameterList != null)
-      {
-        for (int index = 0; index < parameterList.Count; ++index)
-        {
-          float b = parameterList[index].Value;
-          num1 += b;
-          num2 = Mathf.Min(num2, b);
-          num3 = Mathf.Max(num3, b);
-        }
-      }
-      return Mathf.Clamp(num1, num2, num3);
-    }
-  }
+[Category("Effects")]
+public class FloatClampedSumParametersNode : FlowControlNode {
+	[Port("Value")] private ValueInput<IList<IParameter<float>>> parametersInput;
+
+	[Port("Value")]
+	private float Value() {
+		var num1 = 0.0f;
+		var num2 = 0.0f;
+		var num3 = 0.0f;
+		var parameterList = parametersInput.value;
+		if (parameterList != null)
+			for (var index = 0; index < parameterList.Count; ++index) {
+				var b = parameterList[index].Value;
+				num1 += b;
+				num2 = Mathf.Min(num2, b);
+				num3 = Mathf.Max(num3, b);
+			}
+
+		return Mathf.Clamp(num1, num2, num3);
+	}
 }

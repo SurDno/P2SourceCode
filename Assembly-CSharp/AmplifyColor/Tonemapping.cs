@@ -1,10 +1,8 @@
-﻿namespace AmplifyColor
-{
-  public enum Tonemapping
-  {
-    Disabled,
-    Photographic,
-    FilmicHable,
-    FilmicACES,
-  }
+﻿namespace AmplifyColor;
+
+public enum Tonemapping {
+	Disabled,
+	Photographic,
+	FilmicHable,
+	FilmicACES
 }

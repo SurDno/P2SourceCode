@@ -2,12 +2,13 @@
 using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 
-namespace Engine.Source.Commons.Parameters
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad | TypeEnum.NeedSave)]
-  public class BoundHealthStateParameter : Parameter<BoundHealthStateEnum>
-  {
-    protected override bool Compare(BoundHealthStateEnum a, BoundHealthStateEnum b) => a == b;
-  }
+namespace Engine.Source.Commons.Parameters;
+
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave |
+               TypeEnum.StateLoad | TypeEnum.NeedSave)]
+public class BoundHealthStateParameter : Parameter<BoundHealthStateEnum> {
+	protected override bool Compare(BoundHealthStateEnum a, BoundHealthStateEnum b) {
+		return a == b;
+	}
 }

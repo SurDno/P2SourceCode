@@ -4,26 +4,22 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class DelayFramesNode : FlowControlNode
-  {
-    private ValueInput<int> frames;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      frames = AddValueInput<int>("Frames");
-      AddFlowInput("In", () => StartCoroutine(Delay(frames.value, output)));
-    }
+[Category("Engine")]
+public class DelayFramesNode : FlowControlNode {
+	private ValueInput<int> frames;
 
-    private IEnumerator Delay(float frames, FlowOutput output)
-    {
-      for (int index = 0; index < (double) frames; ++index)
-        yield return new WaitForEndOfFrame();
-      output.Call();
-    }
-  }
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		frames = AddValueInput<int>("Frames");
+		AddFlowInput("In", () => StartCoroutine(Delay(frames.value, output)));
+	}
+
+	private IEnumerator Delay(float frames, FlowOutput output) {
+		for (var index = 0; index < (double)frames; ++index)
+			yield return new WaitForEndOfFrame();
+		output.Call();
+	}
 }

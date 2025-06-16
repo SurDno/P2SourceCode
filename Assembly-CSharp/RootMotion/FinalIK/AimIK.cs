@@ -1,43 +1,40 @@
 ﻿using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  [HelpURL("https://www.youtube.com/watch?v=wT8fViZpLmQ&index=3&list=PLVxSIA1OaTOu8Nos3CalXbJ2DrKnntMv6")]
-  [AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Aim IK")]
-  public class AimIK : IK
-  {
-    public IKSolverAim solver = new IKSolverAim();
+namespace RootMotion.FinalIK;
 
-    [ContextMenu("User Manual")]
-    protected override void OpenUserManual()
-    {
-      Application.OpenURL("http://www.root-motion.com/finalikdox/html/page1.html");
-    }
+[HelpURL("https://www.youtube.com/watch?v=wT8fViZpLmQ&index=3&list=PLVxSIA1OaTOu8Nos3CalXbJ2DrKnntMv6")]
+[AddComponentMenu("Scripts/RootMotion.FinalIK/IK/Aim IK")]
+public class AimIK : IK {
+	public IKSolverAim solver = new();
 
-    [ContextMenu("Scrpt Reference")]
-    protected override void OpenScriptReference()
-    {
-      Application.OpenURL("http://www.root-motion.com/finalikdox/html/class_root_motion_1_1_final_i_k_1_1_aim_i_k.html");
-    }
+	[ContextMenu("User Manual")]
+	protected override void OpenUserManual() {
+		Application.OpenURL("http://www.root-motion.com/finalikdox/html/page1.html");
+	}
 
-    [ContextMenu("TUTORIAL VIDEO")]
-    private void OpenSetupTutorial()
-    {
-      Application.OpenURL("https://www.youtube.com/watch?v=wT8fViZpLmQ");
-    }
+	[ContextMenu("Scrpt Reference")]
+	protected override void OpenScriptReference() {
+		Application.OpenURL(
+			"http://www.root-motion.com/finalikdox/html/class_root_motion_1_1_final_i_k_1_1_aim_i_k.html");
+	}
 
-    [ContextMenu("Support Group")]
-    private void SupportGroup()
-    {
-      Application.OpenURL("https://groups.google.com/forum/#!forum/final-ik");
-    }
+	[ContextMenu("TUTORIAL VIDEO")]
+	private void OpenSetupTutorial() {
+		Application.OpenURL("https://www.youtube.com/watch?v=wT8fViZpLmQ");
+	}
 
-    [ContextMenu("Asset Store Thread")]
-    private void ASThread()
-    {
-      Application.OpenURL("http://forum.unity3d.com/threads/final-ik-full-body-ik-aim-look-at-fabrik-ccd-ik-1-0-released.222685/");
-    }
+	[ContextMenu("Support Group")]
+	private void SupportGroup() {
+		Application.OpenURL("https://groups.google.com/forum/#!forum/final-ik");
+	}
 
-    public override IKSolver GetIKSolver() => solver;
-  }
+	[ContextMenu("Asset Store Thread")]
+	private void ASThread() {
+		Application.OpenURL(
+			"http://forum.unity3d.com/threads/final-ik-full-body-ik-aim-look-at-fabrik-ccd-ik-1-0-released.222685/");
+	}
+
+	public override IKSolver GetIKSolver() {
+		return solver;
+	}
 }

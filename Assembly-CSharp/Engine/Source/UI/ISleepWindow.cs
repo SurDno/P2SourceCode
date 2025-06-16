@@ -1,11 +1,9 @@
 ﻿using Engine.Common;
 
-namespace Engine.Source.UI
-{
-  public interface ISleepWindow : IWindow
-  {
-    IEntity Actor { get; set; }
+namespace Engine.Source.UI;
 
-    IEntity Target { get; set; }
-  }
+public interface ISleepWindow : IWindow {
+	IEntity Actor { get; set; }
+
+	IEntity Target { get; set; }
 }

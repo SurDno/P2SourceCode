@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 
-namespace InputServices
-{
-  public interface ICursorController
-  {
-    bool Visible { get; set; }
+namespace InputServices;
 
-    bool Free { get; set; }
+public interface ICursorController {
+	bool Visible { get; set; }
 
-    Vector2 Position { get; }
+	bool Free { get; set; }
 
-    void Move(float diffX, float diffY);
-  }
+	Vector2 Position { get; }
+
+	void Move(float diffX, float diffY);
 }

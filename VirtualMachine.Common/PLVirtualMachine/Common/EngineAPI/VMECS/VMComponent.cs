@@ -8,94 +8,79 @@ using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 using PLVirtualMachine.Common.Serialization;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  public class VMComponent : 
-    ISerializeStateSave,
-    IDynamicLoadSerializable,
-    IRealTimeModifiable,
-    INeedSave
-  {
-    [Serializable]
-    private string engineData = "";
-    private VMBaseEntity parentEntity;
-    private bool isModified;
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    public virtual void Initialize(VMBaseEntity parent) => parentEntity = parent;
+public class VMComponent :
+	ISerializeStateSave,
+	IDynamicLoadSerializable,
+	IRealTimeModifiable,
+	INeedSave {
+	[Serializable] private string engineData = "";
+	private VMBaseEntity parentEntity;
+	private bool isModified;
 
-    public virtual void Initialize(VMBaseEntity parent, IComponent component)
-    {
-      Initialize(parent);
-    }
+	public virtual void Initialize(VMBaseEntity parent) {
+		parentEntity = parent;
+	}
 
-    public VMBaseEntity Parent => parentEntity;
+	public virtual void Initialize(VMBaseEntity parent, IComponent component) {
+		Initialize(parent);
+	}
 
-    public string EngineData => engineData;
+	public VMBaseEntity Parent => parentEntity;
 
-    public string Name => GetComponentTypeName();
+	public string EngineData => engineData;
 
-    public virtual void StateSave(IDataWriter writer)
-    {
-      SaveManagerUtility.Save(writer, "APIName", Name);
-    }
+	public string Name => GetComponentTypeName();
 
-    public virtual void LoadFromXML(XmlElement xmlNode) => OnModify();
+	public virtual void StateSave(IDataWriter writer) {
+		SaveManagerUtility.Save(writer, "APIName", Name);
+	}
 
-    public virtual void OnCreate()
-    {
-    }
+	public virtual void LoadFromXML(XmlElement xmlNode) {
+		OnModify();
+	}
 
-    public virtual void AfterCreate()
-    {
-    }
+	public virtual void OnCreate() { }
 
-    public virtual void AfterSaveLoading()
-    {
-    }
+	public virtual void AfterCreate() { }
 
-    protected void SetEngineData(string engineData)
-    {
-      if (engineData == null)
-        return;
-      this.engineData = engineData;
-    }
+	public virtual void AfterSaveLoading() { }
 
-    protected virtual bool InstanceValid => true;
+	protected void SetEngineData(string engineData) {
+		if (engineData == null)
+			return;
+		this.engineData = engineData;
+	}
 
-    public virtual string GetComponentTypeName()
-    {
-      Logger.AddError(TypeUtility.GetTypeName(GetType()));
-      string componentTypeName = "";
-      object[] customAttributes = GetType().GetCustomAttributes(typeof (InfoAttribute), true);
-      if (customAttributes.Length != 0)
-        componentTypeName = ((InfoAttribute) customAttributes[0]).ApiName;
-      if ("" == componentTypeName)
-        Logger.AddError(string.Format("Component api name for component {0} not defined !", GetType()));
-      return componentTypeName;
-    }
+	protected virtual bool InstanceValid => true;
 
-    public virtual void Clear()
-    {
-    }
+	public virtual string GetComponentTypeName() {
+		Logger.AddError(TypeUtility.GetTypeName(GetType()));
+		var componentTypeName = "";
+		var customAttributes = GetType().GetCustomAttributes(typeof(InfoAttribute), true);
+		if (customAttributes.Length != 0)
+			componentTypeName = ((InfoAttribute)customAttributes[0]).ApiName;
+		if ("" == componentTypeName)
+			Logger.AddError(string.Format("Component api name for component {0} not defined !", GetType()));
+		return componentTypeName;
+	}
 
-    public void OnModify()
-    {
-      isModified = true;
-      if (ModifiableParent == null)
-        return;
-      ModifiableParent.OnModify();
-    }
+	public virtual void Clear() { }
 
-    public bool Modified => isModified;
+	public void OnModify() {
+		isModified = true;
+		if (ModifiableParent == null)
+			return;
+		ModifiableParent.OnModify();
+	}
 
-    public IRealTimeModifiable ModifiableParent
-    {
-      get
-      {
-        return Parent != null && typeof (IRealTimeModifiable).IsAssignableFrom(Parent.GetType()) ? (IRealTimeModifiable) Parent : null;
-      }
-    }
+	public bool Modified => isModified;
 
-    public bool NeedSave => Modified;
-  }
+	public IRealTimeModifiable ModifiableParent =>
+		Parent != null && typeof(IRealTimeModifiable).IsAssignableFrom(Parent.GetType())
+			? (IRealTimeModifiable)Parent
+			: null;
+
+	public bool NeedSave => Modified;
 }

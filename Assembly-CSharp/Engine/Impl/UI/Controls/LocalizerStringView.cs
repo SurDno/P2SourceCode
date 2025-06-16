@@ -1,22 +1,16 @@
 ﻿using Engine.Behaviours.Localization;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class LocalizerStringView : StringView
-  {
-    [SerializeField]
-    private Localizer localizer;
+namespace Engine.Impl.UI.Controls;
 
-    public override void SkipAnimation()
-    {
-    }
+public class LocalizerStringView : StringView {
+	[SerializeField] private Localizer localizer;
 
-    protected override void ApplyStringValue()
-    {
-      if (!(localizer != null))
-        return;
-      localizer.Signature = StringValue;
-    }
-  }
+	public override void SkipAnimation() { }
+
+	protected override void ApplyStringValue() {
+		if (!(localizer != null))
+			return;
+		localizer.Signature = StringValue;
+	}
 }

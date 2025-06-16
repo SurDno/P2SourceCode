@@ -1,21 +1,19 @@
 ﻿using UnityEngine;
 
-namespace BehaviorDesigner.Runtime
-{
-  public interface IBehaviorTree
-  {
-    string GetOwnerName();
+namespace BehaviorDesigner.Runtime;
 
-    int GetInstanceID();
+public interface IBehaviorTree {
+	string GetOwnerName();
 
-    BehaviorSource BehaviorSource { get; }
+	int GetInstanceID();
 
-    Object GetObject();
+	BehaviorSource BehaviorSource { get; }
 
-    SharedVariable GetVariable(string name);
+	Object GetObject();
 
-    void SetVariable(string name, SharedVariable item);
+	SharedVariable GetVariable(string name);
 
-    void SetVariableValue(string name, object value);
-  }
+	void SetVariable(string name, SharedVariable item);
+
+	void SetVariableValue(string name, object value);
 }

@@ -1,17 +1,15 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IContext : INamed
-  {
-    IEnumerable<string> GetComponentNames();
+namespace PLVirtualMachine.Common;
 
-    IEnumerable<IVariable> GetContextVariables(EContextVariableCategory contextVarCategory);
+public interface IContext : INamed {
+	IEnumerable<string> GetComponentNames();
 
-    IVariable GetContextVariable(string variableName);
+	IEnumerable<IVariable> GetContextVariables(EContextVariableCategory contextVarCategory);
 
-    bool IsFunctionalSupport(string componentName);
+	IVariable GetContextVariable(string variableName);
 
-    bool IsFunctionalSupport(IEnumerable<string> functionalsList);
-  }
+	bool IsFunctionalSupport(string componentName);
+
+	bool IsFunctionalSupport(IEnumerable<string> functionalsList);
 }

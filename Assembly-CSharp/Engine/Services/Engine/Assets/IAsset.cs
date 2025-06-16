@@ -1,21 +1,19 @@
-﻿namespace Engine.Services.Engine.Assets
-{
-  public interface IAsset
-  {
-    bool IsError { get; }
+﻿namespace Engine.Services.Engine.Assets;
 
-    bool IsLoaded { get; }
+public interface IAsset {
+	bool IsError { get; }
 
-    bool IsDisposed { get; }
+	bool IsLoaded { get; }
 
-    bool IsReadyToDispose { get; }
+	bool IsDisposed { get; }
 
-    bool IsValid { get; }
+	bool IsReadyToDispose { get; }
 
-    string Path { get; }
+	bool IsValid { get; }
 
-    void Update();
+	string Path { get; }
 
-    void Dispose(string reason);
-  }
+	void Update();
+
+	void Dispose(string reason);
 }

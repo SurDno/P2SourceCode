@@ -5,71 +5,68 @@ using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.GameLogic;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  [FactoryProxy(typeof (VMQuestComponent))]
-  public class QuestComponent : 
-    VMQuestComponent,
-    IInitialiseComponentFromHierarchy,
-    IInitialiseEvents
-  {
-    private QuestFSM questLogic;
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public override string GetComponentTypeName() => nameof (QuestComponent);
+[FactoryProxy(typeof(VMQuestComponent))]
+public class QuestComponent :
+	VMQuestComponent,
+	IInitialiseComponentFromHierarchy,
+	IInitialiseEvents {
+	private QuestFSM questLogic;
 
-    public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject)
-    {
-    }
+	public override string GetComponentTypeName() {
+		return nameof(QuestComponent);
+	}
 
-    public void InitialiseEvent(DynamicEvent target)
-    {
-      string name = target.Name;
-    }
+	public void InitiliseComponentFromHierarchy(VMEntity entity, VMLogicObject templateObject) { }
 
-    public override void Initialize(VMBaseEntity parent) => base.Initialize(parent);
+	public void InitialiseEvent(DynamicEvent target) {
+		var name = target.Name;
+	}
 
-    public void StartQuest(QuestFSM questLogic) => this.questLogic = questLogic;
+	public override void Initialize(VMBaseEntity parent) {
+		base.Initialize(parent);
+	}
 
-    public override void Idle()
-    {
-    }
+	public void StartQuest(QuestFSM questLogic) {
+		this.questLogic = questLogic;
+	}
 
-    public override bool IsPlay() => questLogic == null && questLogic.Active;
+	public override void Idle() { }
 
-    public override void LockObject(IObjRef objRef)
-    {
-      if (questLogic == null)
-      {
-        Logger.AddError("Quest not active, cannot process operation");
-      }
-      else
-      {
-        VMObjRef vmObjRef = (VMObjRef) objRef;
-        VMEntity entityByEngineGuid = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(vmObjRef.EngineGuid);
-        if (entityByEngineGuid != null)
-          questLogic.LockObject(entityByEngineGuid.GetFSM());
-        else
-          Logger.AddError(string.Format("Locking error: dynamic FSM for object {0} not found", vmObjRef.StaticInstance.BaseGuid));
-      }
-    }
+	public override bool IsPlay() {
+		return questLogic == null && questLogic.Active;
+	}
 
-    public override void UnLockObject(IObjRef objRef)
-    {
-      if (questLogic == null)
-      {
-        Logger.AddError("Quest not active, cannot process operation");
-      }
-      else
-      {
-        VMObjRef vmObjRef = (VMObjRef) objRef;
-        VMEntity entityByEngineGuid = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(vmObjRef.EngineGuid);
-        if (entityByEngineGuid != null)
-          questLogic.UnLockObject(entityByEngineGuid.GetFSM());
-        else
-          Logger.AddError(string.Format("Unlocking error: dynamic FSM for object {0} not found", vmObjRef.StaticInstance.BaseGuid));
-      }
-    }
+	public override void LockObject(IObjRef objRef) {
+		if (questLogic == null)
+			Logger.AddError("Quest not active, cannot process operation");
+		else {
+			var vmObjRef = (VMObjRef)objRef;
+			var entityByEngineGuid = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(vmObjRef.EngineGuid);
+			if (entityByEngineGuid != null)
+				questLogic.LockObject(entityByEngineGuid.GetFSM());
+			else
+				Logger.AddError(string.Format("Locking error: dynamic FSM for object {0} not found",
+					vmObjRef.StaticInstance.BaseGuid));
+		}
+	}
 
-    public override void EndQuest() => questLogic.EndQuest();
-  }
+	public override void UnLockObject(IObjRef objRef) {
+		if (questLogic == null)
+			Logger.AddError("Quest not active, cannot process operation");
+		else {
+			var vmObjRef = (VMObjRef)objRef;
+			var entityByEngineGuid = WorldEntityUtility.GetDynamicObjectEntityByEngineGuid(vmObjRef.EngineGuid);
+			if (entityByEngineGuid != null)
+				questLogic.UnLockObject(entityByEngineGuid.GetFSM());
+			else
+				Logger.AddError(string.Format("Unlocking error: dynamic FSM for object {0} not found",
+					vmObjRef.StaticInstance.BaseGuid));
+		}
+	}
+
+	public override void EndQuest() {
+		questLogic.EndQuest();
+	}
 }

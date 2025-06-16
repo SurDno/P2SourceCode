@@ -1,6 +1,5 @@
-﻿public enum TOD_MeshQualityType
-{
-  Low,
-  Medium,
-  High,
+﻿public enum TOD_MeshQualityType {
+	Low,
+	Medium,
+	High
 }

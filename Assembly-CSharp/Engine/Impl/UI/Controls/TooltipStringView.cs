@@ -1,21 +1,15 @@
 ﻿using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class TooltipStringView : StringView
-  {
-    [SerializeField]
-    private TextTooltip tooltip;
+namespace Engine.Impl.UI.Controls;
 
-    public override void SkipAnimation()
-    {
-    }
+public class TooltipStringView : StringView {
+	[SerializeField] private TextTooltip tooltip;
 
-    protected override void ApplyStringValue()
-    {
-      if (!(tooltip != null))
-        return;
-      tooltip.Text = StringValue;
-    }
-  }
+	public override void SkipAnimation() { }
+
+	protected override void ApplyStringValue() {
+		if (!(tooltip != null))
+			return;
+		tooltip.Text = StringValue;
+	}
 }

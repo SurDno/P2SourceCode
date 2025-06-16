@@ -1,13 +1,11 @@
 ﻿using Engine.Common.Components.MessangerStationary;
 
-namespace Engine.Common.Components
-{
-  public interface IMessangerStationaryComponent : IComponent
-  {
-    SpawnpointKindEnum SpawnpointKind { get; set; }
+namespace Engine.Common.Components;
 
-    void StartTeleporting();
+public interface IMessangerStationaryComponent : IComponent {
+	SpawnpointKindEnum SpawnpointKind { get; set; }
 
-    void StopTeleporting();
-  }
+	void StartTeleporting();
+
+	void StopTeleporting();
 }

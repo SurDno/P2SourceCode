@@ -4,43 +4,35 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints.Sounds
-{
-  [Category("Sounds")]
-  [ContextDefinedInputs(typeof (bool))]
-  public class OrNode : FlowControlNode, IMultiPortNode
-  {
-    [SerializeField]
-    private int _portCount = 2;
-    private List<ValueInput<bool>> inputs = new List<ValueInput<bool>>();
+namespace Engine.Source.Blueprints.Sounds;
 
-    public int portCount
-    {
-      get => _portCount;
-      set => _portCount = value;
-    }
+[Category("Sounds")]
+[ContextDefinedInputs(typeof(bool))]
+public class OrNode : FlowControlNode, IMultiPortNode {
+	[SerializeField] private int _portCount = 2;
+	private List<ValueInput<bool>> inputs = new();
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      inputs.Clear();
-      for (int index = 0; index < _portCount; ++index)
-        inputs.Add(AddValueInput<bool>((index + 1).ToString()));
-    }
+	public int portCount {
+		get => _portCount;
+		set => _portCount = value;
+	}
 
-    [Port("Value")]
-    private bool Value()
-    {
-      bool flag = false;
-      foreach (ValueInput<bool> input in inputs)
-      {
-        if (input.isConnected && input.value)
-        {
-          flag = true;
-          break;
-        }
-      }
-      return flag;
-    }
-  }
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		inputs.Clear();
+		for (var index = 0; index < _portCount; ++index)
+			inputs.Add(AddValueInput<bool>((index + 1).ToString()));
+	}
+
+	[Port("Value")]
+	private bool Value() {
+		var flag = false;
+		foreach (var input in inputs)
+			if (input.isConnected && input.value) {
+				flag = true;
+				break;
+			}
+
+		return flag;
+	}
 }

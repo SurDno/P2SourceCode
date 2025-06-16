@@ -3,47 +3,38 @@ using FlowCanvas.Nodes;
 using NodeCanvas.Framework;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class ChromaticAbberationEffectNode : FlowControlNode, IUpdatable
-  {
-    [Port("Intensity")]
-    private ValueInput<float> intensityInput;
-    private float prevIntensity;
-    private PostProcessingStackOverride postProcessingOverride;
+namespace Engine.Source.Blueprints.Effects;
 
-    public void Update()
-    {
-      if (postProcessingOverride == null)
-      {
-        GetOverrideColorGrading();
-      }
-      else
-      {
-        float num = intensityInput.value;
-        if (prevIntensity == (double) num)
-          return;
-        postProcessingOverride.ChromaticAberration.Intensity = num;
-        prevIntensity = num;
-      }
-    }
+[Category("Effects")]
+public class ChromaticAbberationEffectNode : FlowControlNode, IUpdatable {
+	[Port("Intensity")] private ValueInput<float> intensityInput;
+	private float prevIntensity;
+	private PostProcessingStackOverride postProcessingOverride;
 
-    private void GetOverrideColorGrading()
-    {
-      postProcessingOverride = GameCamera.Instance.GamePostProcessingOverride;
-      if (!(postProcessingOverride != null))
-        return;
-      postProcessingOverride.ChromaticAberration.Override = true;
-      postProcessingOverride.ChromaticAberration.Enabled = true;
-    }
+	public void Update() {
+		if (postProcessingOverride == null)
+			GetOverrideColorGrading();
+		else {
+			var num = intensityInput.value;
+			if (prevIntensity == (double)num)
+				return;
+			postProcessingOverride.ChromaticAberration.Intensity = num;
+			prevIntensity = num;
+		}
+	}
 
-    public override void OnDestroy()
-    {
-      base.OnDestroy();
-      if (!(postProcessingOverride != null))
-        return;
-      postProcessingOverride.ChromaticAberration.Override = false;
-    }
-  }
+	private void GetOverrideColorGrading() {
+		postProcessingOverride = GameCamera.Instance.GamePostProcessingOverride;
+		if (!(postProcessingOverride != null))
+			return;
+		postProcessingOverride.ChromaticAberration.Override = true;
+		postProcessingOverride.ChromaticAberration.Enabled = true;
+	}
+
+	public override void OnDestroy() {
+		base.OnDestroy();
+		if (!(postProcessingOverride != null))
+			return;
+		postProcessingOverride.ChromaticAberration.Override = false;
+	}
 }

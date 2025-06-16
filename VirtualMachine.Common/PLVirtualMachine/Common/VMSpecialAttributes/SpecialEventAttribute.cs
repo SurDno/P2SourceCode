@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace PLVirtualMachine.Common.VMSpecialAttributes
-{
-  [AttributeUsage(AttributeTargets.Event)]
-  public class SpecialEventAttribute : Attribute
-  {
-    public readonly ESpecialEventName Name;
+namespace PLVirtualMachine.Common.VMSpecialAttributes;
 
-    public SpecialEventAttribute(ESpecialEventName specialName) => Name = specialName;
-  }
+[AttributeUsage(AttributeTargets.Event)]
+public class SpecialEventAttribute : Attribute {
+	public readonly ESpecialEventName Name;
+
+	public SpecialEventAttribute(ESpecialEventName specialName) {
+		Name = specialName;
+	}
 }

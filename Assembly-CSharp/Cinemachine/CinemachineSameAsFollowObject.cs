@@ -1,22 +1,19 @@
 ﻿using UnityEngine;
 
-namespace Cinemachine
-{
-  [DocumentationSorting(27f, DocumentationSortingAttribute.Level.UserRef)]
-  [AddComponentMenu("")]
-  [RequireComponent(typeof (CinemachinePipeline))]
-  [SaveDuringPlay]
-  public class CinemachineSameAsFollowObject : CinemachineComponentBase
-  {
-    public override bool IsValid => enabled && FollowTarget != null;
+namespace Cinemachine;
 
-    public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
+[DocumentationSorting(27f, DocumentationSortingAttribute.Level.UserRef)]
+[AddComponentMenu("")]
+[RequireComponent(typeof(CinemachinePipeline))]
+[SaveDuringPlay]
+public class CinemachineSameAsFollowObject : CinemachineComponentBase {
+	public override bool IsValid => enabled && FollowTarget != null;
 
-    public override void MutateCameraState(ref CameraState curState, float deltaTime)
-    {
-      if (!IsValid)
-        return;
-      curState.RawOrientation = FollowTarget.transform.rotation;
-    }
-  }
+	public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Aim;
+
+	public override void MutateCameraState(ref CameraState curState, float deltaTime) {
+		if (!IsValid)
+			return;
+		curState.RawOrientation = FollowTarget.transform.rotation;
+	}
 }

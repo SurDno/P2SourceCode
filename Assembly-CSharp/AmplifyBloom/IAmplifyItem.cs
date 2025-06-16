@@ -1,7 +1,5 @@
-﻿namespace AmplifyBloom
-{
-  internal interface IAmplifyItem
-  {
-    void Destroy();
-  }
+﻿namespace AmplifyBloom;
+
+internal interface IAmplifyItem {
+	void Destroy();
 }

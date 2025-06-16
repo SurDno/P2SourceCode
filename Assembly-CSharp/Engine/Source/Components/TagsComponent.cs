@@ -6,19 +6,13 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (ITagsComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class TagsComponent : EngineComponent, ITagsComponent, IComponent
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected List<EntityTagEnum> tags = new List<EntityTagEnum>();
+namespace Engine.Source.Components;
 
-    public IEnumerable<EntityTagEnum> Tags => tags;
-  }
+[Factory(typeof(ITagsComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class TagsComponent : EngineComponent, ITagsComponent, IComponent {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected List<EntityTagEnum> tags = new();
+
+	public IEnumerable<EntityTagEnum> Tags => tags;
 }

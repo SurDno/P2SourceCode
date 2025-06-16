@@ -1,10 +1,8 @@
-﻿namespace SteamNative
-{
-  internal enum LeaderboardDataRequest
-  {
-    Global,
-    GlobalAroundUser,
-    Friends,
-    Users,
-  }
+﻿namespace SteamNative;
+
+internal enum LeaderboardDataRequest {
+	Global,
+	GlobalAroundUser,
+	Friends,
+	Users
 }

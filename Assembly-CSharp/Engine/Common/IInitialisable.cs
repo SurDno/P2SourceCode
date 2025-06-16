@@ -1,9 +1,7 @@
-﻿namespace Engine.Common
-{
-  public interface IInitialisable
-  {
-    void Initialise();
+﻿namespace Engine.Common;
 
-    void Terminate();
-  }
+public interface IInitialisable {
+	void Initialise();
+
+	void Terminate();
 }

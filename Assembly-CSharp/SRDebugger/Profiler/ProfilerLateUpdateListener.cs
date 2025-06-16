@@ -1,18 +1,15 @@
 ﻿using System;
 using UnityEngine;
 
-namespace SRDebugger.Profiler
-{
-  public class ProfilerLateUpdateListener : MonoBehaviour
-  {
-    public Action OnLateUpdate;
+namespace SRDebugger.Profiler;
 
-    private void LateUpdate()
-    {
-      Action onLateUpdate = OnLateUpdate;
-      if (onLateUpdate == null)
-        return;
-      onLateUpdate();
-    }
-  }
+public class ProfilerLateUpdateListener : MonoBehaviour {
+	public Action OnLateUpdate;
+
+	private void LateUpdate() {
+		var onLateUpdate = OnLateUpdate;
+		if (onLateUpdate == null)
+			return;
+		onLateUpdate();
+	}
 }

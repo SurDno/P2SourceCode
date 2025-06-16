@@ -5,16 +5,15 @@ using Engine.Common.Services;
 using Engine.Source.Commons;
 using Engine.Source.Weather;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (WeatherLayerBlender))]
-  public class WeatherLayerBlender_Generated : WeatherLayerBlender, ICloneable, ICopyable
-  {
-    public object Clone()
-    {
-      return ServiceCache.Factory.Instantiate(this);
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2) => ((WeatherLayerBlender_Generated) target2).name = name;
-  }
+[FactoryProxy(typeof(WeatherLayerBlender))]
+public class WeatherLayerBlender_Generated : WeatherLayerBlender, ICloneable, ICopyable {
+	public object Clone() {
+		return ServiceCache.Factory.Instantiate(this);
+	}
+
+	public void CopyTo(object target2) {
+		((WeatherLayerBlender_Generated)target2).name = name;
+	}
 }

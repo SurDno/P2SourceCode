@@ -6,75 +6,66 @@ using Engine.Common.Components.Crowds;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
-{
-  [Info("OutdoorCrowdComponent", typeof (IOutdoorCrowdComponent))]
-  public class VMOutdoorCrowd : VMEngineComponent<IOutdoorCrowdComponent>
-  {
-    public const string ComponentName = "OutdoorCrowdComponent";
+namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents;
 
-    [Property("Layout", "")]
-    public OutdoorCrowdLayoutEnum Layout
-    {
-      get => Component.Layout;
-      set => Component.Layout = value;
-    }
+[Info("OutdoorCrowdComponent", typeof(IOutdoorCrowdComponent))]
+public class VMOutdoorCrowd : VMEngineComponent<IOutdoorCrowdComponent> {
+	public const string ComponentName = "OutdoorCrowdComponent";
 
-    [Event("Need create object event", "template object", false)]
-    public event NeedCreateObjectEventType NeedCreateObjectEvent;
+	[Property("Layout", "")]
+	public OutdoorCrowdLayoutEnum Layout {
+		get => Component.Layout;
+		set => Component.Layout = value;
+	}
 
-    [Event("Need delete object event", "object", false)]
-    public event Action<IEntity> NeedDeleteObjectEvent;
+	[Event("Need create object event", "template object", false)]
+	public event NeedCreateObjectEventType NeedCreateObjectEvent;
 
-    [Method("Add entity", "Target", "")]
-    public void AddEntity(IEntity entity)
-    {
-      try
-      {
-        Component.AddEntity(entity);
-      }
-      catch (Exception ex)
-      {
-        Logger.AddError(string.Format("Outdoor crowd entity adding error at {0}: {1} !", Parent.Name, ex));
-      }
-    }
+	[Event("Need delete object event", "object", false)]
+	public event Action<IEntity> NeedDeleteObjectEvent;
 
-    [Method("Reset", "", "")]
-    public void Reset() => Component.Reset();
+	[Method("Add entity", "Target", "")]
+	public void AddEntity(IEntity entity) {
+		try {
+			Component.AddEntity(entity);
+		} catch (Exception ex) {
+			Logger.AddError(string.Format("Outdoor crowd entity adding error at {0}: {1} !", Parent.Name, ex));
+		}
+	}
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.OnCreateEntity -= OnCreateEntity;
-      Component.OnDeleteEntity -= OnDeleteEntity;
-      base.Clear();
-    }
+	[Method("Reset", "", "")]
+	public void Reset() {
+		Component.Reset();
+	}
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.OnCreateEntity += OnCreateEntity;
-      Component.OnDeleteEntity += OnDeleteEntity;
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.OnCreateEntity -= OnCreateEntity;
+		Component.OnDeleteEntity -= OnDeleteEntity;
+		base.Clear();
+	}
 
-    private void OnDeleteEntity(IEntity entity)
-    {
-      Action<IEntity> deleteObjectEvent = NeedDeleteObjectEvent;
-      if (deleteObjectEvent == null)
-        return;
-      deleteObjectEvent(entity);
-    }
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.OnCreateEntity += OnCreateEntity;
+		Component.OnDeleteEntity += OnDeleteEntity;
+	}
 
-    private void OnCreateEntity(IEntity entity)
-    {
-      NeedCreateObjectEventType createObjectEvent = NeedCreateObjectEvent;
-      if (createObjectEvent == null)
-        return;
-      createObjectEvent(entity);
-    }
+	private void OnDeleteEntity(IEntity entity) {
+		var deleteObjectEvent = NeedDeleteObjectEvent;
+		if (deleteObjectEvent == null)
+			return;
+		deleteObjectEvent(entity);
+	}
 
-    public delegate void NeedCreateObjectEventType([Template] IEntity entity);
-  }
+	private void OnCreateEntity(IEntity entity) {
+		var createObjectEvent = NeedCreateObjectEvent;
+		if (createObjectEvent == null)
+			return;
+		createObjectEvent(entity);
+	}
+
+	public delegate void NeedCreateObjectEventType([Template] IEntity entity);
 }

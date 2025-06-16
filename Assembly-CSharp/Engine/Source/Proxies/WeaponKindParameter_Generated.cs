@@ -9,66 +9,57 @@ using Engine.Common.Components.Parameters;
 using Engine.Source.Commons;
 using Engine.Source.Commons.Parameters;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (WeaponKindParameter))]
-  public class WeaponKindParameter_Generated : 
-    WeaponKindParameter,
-    IComputeNeedSave,
-    INeedSave,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead,
-    ISerializeStateSave,
-    ISerializeStateLoad
-  {
-    public bool NeedSave { get; private set; } = true;
+namespace Engine.Source.Proxies;
 
-    public void ComputeNeedSave(object target2)
-    {
-      NeedSave = true;
-      WeaponKindParameter_Generated parameterGenerated = (WeaponKindParameter_Generated) target2;
-      if (parameterGenerated.name != name || parameterGenerated.value != value)
-        return;
-      NeedSave = false;
-    }
+[FactoryProxy(typeof(WeaponKindParameter))]
+public class WeaponKindParameter_Generated :
+	WeaponKindParameter,
+	IComputeNeedSave,
+	INeedSave,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead,
+	ISerializeStateSave,
+	ISerializeStateLoad {
+	public bool NeedSave { get; private set; } = true;
 
-    public object Clone()
-    {
-      WeaponKindParameter_Generated instance = Activator.CreateInstance<WeaponKindParameter_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+	public void ComputeNeedSave(object target2) {
+		NeedSave = true;
+		var parameterGenerated = (WeaponKindParameter_Generated)target2;
+		if (parameterGenerated.name != name || parameterGenerated.value != value)
+			return;
+		NeedSave = false;
+	}
 
-    public void CopyTo(object target2)
-    {
-      WeaponKindParameter_Generated parameterGenerated = (WeaponKindParameter_Generated) target2;
-      parameterGenerated.name = name;
-      parameterGenerated.value = value;
-    }
+	public object Clone() {
+		var instance = Activator.CreateInstance<WeaponKindParameter_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
-    }
+	public void CopyTo(object target2) {
+		var parameterGenerated = (WeaponKindParameter_Generated)target2;
+		parameterGenerated.name = name;
+		parameterGenerated.value = value;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
-      value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
-    }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
+	}
 
-    public void StateSave(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
-      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
-    }
+	public void DataRead(IDataReader reader, Type type) {
+		name = DefaultDataReadUtility.ReadEnum<ParameterNameEnum>(reader, "Name");
+		value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
+	}
 
-    public void StateLoad(IDataReader reader, Type type)
-    {
-      value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
-    }
-  }
+	public void StateSave(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Name", name);
+		DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
+	}
+
+	public void StateLoad(IDataReader reader, Type type) {
+		value = DefaultDataReadUtility.ReadEnum<WeaponKind>(reader, "Value");
+	}
 }

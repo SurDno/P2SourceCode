@@ -5,98 +5,88 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class PlagueIntroGrowingSpots : MonoBehaviour
-{
-  [SerializeField]
-  private GameObject[] subObjects;
-  [Inspected]
-  private bool IsGame;
-  [SerializeField]
-  private float growTime = 3f;
-  [SerializeField]
-  private float startDistance = 7f;
-  private List<Material> plagueSpotMaterials = new List<Material>();
-  [Inspected]
-  private float level;
-  [Inspected]
-  private float volume;
-  private float updateTime = 0.2f;
-  private float updateTimeLeft;
-  private bool inside;
-  private Collider collider;
-  private AudioSource audioSource;
+public class PlagueIntroGrowingSpots : MonoBehaviour {
+	[SerializeField] private GameObject[] subObjects;
+	[Inspected] private bool IsGame;
+	[SerializeField] private float growTime = 3f;
+	[SerializeField] private float startDistance = 7f;
+	private List<Material> plagueSpotMaterials = new();
+	[Inspected] private float level;
+	[Inspected] private float volume;
+	private float updateTime = 0.2f;
+	private float updateTimeLeft;
+	private bool inside;
+	private Collider collider;
+	private AudioSource audioSource;
 
-  private void Start()
-  {
-    IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
-    collider = GetComponent<Collider>();
-    audioSource = GetComponent<AudioSource>();
-    AddMaterial(gameObject);
-    if (subObjects != null)
-    {
-      for (int index = 0; index < subObjects.Length; ++index)
-        AddMaterial(subObjects[index]);
-    }
-    ApplyLevel();
-  }
+	private void Start() {
+		IsGame = SceneManager.GetActiveScene().name != "PlagueIntro_Riot_Loader";
+		collider = GetComponent<Collider>();
+		audioSource = GetComponent<AudioSource>();
+		AddMaterial(gameObject);
+		if (subObjects != null)
+			for (var index = 0; index < subObjects.Length; ++index)
+				AddMaterial(subObjects[index]);
+		ApplyLevel();
+	}
 
-  private void AddMaterial(GameObject gameObject)
-  {
-    MeshRenderer component = gameObject.GetComponent<MeshRenderer>();
-    if (!(bool) (Object) component)
-      return;
-    plagueSpotMaterials.Add(component.material);
-  }
+	private void AddMaterial(GameObject gameObject) {
+		var component = gameObject.GetComponent<MeshRenderer>();
+		if (!(bool)(Object)component)
+			return;
+		plagueSpotMaterials.Add(component.material);
+	}
 
-  private GameObject GetPlayerGameObject()
-  {
-    if (!IsGame)
-      return GameObject.Find("FPSController");
-    return ((IEntityView) ServiceLocator.GetService<ISimulation>().Player)?.GameObject;
-  }
+	private GameObject GetPlayerGameObject() {
+		if (!IsGame)
+			return GameObject.Find("FPSController");
+		return ((IEntityView)ServiceLocator.GetService<ISimulation>().Player)?.GameObject;
+	}
 
-  private void Update()
-  {
-    if (IsGame && InstanceByRequest<EngineApplication>.Instance.IsPaused)
-      return;
-    if (updateTimeLeft <= 0.0)
-    {
-      inside = AreYouLookingAtMe();
-      updateTimeLeft = updateTime;
-    }
-    else
-      updateTimeLeft -= Time.deltaTime;
-    if (inside)
-    {
-      level += Time.deltaTime / growTime;
-      ApplyLevel();
-    }
-    if (!(audioSource != null))
-      return;
-    UpdateAudioSourceEnable();
-    volume = !inside || level >= 1.0 ? Mathf.Clamp01(volume - Time.deltaTime / 1f) : Mathf.Clamp01(volume + Time.deltaTime / 1f);
-    audioSource.volume = volume;
-  }
+	private void Update() {
+		if (IsGame && InstanceByRequest<EngineApplication>.Instance.IsPaused)
+			return;
+		if (updateTimeLeft <= 0.0) {
+			inside = AreYouLookingAtMe();
+			updateTimeLeft = updateTime;
+		} else
+			updateTimeLeft -= Time.deltaTime;
 
-  private void ApplyLevel()
-  {
-    for (int index = 0; index < plagueSpotMaterials.Count; ++index)
-      plagueSpotMaterials[index].SetFloat("_Level", level);
-  }
+		if (inside) {
+			level += Time.deltaTime / growTime;
+			ApplyLevel();
+		}
 
-  private Camera GetCamera() => IsGame ? GameCamera.Instance.Camera : Camera.main;
+		if (!(audioSource != null))
+			return;
+		UpdateAudioSourceEnable();
+		volume = !inside || level >= 1.0
+			? Mathf.Clamp01(volume - Time.deltaTime / 1f)
+			: Mathf.Clamp01(volume + Time.deltaTime / 1f);
+		audioSource.volume = volume;
+	}
 
-  private bool AreYouLookingAtMe()
-  {
-    Camera camera = GetCamera();
-    return (collider.bounds.ClosestPoint(camera.transform.position) - camera.transform.position).magnitude <= (double) startDistance && GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(camera), collider.bounds);
-  }
+	private void ApplyLevel() {
+		for (var index = 0; index < plagueSpotMaterials.Count; ++index)
+			plagueSpotMaterials[index].SetFloat("_Level", level);
+	}
 
-  private void UpdateAudioSourceEnable()
-  {
-    bool flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude < (double) (audioSource.maxDistance * audioSource.maxDistance) && volume != 0.0;
-    if (audioSource.enabled == flag)
-      return;
-    audioSource.enabled = flag;
-  }
+	private Camera GetCamera() {
+		return IsGame ? GameCamera.Instance.Camera : Camera.main;
+	}
+
+	private bool AreYouLookingAtMe() {
+		var camera = GetCamera();
+		return (collider.bounds.ClosestPoint(camera.transform.position) - camera.transform.position).magnitude <=
+		       (double)startDistance &&
+		       GeometryUtility.TestPlanesAABB(GeometryUtility.CalculateFrustumPlanes(camera), collider.bounds);
+	}
+
+	private void UpdateAudioSourceEnable() {
+		var flag = (transform.position - EngineApplication.PlayerPosition).sqrMagnitude <
+			(double)(audioSource.maxDistance * audioSource.maxDistance) && volume != 0.0;
+		if (audioSource.enabled == flag)
+			return;
+		audioSource.enabled = flag;
+	}
 }

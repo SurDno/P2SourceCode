@@ -1,6 +1,3 @@
-﻿namespace SRF.Helpers
-{
-  public static class AssetUtil
-  {
-  }
-}
+﻿namespace SRF.Helpers;
+
+public static class AssetUtil { }

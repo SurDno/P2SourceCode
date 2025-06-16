@@ -14,78 +14,70 @@ using Engine.Source.Components;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace Engine.BehaviourNodes.Conditionals
-{
-  [TaskDescription("Find closest infected in list and write to Result")]
-  [TaskCategory("Pathologic")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (FindClosestInfected))]
-  public class FindClosestInfected : 
-    FindClosestInListBase,
-    IStub,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [SerializeField]
-    public SharedFloat Threshold = 0.0f;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public bool FindLivingNpc;
+namespace Engine.BehaviourNodes.Conditionals;
 
-    protected override bool Filter(GameObject gameObject)
-    {
-      IEntity entity = EntityUtility.GetEntity(gameObject);
-      EnemyBase component1 = gameObject.GetComponent<EnemyBase>();
-      if (FindLivingNpc && component1 == null || !FindLivingNpc && component1 != null)
-        return false;
-      if (entity == null)
-      {
-        Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
-        return false;
-      }
-      ParametersComponent component2 = entity.GetComponent<ParametersComponent>();
-      if (component2 != null)
-      {
-        IParameter<bool> byName1 = component2.GetByName<bool>(ParameterNameEnum.IsCombatIgnored);
-        if (byName1 != null && byName1.Value)
-          return false;
-        IParameter<float> byName2 = component2.GetByName<float>(ParameterNameEnum.Infection);
-        if (byName2 != null)
-          return byName2.Value > (double) Threshold.Value;
-      }
-      return false;
-    }
+[TaskDescription("Find closest infected in list and write to Result")]
+[TaskCategory("Pathologic")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(FindClosestInfected))]
+public class FindClosestInfected :
+	FindClosestInListBase,
+	IStub,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [SerializeField]
+	public SharedFloat Threshold = 0.0f;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "InputList", InputList);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "Threshold", Threshold);
-      DefaultDataWriteUtility.Write(writer, "FindLivingNpc", FindLivingNpc);
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public bool FindLivingNpc;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      InputList = BehaviorTreeDataReadUtility.ReadShared(reader, "InputList", InputList);
-      Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
-      Threshold = BehaviorTreeDataReadUtility.ReadShared(reader, "Threshold", Threshold);
-      FindLivingNpc = DefaultDataReadUtility.Read(reader, "FindLivingNpc", FindLivingNpc);
-    }
-  }
+	protected override bool Filter(GameObject gameObject) {
+		var entity = EntityUtility.GetEntity(gameObject);
+		var component1 = gameObject.GetComponent<EnemyBase>();
+		if ((FindLivingNpc && component1 == null) || (!FindLivingNpc && component1 != null))
+			return false;
+		if (entity == null) {
+			Debug.LogWarning(
+				gameObject.name + " : entity not found, method : " + GetType().Name + ":" +
+				MethodBase.GetCurrentMethod().Name, gameObject);
+			return false;
+		}
+
+		var component2 = entity.GetComponent<ParametersComponent>();
+		if (component2 != null) {
+			var byName1 = component2.GetByName<bool>(ParameterNameEnum.IsCombatIgnored);
+			if (byName1 != null && byName1.Value)
+				return false;
+			var byName2 = component2.GetByName<float>(ParameterNameEnum.Infection);
+			if (byName2 != null)
+				return byName2.Value > (double)Threshold.Value;
+		}
+
+		return false;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "InputList", InputList);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Result", Result);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Threshold", Threshold);
+		DefaultDataWriteUtility.Write(writer, "FindLivingNpc", FindLivingNpc);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		InputList = BehaviorTreeDataReadUtility.ReadShared(reader, "InputList", InputList);
+		Result = BehaviorTreeDataReadUtility.ReadShared(reader, "Result", Result);
+		Threshold = BehaviorTreeDataReadUtility.ReadShared(reader, "Threshold", Threshold);
+		FindLivingNpc = DefaultDataReadUtility.Read(reader, "FindLivingNpc", FindLivingNpc);
+	}
 }

@@ -1,4 +1,3 @@
-﻿namespace FlowCanvas
-{
-  public delegate void FlowHandler();
-}
+﻿namespace FlowCanvas;
+
+public delegate void FlowHandler();

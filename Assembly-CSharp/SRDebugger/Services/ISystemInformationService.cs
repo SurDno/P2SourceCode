@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 
-namespace SRDebugger.Services
-{
-  public interface ISystemInformationService
-  {
-    IEnumerable<string> GetCategories();
+namespace SRDebugger.Services;
 
-    IList<ISystemInfo> GetInfo(string category);
+public interface ISystemInformationService {
+	IEnumerable<string> GetCategories();
 
-    Dictionary<string, Dictionary<string, object>> CreateReport(bool includePrivate = false);
+	IList<ISystemInfo> GetInfo(string category);
 
-    void AddInfo(string category, ISystemInfo info);
-  }
+	Dictionary<string, Dictionary<string, object>> CreateReport(bool includePrivate = false);
+
+	void AddInfo(string category, ISystemInfo info);
 }

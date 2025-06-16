@@ -1,8 +1,6 @@
-﻿namespace UnityStandardAssets.ImageEffects
-{
-  public enum BloomScreenBlendMode
-  {
-    Screen,
-    Add,
-  }
+﻿namespace UnityStandardAssets.ImageEffects;
+
+public enum BloomScreenBlendMode {
+	Screen,
+	Add
 }

@@ -1,24 +1,20 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Engine.Source.Services.Saves
-{
-  public class DefaultErrorLoadingHandler : IErrorLoadingHandler
-  {
-    public string ErrorLoading { get; private set; }
+namespace Engine.Source.Services.Saves;
 
-    public bool HasErrorLoading => ErrorLoading != null;
+public class DefaultErrorLoadingHandler : IErrorLoadingHandler {
+	public string ErrorLoading { get; private set; }
 
-    public void LogError(string text)
-    {
-      ErrorLoading = text;
-      Debug.LogError(text);
-    }
+	public bool HasErrorLoading => ErrorLoading != null;
 
-    public void LogException(Exception e)
-    {
-      ErrorLoading = e.ToString();
-      Debug.LogException(e);
-    }
-  }
+	public void LogError(string text) {
+		ErrorLoading = text;
+		Debug.LogError(text);
+	}
+
+	public void LogException(Exception e) {
+		ErrorLoading = e.ToString();
+		Debug.LogException(e);
+	}
 }

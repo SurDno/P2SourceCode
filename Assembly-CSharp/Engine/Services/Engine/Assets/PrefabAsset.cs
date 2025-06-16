@@ -2,66 +2,59 @@
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Services.Engine.Assets
-{
-  public class PrefabAsset : IAsset
-  {
-    private IAsyncLoad async;
-    private bool isDone;
-    [Inspected]
-    private string path;
+namespace Engine.Services.Engine.Assets;
 
-    [Inspected]
-    public bool IsError { get; private set; }
+public class PrefabAsset : IAsset {
+	private IAsyncLoad async;
+	private bool isDone;
+	[Inspected] private string path;
 
-    [Inspected]
-    public bool IsLoaded { get; private set; }
+	[Inspected] public bool IsError { get; private set; }
 
-    [Inspected]
-    public bool IsDisposed { get; set; }
+	[Inspected] public bool IsLoaded { get; private set; }
 
-    [Inspected]
-    public bool IsReadyToDispose { get; set; }
+	[Inspected] public bool IsDisposed { get; set; }
 
-    public GameObject Prefab { get; private set; }
+	[Inspected] public bool IsReadyToDispose { get; set; }
 
-    public PrefabAsset(string path)
-    {
-      this.path = path;
-      async = AssetDatabaseService.Instance.LoadAsync<GameObject>(path);
-    }
+	public GameObject Prefab { get; private set; }
 
-    public void Update()
-    {
-      if (IsError)
-        return;
-      if (!isDone)
-      {
-        if (async == null)
-        {
-          IsError = true;
-          return;
-        }
-        isDone = async.IsDone;
-        if (!isDone)
-          return;
-      }
-      if (!IsLoaded)
-      {
-        IsLoaded = true;
-        if (!IsDisposed)
-          Prefab = (GameObject) async.Asset;
-      }
-      if (!IsDisposed)
-        return;
-      Prefab = null;
-      IsReadyToDispose = true;
-    }
+	public PrefabAsset(string path) {
+		this.path = path;
+		async = AssetDatabaseService.Instance.LoadAsync<GameObject>(path);
+	}
 
-    public void Dispose(string reason) => IsDisposed = true;
+	public void Update() {
+		if (IsError)
+			return;
+		if (!isDone) {
+			if (async == null) {
+				IsError = true;
+				return;
+			}
 
-    public bool IsValid => Prefab != null;
+			isDone = async.IsDone;
+			if (!isDone)
+				return;
+		}
 
-    public string Path => Prefab.GetFullName();
-  }
+		if (!IsLoaded) {
+			IsLoaded = true;
+			if (!IsDisposed)
+				Prefab = (GameObject)async.Asset;
+		}
+
+		if (!IsDisposed)
+			return;
+		Prefab = null;
+		IsReadyToDispose = true;
+	}
+
+	public void Dispose(string reason) {
+		IsDisposed = true;
+	}
+
+	public bool IsValid => Prefab != null;
+
+	public string Path => Prefab.GetFullName();
 }

@@ -1,12 +1,10 @@
-﻿namespace SteamNative
-{
-  internal enum ItemUpdateStatus
-  {
-    Invalid,
-    PreparingConfig,
-    PreparingContent,
-    UploadingContent,
-    UploadingPreviewFile,
-    CommittingChanges,
-  }
+﻿namespace SteamNative;
+
+internal enum ItemUpdateStatus {
+	Invalid,
+	PreparingConfig,
+	PreparingContent,
+	UploadingContent,
+	UploadingPreviewFile,
+	CommittingChanges
 }

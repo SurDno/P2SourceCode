@@ -1,8 +1,6 @@
-﻿namespace SteamNative
-{
-  internal enum GamepadTextInputMode
-  {
-    Normal,
-    Password,
-  }
+﻿namespace SteamNative;
+
+internal enum GamepadTextInputMode {
+	Normal,
+	Password
 }

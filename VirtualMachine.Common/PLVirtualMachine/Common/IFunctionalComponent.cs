@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IFunctionalComponent : 
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable
-  {
-    List<IEvent> EngineEvents { get; }
+namespace PLVirtualMachine.Common;
 
-    List<BaseFunction> EngineFunctions { get; }
+public interface IFunctionalComponent :
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable {
+	List<IEvent> EngineEvents { get; }
 
-    string DependedComponentName { get; }
+	List<BaseFunction> EngineFunctions { get; }
 
-    bool Main { get; }
-  }
+	string DependedComponentName { get; }
+
+	bool Main { get; }
 }

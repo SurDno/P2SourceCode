@@ -1,20 +1,16 @@
-﻿namespace FlowCanvas.Nodes
-{
-  public abstract class CallableFunctionNode<TResult> : CallableFunctionNodeBase
-  {
-    private TResult result;
+﻿namespace FlowCanvas.Nodes;
 
-    public abstract TResult Invoke();
+public abstract class CallableFunctionNode<TResult> : CallableFunctionNodeBase {
+	private TResult result;
 
-    protected override sealed void OnRegisterPorts(FlowNode node)
-    {
-      FlowOutput o = node.AddFlowOutput(" ");
-      node.AddValueOutput("Value", () => result);
-      node.AddFlowInput(" ", () =>
-      {
-        result = Invoke();
-        o.Call();
-      });
-    }
-  }
+	public abstract TResult Invoke();
+
+	protected sealed override void OnRegisterPorts(FlowNode node) {
+		var o = node.AddFlowOutput(" ");
+		node.AddValueOutput("Value", () => result);
+		node.AddFlowInput(" ", () => {
+			result = Invoke();
+			o.Call();
+		});
+	}
 }

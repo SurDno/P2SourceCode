@@ -1,11 +1,9 @@
-﻿namespace SteamNative
-{
-  internal enum AppReleaseState
-  {
-    Unknown,
-    Unavailable,
-    Prerelease,
-    PreloadOnly,
-    Released,
-  }
+﻿namespace SteamNative;
+
+internal enum AppReleaseState {
+	Unknown,
+	Unavailable,
+	Prerelease,
+	PreloadOnly,
+	Released
 }

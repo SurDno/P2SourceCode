@@ -6,58 +6,51 @@ using Engine.Source.Effects.Values;
 using Engine.Source.Services;
 using Inspectors;
 
-namespace Engine.Source.Commons.Abilities.Controllers
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SuokCircleAbilityController : IAbilityController, IAbilityValueContainer, IUpdatable
-  {
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    protected SuokCircleTutorialStateEnum state;
-    private SuokCircleService suokService;
-    private AbilityItem abilityItem;
-    private AbilityValue<float> abilityValue;
+namespace Engine.Source.Commons.Abilities.Controllers;
 
-    public void Initialise(AbilityItem abilityItem)
-    {
-      this.abilityItem = abilityItem;
-      suokService = ServiceLocator.GetService<SuokCircleService>();
-      abilityValue = new AbilityValue<float>();
-      if (suokService != null)
-      {
-        abilityValue.Value = suokService.CurrentStamina;
-        suokService.OnStateChangedEvent -= StateChanged;
-        suokService.OnStateChangedEvent += StateChanged;
-      }
-      StateChanged();
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class SuokCircleAbilityController : IAbilityController, IAbilityValueContainer, IUpdatable {
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)] [DataReadProxy] [DataWriteProxy] [CopyableProxy()]
+	protected SuokCircleTutorialStateEnum state;
 
-    public void Shutdown()
-    {
-      if (suokService != null)
-        suokService.OnStateChangedEvent -= StateChanged;
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-    }
+	private SuokCircleService suokService;
+	private AbilityItem abilityItem;
+	private AbilityValue<float> abilityValue;
 
-    private void StateChanged()
-    {
-      abilityItem.Active = suokService.GetState() == state;
-    }
+	public void Initialise(AbilityItem abilityItem) {
+		this.abilityItem = abilityItem;
+		suokService = ServiceLocator.GetService<SuokCircleService>();
+		abilityValue = new AbilityValue<float>();
+		if (suokService != null) {
+			abilityValue.Value = suokService.CurrentStamina;
+			suokService.OnStateChangedEvent -= StateChanged;
+			suokService.OnStateChangedEvent += StateChanged;
+		}
 
-    public void ComputeUpdate()
-    {
-      if (suokService == null)
-        return;
-      abilityValue.Value = suokService.CurrentStamina;
-    }
+		StateChanged();
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum parameter) where T : struct
-    {
-      return parameter == AbilityValueNameEnum.SuokCircleStamina && suokService != null ? abilityValue as AbilityValue<T> : (IAbilityValue<T>) null;
-    }
-  }
+	public void Shutdown() {
+		if (suokService != null)
+			suokService.OnStateChangedEvent -= StateChanged;
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+	}
+
+	private void StateChanged() {
+		abilityItem.Active = suokService.GetState() == state;
+	}
+
+	public void ComputeUpdate() {
+		if (suokService == null)
+			return;
+		abilityValue.Value = suokService.CurrentStamina;
+	}
+
+	public IAbilityValue<T> GetAbilityValue<T>(AbilityValueNameEnum parameter) where T : struct {
+		return parameter == AbilityValueNameEnum.SuokCircleStamina && suokService != null
+			? abilityValue as AbilityValue<T>
+			: (IAbilityValue<T>)null;
+	}
 }

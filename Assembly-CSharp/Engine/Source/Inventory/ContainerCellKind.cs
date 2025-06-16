@@ -1,9 +1,7 @@
-﻿namespace Engine.Source.Inventory
-{
-  public enum ContainerCellKind
-  {
-    MultipleCellToOneStorable,
-    OneCellToOneStorable,
-    OneCellToOneStorableBig,
-  }
+﻿namespace Engine.Source.Inventory;
+
+public enum ContainerCellKind {
+	MultipleCellToOneStorable,
+	OneCellToOneStorable,
+	OneCellToOneStorableBig
 }

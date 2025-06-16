@@ -9,303 +9,261 @@ using ParadoxNotion.Services;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace FlowCanvas
-{
-  public class Graph
-  {
-    private bool hasInitialized;
-    private List<IUpdatable> updatableNodes;
+namespace FlowCanvas;
 
-    public Type baseNodeType => typeof (FlowNode);
+public class Graph {
+	private bool hasInitialized;
+	private List<IUpdatable> updatableNodes;
 
-    private void OnGraphStarted()
-    {
-      if (hasInitialized)
-        return;
-      updatableNodes = new List<IUpdatable>();
-      for (int index = 0; index < nodes.Count; ++index)
-      {
-        if (nodes[index] is IUpdatable node)
-          updatableNodes.Add(node);
-      }
-      for (int index = 0; index < nodes.Count; ++index)
-      {
-        if (nodes[index] is FlowNode)
-        {
-          FlowNode node = (FlowNode) nodes[index];
-          node.AssignSelfInstancePort();
-          node.BindPorts();
-        }
-      }
-      hasInitialized = true;
-    }
+	public Type baseNodeType => typeof(FlowNode);
 
-    private void OnGraphUpdate()
-    {
-      if (updatableNodes == null)
-        return;
-      for (int index = 0; index < updatableNodes.Count; ++index)
-        updatableNodes[index].Update();
-    }
+	private void OnGraphStarted() {
+		if (hasInitialized)
+			return;
+		updatableNodes = new List<IUpdatable>();
+		for (var index = 0; index < nodes.Count; ++index)
+			if (nodes[index] is IUpdatable node)
+				updatableNodes.Add(node);
+		for (var index = 0; index < nodes.Count; ++index)
+			if (nodes[index] is FlowNode) {
+				var node = (FlowNode)nodes[index];
+				node.AssignSelfInstancePort();
+				node.BindPorts();
+			}
 
-    public void Serialize(out string json, out List<Object> references)
-    {
-      GraphData graphData = new GraphData();
-      graphData.nodes = nodes;
-      List<Connection> connectionList = new List<Connection>();
-      for (int index1 = 0; index1 < graphData.nodes.Count; ++index1)
-      {
-        for (int index2 = 0; index2 < graphData.nodes[index1].outConnections.Count; ++index2)
-          connectionList.Add(graphData.nodes[index1].outConnections[index2]);
-      }
-      graphData.connections = connectionList;
-      references = new List<Object>();
-      json = JSONSerializer.Serialize(typeof (GraphData), graphData, objectReferences: references);
-    }
+		hasInitialized = true;
+	}
 
-    public void Deserialize(string serializedGraph, List<Object> objectReferences)
-    {
-      if (ReflectionTools.ContextObject == null)
-        ReflectionTools.ContextObject = agent;
-      GraphData graphData = JSONSerializer.Deserialize<GraphData>(serializedGraph, objectReferences);
-      ReflectionTools.ContextObject = null;
-      for (int index = 0; index < graphData.connections.Count; ++index)
-      {
-        if (graphData.connections[index].sourceNode == null)
-          Debug.LogError("connections[i].sourceNode is null, i : " + index + " , graph : " + agent.gameObject.GetFullName());
-        else if (graphData.connections[index].targetNode == null)
-        {
-          Debug.LogError("connections[i].targetNode is null, i : " + index + " , graph : " + agent.gameObject.GetFullName());
-        }
-        else
-        {
-          graphData.connections[index].sourceNode.outConnections.Add(graphData.connections[index]);
-          graphData.connections[index].targetNode.inConnections.Add(graphData.connections[index]);
-        }
-      }
-      for (int index = 0; index < graphData.nodes.Count; ++index)
-        graphData.nodes[index].graph = this;
-      nodes = graphData.nodes;
-      UpdateNodeIDs();
-      OnValidate();
-      CorrectPosition();
-    }
+	private void OnGraphUpdate() {
+		if (updatableNodes == null)
+			return;
+		for (var index = 0; index < updatableNodes.Count; ++index)
+			updatableNodes[index].Update();
+	}
 
-    private void CorrectPosition()
-    {
-      zoomFactor = 1f;
-      translation = Vector2.positiveInfinity;
-      for (int index = 0; index < nodes.Count; ++index)
-      {
-        Node node = nodes[index];
-        if (node.nodePosition.x < (double) translation.x)
-          translation = node.nodePosition;
-      }
-      if (translation == Vector2.positiveInfinity)
-        translation = Vector2.zero;
-      translation = new Vector2((float) (-(double) translation.x + 500.0), (float) (-(double) translation.y + 500.0));
-    }
+	public void Serialize(out string json, out List<Object> references) {
+		var graphData = new GraphData();
+		graphData.nodes = nodes;
+		var connectionList = new List<Connection>();
+		for (var index1 = 0; index1 < graphData.nodes.Count; ++index1) {
+			for (var index2 = 0; index2 < graphData.nodes[index1].outConnections.Count; ++index2)
+				connectionList.Add(graphData.nodes[index1].outConnections[index2]);
+		}
 
-    public void OnValidate()
-    {
-      for (int index = 0; index < nodes.Count; ++index)
-      {
-        Node node = nodes[index];
-        try
-        {
-          node.OnValidate(this);
-        }
-        catch (Exception ex)
-        {
-          Debug.LogError(ex.ToString());
-        }
-      }
-    }
+		graphData.connections = connectionList;
+		references = new List<Object>();
+		json = JSONSerializer.Serialize(typeof(GraphData), graphData, objectReferences: references);
+	}
 
-    public bool isRunning { get; private set; }
+	public void Deserialize(string serializedGraph, List<Object> objectReferences) {
+		if (ReflectionTools.ContextObject == null)
+			ReflectionTools.ContextObject = agent;
+		var graphData = JSONSerializer.Deserialize<GraphData>(serializedGraph, objectReferences);
+		ReflectionTools.ContextObject = null;
+		for (var index = 0; index < graphData.connections.Count; ++index)
+			if (graphData.connections[index].sourceNode == null)
+				Debug.LogError("connections[i].sourceNode is null, i : " + index + " , graph : " +
+				               agent.gameObject.GetFullName());
+			else if (graphData.connections[index].targetNode == null)
+				Debug.LogError("connections[i].targetNode is null, i : " + index + " , graph : " +
+				               agent.gameObject.GetFullName());
+			else {
+				graphData.connections[index].sourceNode.outConnections.Add(graphData.connections[index]);
+				graphData.connections[index].targetNode.inConnections.Add(graphData.connections[index]);
+			}
 
-    public bool isPaused { get; private set; }
+		for (var index = 0; index < graphData.nodes.Count; ++index)
+			graphData.nodes[index].graph = this;
+		nodes = graphData.nodes;
+		UpdateNodeIDs();
+		OnValidate();
+		CorrectPosition();
+	}
 
-    public List<Node> nodes { get; private set; } = new List<Node>();
+	private void CorrectPosition() {
+		zoomFactor = 1f;
+		translation = Vector2.positiveInfinity;
+		for (var index = 0; index < nodes.Count; ++index) {
+			var node = nodes[index];
+			if (node.nodePosition.x < (double)translation.x)
+				translation = node.nodePosition;
+		}
 
-    public Vector2 translation { get; set; }
+		if (translation == Vector2.positiveInfinity)
+			translation = Vector2.zero;
+		translation = new Vector2((float)(-(double)translation.x + 500.0), (float)(-(double)translation.y + 500.0));
+	}
 
-    public float zoomFactor { get; set; } = 1f;
+	public void OnValidate() {
+		for (var index = 0; index < nodes.Count; ++index) {
+			var node = nodes[index];
+			try {
+				node.OnValidate(this);
+			} catch (Exception ex) {
+				Debug.LogError(ex.ToString());
+			}
+		}
+	}
 
-    public FlowScriptController agent { get; set; }
+	public bool isRunning { get; private set; }
 
-    public string agentName { get; private set; }
+	public bool isPaused { get; private set; }
 
-    public void UpdateReferences() => UpdateNodeBBFields();
+	public List<Node> nodes { get; private set; } = new();
 
-    private void UpdateNodeBBFields()
-    {
-      for (int index = 0; index < nodes.Count; ++index)
-        BBParameter.SetBBFields(nodes[index], agent.blackboard);
-    }
+	public Vector2 translation { get; set; }
 
-    public void UpdateNodeIDs()
-    {
-      for (int index = 0; index < nodes.Count; ++index)
-      {
-        nodes[index].ResetRecursion();
-        nodes[index].Id = index + 1;
-      }
-    }
+	public float zoomFactor { get; set; } = 1f;
 
-    public void StartGraph()
-    {
-      if (isRunning)
-        return;
-      agentName = agent.name;
-      UpdateReferences();
-      isRunning = true;
-      if (!isPaused)
-        OnGraphStarted();
-      for (int index = 0; index < nodes.Count; ++index)
-      {
-        if (!isPaused)
-          nodes[index].OnGraphStarted();
-        else
-          nodes[index].OnGraphUnpaused();
-      }
-      isPaused = false;
-      BlueprintManager.current.graphs.Add(this);
-      UpdateGraph();
-    }
+	public FlowScriptController agent { get; set; }
 
-    public void Stop(bool success = true)
-    {
-      if (!isRunning && !isPaused)
-        return;
-      BlueprintManager.current.graphs.Remove(this);
-      isRunning = false;
-      isPaused = false;
-      for (int index = 0; index < nodes.Count; ++index)
-      {
-        nodes[index].Reset(false);
-        nodes[index].OnGraphStoped();
-      }
-    }
+	public string agentName { get; private set; }
 
-    public void Pause()
-    {
-      if (!isRunning)
-        return;
-      BlueprintManager.current.graphs.Remove(this);
-      isRunning = false;
-      isPaused = true;
-      for (int index = 0; index < nodes.Count; ++index)
-        nodes[index].OnGraphPaused();
-    }
+	public void UpdateReferences() {
+		UpdateNodeBBFields();
+	}
 
-    public void UpdateGraph() => OnGraphUpdate();
+	private void UpdateNodeBBFields() {
+		for (var index = 0; index < nodes.Count; ++index)
+			BBParameter.SetBBFields(nodes[index], agent.blackboard);
+	}
 
-    public void SendEvent(EventData eventData)
-    {
-      if (!isRunning || eventData == null || !(agent != null))
-        return;
-      MessageRouter component = agent.GetComponent<MessageRouter>();
-      if (component != null)
-      {
-        component.Dispatch("OnCustomEvent", eventData);
-        component.Dispatch(eventData.name, eventData.value);
-      }
-    }
+	public void UpdateNodeIDs() {
+		for (var index = 0; index < nodes.Count; ++index) {
+			nodes[index].ResetRecursion();
+			nodes[index].Id = index + 1;
+		}
+	}
 
-    public List<T> GetAllNodesOfType<T>() where T : Node
-    {
-      return nodes.OfType<T>().ToList();
-    }
+	public void StartGraph() {
+		if (isRunning)
+			return;
+		agentName = agent.name;
+		UpdateReferences();
+		isRunning = true;
+		if (!isPaused)
+			OnGraphStarted();
+		for (var index = 0; index < nodes.Count; ++index)
+			if (!isPaused)
+				nodes[index].OnGraphStarted();
+			else
+				nodes[index].OnGraphUnpaused();
+		isPaused = false;
+		BlueprintManager.current.graphs.Add(this);
+		UpdateGraph();
+	}
 
-    public BBParameter[] GetDefinedParameters()
-    {
-      List<BBParameter> bbParameterList = new List<BBParameter>();
-      List<object> objectList = new List<object>();
-      objectList.AddRange(nodes);
-      for (int index = 0; index < objectList.Count; ++index)
-      {
-        foreach (BBParameter objectBbParameter in BBParameter.GetObjectBBParameters(objectList[index]))
-        {
-          if (objectBbParameter != null && objectBbParameter.useBlackboard && !objectBbParameter.isNone)
-            bbParameterList.Add(objectBbParameter);
-        }
-      }
-      return bbParameterList.ToArray();
-    }
+	public void Stop(bool success = true) {
+		if (!isRunning && !isPaused)
+			return;
+		BlueprintManager.current.graphs.Remove(this);
+		isRunning = false;
+		isPaused = false;
+		for (var index = 0; index < nodes.Count; ++index) {
+			nodes[index].Reset(false);
+			nodes[index].OnGraphStoped();
+		}
+	}
 
-    public void CreateDefinedParameterVariables(Blackboard bb)
-    {
-      foreach (BBParameter definedParameter in GetDefinedParameters())
-        definedParameter.PromoteToVariable(bb);
-    }
+	public void Pause() {
+		if (!isRunning)
+			return;
+		BlueprintManager.current.graphs.Remove(this);
+		isRunning = false;
+		isPaused = true;
+		for (var index = 0; index < nodes.Count; ++index)
+			nodes[index].OnGraphPaused();
+	}
 
-    public Node AddNode(Type nodeType, Vector2 pos)
-    {
-      if (!nodeType.RTIsSubclassOf(baseNodeType))
-      {
-        Debug.LogWarning(nodeType + " can't be added to " + GetType().FriendlyName() + " graph");
-        return null;
-      }
-      Node node = Node.Create(this, nodeType, pos);
-      RecordUndo("New Node");
-      nodes.Add(node);
-      UpdateNodeIDs();
-      return node;
-    }
+	public void UpdateGraph() {
+		OnGraphUpdate();
+	}
 
-    public void RemoveNode(Node node, bool recordUndo = true)
-    {
-      if (!nodes.Contains(node))
-      {
-        Debug.LogWarning("Node is not part of this graph");
-      }
-      else
-      {
-        node.OnDestroy();
-        foreach (Connection connection in node.inConnections.ToArray())
-          RemoveConnection(connection);
-        foreach (Connection connection in node.outConnections.ToArray())
-          RemoveConnection(connection);
-        if (recordUndo)
-          RecordUndo("Delete Node");
-        nodes.Remove(node);
-        UpdateNodeIDs();
-      }
-    }
+	public void SendEvent(EventData eventData) {
+		if (!isRunning || eventData == null || !(agent != null))
+			return;
+		var component = agent.GetComponent<MessageRouter>();
+		if (component != null) {
+			component.Dispatch("OnCustomEvent", eventData);
+			component.Dispatch(eventData.name, eventData.value);
+		}
+	}
 
-    public Connection ConnectNodes(Node sourceNode, Node targetNode, int indexToInsert)
-    {
-      if (!targetNode.IsNewConnectionAllowed(sourceNode))
-        return null;
-      RecordUndo("New Connection");
-      Connection connection = Connection.Create(sourceNode, targetNode, indexToInsert);
-      sourceNode.OnChildConnected(indexToInsert);
-      targetNode.OnParentConnected(targetNode.inConnections.IndexOf(connection));
-      return connection;
-    }
+	public List<T> GetAllNodesOfType<T>() where T : Node {
+		return nodes.OfType<T>().ToList();
+	}
 
-    public void RemoveConnection(Connection connection, bool recordUndo = true)
-    {
-      if (Application.isPlaying)
-        connection.Reset();
-      if (recordUndo)
-        RecordUndo("Delete Connection");
-      connection.OnDestroy();
-      connection.sourceNode.OnChildDisconnected(connection.sourceNode.outConnections.IndexOf(connection));
-      connection.targetNode.OnParentDisconnected(connection.targetNode.inConnections.IndexOf(connection));
-      connection.sourceNode.outConnections.Remove(connection);
-      connection.targetNode.inConnections.Remove(connection);
-    }
+	public BBParameter[] GetDefinedParameters() {
+		var bbParameterList = new List<BBParameter>();
+		var objectList = new List<object>();
+		objectList.AddRange(nodes);
+		for (var index = 0; index < objectList.Count; ++index)
+			foreach (var objectBbParameter in BBParameter.GetObjectBBParameters(objectList[index]))
+				if (objectBbParameter != null && objectBbParameter.useBlackboard && !objectBbParameter.isNone)
+					bbParameterList.Add(objectBbParameter);
+		return bbParameterList.ToArray();
+	}
 
-    private void RecordUndo(string name)
-    {
-    }
+	public void CreateDefinedParameterVariables(Blackboard bb) {
+		foreach (var definedParameter in GetDefinedParameters())
+			definedParameter.PromoteToVariable(bb);
+	}
 
-    public void OnDestroy()
-    {
-      foreach (Node node in nodes.ToList())
-        node.OnDestroy();
-    }
-  }
+	public Node AddNode(Type nodeType, Vector2 pos) {
+		if (!nodeType.RTIsSubclassOf(baseNodeType)) {
+			Debug.LogWarning(nodeType + " can't be added to " + GetType().FriendlyName() + " graph");
+			return null;
+		}
+
+		var node = Node.Create(this, nodeType, pos);
+		RecordUndo("New Node");
+		nodes.Add(node);
+		UpdateNodeIDs();
+		return node;
+	}
+
+	public void RemoveNode(Node node, bool recordUndo = true) {
+		if (!nodes.Contains(node))
+			Debug.LogWarning("Node is not part of this graph");
+		else {
+			node.OnDestroy();
+			foreach (var connection in node.inConnections.ToArray())
+				RemoveConnection(connection);
+			foreach (var connection in node.outConnections.ToArray())
+				RemoveConnection(connection);
+			if (recordUndo)
+				RecordUndo("Delete Node");
+			nodes.Remove(node);
+			UpdateNodeIDs();
+		}
+	}
+
+	public Connection ConnectNodes(Node sourceNode, Node targetNode, int indexToInsert) {
+		if (!targetNode.IsNewConnectionAllowed(sourceNode))
+			return null;
+		RecordUndo("New Connection");
+		var connection = Connection.Create(sourceNode, targetNode, indexToInsert);
+		sourceNode.OnChildConnected(indexToInsert);
+		targetNode.OnParentConnected(targetNode.inConnections.IndexOf(connection));
+		return connection;
+	}
+
+	public void RemoveConnection(Connection connection, bool recordUndo = true) {
+		if (Application.isPlaying)
+			connection.Reset();
+		if (recordUndo)
+			RecordUndo("Delete Connection");
+		connection.OnDestroy();
+		connection.sourceNode.OnChildDisconnected(connection.sourceNode.outConnections.IndexOf(connection));
+		connection.targetNode.OnParentDisconnected(connection.targetNode.inConnections.IndexOf(connection));
+		connection.sourceNode.outConnections.Remove(connection);
+		connection.targetNode.inConnections.Remove(connection);
+	}
+
+	private void RecordUndo(string name) { }
+
+	public void OnDestroy() {
+		foreach (var node in nodes.ToList())
+			node.OnDestroy();
+	}
 }

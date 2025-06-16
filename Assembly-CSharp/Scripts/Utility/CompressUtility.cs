@@ -1,33 +1,27 @@
 ﻿using System.IO;
 using System.IO.Compression;
 
-namespace Scripts.Utility
-{
-  public static class CompressUtility
-  {
-    public static byte[] CompressData(byte[] data)
-    {
-      using (MemoryStream memoryStream = new MemoryStream())
-      {
-        using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Compress))
-          gzipStream.Write(data, 0, data.Length);
-        return memoryStream.ToArray();
-      }
-    }
+namespace Scripts.Utility;
 
-    public static byte[] DecompressData(byte[] data)
-    {
-      using (MemoryStream memoryStream = new MemoryStream(data))
-      {
-        using (GZipStream gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress))
-        {
-          using (MemoryStream destination = new MemoryStream())
-          {
-            gzipStream.CopyTo(destination);
-            return destination.ToArray();
-          }
-        }
-      }
-    }
-  }
+public static class CompressUtility {
+	public static byte[] CompressData(byte[] data) {
+		using (var memoryStream = new MemoryStream()) {
+			using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Compress)) {
+				gzipStream.Write(data, 0, data.Length);
+			}
+
+			return memoryStream.ToArray();
+		}
+	}
+
+	public static byte[] DecompressData(byte[] data) {
+		using (var memoryStream = new MemoryStream(data)) {
+			using (var gzipStream = new GZipStream(memoryStream, CompressionMode.Decompress)) {
+				using (var destination = new MemoryStream()) {
+					gzipStream.CopyTo(destination);
+					return destination.ToArray();
+				}
+			}
+		}
+	}
 }

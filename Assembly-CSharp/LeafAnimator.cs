@@ -5,239 +5,220 @@ using Engine.Impl.Services;
 using Engine.Source.Commons;
 using UnityEngine;
 
-public class LeafAnimator : MonoBehaviour, IUpdatable
-{
-  private static MaterialPropertyBlock materialProperties;
-  private static int cutoffPropertyID;
-  public LeafManager manager;
-  public float firstRadius = 1f;
-  public float firstPeriod = 5f;
-  [Range(0.0f, 360f)]
-  public float rotation;
-  [Space]
-  public float secondRadius = 1f;
-  public float secondPeriod = -2.15f;
-  public float slope = 0.25f;
-  [Space]
-  public Vector3 velocity = Vector3.down;
-  [Space]
-  public float flyTime = 60f;
-  public float layTime = 30f;
-  public float flyFade = 5f;
-  public float layFade = 15f;
-  [Space]
-  [Tooltip("False — лист растворяется вместо приземления")]
-  public bool landing = true;
-  [Tooltip("Длительность перехода меджу вращением полета и вращением покоя")]
-  public float landingBlend = 0.25f;
-  public Vector3 landingNormal = Vector3.up;
-  [Space]
-  public Transform leafTransform;
-  public Renderer leafRenderer;
-  private float _phase;
-  private bool _isOpaque;
-  private TimeSpan prevTime;
-  private TimeService timeService;
-  private IUpdater updater;
-  private CachedTransform cachedTransform0;
-  private float cachedTransform0Time;
-  private CachedTransform cachedTransform1;
-  private float cachedTransform1Time;
+public class LeafAnimator : MonoBehaviour, IUpdatable {
+	private static MaterialPropertyBlock materialProperties;
+	private static int cutoffPropertyID;
+	public LeafManager manager;
+	public float firstRadius = 1f;
+	public float firstPeriod = 5f;
+	[Range(0.0f, 360f)] public float rotation;
+	[Space] public float secondRadius = 1f;
+	public float secondPeriod = -2.15f;
+	public float slope = 0.25f;
+	[Space] public Vector3 velocity = Vector3.down;
+	[Space] public float flyTime = 60f;
+	public float layTime = 30f;
+	public float flyFade = 5f;
+	public float layFade = 15f;
 
-  private void Awake()
-  {
-    if (materialProperties == null)
-    {
-      materialProperties = new MaterialPropertyBlock();
-      cutoffPropertyID = Shader.PropertyToID("_Cutoff");
-    }
-    timeService = ServiceLocator.GetService<TimeService>();
-    prevTime = timeService.RealTime;
-    updater = InstanceByRequest<UpdateService>.Instance.LeafUpdater;
-    updater.AddUpdatable(this);
-  }
+	[Space] [Tooltip("False — лист растворяется вместо приземления")]
+	public bool landing = true;
 
-  private void OnDestroy() => updater.RemoveUpdatable(this);
+	[Tooltip("Длительность перехода меджу вращением полета и вращением покоя")]
+	public float landingBlend = 0.25f;
 
-  private CachedTransform CalculateTransformCached(float time)
-  {
-    if (time > 0.0)
-      time = 0.0f;
-    if (manager == null || manager.minSimulationTime <= 0.0)
-      return CalculateTransform(time);
-    if (time > (double) cachedTransform1Time)
-    {
-      cachedTransform0 = cachedTransform1;
-      cachedTransform0Time = cachedTransform1Time;
-      cachedTransform1Time = time + manager.minSimulationTime;
-      if (cachedTransform1Time > 0.0)
-        cachedTransform1Time = 0.0f;
-      cachedTransform1 = CalculateTransform(cachedTransform1Time);
-    }
-    return CachedTransform.LerpUnclamped(cachedTransform0, cachedTransform1, (float) ((time - (double) cachedTransform0Time) / (cachedTransform1Time - (double) cachedTransform0Time)));
-  }
+	public Vector3 landingNormal = Vector3.up;
+	[Space] public Transform leafTransform;
+	public Renderer leafRenderer;
+	private float _phase;
+	private bool _isOpaque;
+	private TimeSpan prevTime;
+	private TimeService timeService;
+	private IUpdater updater;
+	private CachedTransform cachedTransform0;
+	private float cachedTransform0Time;
+	private CachedTransform cachedTransform1;
+	private float cachedTransform1Time;
 
-  private CachedTransform CalculateTransform(float time)
-  {
-    float t = 0.0f;
-    if (landing && -(double) time < landingBlend)
-    {
-      float num = (float) (1.0 - -(double) time / landingBlend);
-      t = num * num;
-    }
-    Point point = GetPoint(time);
-    Vector3 position = point.position;
-    Quaternion a = Quaternion.LookRotation(point.normal);
-    if (t > 0.0)
-    {
-      position *= 1f - t;
-      Quaternion b = Quaternion.LookRotation(landingNormal, point.normal) * Quaternion.Euler(270f, 180f, 0.0f);
-      a = Quaternion.Lerp(a, b, t);
-    }
-    return new CachedTransform {
-      position = position,
-      rotation = a
-    };
-  }
+	private void Awake() {
+		if (materialProperties == null) {
+			materialProperties = new MaterialPropertyBlock();
+			cutoffPropertyID = Shader.PropertyToID("_Cutoff");
+		}
 
-  private Point GetPoint(float time)
-  {
-    Point point = new Point();
-    float f1 = (float) (time / (double) firstPeriod * 3.1415927410125732 * 2.0 + Math.PI / 180.0 * rotation);
-    Vector3 vector3_1 = new Vector3(Mathf.Sin(f1), 0.0f, Mathf.Cos(f1));
-    Vector3 vector3_2 = new Vector3(vector3_1.z, 0.0f, -vector3_1.x);
-    float f2 = (float) ((time / (double) secondPeriod + 0.5) * 3.1415927410125732 * 2.0);
-    Vector3 vector3_3 = new Vector3(Mathf.Sin(f2), 0.0f, Mathf.Cos(f2));
-    vector3_3.y = vector3_3.z * slope;
-    Vector3 vector3_4 = new Vector3 {
-      x = (float) (vector3_2.x * (double) vector3_3.x + vector3_1.x * (double) vector3_3.z),
-      y = (float) (vector3_2.y * (double) vector3_3.x + vector3_3.y + vector3_1.y * (double) vector3_3.z),
-      z = (float) (vector3_2.z * (double) vector3_3.x + vector3_1.z * (double) vector3_3.z)
-    };
-    point.position = new Vector3 {
-      x = (float) (velocity.x * (double) time + vector3_1.x * (double) firstRadius + vector3_4.x * (double) secondRadius),
-      y = (float) (velocity.y * (double) time + vector3_1.y * (double) firstRadius + (slope + (double) vector3_4.y) * secondRadius),
-      z = (float) (velocity.z * (double) time + vector3_1.z * (double) firstRadius + vector3_4.z * (double) secondRadius)
-    };
-    point.normal = vector3_4;
-    return point;
-  }
+		timeService = ServiceLocator.GetService<TimeService>();
+		prevTime = timeService.RealTime;
+		updater = InstanceByRequest<UpdateService>.Instance.LeafUpdater;
+		updater.AddUpdatable(this);
+	}
 
-  private void OnDrawGizmosSelected()
-  {
-    Gizmos.color = !landing ? new Color(1f, 0.75f, 0.0f) : new Color(0.0f, 1f, 0.0f);
-    int num1 = Mathf.RoundToInt(flyTime * 4f);
-    float num2 = flyTime / num1;
-    Matrix4x4 localToWorldMatrix = transform.localToWorldMatrix;
-    Vector3 from = localToWorldMatrix.MultiplyPoint(GetPoint(0.0f).position);
-    for (int index = 1; index < num1 + 1; ++index)
-    {
-      Vector3 to = localToWorldMatrix.MultiplyPoint(GetPoint(-num2 * index).position);
-      Gizmos.DrawLine(from, to);
-      from = to;
-    }
-  }
+	private void OnDestroy() {
+		updater.RemoveUpdatable(this);
+	}
 
-  private void Remove()
-  {
-    if (manager != null)
-      manager.ReturnAnimator(this);
-    else
-      Destroy(gameObject);
-  }
+	private CachedTransform CalculateTransformCached(float time) {
+		if (time > 0.0)
+			time = 0.0f;
+		if (manager == null || manager.minSimulationTime <= 0.0)
+			return CalculateTransform(time);
+		if (time > (double)cachedTransform1Time) {
+			cachedTransform0 = cachedTransform1;
+			cachedTransform0Time = cachedTransform1Time;
+			cachedTransform1Time = time + manager.minSimulationTime;
+			if (cachedTransform1Time > 0.0)
+				cachedTransform1Time = 0.0f;
+			cachedTransform1 = CalculateTransform(cachedTransform1Time);
+		}
 
-  private void SetOpacity(float opacity)
-  {
-    if (opacity == 1.0)
-    {
-      leafRenderer.SetPropertyBlock(null);
-    }
-    else
-    {
-      materialProperties.SetFloat(cutoffPropertyID, (float) (1.0 - opacity * 0.5));
-      leafRenderer.SetPropertyBlock(materialProperties);
-    }
-  }
+		return CachedTransform.LerpUnclamped(cachedTransform0, cachedTransform1,
+			(float)((time - (double)cachedTransform0Time) / (cachedTransform1Time - (double)cachedTransform0Time)));
+	}
 
-  public void SetToStart()
-  {
-    cachedTransform0Time = float.MinValue;
-    cachedTransform1Time = float.MinValue;
-    cachedTransform0 = new CachedTransform {
-      rotation = Quaternion.identity
-    };
-    cachedTransform1 = cachedTransform0;
-    _phase = -flyTime;
-    _isOpaque = false;
-    SetOpacity(0.0f);
-  }
+	private CachedTransform CalculateTransform(float time) {
+		var t = 0.0f;
+		if (landing && -(double)time < landingBlend) {
+			var num = (float)(1.0 - -(double)time / landingBlend);
+			t = num * num;
+		}
 
-  private void UpdateTransform()
-  {
-    CachedTransform transformCached = CalculateTransformCached(_phase);
-    leafTransform.localPosition = transformCached.position;
-    leafTransform.localRotation = transformCached.rotation;
-  }
+		var point = GetPoint(time);
+		var position = point.position;
+		var a = Quaternion.LookRotation(point.normal);
+		if (t > 0.0) {
+			position *= 1f - t;
+			var b = Quaternion.LookRotation(landingNormal, point.normal) * Quaternion.Euler(270f, 180f, 0.0f);
+			a = Quaternion.Lerp(a, b, t);
+		}
 
-  void IUpdatable.ComputeUpdate()
-  {
-    if (!isActiveAndEnabled)
-      return;
-    TimeSpan timeSpan = timeService.RealTime - prevTime;
-    prevTime = timeService.RealTime;
-    bool flag = _phase < 0.0;
-    _phase += (float) timeSpan.TotalSeconds;
-    if (flag)
-      UpdateTransform();
-    if (landing)
-    {
-      if (_phase >= (double) layTime)
-      {
-        Remove();
-        return;
-      }
-    }
-    else if (_phase >= 0.0)
-    {
-      Remove();
-      return;
-    }
-    float num = 1f * Mathf.Clamp01((flyTime + _phase) / flyFade);
-    float opacity = !landing ? num * Mathf.Clamp01(-_phase / flyFade) : num * Mathf.Clamp01((layTime - _phase) / layFade);
-    if (opacity >= 0.99000000953674316)
-    {
-      if (_isOpaque)
-        return;
-      SetOpacity(1f);
-      _isOpaque = true;
-    }
-    else
-    {
-      SetOpacity(opacity);
-      _isOpaque = false;
-    }
-  }
+		return new CachedTransform {
+			position = position,
+			rotation = a
+		};
+	}
 
-  private struct Point
-  {
-    public Vector3 position;
-    public Vector3 normal;
-  }
+	private Point GetPoint(float time) {
+		var point = new Point();
+		var f1 = (float)(time / (double)firstPeriod * 3.1415927410125732 * 2.0 + Math.PI / 180.0 * rotation);
+		var vector3_1 = new Vector3(Mathf.Sin(f1), 0.0f, Mathf.Cos(f1));
+		var vector3_2 = new Vector3(vector3_1.z, 0.0f, -vector3_1.x);
+		var f2 = (float)((time / (double)secondPeriod + 0.5) * 3.1415927410125732 * 2.0);
+		var vector3_3 = new Vector3(Mathf.Sin(f2), 0.0f, Mathf.Cos(f2));
+		vector3_3.y = vector3_3.z * slope;
+		var vector3_4 = new Vector3 {
+			x = (float)(vector3_2.x * (double)vector3_3.x + vector3_1.x * (double)vector3_3.z),
+			y = (float)(vector3_2.y * (double)vector3_3.x + vector3_3.y + vector3_1.y * (double)vector3_3.z),
+			z = (float)(vector3_2.z * (double)vector3_3.x + vector3_1.z * (double)vector3_3.z)
+		};
+		point.position = new Vector3 {
+			x = (float)(velocity.x * (double)time + vector3_1.x * (double)firstRadius +
+			            vector3_4.x * (double)secondRadius),
+			y = (float)(velocity.y * (double)time + vector3_1.y * (double)firstRadius +
+			            (slope + (double)vector3_4.y) * secondRadius),
+			z = (float)(velocity.z * (double)time + vector3_1.z * (double)firstRadius +
+			            vector3_4.z * (double)secondRadius)
+		};
+		point.normal = vector3_4;
+		return point;
+	}
 
-  private struct CachedTransform
-  {
-    public Vector3 position;
-    public Quaternion rotation;
+	private void OnDrawGizmosSelected() {
+		Gizmos.color = !landing ? new Color(1f, 0.75f, 0.0f) : new Color(0.0f, 1f, 0.0f);
+		var num1 = Mathf.RoundToInt(flyTime * 4f);
+		var num2 = flyTime / num1;
+		var localToWorldMatrix = transform.localToWorldMatrix;
+		var from = localToWorldMatrix.MultiplyPoint(GetPoint(0.0f).position);
+		for (var index = 1; index < num1 + 1; ++index) {
+			var to = localToWorldMatrix.MultiplyPoint(GetPoint(-num2 * index).position);
+			Gizmos.DrawLine(from, to);
+			from = to;
+		}
+	}
 
-    public static CachedTransform LerpUnclamped(
-      CachedTransform a,
-      CachedTransform b,
-      float time)
-    {
-      return new CachedTransform {
-        position = Vector3.LerpUnclamped(a.position, b.position, time),
-        rotation = Quaternion.LerpUnclamped(a.rotation, b.rotation, time)
-      };
-    }
-  }
+	private void Remove() {
+		if (manager != null)
+			manager.ReturnAnimator(this);
+		else
+			Destroy(gameObject);
+	}
+
+	private void SetOpacity(float opacity) {
+		if (opacity == 1.0)
+			leafRenderer.SetPropertyBlock(null);
+		else {
+			materialProperties.SetFloat(cutoffPropertyID, (float)(1.0 - opacity * 0.5));
+			leafRenderer.SetPropertyBlock(materialProperties);
+		}
+	}
+
+	public void SetToStart() {
+		cachedTransform0Time = float.MinValue;
+		cachedTransform1Time = float.MinValue;
+		cachedTransform0 = new CachedTransform {
+			rotation = Quaternion.identity
+		};
+		cachedTransform1 = cachedTransform0;
+		_phase = -flyTime;
+		_isOpaque = false;
+		SetOpacity(0.0f);
+	}
+
+	private void UpdateTransform() {
+		var transformCached = CalculateTransformCached(_phase);
+		leafTransform.localPosition = transformCached.position;
+		leafTransform.localRotation = transformCached.rotation;
+	}
+
+	void IUpdatable.ComputeUpdate() {
+		if (!isActiveAndEnabled)
+			return;
+		var timeSpan = timeService.RealTime - prevTime;
+		prevTime = timeService.RealTime;
+		var flag = _phase < 0.0;
+		_phase += (float)timeSpan.TotalSeconds;
+		if (flag)
+			UpdateTransform();
+		if (landing) {
+			if (_phase >= (double)layTime) {
+				Remove();
+				return;
+			}
+		} else if (_phase >= 0.0) {
+			Remove();
+			return;
+		}
+
+		var num = 1f * Mathf.Clamp01((flyTime + _phase) / flyFade);
+		var opacity = !landing
+			? num * Mathf.Clamp01(-_phase / flyFade)
+			: num * Mathf.Clamp01((layTime - _phase) / layFade);
+		if (opacity >= 0.99000000953674316) {
+			if (_isOpaque)
+				return;
+			SetOpacity(1f);
+			_isOpaque = true;
+		} else {
+			SetOpacity(opacity);
+			_isOpaque = false;
+		}
+	}
+
+	private struct Point {
+		public Vector3 position;
+		public Vector3 normal;
+	}
+
+	private struct CachedTransform {
+		public Vector3 position;
+		public Quaternion rotation;
+
+		public static CachedTransform LerpUnclamped(
+			CachedTransform a,
+			CachedTransform b,
+			float time) {
+			return new CachedTransform {
+				position = Vector3.LerpUnclamped(a.position, b.position, time),
+				rotation = Quaternion.LerpUnclamped(a.rotation, b.rotation, time)
+			};
+		}
+	}
 }

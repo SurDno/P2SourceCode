@@ -1,9 +1,7 @@
-﻿namespace Engine.Impl.Services.Simulations
-{
-  public interface IInjectable
-  {
-    void OnAdded();
+﻿namespace Engine.Impl.Services.Simulations;
 
-    void OnRemoved();
-  }
+public interface IInjectable {
+	void OnAdded();
+
+	void OnRemoved();
 }

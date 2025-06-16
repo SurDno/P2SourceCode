@@ -1,103 +1,87 @@
 ﻿using System;
 using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  public class GenericPoser : Poser
-  {
-    public Map[] maps;
+namespace RootMotion.FinalIK;
 
-    [ContextMenu("Auto-Mapping")]
-    public override void AutoMapping()
-    {
-      if (poseRoot == null)
-      {
-        maps = new Map[0];
-      }
-      else
-      {
-        maps = new Map[0];
-        Transform[] componentsInChildren1 = transform.GetComponentsInChildren<Transform>();
-        Transform[] componentsInChildren2 = poseRoot.GetComponentsInChildren<Transform>();
-        for (int index = 1; index < componentsInChildren1.Length; ++index)
-        {
-          Transform targetNamed = GetTargetNamed(componentsInChildren1[index].name, componentsInChildren2);
-          if (targetNamed != null)
-          {
-            Array.Resize(ref maps, maps.Length + 1);
-            maps[maps.Length - 1] = new Map(componentsInChildren1[index], targetNamed);
-          }
-        }
-        StoreDefaultState();
-      }
-    }
+public class GenericPoser : Poser {
+	public Map[] maps;
 
-    protected override void InitiatePoser() => StoreDefaultState();
+	[ContextMenu("Auto-Mapping")]
+	public override void AutoMapping() {
+		if (poseRoot == null)
+			maps = new Map[0];
+		else {
+			maps = new Map[0];
+			var componentsInChildren1 = transform.GetComponentsInChildren<Transform>();
+			var componentsInChildren2 = poseRoot.GetComponentsInChildren<Transform>();
+			for (var index = 1; index < componentsInChildren1.Length; ++index) {
+				var targetNamed = GetTargetNamed(componentsInChildren1[index].name, componentsInChildren2);
+				if (targetNamed != null) {
+					Array.Resize(ref maps, maps.Length + 1);
+					maps[maps.Length - 1] = new Map(componentsInChildren1[index], targetNamed);
+				}
+			}
 
-    protected override void UpdatePoser()
-    {
-      if (weight <= 0.0 || this.localPositionWeight <= 0.0 && this.localRotationWeight <= 0.0 || poseRoot == null)
-        return;
-      float localRotationWeight = this.localRotationWeight * weight;
-      float localPositionWeight = this.localPositionWeight * weight;
-      for (int index = 0; index < maps.Length; ++index)
-        maps[index].Update(localRotationWeight, localPositionWeight);
-    }
+			StoreDefaultState();
+		}
+	}
 
-    protected override void FixPoserTransforms()
-    {
-      for (int index = 0; index < maps.Length; ++index)
-        maps[index].FixTransform();
-    }
+	protected override void InitiatePoser() {
+		StoreDefaultState();
+	}
 
-    private void StoreDefaultState()
-    {
-      for (int index = 0; index < maps.Length; ++index)
-        maps[index].StoreDefaultState();
-    }
+	protected override void UpdatePoser() {
+		if (weight <= 0.0 || (this.localPositionWeight <= 0.0 && this.localRotationWeight <= 0.0) || poseRoot == null)
+			return;
+		var localRotationWeight = this.localRotationWeight * weight;
+		var localPositionWeight = this.localPositionWeight * weight;
+		for (var index = 0; index < maps.Length; ++index)
+			maps[index].Update(localRotationWeight, localPositionWeight);
+	}
 
-    private Transform GetTargetNamed(string tName, Transform[] array)
-    {
-      for (int index = 0; index < array.Length; ++index)
-      {
-        if (array[index].name == tName)
-          return array[index];
-      }
-      return null;
-    }
+	protected override void FixPoserTransforms() {
+		for (var index = 0; index < maps.Length; ++index)
+			maps[index].FixTransform();
+	}
 
-    [Serializable]
-    public class Map
-    {
-      public Transform bone;
-      public Transform target;
-      private Vector3 defaultLocalPosition;
-      private Quaternion defaultLocalRotation;
+	private void StoreDefaultState() {
+		for (var index = 0; index < maps.Length; ++index)
+			maps[index].StoreDefaultState();
+	}
 
-      public Map(Transform bone, Transform target)
-      {
-        this.bone = bone;
-        this.target = target;
-        StoreDefaultState();
-      }
+	private Transform GetTargetNamed(string tName, Transform[] array) {
+		for (var index = 0; index < array.Length; ++index)
+			if (array[index].name == tName)
+				return array[index];
+		return null;
+	}
 
-      public void StoreDefaultState()
-      {
-        defaultLocalPosition = bone.localPosition;
-        defaultLocalRotation = bone.localRotation;
-      }
+	[Serializable]
+	public class Map {
+		public Transform bone;
+		public Transform target;
+		private Vector3 defaultLocalPosition;
+		private Quaternion defaultLocalRotation;
 
-      public void FixTransform()
-      {
-        bone.localPosition = defaultLocalPosition;
-        bone.localRotation = defaultLocalRotation;
-      }
+		public Map(Transform bone, Transform target) {
+			this.bone = bone;
+			this.target = target;
+			StoreDefaultState();
+		}
 
-      public void Update(float localRotationWeight, float localPositionWeight)
-      {
-        bone.localRotation = Quaternion.Lerp(bone.localRotation, target.localRotation, localRotationWeight);
-        bone.localPosition = Vector3.Lerp(bone.localPosition, target.localPosition, localPositionWeight);
-      }
-    }
-  }
+		public void StoreDefaultState() {
+			defaultLocalPosition = bone.localPosition;
+			defaultLocalRotation = bone.localRotation;
+		}
+
+		public void FixTransform() {
+			bone.localPosition = defaultLocalPosition;
+			bone.localRotation = defaultLocalRotation;
+		}
+
+		public void Update(float localRotationWeight, float localPositionWeight) {
+			bone.localRotation = Quaternion.Lerp(bone.localRotation, target.localRotation, localRotationWeight);
+			bone.localPosition = Vector3.Lerp(bone.localPosition, target.localPosition, localPositionWeight);
+		}
+	}
 }

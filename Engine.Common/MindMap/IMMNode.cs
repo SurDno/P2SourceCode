@@ -1,18 +1,16 @@
 ﻿using System;
 using Engine.Common.Types;
 
-namespace Engine.Common.MindMap
-{
-  public interface IMMNode
-  {
-    Guid Id { get; set; }
+namespace Engine.Common.MindMap;
 
-    Position Position { get; set; }
+public interface IMMNode {
+	Guid Id { get; set; }
 
-    MMNodeKind NodeKind { get; set; }
+	Position Position { get; set; }
 
-    IMMContent Content { get; set; }
+	MMNodeKind NodeKind { get; set; }
 
-    bool Undiscovered { get; set; }
-  }
+	IMMContent Content { get; set; }
+
+	bool Undiscovered { get; set; }
 }

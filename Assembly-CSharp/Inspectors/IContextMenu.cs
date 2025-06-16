@@ -1,13 +1,11 @@
 ﻿using System;
 
-namespace Inspectors
-{
-  public interface IContextMenu
-  {
-    void AddItem(string name, bool on, Action action);
+namespace Inspectors;
 
-    void AddSeparator(string name);
+public interface IContextMenu {
+	void AddItem(string name, bool on, Action action);
 
-    void Show();
-  }
+	void AddSeparator(string name);
+
+	void Show();
 }

@@ -1,9 +1,6 @@
 ﻿using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class ChangeBlockTypeParameterNode : ChangeParameterNode<BlockTypeEnum>
-  {
-  }
-}
+namespace Engine.Source.Blueprints;
+
+[Category("Engine")]
+public class ChangeBlockTypeParameterNode : ChangeParameterNode<BlockTypeEnum> { }

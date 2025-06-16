@@ -2,30 +2,25 @@
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Services
-{
-  [GameService(typeof (SelectionService))]
-  public class SelectionService
-  {
-    [Inspected]
-    private object[] selections = new object[10];
+namespace Engine.Services;
 
-    public int SelectionCount => selections.Length;
+[GameService(typeof(SelectionService))]
+public class SelectionService {
+	[Inspected] private object[] selections = new object[10];
 
-    public void SetSelection(int index, object selection)
-    {
-      if (index < 0 || index >= selections.Length)
-        Debug.LogWarning("Selection index out of range");
-      else
-        selections[index] = selection;
-    }
+	public int SelectionCount => selections.Length;
 
-    public object GetSelection(int index)
-    {
-      if (index >= 0 && index < selections.Length)
-        return selections[index];
-      Debug.LogWarning("Selection index out of range");
-      return null;
-    }
-  }
+	public void SetSelection(int index, object selection) {
+		if (index < 0 || index >= selections.Length)
+			Debug.LogWarning("Selection index out of range");
+		else
+			selections[index] = selection;
+	}
+
+	public object GetSelection(int index) {
+		if (index >= 0 && index < selections.Length)
+			return selections[index];
+		Debug.LogWarning("Selection index out of range");
+		return null;
+	}
 }

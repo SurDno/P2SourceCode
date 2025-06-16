@@ -1,10 +1,8 @@
-﻿namespace SteamNative
-{
-  internal enum LobbyType
-  {
-    Private,
-    FriendsOnly,
-    Public,
-    Invisible,
-  }
+﻿namespace SteamNative;
+
+internal enum LobbyType {
+	Private,
+	FriendsOnly,
+	Public,
+	Invisible
 }

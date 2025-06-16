@@ -1,9 +1,7 @@
-﻿namespace TriangleNet
-{
-  public enum TriangulationAlgorithm
-  {
-    Dwyer,
-    Incremental,
-    SweepLine,
-  }
+﻿namespace TriangleNet;
+
+public enum TriangulationAlgorithm {
+	Dwyer,
+	Incremental,
+	SweepLine
 }

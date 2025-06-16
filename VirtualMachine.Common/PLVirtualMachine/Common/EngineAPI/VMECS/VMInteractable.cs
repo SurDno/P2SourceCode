@@ -4,71 +4,65 @@ using Engine.Common.Components;
 using Engine.Common.Components.Interactable;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("Interactive", typeof (IInteractableComponent))]
-  public class VMInteractable : VMEngineComponent<IInteractableComponent>
-  {
-    public const string ComponentName = "Interactive";
-    private ITextRef title;
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    [Property("Title", "", true)]
-    public ITextRef ObjectName
-    {
-      get => title;
-      set
-      {
-        title = value;
-        Component.Title = EngineAPIManager.CreateEngineTextInstance(title);
-      }
-    }
+[Info("Interactive", typeof(IInteractableComponent))]
+public class VMInteractable : VMEngineComponent<IInteractableComponent> {
+	public const string ComponentName = "Interactive";
+	private ITextRef title;
 
-    [Event("Begin interact event", "агент:Controller,цель:Interactive,тип")]
-    public event Action<IEntity, IEntity, InteractType> BeginIteractEvent;
+	[Property("Title", "", true)]
+	public ITextRef ObjectName {
+		get => title;
+		set {
+			title = value;
+			Component.Title = EngineAPIManager.CreateEngineTextInstance(title);
+		}
+	}
 
-    [Event("End interact event", "агент:Controller,цель:Interactive,тип")]
-    public event Action<IEntity, IEntity, InteractType> EndIteractEvent;
+	[Event("Begin interact event", "агент:Controller,цель:Interactive,тип")]
+	public event Action<IEntity, IEntity, InteractType> BeginIteractEvent;
 
-    [Method("Enable component", "Enable", "")]
-    public void EnableComponent(bool enable) => Component.IsEnabled = enable;
+	[Event("End interact event", "агент:Controller,цель:Interactive,тип")]
+	public event Action<IEntity, IEntity, InteractType> EndIteractEvent;
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.BeginInteractEvent -= FireBeginInteractEvent;
-      Component.EndInteractEvent -= FireEndInteractEvent;
-      base.Clear();
-    }
+	[Method("Enable component", "Enable", "")]
+	public void EnableComponent(bool enable) {
+		Component.IsEnabled = enable;
+	}
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.BeginInteractEvent += FireBeginInteractEvent;
-      Component.EndInteractEvent += FireEndInteractEvent;
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.BeginInteractEvent -= FireBeginInteractEvent;
+		Component.EndInteractEvent -= FireEndInteractEvent;
+		base.Clear();
+	}
 
-    private void FireBeginInteractEvent(
-      IEntity owner,
-      IInteractableComponent target,
-      IInteractItem item)
-    {
-      Action<IEntity, IEntity, InteractType> beginIteractEvent = BeginIteractEvent;
-      if (beginIteractEvent == null)
-        return;
-      beginIteractEvent(owner, target.Owner, item.Type);
-    }
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.BeginInteractEvent += FireBeginInteractEvent;
+		Component.EndInteractEvent += FireEndInteractEvent;
+	}
 
-    private void FireEndInteractEvent(
-      IEntity owner,
-      IInteractableComponent target,
-      IInteractItem item)
-    {
-      Action<IEntity, IEntity, InteractType> endIteractEvent = EndIteractEvent;
-      if (endIteractEvent == null)
-        return;
-      endIteractEvent(owner, target.Owner, item.Type);
-    }
-  }
+	private void FireBeginInteractEvent(
+		IEntity owner,
+		IInteractableComponent target,
+		IInteractItem item) {
+		var beginIteractEvent = BeginIteractEvent;
+		if (beginIteractEvent == null)
+			return;
+		beginIteractEvent(owner, target.Owner, item.Type);
+	}
+
+	private void FireEndInteractEvent(
+		IEntity owner,
+		IInteractableComponent target,
+		IInteractItem item) {
+		var endIteractEvent = EndIteractEvent;
+		if (endIteractEvent == null)
+			return;
+		endIteractEvent(owner, target.Owner, item.Type);
+	}
 }

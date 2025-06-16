@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 
-public interface INpcStateNeedSyncBack
-{
-  Vector3 GetSyncBackPosition();
+public interface INpcStateNeedSyncBack {
+	Vector3 GetSyncBackPosition();
 
-  POIAnimationEnum GetPoiType();
+	POIAnimationEnum GetPoiType();
 }

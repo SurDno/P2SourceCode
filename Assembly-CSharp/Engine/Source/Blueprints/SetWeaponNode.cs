@@ -5,23 +5,20 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class SetWeaponNode : FlowControlNode
-  {
-    private ValueInput<WeaponKind> weaponInput;
+namespace Engine.Source.Blueprints;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () =>
-      {
-        ServiceLocator.GetService<ISimulation>().Player?.GetComponent<IAttackerPlayerComponent>()?.SetWeapon(weaponInput.value);
-        output.Call();
-      });
-      weaponInput = AddValueInput<WeaponKind>("Weapon");
-    }
-  }
+[Category("Engine")]
+public class SetWeaponNode : FlowControlNode {
+	private ValueInput<WeaponKind> weaponInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => {
+			ServiceLocator.GetService<ISimulation>().Player?.GetComponent<IAttackerPlayerComponent>()
+				?.SetWeapon(weaponInput.value);
+			output.Call();
+		});
+		weaponInput = AddValueInput<WeaponKind>("Weapon");
+	}
 }

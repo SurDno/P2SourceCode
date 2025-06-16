@@ -2,25 +2,32 @@
 using Inspectors;
 using Object = UnityEngine.Object;
 
-namespace Engine.Source.Connections
-{
-  public struct UnityAsset<T> : IUnityAsset where T : Object
-  {
-    private Guid id;
+namespace Engine.Source.Connections;
 
-    [Inspected]
-    public Guid Id => id;
+public struct UnityAsset<T> : IUnityAsset where T : Object {
+	private Guid id;
 
-    public UnityAsset(Guid id) => this.id = id;
+	[Inspected] public Guid Id => id;
 
-    public T Value => UnityAssetUtility.GetValue<T>(id);
+	public UnityAsset(Guid id) {
+		this.id = id;
+	}
 
-    public override int GetHashCode() => id.GetHashCode();
+	public T Value => UnityAssetUtility.GetValue<T>(id);
 
-    public override bool Equals(object a) => a is UnityAsset<T> unityAsset && this == unityAsset;
+	public override int GetHashCode() {
+		return id.GetHashCode();
+	}
 
-    public static bool operator ==(UnityAsset<T> a, UnityAsset<T> b) => a.id == b.id;
+	public override bool Equals(object a) {
+		return a is UnityAsset<T> unityAsset && this == unityAsset;
+	}
 
-    public static bool operator !=(UnityAsset<T> a, UnityAsset<T> b) => !(a == b);
-  }
+	public static bool operator ==(UnityAsset<T> a, UnityAsset<T> b) {
+		return a.id == b.id;
+	}
+
+	public static bool operator !=(UnityAsset<T> a, UnityAsset<T> b) {
+		return !(a == b);
+	}
 }

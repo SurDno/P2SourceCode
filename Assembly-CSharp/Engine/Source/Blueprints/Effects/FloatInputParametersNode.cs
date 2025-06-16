@@ -6,22 +6,17 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class FloatInputParametersNode : FlowControlNode
-  {
-    [Port("Name")]
-    private ValueInput<string> nameInput;
-    [FromLocator]
-    private EffectsService effects;
-    private List<IParameter<float>> result = new List<IParameter<float>>();
+namespace Engine.Source.Blueprints.Effects;
 
-    [Port("Value")]
-    private IList<IParameter<float>> Value()
-    {
-      effects.GetParameters(nameInput.value, result);
-      return result;
-    }
-  }
+[Category("Effects")]
+public class FloatInputParametersNode : FlowControlNode {
+	[Port("Name")] private ValueInput<string> nameInput;
+	[FromLocator] private EffectsService effects;
+	private List<IParameter<float>> result = new();
+
+	[Port("Value")]
+	private IList<IParameter<float>> Value() {
+		effects.GetParameters(nameInput.value, result);
+		return result;
+	}
 }

@@ -5,21 +5,15 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
 
-namespace Engine.Source.UI.Menu.Protagonist.MindMap
-{
-  [Factory(typeof (IMMContent))]
-  public class MMContent : IMMContent, IIdSetter
-  {
-    [Inspected]
-    public Guid Id { get; set; }
+namespace Engine.Source.UI.Menu.Protagonist.MindMap;
 
-    [Inspected]
-    public LocalizedText Description { get; set; }
+[Factory(typeof(IMMContent))]
+public class MMContent : IMMContent, IIdSetter {
+	[Inspected] public Guid Id { get; set; }
 
-    [Inspected]
-    public MMContentKind Kind { get; set; }
+	[Inspected] public LocalizedText Description { get; set; }
 
-    [Inspected]
-    public IMMPlaceholder Placeholder { get; set; }
-  }
+	[Inspected] public MMContentKind Kind { get; set; }
+
+	[Inspected] public IMMPlaceholder Placeholder { get; set; }
 }

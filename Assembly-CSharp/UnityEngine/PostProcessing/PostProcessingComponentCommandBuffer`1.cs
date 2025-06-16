@@ -1,13 +1,12 @@
 ﻿using UnityEngine.Rendering;
 
-namespace UnityEngine.PostProcessing
-{
-  public abstract class PostProcessingComponentCommandBuffer<T> : PostProcessingComponent<T> where T : PostProcessingModel
-  {
-    public abstract CameraEvent GetCameraEvent();
+namespace UnityEngine.PostProcessing;
 
-    public abstract string GetName();
+public abstract class PostProcessingComponentCommandBuffer<T> : PostProcessingComponent<T>
+	where T : PostProcessingModel {
+	public abstract CameraEvent GetCameraEvent();
 
-    public abstract void PopulateCommandBuffer(CommandBuffer cb);
-  }
+	public abstract string GetName();
+
+	public abstract void PopulateCommandBuffer(CommandBuffer cb);
 }

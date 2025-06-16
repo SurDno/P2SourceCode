@@ -1,15 +1,13 @@
 ﻿using System;
 
-namespace TriangleNet.Log
-{
-  public interface ILogItem
-  {
-    DateTime Time { get; }
+namespace TriangleNet.Log;
 
-    LogLevel Level { get; }
+public interface ILogItem {
+	DateTime Time { get; }
 
-    string Message { get; }
+	LogLevel Level { get; }
 
-    string Info { get; }
-  }
+	string Message { get; }
+
+	string Info { get; }
 }

@@ -4,41 +4,37 @@ using Cofe.Meta;
 using Cofe.Utility;
 using UnityEngine;
 
-namespace Engine.Source.Services.Consoles
-{
-  [AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
-  public class ConsoleCommandAttribute : InitialiseAttribute
-  {
-    private string name;
+namespace Engine.Source.Services.Consoles;
 
-    public ConsoleCommandAttribute(string name) => this.name = name;
+[AttributeUsage(AttributeTargets.Method, AllowMultiple = true, Inherited = false)]
+public class ConsoleCommandAttribute : InitialiseAttribute {
+	private string name;
 
-    public override void ComputeMember(Container container, MemberInfo member)
-    {
-      if (name.IsNullOrEmpty())
-        return;
-      MethodInfo method = member as MethodInfo;
-      if (method == null)
-        return;
-      ParameterInfo[] parameters = method.GetParameters();
-      if (method.ReturnType != typeof (string) || parameters.Length != 2 || parameters[0].ParameterType != typeof (string) || parameters[1].ParameterType != typeof (ConsoleParameter[]))
-        Debug.LogError("Console command wrong parameters : " + name);
-      else
-        container.GetHandler(Id).AddHandle((target, data) => ConsoleService.RegisterCommand(name, (command, parameters2) =>
-        {
-          try
-          {
-            return (string) method.Invoke(target, new object[2]
-            {
-              command,
-              parameters2
-            });
-          }
-          catch (Exception ex)
-          {
-            return ex.ToString();
-          }
-        }));
-    }
-  }
+	public ConsoleCommandAttribute(string name) {
+		this.name = name;
+	}
+
+	public override void ComputeMember(Container container, MemberInfo member) {
+		if (name.IsNullOrEmpty())
+			return;
+		var method = member as MethodInfo;
+		if (method == null)
+			return;
+		var parameters = method.GetParameters();
+		if (method.ReturnType != typeof(string) || parameters.Length != 2 ||
+		    parameters[0].ParameterType != typeof(string) || parameters[1].ParameterType != typeof(ConsoleParameter[]))
+			Debug.LogError("Console command wrong parameters : " + name);
+		else
+			container.GetHandler(Id).AddHandle((target, data) => ConsoleService.RegisterCommand(name,
+				(command, parameters2) => {
+					try {
+						return (string)method.Invoke(target, new object[2] {
+							command,
+							parameters2
+						});
+					} catch (Exception ex) {
+						return ex.ToString();
+					}
+				}));
+	}
 }

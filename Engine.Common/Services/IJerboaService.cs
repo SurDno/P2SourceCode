@@ -1,13 +1,11 @@
-﻿namespace Engine.Common.Services
-{
-  public interface IJerboaService
-  {
-    float Quality { get; set; }
+﻿namespace Engine.Common.Services;
 
-    float Amount { get; set; }
+public interface IJerboaService {
+	float Quality { get; set; }
 
-    JerboaColorEnum Color { get; set; }
+	float Amount { get; set; }
 
-    void Syncronize();
-  }
+	JerboaColorEnum Color { get; set; }
+
+	void Syncronize();
 }

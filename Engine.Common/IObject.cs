@@ -1,19 +1,17 @@
 ﻿using System;
 
-namespace Engine.Common
-{
-  public interface IObject
-  {
-    Guid Id { get; }
+namespace Engine.Common;
 
-    string Name { get; set; }
+public interface IObject {
+	Guid Id { get; }
 
-    Guid TemplateId { get; }
+	string Name { get; set; }
 
-    string Source { get; }
+	Guid TemplateId { get; }
 
-    IObject Template { get; }
+	string Source { get; }
 
-    bool IsTemplate { get; }
-  }
+	IObject Template { get; }
+
+	bool IsTemplate { get; }
 }

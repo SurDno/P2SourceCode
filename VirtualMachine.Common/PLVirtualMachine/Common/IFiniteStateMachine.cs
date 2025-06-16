@@ -1,37 +1,36 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IFiniteStateMachine : 
-    IState,
-    IGraphObject,
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable,
-    ILocalContext,
-    IGraph
-  {
-    EGraphType GraphType { get; }
+namespace PLVirtualMachine.Common;
 
-    IState InitState { get; }
+public interface IFiniteStateMachine :
+	IState,
+	IGraphObject,
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable,
+	ILocalContext,
+	IGraph {
+	EGraphType GraphType { get; }
 
-    List<IState> States { get; }
+	IState InitState { get; }
 
-    IState GetSubgraphExitState();
+	List<IState> States { get; }
 
-    bool IsSubGraph { get; }
+	IState GetSubgraphExitState();
 
-    bool Abstract { get; }
+	bool IsSubGraph { get; }
 
-    List<InputParam> InputParams { get; }
+	bool Abstract { get; }
 
-    IFiniteStateMachine SubstituteGraph { get; }
+	List<InputParam> InputParams { get; }
 
-    List<IFiniteStateMachine> GetSubGraphStructure(EGraphType graphType = EGraphType.GRAPH_TYPE_ALL, bool withBaseClasses = true);
+	IFiniteStateMachine SubstituteGraph { get; }
 
-    IState GetStateByGuid(ulong stateId, bool withBaseClasses = true);
-  }
+	List<IFiniteStateMachine> GetSubGraphStructure(EGraphType graphType = EGraphType.GRAPH_TYPE_ALL,
+		bool withBaseClasses = true);
+
+	IState GetStateByGuid(ulong stateId, bool withBaseClasses = true);
 }

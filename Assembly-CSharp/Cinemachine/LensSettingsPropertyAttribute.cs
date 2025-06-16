@@ -1,10 +1,7 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Cinemachine
-{
-  [AttributeUsage(AttributeTargets.Field)]
-  public sealed class LensSettingsPropertyAttribute : PropertyAttribute
-  {
-  }
-}
+namespace Cinemachine;
+
+[AttributeUsage(AttributeTargets.Field)]
+public sealed class LensSettingsPropertyAttribute : PropertyAttribute { }

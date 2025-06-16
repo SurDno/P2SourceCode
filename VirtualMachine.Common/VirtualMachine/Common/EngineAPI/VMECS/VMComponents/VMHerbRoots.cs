@@ -4,107 +4,95 @@ using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents
-{
-  [Info("HerbRootsComponent", typeof (IHerbRootsComponent))]
-  public class VMHerbRoots : VMEngineComponent<IHerbRootsComponent>
-  {
-    public const string ComponentName = "HerbRootsComponent";
+namespace VirtualMachine.Common.EngineAPI.VMECS.VMComponents;
 
-    [Event("Player enters trigger event", "")]
-    public event Action TriggerEnterEvent;
+[Info("HerbRootsComponent", typeof(IHerbRootsComponent))]
+public class VMHerbRoots : VMEngineComponent<IHerbRootsComponent> {
+	public const string ComponentName = "HerbRootsComponent";
 
-    [Event("Player leaves trigger event", "")]
-    public event Action TriggerLeaveEvent;
+	[Event("Player enters trigger event", "")]
+	public event Action TriggerEnterEvent;
 
-    [Event("Activation start event", "")]
-    public event Action ActivateStartEvent;
+	[Event("Player leaves trigger event", "")]
+	public event Action TriggerLeaveEvent;
 
-    [Event("Activation end event", "")]
-    public event Action ActivateEndEvent;
+	[Event("Activation start event", "")] public event Action ActivateStartEvent;
 
-    [Event("Herb spawn event", "")]
-    public event Action HerbSpawnEvent;
+	[Event("Activation end event", "")] public event Action ActivateEndEvent;
 
-    [Event("Last herb spawn event", "")]
-    public event Action LastHerbSpawnEvent;
+	[Event("Herb spawn event", "")] public event Action HerbSpawnEvent;
 
-    [Method("Reset", "", "")]
-    public void Reset() => Component.Reset();
+	[Event("Last herb spawn event", "")] public event Action LastHerbSpawnEvent;
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.OnTriggerEnterEvent -= OnTriggerEnterEvent;
-      Component.OnTriggerLeaveEvent -= OnTriggerLeaveEvent;
-      Component.OnActivateStartEvent -= OnActivateStartEvent;
-      Component.OnActivateEndEvent -= OnActivateEndEvent;
-      Component.OnHerbSpawnEvent -= HerbSpawnEvent;
-      Component.OnLastHerbSpawnEvent -= LastHerbSpawnEvent;
-      base.Clear();
-    }
+	[Method("Reset", "", "")]
+	public void Reset() {
+		Component.Reset();
+	}
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.OnTriggerEnterEvent += OnTriggerEnterEvent;
-      Component.OnTriggerLeaveEvent += OnTriggerLeaveEvent;
-      Component.OnActivateStartEvent += OnActivateStartEvent;
-      Component.OnActivateEndEvent += OnActivateEndEvent;
-      Component.OnHerbSpawnEvent += HerbSpawnEvent;
-      Component.OnLastHerbSpawnEvent += LastHerbSpawnEvent;
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.OnTriggerEnterEvent -= OnTriggerEnterEvent;
+		Component.OnTriggerLeaveEvent -= OnTriggerLeaveEvent;
+		Component.OnActivateStartEvent -= OnActivateStartEvent;
+		Component.OnActivateEndEvent -= OnActivateEndEvent;
+		Component.OnHerbSpawnEvent -= HerbSpawnEvent;
+		Component.OnLastHerbSpawnEvent -= LastHerbSpawnEvent;
+		base.Clear();
+	}
 
-    private void OnTriggerEnterEvent()
-    {
-      Action triggerEnterEvent = TriggerEnterEvent;
-      if (triggerEnterEvent == null)
-        return;
-      triggerEnterEvent();
-    }
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.OnTriggerEnterEvent += OnTriggerEnterEvent;
+		Component.OnTriggerLeaveEvent += OnTriggerLeaveEvent;
+		Component.OnActivateStartEvent += OnActivateStartEvent;
+		Component.OnActivateEndEvent += OnActivateEndEvent;
+		Component.OnHerbSpawnEvent += HerbSpawnEvent;
+		Component.OnLastHerbSpawnEvent += LastHerbSpawnEvent;
+	}
 
-    private void OnTriggerLeaveEvent()
-    {
-      Action triggerLeaveEvent = TriggerLeaveEvent;
-      if (triggerLeaveEvent == null)
-        return;
-      triggerLeaveEvent();
-    }
+	private void OnTriggerEnterEvent() {
+		var triggerEnterEvent = TriggerEnterEvent;
+		if (triggerEnterEvent == null)
+			return;
+		triggerEnterEvent();
+	}
 
-    private void OnActivateStartEvent()
-    {
-      Action activateStartEvent = ActivateStartEvent;
-      if (activateStartEvent == null)
-        return;
-      activateStartEvent();
-    }
+	private void OnTriggerLeaveEvent() {
+		var triggerLeaveEvent = TriggerLeaveEvent;
+		if (triggerLeaveEvent == null)
+			return;
+		triggerLeaveEvent();
+	}
 
-    private void OnActivateEndEvent()
-    {
-      Action activateEndEvent = ActivateEndEvent;
-      if (activateEndEvent == null)
-        return;
-      activateEndEvent();
-    }
+	private void OnActivateStartEvent() {
+		var activateStartEvent = ActivateStartEvent;
+		if (activateStartEvent == null)
+			return;
+		activateStartEvent();
+	}
 
-    private void OnHerbSpawnEvent()
-    {
-      Action herbSpawnEvent = HerbSpawnEvent;
-      if (herbSpawnEvent == null)
-        return;
-      herbSpawnEvent();
-    }
+	private void OnActivateEndEvent() {
+		var activateEndEvent = ActivateEndEvent;
+		if (activateEndEvent == null)
+			return;
+		activateEndEvent();
+	}
 
-    private void OnLastHerbSpawnEvent()
-    {
-      Action lastHerbSpawnEvent = LastHerbSpawnEvent;
-      if (lastHerbSpawnEvent == null)
-        return;
-      lastHerbSpawnEvent();
-    }
+	private void OnHerbSpawnEvent() {
+		var herbSpawnEvent = HerbSpawnEvent;
+		if (herbSpawnEvent == null)
+			return;
+		herbSpawnEvent();
+	}
 
-    public delegate void NeedCreateObjectEventType([Template] IEntity entity);
-  }
+	private void OnLastHerbSpawnEvent() {
+		var lastHerbSpawnEvent = LastHerbSpawnEvent;
+		if (lastHerbSpawnEvent == null)
+			return;
+		lastHerbSpawnEvent();
+	}
+
+	public delegate void NeedCreateObjectEventType([Template] IEntity entity);
 }

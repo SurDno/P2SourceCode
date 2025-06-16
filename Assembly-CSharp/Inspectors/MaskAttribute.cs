@@ -1,9 +1,6 @@
 ﻿using System;
 
-namespace Inspectors
-{
-  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-  public class MaskAttribute : Attribute
-  {
-  }
-}
+namespace Inspectors;
+
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public class MaskAttribute : Attribute { }

@@ -19,155 +19,134 @@ using Engine.Source.Utility;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Services
-{
-  [SaveDepend(typeof (ISimulation))]
-  [GameService(typeof (ForcedDialogService), typeof (IForcedDialogService))]
-  [GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class ForcedDialogService : 
-    IInitialisable,
-    IUpdatable,
-    IForcedDialogService,
-    ISavesController,
-    IEntityEventsListener
-  {
-    [StateSaveProxy]
-    [StateLoadProxy()]
-    [Inspected]
-    protected List<ForcedDialogCharacterInfo> characters = new List<ForcedDialogCharacterInfo>();
+namespace Engine.Source.Services;
 
-    public void Initialise()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
-    }
+[SaveDepend(typeof(ISimulation))]
+[GameService(typeof(ForcedDialogService), typeof(IForcedDialogService))]
+[GenerateProxy(TypeEnum.StateSave | TypeEnum.StateLoad)]
+public class ForcedDialogService :
+	IInitialisable,
+	IUpdatable,
+	IForcedDialogService,
+	ISavesController,
+	IEntityEventsListener {
+	[StateSaveProxy] [StateLoadProxy()] [Inspected]
+	protected List<ForcedDialogCharacterInfo> characters = new();
 
-    public void Terminate()
-    {
-      InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
-      characters.Clear();
-    }
+	public void Initialise() {
+		InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable(this);
+	}
 
-    public void AddForcedDialog(IEntity character, float distance)
-    {
-      ISpeakingComponent component = character.GetComponent<ISpeakingComponent>();
-      if (component == null)
-        Debug.LogWarning(character.Name + ": has no speaking component");
-      else if (!component.SpeakAvailable)
-      {
-        Debug.LogWarning(character.Name + ": speak not availiable");
-      }
-      else
-      {
-        RemoveForcedDialog(character);
-        ForcedDialogCharacterInfo dialogCharacterInfo = ProxyFactory.Create<ForcedDialogCharacterInfo>();
-        dialogCharacterInfo.Character = character;
-        dialogCharacterInfo.Distance = distance;
-        characters.Add(dialogCharacterInfo);
-        ComputeAdded(character);
-      }
-    }
+	public void Terminate() {
+		InstanceByRequest<UpdateService>.Instance.Updater.RemoveUpdatable(this);
+		characters.Clear();
+	}
 
-    public void RemoveForcedDialog(IEntity character)
-    {
-      int index = 0;
-      while (index < characters.Count)
-      {
-        if (characters[index].Character == character)
-          characters.RemoveAt(index);
-        else
-          ++index;
-      }
-      ((Entity) character).RemoveListener(this);
-    }
+	public void AddForcedDialog(IEntity character, float distance) {
+		var component = character.GetComponent<ISpeakingComponent>();
+		if (component == null)
+			Debug.LogWarning(character.Name + ": has no speaking component");
+		else if (!component.SpeakAvailable)
+			Debug.LogWarning(character.Name + ": speak not availiable");
+		else {
+			RemoveForcedDialog(character);
+			var dialogCharacterInfo = ProxyFactory.Create<ForcedDialogCharacterInfo>();
+			dialogCharacterInfo.Character = character;
+			dialogCharacterInfo.Distance = distance;
+			characters.Add(dialogCharacterInfo);
+			ComputeAdded(character);
+		}
+	}
 
-    private void OnCharacterDisposed(IEntity sender) => RemoveForcedDialog(sender);
+	public void RemoveForcedDialog(IEntity character) {
+		var index = 0;
+		while (index < characters.Count)
+			if (characters[index].Character == character)
+				characters.RemoveAt(index);
+			else
+				++index;
+		((Entity)character).RemoveListener(this);
+	}
 
-    public void ComputeUpdate()
-    {
-      if (characters.Count == 0 || !PlayerUtility.IsPlayerCanControlling)
-        return;
-      IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-      foreach (ForcedDialogCharacterInfo character in characters)
-      {
-        if (TryStartDialog(player, character))
-        {
-          RemoveForcedDialog(character.Character);
-          break;
-        }
-      }
-    }
+	private void OnCharacterDisposed(IEntity sender) {
+		RemoveForcedDialog(sender);
+	}
 
-    private bool TryStartDialog(IEntity player, ForcedDialogCharacterInfo character)
-    {
-      if (character == null || character.Character == null || !(character.Character is IEntityView) || ((IEntityView) character.Character).GameObject == null || !((IEntityView) character.Character).GameObject.activeSelf || character.Distance != 0.0 && (((IEntityView) character.Character).Position - ((IEntityView) player).Position).magnitude >= (double) character.Distance || !SameIndoorWithPlayer(player, character))
-        return false;
-      StartDialog(character.Character);
-      return true;
-    }
+	public void ComputeUpdate() {
+		if (characters.Count == 0 || !PlayerUtility.IsPlayerCanControlling)
+			return;
+		var player = ServiceLocator.GetService<ISimulation>().Player;
+		foreach (var character in characters)
+			if (TryStartDialog(player, character)) {
+				RemoveForcedDialog(character.Character);
+				break;
+			}
+	}
 
-    private bool SameIndoorWithPlayer(IEntity player, ForcedDialogCharacterInfo character)
-    {
-      LocationItemComponent component1 = player.GetComponent<LocationItemComponent>();
-      LocationItemComponent component2 = character.Character.GetComponent<LocationItemComponent>();
-      return !component1.IsIndoor ? !component2.IsIndoor : component1.LogicLocation == component2.LogicLocation;
-    }
+	private bool TryStartDialog(IEntity player, ForcedDialogCharacterInfo character) {
+		if (character == null || character.Character == null || !(character.Character is IEntityView) ||
+		    ((IEntityView)character.Character).GameObject == null ||
+		    !((IEntityView)character.Character).GameObject.activeSelf ||
+		    (character.Distance != 0.0 &&
+		     (((IEntityView)character.Character).Position - ((IEntityView)player).Position).magnitude >=
+		     (double)character.Distance) || !SameIndoorWithPlayer(player, character))
+			return false;
+		StartDialog(character.Character);
+		return true;
+	}
 
-    private void StartDialog(IEntity character)
-    {
-      InteractableComponent component = character.GetComponent<InteractableComponent>();
-      if (component != null)
-      {
-        IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-        component.BeginInteract(player, InteractType.Dialog);
-      }
-      else
-        BlueprintServiceUtility.Start(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DialogBlueprint, character, null, character.GetInfo());
-    }
+	private bool SameIndoorWithPlayer(IEntity player, ForcedDialogCharacterInfo character) {
+		var component1 = player.GetComponent<LocationItemComponent>();
+		var component2 = character.Character.GetComponent<LocationItemComponent>();
+		return !component1.IsIndoor ? !component2.IsIndoor : component1.LogicLocation == component2.LogicLocation;
+	}
 
-    public IEnumerator Load(IErrorLoadingHandler errorHandler)
-    {
-      yield break;
-    }
+	private void StartDialog(IEntity character) {
+		var component = character.GetComponent<InteractableComponent>();
+		if (component != null) {
+			var player = ServiceLocator.GetService<ISimulation>().Player;
+			component.BeginInteract(player, InteractType.Dialog);
+		} else
+			BlueprintServiceUtility.Start(ScriptableObjectInstance<ResourceFromCodeData>.Instance.DialogBlueprint,
+				character, null, character.GetInfo());
+	}
 
-    public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler)
-    {
-      XmlElement node = element[TypeUtility.GetTypeName(GetType())];
-      if (node == null)
-      {
-        errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
-      }
-      else
-      {
-        XmlNodeDataReader reader = new XmlNodeDataReader(node, context);
-        ((ISerializeStateLoad) this).StateLoad(reader, GetType());
-        yield break;
-      }
-    }
+	public IEnumerator Load(IErrorLoadingHandler errorHandler) {
+		yield break;
+	}
 
-    public void Unload() => characters.Clear();
+	public IEnumerator Load(XmlElement element, string context, IErrorLoadingHandler errorHandler) {
+		var node = element[TypeUtility.GetTypeName(GetType())];
+		if (node == null)
+			errorHandler.LogError(TypeUtility.GetTypeName(GetType()) + " node not found , context : " + context);
+		else {
+			var reader = new XmlNodeDataReader(node, context);
+			((ISerializeStateLoad)this).StateLoad(reader, GetType());
+			yield break;
+		}
+	}
 
-    public void Save(IDataWriter writer, string context)
-    {
-      DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
-    }
+	public void Unload() {
+		characters.Clear();
+	}
 
-    private void ComputeAdded(IEntity character)
-    {
-      ((Entity) character).AddListener(this);
-    }
+	public void Save(IDataWriter writer, string context) {
+		DefaultStateSaveUtility.SaveSerialize(writer, TypeUtility.GetTypeName(GetType()), this);
+	}
 
-    [OnLoaded]
-    private void OnLoaded()
-    {
-      foreach (ForcedDialogCharacterInfo character in characters)
-        ComputeAdded(character.Character);
-    }
+	private void ComputeAdded(IEntity character) {
+		((Entity)character).AddListener(this);
+	}
 
-    public void OnEntityEvent(IEntity sender, EntityEvents kind)
-    {
-      if (kind != EntityEvents.DisposeEvent)
-        return;
-      OnCharacterDisposed(sender);
-    }
-  }
+	[OnLoaded]
+	private void OnLoaded() {
+		foreach (var character in characters)
+			ComputeAdded(character.Character);
+	}
+
+	public void OnEntityEvent(IEntity sender, EntityEvents kind) {
+		if (kind != EntityEvents.DisposeEvent)
+			return;
+		OnCharacterDisposed(sender);
+	}
 }

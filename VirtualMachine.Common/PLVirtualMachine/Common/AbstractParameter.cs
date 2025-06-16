@@ -1,58 +1,48 @@
 ﻿using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  public class AbstractParameter : IVariable, INamed, IParam
-  {
-    protected string name;
-    protected string componentName;
-    protected VMType paramType;
-    protected object defaultValue;
+namespace PLVirtualMachine.Common;
 
-    public AbstractParameter(
-      string name,
-      string componentName,
-      VMType type,
-      object defValue,
-      bool not_used = false)
-    {
-      this.name = name;
-      this.componentName = componentName;
-      paramType = type;
-    }
+public class AbstractParameter : IVariable, INamed, IParam {
+	protected string name;
+	protected string componentName;
+	protected VMType paramType;
+	protected object defaultValue;
 
-    public EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
-    }
+	public AbstractParameter(
+		string name,
+		string componentName,
+		VMType type,
+		object defValue,
+		bool not_used = false) {
+		this.name = name;
+		this.componentName = componentName;
+		paramType = type;
+	}
 
-    public string Name
-    {
-      get => componentName != "" ? componentName + "." + name : name;
-    }
+	public EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_PARAM;
 
-    public object Value
-    {
-      get => defaultValue;
-      set
-      {
-      }
-    }
+	public string Name => componentName != "" ? componentName + "." + name : name;
 
-    public VMType Type => paramType;
+	public object Value {
+		get => defaultValue;
+		set { }
+	}
 
-    public bool Implicit => false;
+	public VMType Type => paramType;
 
-    public IGameObjectContext OwnerContext => null;
+	public bool Implicit => false;
 
-    public virtual bool IsEqual(IVariable other)
-    {
-      if (!typeof (AbstractParameter).IsAssignableFrom(other.GetType()))
-        return false;
-      AbstractParameter abstractParameter = (AbstractParameter) other;
-      return (!("" != componentName) || !(componentName != abstractParameter.componentName)) && Name == abstractParameter.Name;
-    }
+	public IGameObjectContext OwnerContext => null;
 
-    public void Clear() => defaultValue = null;
-  }
+	public virtual bool IsEqual(IVariable other) {
+		if (!typeof(AbstractParameter).IsAssignableFrom(other.GetType()))
+			return false;
+		var abstractParameter = (AbstractParameter)other;
+		return (!("" != componentName) || !(componentName != abstractParameter.componentName)) &&
+		       Name == abstractParameter.Name;
+	}
+
+	public void Clear() {
+		defaultValue = null;
+	}
 }

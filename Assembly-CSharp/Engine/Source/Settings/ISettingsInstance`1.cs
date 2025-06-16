@@ -1,11 +1,9 @@
 ﻿using System;
 
-namespace Engine.Source.Settings
-{
-  public interface ISettingsInstance<T>
-  {
-    event Action OnApply;
+namespace Engine.Source.Settings;
 
-    void Apply();
-  }
+public interface ISettingsInstance<T> {
+	event Action OnApply;
+
+	void Apply();
 }

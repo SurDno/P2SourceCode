@@ -2,20 +2,17 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-namespace SRF.UI
-{
-  [AddComponentMenu("SRF/UI/SRText")]
-  public class SRText : Text
-  {
-    public event Action<SRText> LayoutDirty;
+namespace SRF.UI;
 
-    public override void SetLayoutDirty()
-    {
-      base.SetLayoutDirty();
-      Action<SRText> layoutDirty = LayoutDirty;
-      if (layoutDirty == null)
-        return;
-      layoutDirty(this);
-    }
-  }
+[AddComponentMenu("SRF/UI/SRText")]
+public class SRText : Text {
+	public event Action<SRText> LayoutDirty;
+
+	public override void SetLayoutDirty() {
+		base.SetLayoutDirty();
+		var layoutDirty = LayoutDirty;
+		if (layoutDirty == null)
+			return;
+		layoutDirty(this);
+	}
 }

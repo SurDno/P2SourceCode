@@ -5,52 +5,48 @@ using Inspectors;
 using StateSetters;
 using UnityEngine;
 
-namespace Engine.Behaviours
-{
-  public class DiseaseValueController : MonoBehaviour, IEntityAttachable
-  {
-    private DiseaseComponent component;
-    private float diseaseValue;
-    [SerializeField]
-    private StateSetterItem[] diseaseValueState;
+namespace Engine.Behaviours;
 
-    public void Attach(IEntity owner)
-    {
-      component = owner.GetComponent<DiseaseComponent>();
-      if (component == null)
-        return;
-      component.OnCurrentDiseaseValueChanged += OnCurrentDiseaseValueChanged;
-      OnCurrentDiseaseValueChanged(component.CurrentDiseaseValue);
-    }
+public class DiseaseValueController : MonoBehaviour, IEntityAttachable {
+	private DiseaseComponent component;
+	private float diseaseValue;
+	[SerializeField] private StateSetterItem[] diseaseValueState;
 
-    public void Detach()
-    {
-      if (component == null)
-        return;
-      component.OnCurrentDiseaseValueChanged -= OnCurrentDiseaseValueChanged;
-      component = null;
-    }
+	public void Attach(IEntity owner) {
+		component = owner.GetComponent<DiseaseComponent>();
+		if (component == null)
+			return;
+		component.OnCurrentDiseaseValueChanged += OnCurrentDiseaseValueChanged;
+		OnCurrentDiseaseValueChanged(component.CurrentDiseaseValue);
+	}
 
-    private void OnCurrentDiseaseValueChanged(float value) => UpdateValue();
+	public void Detach() {
+		if (component == null)
+			return;
+		component.OnCurrentDiseaseValueChanged -= OnCurrentDiseaseValueChanged;
+		component = null;
+	}
 
-    [Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    private float DiseaseValue
-    {
-      set
-      {
-        diseaseValue = Mathf.Clamp01(value);
-        diseaseValueState.Apply(diseaseValue);
-      }
-      get => diseaseValue;
-    }
+	private void OnCurrentDiseaseValueChanged(float value) {
+		UpdateValue();
+	}
 
-    private void VisirEnableListener_OnVisibleChanged(bool visible) => UpdateValue();
+	[Inspected(Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
+	private float DiseaseValue {
+		set {
+			diseaseValue = Mathf.Clamp01(value);
+			diseaseValueState.Apply(diseaseValue);
+		}
+		get => diseaseValue;
+	}
 
-    private void UpdateValue()
-    {
-      if (component == null)
-        return;
-      DiseaseValue = component.CurrentDiseaseValue;
-    }
-  }
+	private void VisirEnableListener_OnVisibleChanged(bool visible) {
+		UpdateValue();
+	}
+
+	private void UpdateValue() {
+		if (component == null)
+			return;
+		DiseaseValue = component.CurrentDiseaseValue;
+	}
 }

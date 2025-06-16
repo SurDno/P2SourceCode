@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.UI
-{
-  public interface IStartDifficultyPresetWindow : IWindow, IMainMenu
-  {
-  }
-}
+﻿namespace Engine.Source.UI;
+
+public interface IStartDifficultyPresetWindow : IWindow, IMainMenu { }

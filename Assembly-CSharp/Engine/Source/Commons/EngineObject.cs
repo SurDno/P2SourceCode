@@ -7,100 +7,83 @@ using Engine.Services;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons
-{
-  public abstract class EngineObject : IObject, IDisposable, IIdSetter, ITemplateSetter
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    protected Guid id = Guid.Empty;
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy()]
-    [Inspected(Header = true)]
-    protected string name = "";
-    private IObject template;
-    private Parameters parameters;
+namespace Engine.Source.Commons;
 
-    public Guid Id
-    {
-      get => id;
-      set => id = !(value == Guid.Empty) ? value : throw new Exception("Set id as Guid.Empty");
-    }
+public abstract class EngineObject : IObject, IDisposable, IIdSetter, ITemplateSetter {
+	[DataReadProxy] [DataWriteProxy] [StateSaveProxy] [Inspected(Mode = ExecuteMode.EditAndRuntime)]
+	protected Guid id = Guid.Empty;
 
-    public string Name
-    {
-      get => name;
-      set => name = value;
-    }
+	[StateSaveProxy] [StateLoadProxy] [CopyableProxy()] [Inspected(Header = true)]
+	protected string name = "";
 
-    [Inspected]
-    public Guid TemplateId => template != null ? template.Id : Guid.Empty;
+	private IObject template;
+	private Parameters parameters;
 
-    [Inspected]
-    public IObject Template
-    {
-      get => template;
-      set => template = value;
-    }
+	public Guid Id {
+		get => id;
+		set => id = !(value == Guid.Empty) ? value : throw new Exception("Set id as Guid.Empty");
+	}
 
-    [Inspected]
-    public bool IsDisposed
-    {
-      get => GetParameter(Parameters.IsDisposed);
-      protected set => SetParameter(Parameters.IsDisposed, value);
-    }
+	public string Name {
+		get => name;
+		set => name = value;
+	}
 
-    [Inspected(Mode = ExecuteMode.EditAndRuntime)]
-    public string Source => AssetDatabaseService.Instance.GetPath(Id);
+	[Inspected] public Guid TemplateId => template != null ? template.Id : Guid.Empty;
 
-    public bool IsTemplate
-    {
-      get => GetParameter(Parameters.IsTemplate);
-      set => SetParameter(Parameters.IsTemplate, value);
-    }
+	[Inspected]
+	public IObject Template {
+		get => template;
+		set => template = value;
+	}
 
-    public virtual void Dispose()
-    {
-      if (IsDisposed)
-        Debug.LogError("Object already disposed : " + this.GetInfo());
-      else
-        IsDisposed = true;
-    }
+	[Inspected]
+	public bool IsDisposed {
+		get => GetParameter(Parameters.IsDisposed);
+		protected set => SetParameter(Parameters.IsDisposed, value);
+	}
 
-    [Inspected(Type = typeof (StoreToSelectionMethodDrawer))]
-    private void StoreToSelection(int index)
-    {
-      ServiceLocator.GetService<SelectionService>().SetSelection(index, this);
-    }
+	[Inspected(Mode = ExecuteMode.EditAndRuntime)]
+	public string Source => AssetDatabaseService.Instance.GetPath(Id);
 
-    protected bool GetParameter(Parameters parameter)
-    {
-      return (parameters & parameter) != 0;
-    }
+	public bool IsTemplate {
+		get => GetParameter(Parameters.IsTemplate);
+		set => SetParameter(Parameters.IsTemplate, value);
+	}
 
-    protected void SetParameter(Parameters parameter, bool value)
-    {
-      parameters &= ~parameter;
-      if (!value)
-        return;
-      parameters |= parameter;
-    }
+	public virtual void Dispose() {
+		if (IsDisposed)
+			Debug.LogError("Object already disposed : " + this.GetInfo());
+		else
+			IsDisposed = true;
+	}
 
-    [Flags]
-    public enum Parameters
-    {
-      None = 0,
-      IsDisposed = 1,
-      IsTemplate = 2,
-      DontSave = 4,
-      IsPlayer = 8,
-      IsEnabledInHierarchy = 16,
-      IsAdded = 32,
-      IsEnabled = 64,
-      IsAttached = 128,
-    }
-  }
+	[Inspected(Type = typeof(StoreToSelectionMethodDrawer))]
+	private void StoreToSelection(int index) {
+		ServiceLocator.GetService<SelectionService>().SetSelection(index, this);
+	}
+
+	protected bool GetParameter(Parameters parameter) {
+		return (parameters & parameter) != 0;
+	}
+
+	protected void SetParameter(Parameters parameter, bool value) {
+		parameters &= ~parameter;
+		if (!value)
+			return;
+		parameters |= parameter;
+	}
+
+	[Flags]
+	public enum Parameters {
+		None = 0,
+		IsDisposed = 1,
+		IsTemplate = 2,
+		DontSave = 4,
+		IsPlayer = 8,
+		IsEnabledInHierarchy = 16,
+		IsAdded = 32,
+		IsEnabled = 64,
+		IsAttached = 128
+	}
 }

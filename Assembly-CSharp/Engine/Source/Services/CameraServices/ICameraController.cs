@@ -1,14 +1,12 @@
 ﻿using Engine.Common;
 using UnityEngine;
 
-namespace Engine.Source.Services.CameraServices
-{
-  public interface ICameraController
-  {
-    void Initialise();
+namespace Engine.Source.Services.CameraServices;
 
-    void Shutdown();
+public interface ICameraController {
+	void Initialise();
 
-    void Update(IEntity target, GameObject gameObjectTarget);
-  }
+	void Shutdown();
+
+	void Update(IEntity target, GameObject gameObjectTarget);
 }

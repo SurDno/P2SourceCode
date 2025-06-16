@@ -8,43 +8,42 @@ using Engine.Common.Types;
 using Engine.Source.Components.Maps;
 using UnityEngine;
 
-public interface IMapItem
-{
-  LocalizedText Title { get; }
+public interface IMapItem {
+	LocalizedText Title { get; }
 
-  LocalizedText Text { get; }
+	LocalizedText Text { get; }
 
-  MapPlaceholder Resource { get; }
+	MapPlaceholder Resource { get; }
 
-  Vector2 WorldPosition { get; }
+	Vector2 WorldPosition { get; }
 
-  float Rotation { get; }
+	float Rotation { get; }
 
-  float Reputation { get; }
+	float Reputation { get; }
 
-  int Disease { get; }
+	int Disease { get; }
 
-  IEntity BoundCharacter { get; set; }
+	IEntity BoundCharacter { get; set; }
 
-  IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
+	IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
 
-  IParameterValue<bool> SavePointIcon { get; }
+	IParameterValue<bool> SavePointIcon { get; }
 
-  IParameterValue<bool> SleepIcon { get; }
+	IParameterValue<bool> SleepIcon { get; }
 
-  IParameterValue<bool> CraftIcon { get; }
+	IParameterValue<bool> CraftIcon { get; }
 
-  IParameterValue<bool> StorageIcon { get; }
+	IParameterValue<bool> StorageIcon { get; }
 
-  IParameterValue<bool> MerchantIcon { get; }
+	IParameterValue<bool> MerchantIcon { get; }
 
-  IParameterValue<FastTravelPointEnum> FastTravelPoint { get; }
+	IParameterValue<FastTravelPointEnum> FastTravelPoint { get; }
 
-  IEnumerable<IMMNode> Nodes { get; }
+	IEnumerable<IMMNode> Nodes { get; }
 
-  bool Discovered { get; }
+	bool Discovered { get; }
 
-  LocalizedText TooltipText { get; set; }
+	LocalizedText TooltipText { get; set; }
 
-  IMapTooltipResource TooltipResource { get; set; }
+	IMapTooltipResource TooltipResource { get; set; }
 }

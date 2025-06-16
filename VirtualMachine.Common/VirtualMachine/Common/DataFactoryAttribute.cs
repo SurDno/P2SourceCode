@@ -2,32 +2,27 @@
 using System.Collections.Generic;
 using Cofe.Meta;
 
-namespace VirtualMachine.Common
-{
-  [AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-  public class DataFactoryAttribute : TypeAttribute
-  {
-    private static Dictionary<string, Type> types = new Dictionary<string, Type>();
+namespace VirtualMachine.Common;
 
-    public string TypeName { get; set; }
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
+public class DataFactoryAttribute : TypeAttribute {
+	private static Dictionary<string, Type> types = new();
 
-    public DataFactoryAttribute(string typeName) => TypeName = typeName;
+	public string TypeName { get; set; }
 
-    public override void ComputeType(Type type)
-    {
-      types.Add(TypeName, type);
-    }
+	public DataFactoryAttribute(string typeName) {
+		TypeName = typeName;
+	}
 
-    public static Type GetTypeByName(string typeName)
-    {
-      Type typeByName;
-      types.TryGetValue(typeName, out typeByName);
-      return typeByName;
-    }
+	public override void ComputeType(Type type) {
+		types.Add(TypeName, type);
+	}
 
-    public static IEnumerable<KeyValuePair<string, Type>> Items
-    {
-      get => types;
-    }
-  }
+	public static Type GetTypeByName(string typeName) {
+		Type typeByName;
+		types.TryGetValue(typeName, out typeByName);
+		return typeByName;
+	}
+
+	public static IEnumerable<KeyValuePair<string, Type>> Items => types;
 }

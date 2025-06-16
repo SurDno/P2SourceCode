@@ -8,49 +8,38 @@ using Engine.Source.Commons.Effects;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class NpcPunchHitEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected WeaponEnum weapon = WeaponEnum.Hands;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class NpcPunchHitEffect : IEffect {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected WeaponEnum weapon = WeaponEnum.Hands;
 
-    public IEntity Target { get; set; }
+	public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public void Cleanup()
-    {
-    }
+	public IEntity Target { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      if (!(AbilityItem.AbilityController is CloseCombatAbilityController))
-      {
-        Debug.LogError(typeof (NpcPunchEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name);
-        return false;
-      }
-      ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>()?.FirePunchHitEvent(weapon);
-      return true;
-    }
+	public ParameterEffectQueueEnum Queue => queue;
 
-    public bool Compute(float currentRealTime, float currentGameTime) => false;
-  }
+	public void Cleanup() { }
+
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		if (!(AbilityItem.AbilityController is CloseCombatAbilityController)) {
+			Debug.LogError(typeof(NpcPunchEffect).Name + " requires " + typeof(CloseCombatAbilityController).Name);
+			return false;
+		}
+
+		((IEntityView)AbilityItem.Self).GameObject.GetComponent<EnemyBase>()?.FirePunchHitEvent(weapon);
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		return false;
+	}
 }

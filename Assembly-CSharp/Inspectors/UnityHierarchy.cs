@@ -2,153 +2,113 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-namespace Inspectors
-{
-  public class UnityHierarchy
-  {
-    private static UnityHierarchy instance = new UnityHierarchy();
+namespace Inspectors;
 
-    public static UnityHierarchy Instance => instance;
+public class UnityHierarchy {
+	private static UnityHierarchy instance = new();
 
-    [Inspected]
-    public IEnumerable<SceneInfo> Scenes
-    {
-      get
-      {
-        int count = SceneManager.sceneCount;
-        for (int index = 0; index < count; ++index)
-          yield return new SceneInfo(SceneManager.GetSceneAt(index));
-      }
-    }
+	public static UnityHierarchy Instance => instance;
 
-    public class SceneInfo
-    {
-      private Scene scene;
+	[Inspected]
+	public IEnumerable<SceneInfo> Scenes {
+		get {
+			var count = SceneManager.sceneCount;
+			for (var index = 0; index < count; ++index)
+				yield return new SceneInfo(SceneManager.GetSceneAt(index));
+		}
+	}
 
-      public SceneInfo(Scene scene) => this.scene = scene;
+	public class SceneInfo {
+		private Scene scene;
 
-      [Inspected(Header = true)]
-      private string Name => scene.IsValid() ? scene.name : "null";
+		public SceneInfo(Scene scene) {
+			this.scene = scene;
+		}
 
-      [Inspected]
-      private IEnumerable<GameObjectInfo> Childs
-      {
-        get
-        {
-          if (scene.IsValid())
-          {
-            GameObject[] roots = scene.GetRootGameObjects();
-            for (int index = 0; index < roots.Length; ++index)
-              yield return new GameObjectInfo(roots[index]);
-            roots = null;
-          }
-        }
-      }
-    }
+		[Inspected(Header = true)] private string Name => scene.IsValid() ? scene.name : "null";
 
-    public class TransformInfo
-    {
-      private Transform transform;
+		[Inspected]
+		private IEnumerable<GameObjectInfo> Childs {
+			get {
+				if (scene.IsValid()) {
+					var roots = scene.GetRootGameObjects();
+					for (var index = 0; index < roots.Length; ++index)
+						yield return new GameObjectInfo(roots[index]);
+					roots = null;
+				}
+			}
+		}
+	}
 
-      public TransformInfo(Transform transform) => this.transform = transform;
+	public class TransformInfo {
+		private Transform transform;
 
-      [Inspected]
-      private Vector3 Position
-      {
-        get
-        {
-          return transform != null ? transform.localPosition : Vector3.zero;
-        }
-      }
+		public TransformInfo(Transform transform) {
+			this.transform = transform;
+		}
 
-      [Inspected]
-      private Quaternion Rotation
-      {
-        get
-        {
-          return transform != null ? transform.localRotation : Quaternion.identity;
-        }
-      }
+		[Inspected] private Vector3 Position => transform != null ? transform.localPosition : Vector3.zero;
 
-      [Inspected]
-      private Vector3 Scale
-      {
-        get => transform != null ? transform.localScale : Vector3.one;
-      }
-    }
+		[Inspected] private Quaternion Rotation => transform != null ? transform.localRotation : Quaternion.identity;
 
-    public class GameObjectInfo
-    {
-      private GameObject gameObject;
+		[Inspected] private Vector3 Scale => transform != null ? transform.localScale : Vector3.one;
+	}
 
-      public GameObjectInfo(GameObject gameObject) => this.gameObject = gameObject;
+	public class GameObjectInfo {
+		private GameObject gameObject;
 
-      [Inspected(Header = true)]
-      private string Name => gameObject != null ? gameObject.name : "";
+		public GameObjectInfo(GameObject gameObject) {
+			this.gameObject = gameObject;
+		}
 
-      [Inspected(Mutable = true)]
-      public bool Enable
-      {
-        get => gameObject != null && gameObject.activeSelf;
-        set
-        {
-          if (!(gameObject != null))
-            return;
-          gameObject.SetActive(value);
-        }
-      }
+		[Inspected(Header = true)] private string Name => gameObject != null ? gameObject.name : "";
 
-      [Inspected]
-      public string Tag => gameObject != null ? gameObject.tag : "";
+		[Inspected(Mutable = true)]
+		public bool Enable {
+			get => gameObject != null && gameObject.activeSelf;
+			set {
+				if (!(gameObject != null))
+					return;
+				gameObject.SetActive(value);
+			}
+		}
 
-      [Inspected]
-      public string Layer
-      {
-        get
-        {
-          return gameObject != null ? LayerMask.LayerToName(gameObject.layer) : "";
-        }
-      }
+		[Inspected] public string Tag => gameObject != null ? gameObject.tag : "";
 
-      [Inspected]
-      private IEnumerable<object> Components
-      {
-        get
-        {
-          if (gameObject != null)
-          {
-            Component[] components = gameObject.GetComponents<Component>();
-            Component[] componentArray = components;
-            for (int index = 0; index < componentArray.Length; ++index)
-            {
-              Component component = componentArray[index];
-              Transform transform = component as Transform;
-              if (transform != null)
-                yield return new TransformInfo(transform);
-              else
-                yield return component;
-              transform = null;
-              component = null;
-            }
-            componentArray = null;
-            components = null;
-          }
-        }
-      }
+		[Inspected] public string Layer => gameObject != null ? LayerMask.LayerToName(gameObject.layer) : "";
 
-      [Inspected]
-      private IEnumerable<GameObjectInfo> Childs
-      {
-        get
-        {
-          if (gameObject != null)
-          {
-            int count = gameObject.transform.childCount;
-            for (int index = 0; index < count; ++index)
-              yield return new GameObjectInfo(gameObject.transform.GetChild(index).gameObject);
-          }
-        }
-      }
-    }
-  }
+		[Inspected]
+		private IEnumerable<object> Components {
+			get {
+				if (gameObject != null) {
+					var components = gameObject.GetComponents<Component>();
+					var componentArray = components;
+					for (var index = 0; index < componentArray.Length; ++index) {
+						var component = componentArray[index];
+						var transform = component as Transform;
+						if (transform != null)
+							yield return new TransformInfo(transform);
+						else
+							yield return component;
+						transform = null;
+						component = null;
+					}
+
+					componentArray = null;
+					components = null;
+				}
+			}
+		}
+
+		[Inspected]
+		private IEnumerable<GameObjectInfo> Childs {
+			get {
+				if (gameObject != null) {
+					var count = gameObject.transform.childCount;
+					for (var index = 0; index < count; ++index)
+						yield return new GameObjectInfo(gameObject.transform.GetChild(index).gameObject);
+				}
+			}
+		}
+	}
 }

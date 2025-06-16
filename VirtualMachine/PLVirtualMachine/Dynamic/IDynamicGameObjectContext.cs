@@ -2,40 +2,38 @@
 using PLVirtualMachine.Common;
 using PLVirtualMachine.Objects;
 
-namespace PLVirtualMachine.Dynamic
-{
-  public interface IDynamicGameObjectContext
-  {
-    Guid DynamicGuid { get; }
+namespace PLVirtualMachine.Dynamic;
 
-    ulong StaticGuid { get; }
+public interface IDynamicGameObjectContext {
+	Guid DynamicGuid { get; }
 
-    VMEntity Entity { get; }
+	ulong StaticGuid { get; }
 
-    VMLogicObject FSMStaticObject { get; }
+	VMEntity Entity { get; }
 
-    IState CurrentState { get; }
+	VMLogicObject FSMStaticObject { get; }
 
-    IParam GetContextParam(string paramName);
+	IState CurrentState { get; }
 
-    IParam GetContextParam(ulong stGuid);
+	IParam GetContextParam(string paramName);
 
-    EventMessage GetContextMessage(string messageName);
+	IParam GetContextParam(ulong stGuid);
 
-    BaseFunction GetContextFunction(string functionName);
+	EventMessage GetContextMessage(string messageName);
 
-    DynamicEvent GetContextEvent(string eventName);
+	BaseFunction GetContextFunction(string functionName);
 
-    DynamicEvent GetContextEvent(ulong eventId);
+	DynamicEvent GetContextEvent(string eventName);
 
-    object GetLocalVariableValue(string varName);
+	DynamicEvent GetContextEvent(ulong eventId);
 
-    bool IsStaticDerived(IBlueprint blueprint);
+	object GetLocalVariableValue(string varName);
 
-    bool Active { get; }
+	bool IsStaticDerived(IBlueprint blueprint);
 
-    IGameMode GameTimeContext { get; }
+	bool Active { get; }
 
-    EEventRaisingMode FsmEventProcessingMode { get; }
-  }
+	IGameMode GameTimeContext { get; }
+
+	EEventRaisingMode FsmEventProcessingMode { get; }
 }

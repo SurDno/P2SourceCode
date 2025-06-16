@@ -13,143 +13,131 @@ using Engine.Source.Services.Inputs;
 using Engine.Source.UI;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Menu.Protagonist.Inventory
-{
-  public class ProtagonistWindow : 
-    BaseInventoryWindow<ProtagonistWindow>,
-    IInventoryWindow,
-    IWindow,
-    IPauseMenu
-  {
-    [SerializeField]
-    private IEntitySerializable investigationTemplate;
-    [SerializeField]
-    private IEntitySerializable dropTemplate;
-    [SerializeField]
-    private GameObject characterPicture;
-    private IStorageComponent investigationTableStorage;
-    private IStorageComponent dropTableStorage;
+namespace Engine.Impl.UI.Menu.Protagonist.Inventory;
 
-    protected override bool ValidateContainer(
-      IInventoryComponent container,
-      IStorageComponent storage)
-    {
-      return base.ValidateContainer(container, storage);
-    }
+public class ProtagonistWindow :
+	BaseInventoryWindow<ProtagonistWindow>,
+	IInventoryWindow,
+	IWindow,
+	IPauseMenu {
+	[SerializeField] private IEntitySerializable investigationTemplate;
+	[SerializeField] private IEntitySerializable dropTemplate;
+	[SerializeField] private GameObject characterPicture;
+	private IStorageComponent investigationTableStorage;
+	private IStorageComponent dropTableStorage;
 
-    protected override void DragEnd(Intersect intersect)
-    {
-      if (!drag.IsEnabled || !intersect.IsIntersected)
-        return;
-      base.DragEnd(intersect);
-    }
+	protected override bool ValidateContainer(
+		IInventoryComponent container,
+		IStorageComponent storage) {
+		return base.ValidateContainer(container, storage);
+	}
 
-    protected override void Subscribe()
-    {
-      base.Subscribe();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LTrigger, OnLeftTrigger);
-    }
+	protected override void DragEnd(Intersect intersect) {
+		if (!drag.IsEnabled || !intersect.IsIntersected)
+			return;
+		base.DragEnd(intersect);
+	}
 
-    protected override void Unsubscribe()
-    {
-      base.Unsubscribe();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LTrigger, OnLeftTrigger);
-    }
+	protected override void Subscribe() {
+		base.Subscribe();
+		ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.LTrigger, OnLeftTrigger);
+	}
 
-    private bool OnLeftTrigger(GameActionType type, bool down)
-    {
-      if (!down)
-        return false;
-      IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-      if (player != null)
-        InventorySorter.Sort(player.GetComponent<StorageComponent>());
-      actors.Clear();
-      actors.Add(Actor);
-      CreateContainers();
-      actors.Add(investigationTableStorage);
-      actors.Add(dropTableStorage);
-      Build2();
-      GetFirstStorable();
-      return true;
-    }
+	protected override void Unsubscribe() {
+		base.Unsubscribe();
+		ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.LTrigger, OnLeftTrigger);
+	}
 
-    protected override void OnEnable()
-    {
-      base.OnEnable();
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
-      InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
-      actors.Clear();
-      actors.Add(Actor);
-      CreateContainers();
-      actors.Add(investigationTableStorage);
-      actors.Add(dropTableStorage);
-      Build2();
-    }
+	private bool OnLeftTrigger(GameActionType type, bool down) {
+		if (!down)
+			return false;
+		var player = ServiceLocator.GetService<ISimulation>().Player;
+		if (player != null)
+			InventorySorter.Sort(player.GetComponent<StorageComponent>());
+		actors.Clear();
+		actors.Add(Actor);
+		CreateContainers();
+		actors.Add(investigationTableStorage);
+		actors.Add(dropTableStorage);
+		Build2();
+		GetFirstStorable();
+		return true;
+	}
 
-    protected override void OnDisable()
-    {
-      DestroyContainers();
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Inventory, WithoutJoystickCancelListener);
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
-      InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
-      base.OnDisable();
-    }
+	protected override void OnEnable() {
+		base.OnEnable();
+		ServiceLocator.GetService<GameActionService>()
+			.AddListener(GameActionType.GenericPlayerMenu, CancelListener, true);
+		InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
+		actors.Clear();
+		actors.Add(Actor);
+		CreateContainers();
+		actors.Add(investigationTableStorage);
+		actors.Add(dropTableStorage);
+		Build2();
+	}
 
-    protected override void OnJoystick(bool joystick)
-    {
-      base.OnJoystick(joystick);
-      if (joystick)
-        ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Inventory, WithoutJoystickCancelListener);
-      else
-        ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Inventory, WithoutJoystickCancelListener);
-    }
+	protected override void OnDisable() {
+		DestroyContainers();
+		ServiceLocator.GetService<GameActionService>()
+			.RemoveListener(GameActionType.Inventory, WithoutJoystickCancelListener);
+		ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.GenericPlayerMenu, CancelListener);
+		InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
+		base.OnDisable();
+	}
 
-    private void CreateContainers()
-    {
-      IEntity template1 = investigationTemplate.Value;
-      IEntity entity1 = ServiceLocator.GetService<IFactory>().Instantiate(template1);
-      entity1.Name = "InvestigationTable";
-      investigationTableStorage = entity1.GetComponent<IStorageComponent>();
-      ServiceLocator.GetService<ISimulation>().Add(entity1, ServiceLocator.GetService<ISimulation>().Others);
-      IEntity template2 = dropTemplate.Value;
-      IEntity entity2 = ServiceLocator.GetService<IFactory>().Instantiate(template2);
-      entity2.Name = "DropTable";
-      dropTableStorage = entity2.GetComponent<IStorageComponent>();
-      ServiceLocator.GetService<ISimulation>().Add(entity2, ServiceLocator.GetService<ISimulation>().Others);
-    }
+	protected override void OnJoystick(bool joystick) {
+		base.OnJoystick(joystick);
+		if (joystick)
+			ServiceLocator.GetService<GameActionService>()
+				.RemoveListener(GameActionType.Inventory, WithoutJoystickCancelListener);
+		else
+			ServiceLocator.GetService<GameActionService>()
+				.AddListener(GameActionType.Inventory, WithoutJoystickCancelListener);
+	}
 
-    private void DestroyContainers()
-    {
-      investigationTableStorage.Owner.Dispose();
-      investigationTableStorage = null;
-      dropTableStorage.Owner.Dispose();
-      dropTableStorage = null;
-    }
+	private void CreateContainers() {
+		var template1 = investigationTemplate.Value;
+		var entity1 = ServiceLocator.GetService<IFactory>().Instantiate(template1);
+		entity1.Name = "InvestigationTable";
+		investigationTableStorage = entity1.GetComponent<IStorageComponent>();
+		ServiceLocator.GetService<ISimulation>().Add(entity1, ServiceLocator.GetService<ISimulation>().Others);
+		var template2 = dropTemplate.Value;
+		var entity2 = ServiceLocator.GetService<IFactory>().Instantiate(template2);
+		entity2.Name = "DropTable";
+		dropTableStorage = entity2.GetComponent<IStorageComponent>();
+		ServiceLocator.GetService<ISimulation>().Add(entity2, ServiceLocator.GetService<ISimulation>().Others);
+	}
 
-    protected override bool ValidateComputeActor(IStorageComponent actor)
-    {
-      return base.ValidateComputeActor(actor) || actor == investigationTableStorage || actor == dropTableStorage;
-    }
+	private void DestroyContainers() {
+		investigationTableStorage.Owner.Dispose();
+		investigationTableStorage = null;
+		dropTableStorage.Owner.Dispose();
+		dropTableStorage = null;
+	}
 
-    public override void Initialize()
-    {
-      RegisterLayer<IInventoryWindow>(this);
-      base.Initialize();
-    }
+	protected override bool ValidateComputeActor(IStorageComponent actor) {
+		return base.ValidateComputeActor(actor) || actor == investigationTableStorage || actor == dropTableStorage;
+	}
 
-    public override Type GetWindowType() => typeof (IInventoryWindow);
+	public override void Initialize() {
+		RegisterLayer<IInventoryWindow>(this);
+		base.Initialize();
+	}
 
-    protected override void HideInfoWindow() => base.HideInfoWindow();
+	public override Type GetWindowType() {
+		return typeof(IInventoryWindow);
+	}
 
-    public override IEnumerator OnOpened()
-    {
-      SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IInventoryWindow>(this);
-      return base.OnOpened();
-    }
+	protected override void HideInfoWindow() {
+		base.HideInfoWindow();
+	}
 
-    public override bool IsWindowAvailable
-    {
-      get => !ServiceLocator.GetService<InterfaceBlockingService>().BlockInventoryInterface;
-    }
-  }
+	public override IEnumerator OnOpened() {
+		SimplePlayerWindowSwapper.SetLastOpenedPlayerWindow<IInventoryWindow>(this);
+		return base.OnOpened();
+	}
+
+	public override bool IsWindowAvailable =>
+		!ServiceLocator.GetService<InterfaceBlockingService>().BlockInventoryInterface;
 }

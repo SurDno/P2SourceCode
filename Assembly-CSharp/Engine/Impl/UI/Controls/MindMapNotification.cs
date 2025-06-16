@@ -12,123 +12,103 @@ using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class MindMapNotification : UIControl, INotification
-  {
-    private static Action NewNotificationEvent;
-    [SerializeField]
-    private CanvasGroup canvasGroup;
-    [SerializeField]
-    private RawImage[] images;
-    [Space]
-    [SerializeField]
-    private AudioClip clip;
-    [SerializeField]
-    private AudioMixerGroup mixer;
-    [Space]
-    [SerializeField]
-    private float time;
-    [SerializeField]
-    private float fadeIn;
-    [SerializeField]
-    private float fadeOut;
-    [SerializeField]
-    private Vector2 step;
-    private float progress;
-    private bool shutdown;
-    private UIService ui;
-    private bool play;
-    private float position;
-    private int targetPosition;
+namespace Engine.Impl.UI.Controls;
 
-    [Inspected]
-    public bool Complete { get; private set; }
+public class MindMapNotification : UIControl, INotification {
+	private static Action NewNotificationEvent;
+	[SerializeField] private CanvasGroup canvasGroup;
+	[SerializeField] private RawImage[] images;
+	[Space] [SerializeField] private AudioClip clip;
+	[SerializeField] private AudioMixerGroup mixer;
+	[Space] [SerializeField] private float time;
+	[SerializeField] private float fadeIn;
+	[SerializeField] private float fadeOut;
+	[SerializeField] private Vector2 step;
+	private float progress;
+	private bool shutdown;
+	private UIService ui;
+	private bool play;
+	private float position;
+	private int targetPosition;
 
-    [Inspected]
-    public NotificationEnum Type { get; private set; }
+	[Inspected] public bool Complete { get; private set; }
 
-    private void SetPosition(float value)
-    {
-      if (value == (double) position)
-        return;
-      position = value;
-      ((RectTransform) transform).anchoredPosition = position * step;
-    }
+	[Inspected] public NotificationEnum Type { get; private set; }
 
-    private void Update()
-    {
-      if (!(ui.Active is HudWindow))
-        return;
-      if (!play)
-      {
-        Play();
-        play = true;
-      }
-      progress += Time.deltaTime;
-      if (progress >= (double) fadeIn)
-        Complete = true;
-      if (progress >= (double) time && shutdown)
-      {
-        Destroy(gameObject);
-      }
-      else
-      {
-        canvasGroup.alpha = SoundUtility.ComputeFade(progress, time, fadeIn, fadeOut);
-        SetPosition(Mathf.MoveTowards(position, targetPosition, Time.deltaTime / fadeIn));
-      }
-    }
+	private void SetPosition(float value) {
+		if (value == (double)position)
+			return;
+		position = value;
+		((RectTransform)transform).anchoredPosition = position * step;
+	}
 
-    private void Play()
-    {
-      if (clip == null || mixer == null)
-        return;
-      SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
-    }
+	private void Update() {
+		if (!(ui.Active is HudWindow))
+			return;
+		if (!play) {
+			Play();
+			play = true;
+		}
 
-    protected override void Awake()
-    {
-      base.Awake();
-      ui = ServiceLocator.GetService<UIService>();
-      Action notificationEvent = NewNotificationEvent;
-      if (notificationEvent != null)
-        notificationEvent();
-      NewNotificationEvent += NewNotificationListener;
-    }
+		progress += Time.deltaTime;
+		if (progress >= (double)fadeIn)
+			Complete = true;
+		if (progress >= (double)time && shutdown)
+			Destroy(gameObject);
+		else {
+			canvasGroup.alpha = SoundUtility.ComputeFade(progress, time, fadeIn, fadeOut);
+			SetPosition(Mathf.MoveTowards(position, targetPosition, Time.deltaTime / fadeIn));
+		}
+	}
 
-    private void OnDestroy()
-    {
-      NewNotificationEvent -= NewNotificationListener;
-    }
+	private void Play() {
+		if (clip == null || mixer == null)
+			return;
+		SoundUtility.PlayAudioClip2D(clip, mixer, 1f, 0.0f, context: gameObject.GetFullName());
+	}
 
-    public void NewNotificationListener() => ++targetPosition;
+	protected override void Awake() {
+		base.Awake();
+		ui = ServiceLocator.GetService<UIService>();
+		var notificationEvent = NewNotificationEvent;
+		if (notificationEvent != null)
+			notificationEvent();
+		NewNotificationEvent += NewNotificationListener;
+	}
 
-    public void Initialise(NotificationEnum type, object[] values)
-    {
-      SetPosition(-1f);
-      canvasGroup.alpha = 0.0f;
-      Type = type;
-      IMMContent result = null;
-      ApplyValue(ref result, values, 0);
-      if (result == null)
-        return;
-      MMPlaceholder placeholder = (MMPlaceholder) result.Placeholder;
-      if (placeholder == null)
-        return;
-      foreach (RawImage image in images)
-        image.texture = placeholder.Image.Value;
-    }
+	private void OnDestroy() {
+		NewNotificationEvent -= NewNotificationListener;
+	}
 
-    public void Shutdown() => shutdown = true;
+	public void NewNotificationListener() {
+		++targetPosition;
+	}
 
-    private void ApplyValue<T>(ref T result, object[] values, int index)
-    {
-      if (index >= values.Length)
-        return;
-      object obj1 = values[index];
-      if (obj1 == null || !(obj1 is T obj2))
-        return;
-      result = obj2;
-    }
-  }
+	public void Initialise(NotificationEnum type, object[] values) {
+		SetPosition(-1f);
+		canvasGroup.alpha = 0.0f;
+		Type = type;
+		IMMContent result = null;
+		ApplyValue(ref result, values, 0);
+		if (result == null)
+			return;
+		var placeholder = (MMPlaceholder)result.Placeholder;
+		if (placeholder == null)
+			return;
+		foreach (var image in images)
+			image.texture = placeholder.Image.Value;
+	}
+
+	public void Shutdown() {
+		shutdown = true;
+	}
+
+	private void ApplyValue<T>(ref T result, object[] values, int index) {
+		if (index >= values.Length)
+			return;
+		var obj1 = values[index];
+		if (obj1 == null || !(obj1 is T obj2))
+			return;
+		result = obj2;
+	}
 }

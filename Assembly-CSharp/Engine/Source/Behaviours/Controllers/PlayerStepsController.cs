@@ -2,58 +2,44 @@
 using UnityEngine;
 using UnityEngine.Audio;
 
-namespace Engine.Source.Behaviours.Controllers
-{
-  public class PlayerStepsController : StepsController
-  {
-    [Tooltip("Влияет на частоту проигрывания шагов.")]
-    [SerializeField]
-    private float playerStepSize = 3f;
-    private CharacterController characterController;
-    private bool footLeft;
-    private float footDistance;
+namespace Engine.Source.Behaviours.Controllers;
 
-    protected override AudioMixerGroup FootAudioMixer
-    {
-      get => ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootMixer;
-    }
+public class PlayerStepsController : StepsController {
+	[Tooltip("Влияет на частоту проигрывания шагов.")] [SerializeField]
+	private float playerStepSize = 3f;
 
-    protected override AudioMixerGroup FootEffectsAudioMixer
-    {
-      get => ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootEffectsMixer;
-    }
+	private CharacterController characterController;
+	private bool footLeft;
+	private float footDistance;
 
-    protected override void Awake()
-    {
-      base.Awake();
-      characterController = GetComponent<CharacterController>();
-    }
+	protected override AudioMixerGroup FootAudioMixer =>
+		ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootMixer;
 
-    private void FixedUpdate()
-    {
-      if (!PlayerUtility.IsPlayerCanControlling)
-        return;
-      if (characterController == null)
-      {
-        Debug.LogError("{1} needs to have charackter controller if used as player");
-      }
-      else
-      {
-        if (!characterController.isGrounded)
-          return;
-        footDistance += characterController.velocity.magnitude * Time.deltaTime;
-        float num = Mathf.Sin(6.28318548f * footDistance / playerStepSize);
-        if (num < 0.0 && !footLeft)
-        {
-          OnStep("Skeleton.Humanoid.Foot_Left", false);
-          footLeft = true;
-        }
-        else if (num > 0.0 && footLeft)
-        {
-          OnStep("Skeleton.Humanoid.Foot_Right", false);
-          footLeft = false;
-        }
-      }
-    }
-  }
+	protected override AudioMixerGroup FootEffectsAudioMixer =>
+		ScriptableObjectInstance<GameSettingsData>.Instance.ProtagonistFootEffectsMixer;
+
+	protected override void Awake() {
+		base.Awake();
+		characterController = GetComponent<CharacterController>();
+	}
+
+	private void FixedUpdate() {
+		if (!PlayerUtility.IsPlayerCanControlling)
+			return;
+		if (characterController == null)
+			Debug.LogError("{1} needs to have charackter controller if used as player");
+		else {
+			if (!characterController.isGrounded)
+				return;
+			footDistance += characterController.velocity.magnitude * Time.deltaTime;
+			var num = Mathf.Sin(6.28318548f * footDistance / playerStepSize);
+			if (num < 0.0 && !footLeft) {
+				OnStep("Skeleton.Humanoid.Foot_Left", false);
+				footLeft = true;
+			} else if (num > 0.0 && footLeft) {
+				OnStep("Skeleton.Humanoid.Foot_Right", false);
+				footLeft = false;
+			}
+		}
+	}
 }

@@ -1,27 +1,24 @@
 ﻿using System;
 using System.Runtime.InteropServices;
 
-namespace UnityEngine.PostProcessing
-{
-  [Serializable]
-  public class DitheringModel : PostProcessingModel
-  {
-    [SerializeField]
-    private Settings m_Settings = Settings.defaultSettings;
+namespace UnityEngine.PostProcessing;
 
-    public Settings settings
-    {
-      get => m_Settings;
-      set => m_Settings = value;
-    }
+[Serializable]
+public class DitheringModel : PostProcessingModel {
+	[SerializeField] private Settings m_Settings = Settings.defaultSettings;
 
-    public override void Reset() => m_Settings = Settings.defaultSettings;
+	public Settings settings {
+		get => m_Settings;
+		set => m_Settings = value;
+	}
 
-    [Serializable]
-    [StructLayout(LayoutKind.Sequential, Size = 1)]
-    public struct Settings
-    {
-      public static Settings defaultSettings => new Settings();
-    }
-  }
+	public override void Reset() {
+		m_Settings = Settings.defaultSettings;
+	}
+
+	[Serializable]
+	[StructLayout(LayoutKind.Sequential, Size = 1)]
+	public struct Settings {
+		public static Settings defaultSettings => new();
+	}
 }

@@ -1,70 +1,55 @@
 ﻿using System;
 using ParadoxNotion.Design;
 
-namespace FlowCanvas.Nodes
-{
-  [DoNotList]
-  public class SimplexNodeWrapper<T> : FlowNode where T : SimplexNode
-  {
-    private T _simplexNode;
+namespace FlowCanvas.Nodes;
 
-    private T simplexNode
-    {
-      get
-      {
-        if (_simplexNode == null)
-        {
-          _simplexNode = (T) Activator.CreateInstance(typeof (T));
-          if (_simplexNode != null)
-            GatherPorts();
-        }
-        return _simplexNode;
-      }
-    }
+[DoNotList]
+public class SimplexNodeWrapper<T> : FlowNode where T : SimplexNode {
+	private T _simplexNode;
 
-    public override string name
-    {
-      get => simplexNode != null ? simplexNode.name : "NULL";
-    }
+	private T simplexNode {
+		get {
+			if (_simplexNode == null) {
+				_simplexNode = (T)Activator.CreateInstance(typeof(T));
+				if (_simplexNode != null)
+					GatherPorts();
+			}
 
-    public override string description
-    {
-      get => simplexNode != null ? simplexNode.description : "NULL";
-    }
+			return _simplexNode;
+		}
+	}
 
-    public override void OnGraphStarted()
-    {
-      if (simplexNode == null)
-        return;
-      simplexNode.OnGraphStarted();
-    }
+	public override string name => simplexNode != null ? simplexNode.name : "NULL";
 
-    public override void OnGraphPaused()
-    {
-      if (simplexNode == null)
-        return;
-      simplexNode.OnGraphPaused();
-    }
+	public override string description => simplexNode != null ? simplexNode.description : "NULL";
 
-    public override void OnGraphUnpaused()
-    {
-      if (simplexNode == null)
-        return;
-      simplexNode.OnGraphUnpaused();
-    }
+	public override void OnGraphStarted() {
+		if (simplexNode == null)
+			return;
+		simplexNode.OnGraphStarted();
+	}
 
-    public override void OnGraphStoped()
-    {
-      if (simplexNode == null)
-        return;
-      simplexNode.OnGraphStoped();
-    }
+	public override void OnGraphPaused() {
+		if (simplexNode == null)
+			return;
+		simplexNode.OnGraphPaused();
+	}
 
-    protected override void RegisterPorts()
-    {
-      if (simplexNode == null)
-        return;
-      simplexNode.RegisterPorts(this);
-    }
-  }
+	public override void OnGraphUnpaused() {
+		if (simplexNode == null)
+			return;
+		simplexNode.OnGraphUnpaused();
+	}
+
+	public override void OnGraphStoped() {
+		if (simplexNode == null)
+			return;
+		simplexNode.OnGraphStoped();
+	}
+
+	protected override void RegisterPorts() {
+		if (simplexNode == null)
+			return;
+		simplexNode.RegisterPorts(this);
+	}
 }

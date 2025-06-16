@@ -12,59 +12,49 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Components;
 using UnityEngine;
 
-namespace Engine.BehaviourNodes.Conditionals
-{
-  [TaskDescription("Does NPC have item in inventory")]
-  [TaskCategory("Pathologic")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (HasItemInInventory))]
-  public class HasItemInInventory : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public string ItemName;
+namespace Engine.BehaviourNodes.Conditionals;
 
-    public override TaskStatus OnUpdate()
-    {
-      IEntity entity = EntityUtility.GetEntity(gameObject);
-      if (entity == null)
-      {
-        Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
-        return TaskStatus.Failure;
-      }
-      StorageComponent component1 = entity.GetComponent<StorageComponent>();
-      if (component1 != null)
-      {
-        foreach (IComponent component2 in component1.Items)
-        {
-          if (component2.Owner.Name == ItemName)
-            return TaskStatus.Success;
-        }
-      }
-      return TaskStatus.Failure;
-    }
+[TaskDescription("Does NPC have item in inventory")]
+[TaskCategory("Pathologic")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(HasItemInInventory))]
+public class HasItemInInventory : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public string ItemName;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      DefaultDataWriteUtility.Write(writer, "ItemName", ItemName);
-    }
+	public override TaskStatus OnUpdate() {
+		var entity = EntityUtility.GetEntity(gameObject);
+		if (entity == null) {
+			Debug.LogWarning(
+				gameObject.name + " : entity not found, method : " + GetType().Name + ":" +
+				MethodBase.GetCurrentMethod().Name, gameObject);
+			return TaskStatus.Failure;
+		}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      ItemName = DefaultDataReadUtility.Read(reader, "ItemName", ItemName);
-    }
-  }
+		var component1 = entity.GetComponent<StorageComponent>();
+		if (component1 != null)
+			foreach (IComponent component2 in component1.Items)
+				if (component2.Owner.Name == ItemName)
+					return TaskStatus.Success;
+		return TaskStatus.Failure;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		DefaultDataWriteUtility.Write(writer, "ItemName", ItemName);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		ItemName = DefaultDataReadUtility.Read(reader, "ItemName", ItemName);
+	}
 }

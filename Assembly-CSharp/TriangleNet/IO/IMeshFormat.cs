@@ -1,9 +1,7 @@
-﻿namespace TriangleNet.IO
-{
-  public interface IMeshFormat
-  {
-    Mesh Import(string filename);
+﻿namespace TriangleNet.IO;
 
-    void Write(Mesh mesh, string filename);
-  }
+public interface IMeshFormat {
+	Mesh Import(string filename);
+
+	void Write(Mesh mesh, string filename);
 }

@@ -2,17 +2,15 @@
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class MultiplicationNode : FlowControlNode
-  {
-    [Port("Value")]
-    private ValueInput<float> valueInput;
-    [Port("Multiplier")]
-    private ValueInput<float> multiplierInput;
+namespace Engine.Source.Blueprints.Effects;
 
-    [Port("Value")]
-    private float Value() => valueInput.value * multiplierInput.value;
-  }
+[Category("Effects")]
+public class MultiplicationNode : FlowControlNode {
+	[Port("Value")] private ValueInput<float> valueInput;
+	[Port("Multiplier")] private ValueInput<float> multiplierInput;
+
+	[Port("Value")]
+	private float Value() {
+		return valueInput.value * multiplierInput.value;
+	}
 }

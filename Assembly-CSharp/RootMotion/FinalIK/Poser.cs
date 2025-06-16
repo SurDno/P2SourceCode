@@ -1,48 +1,40 @@
 ﻿using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  public abstract class Poser : SolverManager
-  {
-    public Transform poseRoot;
-    [Range(0.0f, 1f)]
-    public float weight = 1f;
-    [Range(0.0f, 1f)]
-    public float localRotationWeight = 1f;
-    [Range(0.0f, 1f)]
-    public float localPositionWeight;
-    private bool initiated;
+namespace RootMotion.FinalIK;
 
-    public abstract void AutoMapping();
+public abstract class Poser : SolverManager {
+	public Transform poseRoot;
+	[Range(0.0f, 1f)] public float weight = 1f;
+	[Range(0.0f, 1f)] public float localRotationWeight = 1f;
+	[Range(0.0f, 1f)] public float localPositionWeight;
+	private bool initiated;
 
-    protected abstract void InitiatePoser();
+	public abstract void AutoMapping();
 
-    protected abstract void UpdatePoser();
+	protected abstract void InitiatePoser();
 
-    protected abstract void FixPoserTransforms();
+	protected abstract void UpdatePoser();
 
-    protected override void UpdateSolver()
-    {
-      if (!initiated)
-        InitiateSolver();
-      if (!initiated)
-        return;
-      UpdatePoser();
-    }
+	protected abstract void FixPoserTransforms();
 
-    protected override void InitiateSolver()
-    {
-      if (initiated)
-        return;
-      InitiatePoser();
-      initiated = true;
-    }
+	protected override void UpdateSolver() {
+		if (!initiated)
+			InitiateSolver();
+		if (!initiated)
+			return;
+		UpdatePoser();
+	}
 
-    protected override void FixTransforms()
-    {
-      if (!initiated)
-        return;
-      FixPoserTransforms();
-    }
-  }
+	protected override void InitiateSolver() {
+		if (initiated)
+			return;
+		InitiatePoser();
+		initiated = true;
+	}
+
+	protected override void FixTransforms() {
+		if (!initiated)
+			return;
+		FixPoserTransforms();
+	}
 }

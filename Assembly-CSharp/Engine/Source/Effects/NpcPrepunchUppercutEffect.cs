@@ -8,50 +8,43 @@ using Engine.Source.Commons.Effects;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class NpcPrepunchUppercutEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    protected string name = "";
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
+namespace Engine.Source.Effects;
 
-    public string Name => name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class NpcPrepunchUppercutEffect : IEffect {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy]
+	[Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
+	protected string name = "";
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public IEntity Target { get; set; }
+	public string Name => name;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public void Cleanup()
-    {
-    }
+	public IEntity Target { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      EnemyBase component1 = ((IEntityView) AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
-      EnemyBase component2 = ((IEntityView) Target).GameObject.GetComponent<EnemyBase>();
-      if (!(AbilityItem.AbilityController is CloseCombatAbilityController abilityController))
-      {
-        Debug.LogError(typeof (NpcPunchEffect).Name + " requires " + typeof (CloseCombatAbilityController).Name);
-        return false;
-      }
-      component2?.PrepunchUppercut(abilityController.ReactionType, abilityController.WeaponKind, component1);
-      return true;
-    }
+	public ParameterEffectQueueEnum Queue => queue;
 
-    public bool Compute(float currentRealTime, float currentGameTime) => false;
-  }
+	public void Cleanup() { }
+
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		var component1 = ((IEntityView)AbilityItem.Self).GameObject.GetComponent<EnemyBase>();
+		var component2 = ((IEntityView)Target).GameObject.GetComponent<EnemyBase>();
+		if (!(AbilityItem.AbilityController is CloseCombatAbilityController abilityController)) {
+			Debug.LogError(typeof(NpcPunchEffect).Name + " requires " + typeof(CloseCombatAbilityController).Name);
+			return false;
+		}
+
+		component2?.PrepunchUppercut(abilityController.ReactionType, abilityController.WeaponKind, component1);
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		return false;
+	}
 }

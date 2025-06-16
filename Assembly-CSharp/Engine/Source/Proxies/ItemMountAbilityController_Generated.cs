@@ -6,33 +6,30 @@ using Engine.Common.Commons.Converters;
 using Engine.Common.Components.Storable;
 using Engine.Source.Commons.Abilities.Controllers;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (ItemMountAbilityController))]
-  public class ItemMountAbilityController_Generated : 
-    ItemMountAbilityController,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      ItemMountAbilityController_Generated instance = Activator.CreateInstance<ItemMountAbilityController_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2) => ((ItemMountAbilityController_Generated) target2).group = group;
+[FactoryProxy(typeof(ItemMountAbilityController))]
+public class ItemMountAbilityController_Generated :
+	ItemMountAbilityController,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<ItemMountAbilityController_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Group", group);
-    }
+	public void CopyTo(object target2) {
+		((ItemMountAbilityController_Generated)target2).group = group;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      group = DefaultDataReadUtility.ReadEnum<InventoryGroup>(reader, "Group");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Group", group);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		group = DefaultDataReadUtility.ReadEnum<InventoryGroup>(reader, "Group");
+	}
 }

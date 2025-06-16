@@ -1,4 +1,3 @@
-﻿namespace SRDebugger
-{
-  public delegate void ActionCompleteCallback(bool success);
-}
+﻿namespace SRDebugger;
+
+public delegate void ActionCompleteCallback(bool success);

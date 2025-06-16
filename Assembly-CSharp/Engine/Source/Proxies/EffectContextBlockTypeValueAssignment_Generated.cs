@@ -6,40 +6,34 @@ using Engine.Common.Commons.Converters;
 using Engine.Source.Effects.Engine;
 using Expressions;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (EffectContextBlockTypeValueAssignment))]
-  public class EffectContextBlockTypeValueAssignment_Generated : 
-    EffectContextBlockTypeValueAssignment,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      EffectContextBlockTypeValueAssignment_Generated instance = Activator.CreateInstance<EffectContextBlockTypeValueAssignment_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2)
-    {
-      EffectContextBlockTypeValueAssignment_Generated assignmentGenerated = (EffectContextBlockTypeValueAssignment_Generated) target2;
-      assignmentGenerated.a = CloneableObjectUtility.Clone(a);
-      assignmentGenerated.b = CloneableObjectUtility.Clone(b);
-    }
+[FactoryProxy(typeof(EffectContextBlockTypeValueAssignment))]
+public class EffectContextBlockTypeValueAssignment_Generated :
+	EffectContextBlockTypeValueAssignment,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<EffectContextBlockTypeValueAssignment_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "A", a);
-      DefaultDataWriteUtility.WriteSerialize(writer, "Source", b);
-    }
+	public void CopyTo(object target2) {
+		var assignmentGenerated = (EffectContextBlockTypeValueAssignment_Generated)target2;
+		assignmentGenerated.a = CloneableObjectUtility.Clone(a);
+		assignmentGenerated.b = CloneableObjectUtility.Clone(b);
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      a = DefaultDataReadUtility.ReadSerialize<IValueSetter<BlockTypeEnum>>(reader, "A");
-      b = DefaultDataReadUtility.ReadSerialize<IValue<BlockTypeEnum>>(reader, "Source");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "A", a);
+		DefaultDataWriteUtility.WriteSerialize(writer, "Source", b);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		a = DefaultDataReadUtility.ReadSerialize<IValueSetter<BlockTypeEnum>>(reader, "A");
+		b = DefaultDataReadUtility.ReadSerialize<IValue<BlockTypeEnum>>(reader, "Source");
+	}
 }

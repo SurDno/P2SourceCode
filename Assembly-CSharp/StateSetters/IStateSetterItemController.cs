@@ -1,7 +1,5 @@
-﻿namespace StateSetters
-{
-  public interface IStateSetterItemController
-  {
-    void Apply(StateSetterItem item, float value);
-  }
+﻿namespace StateSetters;
+
+public interface IStateSetterItemController {
+	void Apply(StateSetterItem item, float value);
 }

@@ -8,109 +8,99 @@ using ParadoxNotion.Serialization;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
-namespace NodeCanvas.Framework
-{
-  public class Blackboard : MonoBehaviour, ISerializationCallbackReceiver
-  {
-    [SerializeField]
-    private string _serializedBlackboard;
-    [SerializeField]
-    private List<Object> _objectReferences = new List<Object>();
-    private BlackboardData _blackboard = new BlackboardData();
-    private Thread deserializeThread;
+namespace NodeCanvas.Framework;
 
-    public event Action<Variable> onVariableAdded;
+public class Blackboard : MonoBehaviour, ISerializationCallbackReceiver {
+	[SerializeField] private string _serializedBlackboard;
+	[SerializeField] private List<Object> _objectReferences = new();
+	private BlackboardData _blackboard = new();
+	private Thread deserializeThread;
 
-    public event Action<Variable> onVariableRemoved;
+	public event Action<Variable> onVariableAdded;
 
-    void ISerializationCallbackReceiver.OnBeforeSerialize()
-    {
-    }
+	public event Action<Variable> onVariableRemoved;
 
-    public void WaitForThreadFinish()
-    {
-      if (deserializeThread == null)
-        return;
-      deserializeThread.Join();
-      deserializeThread = null;
-    }
+	void ISerializationCallbackReceiver.OnBeforeSerialize() { }
 
-    public bool IsReady => deserializeThread == null || !deserializeThread.IsAlive;
+	public void WaitForThreadFinish() {
+		if (deserializeThread == null)
+			return;
+		deserializeThread.Join();
+		deserializeThread = null;
+	}
 
-    void ISerializationCallbackReceiver.OnAfterDeserialize()
-    {
-      if (EngineApplication.MainThread == Thread.CurrentThread && ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintsInSeparateThread)
-      {
-        deserializeThread = new Thread(() =>
-        {
-          _blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
-          if (_blackboard != null)
-            return;
-          Debug.LogError("!!!");
-          _blackboard = new BlackboardData();
-        });
-        deserializeThread.Start();
-      }
-      else
-      {
-        _blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
-        if (_blackboard == null)
-        {
-          Debug.LogError("!!!");
-          _blackboard = new BlackboardData();
-        }
-      }
-    }
+	public bool IsReady => deserializeThread == null || !deserializeThread.IsAlive;
 
-    public Dictionary<string, Variable> variables
-    {
-      get => _blackboard.variables;
-      set => _blackboard.variables = value;
-    }
+	void ISerializationCallbackReceiver.OnAfterDeserialize() {
+		if (EngineApplication.MainThread == Thread.CurrentThread &&
+		    ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintsInSeparateThread) {
+			deserializeThread = new Thread(() => {
+				_blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
+				if (_blackboard != null)
+					return;
+				Debug.LogError("!!!");
+				_blackboard = new BlackboardData();
+			});
+			deserializeThread.Start();
+		} else {
+			_blackboard = JSONSerializer.Deserialize<BlackboardData>(_serializedBlackboard, _objectReferences);
+			if (_blackboard == null) {
+				Debug.LogError("!!!");
+				_blackboard = new BlackboardData();
+			}
+		}
+	}
 
-    public Variable AddVariable(string name, Type type)
-    {
-      Variable variable = _blackboard.AddVariable(name, type);
-      Action<Variable> onVariableAdded = this.onVariableAdded;
-      if (onVariableAdded != null)
-        onVariableAdded(variable);
-      return variable;
-    }
+	public Dictionary<string, Variable> variables {
+		get => _blackboard.variables;
+		set => _blackboard.variables = value;
+	}
 
-    public Variable AddVariable(string name, object value)
-    {
-      Variable variable = _blackboard.AddVariable(name, value);
-      Action<Variable> onVariableAdded = this.onVariableAdded;
-      if (onVariableAdded != null)
-        onVariableAdded(variable);
-      return variable;
-    }
+	public Variable AddVariable(string name, Type type) {
+		var variable = _blackboard.AddVariable(name, type);
+		var onVariableAdded = this.onVariableAdded;
+		if (onVariableAdded != null)
+			onVariableAdded(variable);
+		return variable;
+	}
 
-    public Variable RemoveVariable(string name)
-    {
-      Variable variable = _blackboard.RemoveVariable(name);
-      Action<Variable> onVariableRemoved = this.onVariableRemoved;
-      if (onVariableRemoved != null)
-        onVariableRemoved(variable);
-      return variable;
-    }
+	public Variable AddVariable(string name, object value) {
+		var variable = _blackboard.AddVariable(name, value);
+		var onVariableAdded = this.onVariableAdded;
+		if (onVariableAdded != null)
+			onVariableAdded(variable);
+		return variable;
+	}
 
-    public Variable GetVariable(string name, Type ofType = null)
-    {
-      return _blackboard.GetVariable(name, ofType);
-    }
+	public Variable RemoveVariable(string name) {
+		var variable = _blackboard.RemoveVariable(name);
+		var onVariableRemoved = this.onVariableRemoved;
+		if (onVariableRemoved != null)
+			onVariableRemoved(variable);
+		return variable;
+	}
 
-    public Variable GetVariableByID(string ID) => _blackboard.GetVariableByID(ID);
+	public Variable GetVariable(string name, Type ofType = null) {
+		return _blackboard.GetVariable(name, ofType);
+	}
 
-    public Variable<T> GetVariable<T>(string name) => _blackboard.GetVariable<T>(name);
+	public Variable GetVariableByID(string ID) {
+		return _blackboard.GetVariableByID(ID);
+	}
 
-    public T GetValue<T>(string name) => _blackboard.GetValue<T>(name);
+	public Variable<T> GetVariable<T>(string name) {
+		return _blackboard.GetVariable<T>(name);
+	}
 
-    public Variable SetValue(string name, object value) => _blackboard.SetValue(name, value);
+	public T GetValue<T>(string name) {
+		return _blackboard.GetValue<T>(name);
+	}
 
-    public string[] GetVariableNames(Type ofType)
-    {
-      return _blackboard.GetVariableNames(ofType);
-    }
-  }
+	public Variable SetValue(string name, object value) {
+		return _blackboard.SetValue(name, value);
+	}
+
+	public string[] GetVariableNames(Type ofType) {
+		return _blackboard.GetVariableNames(ofType);
+	}
 }

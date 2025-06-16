@@ -1,9 +1,7 @@
-﻿namespace ParadoxNotion
-{
-  public enum CollisionTypes
-  {
-    CollisionEnter,
-    CollisionExit,
-    CollisionStay,
-  }
+﻿namespace ParadoxNotion;
+
+public enum CollisionTypes {
+	CollisionEnter,
+	CollisionExit,
+	CollisionStay
 }

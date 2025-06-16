@@ -3,25 +3,19 @@ using Cofe.Utility;
 using Inspectors;
 using UnityEngine;
 
-public class CutsceneAnimator : MonoBehaviour
-{
-  [SerializeField]
-  private Item[] items = new Item[0];
+public class CutsceneAnimator : MonoBehaviour {
+	[SerializeField] private Item[] items = new Item[0];
 
-  [Inspected]
-  private void Run()
-  {
-    foreach (Item obj in items)
-    {
-      if (obj.Animator != null && !obj.Trigger.IsNullOrEmpty())
-        obj.Animator.SetTrigger(obj.Trigger);
-    }
-  }
+	[Inspected]
+	private void Run() {
+		foreach (var obj in items)
+			if (obj.Animator != null && !obj.Trigger.IsNullOrEmpty())
+				obj.Animator.SetTrigger(obj.Trigger);
+	}
 
-  [Serializable]
-  public class Item
-  {
-    public Animator Animator;
-    public string Trigger;
-  }
+	[Serializable]
+	public class Item {
+		public Animator Animator;
+		public string Trigger;
+	}
 }

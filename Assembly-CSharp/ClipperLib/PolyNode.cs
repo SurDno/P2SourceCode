@@ -1,54 +1,48 @@
 ﻿using System.Collections.Generic;
 
-namespace ClipperLib
-{
-  public class PolyNode
-  {
-    internal List<PolyNode> m_Childs = new List<PolyNode>();
-    internal EndType m_endtype;
-    internal int m_Index;
-    internal JoinType m_jointype;
-    internal PolyNode m_Parent;
-    internal List<IntPoint> m_polygon = new List<IntPoint>();
+namespace ClipperLib;
 
-    public int ChildCount => m_Childs.Count;
+public class PolyNode {
+	internal List<PolyNode> m_Childs = new();
+	internal EndType m_endtype;
+	internal int m_Index;
+	internal JoinType m_jointype;
+	internal PolyNode m_Parent;
+	internal List<IntPoint> m_polygon = new();
 
-    public List<IntPoint> Contour => m_polygon;
+	public int ChildCount => m_Childs.Count;
 
-    public List<PolyNode> Childs => m_Childs;
+	public List<IntPoint> Contour => m_polygon;
 
-    public PolyNode Parent => m_Parent;
+	public List<PolyNode> Childs => m_Childs;
 
-    public bool IsHole => IsHoleNode();
+	public PolyNode Parent => m_Parent;
 
-    public bool IsOpen { get; set; }
+	public bool IsHole => IsHoleNode();
 
-    private bool IsHoleNode()
-    {
-      bool flag = true;
-      for (PolyNode parent = m_Parent; parent != null; parent = parent.m_Parent)
-        flag = !flag;
-      return flag;
-    }
+	public bool IsOpen { get; set; }
 
-    internal void AddChild(PolyNode Child)
-    {
-      int count = m_Childs.Count;
-      m_Childs.Add(Child);
-      Child.m_Parent = this;
-      Child.m_Index = count;
-    }
+	private bool IsHoleNode() {
+		var flag = true;
+		for (var parent = m_Parent; parent != null; parent = parent.m_Parent)
+			flag = !flag;
+		return flag;
+	}
 
-    public PolyNode GetNext()
-    {
-      return m_Childs.Count > 0 ? m_Childs[0] : GetNextSiblingUp();
-    }
+	internal void AddChild(PolyNode Child) {
+		var count = m_Childs.Count;
+		m_Childs.Add(Child);
+		Child.m_Parent = this;
+		Child.m_Index = count;
+	}
 
-    internal PolyNode GetNextSiblingUp()
-    {
-      if (m_Parent == null)
-        return null;
-      return m_Index == m_Parent.m_Childs.Count - 1 ? m_Parent.GetNextSiblingUp() : m_Parent.m_Childs[m_Index + 1];
-    }
-  }
+	public PolyNode GetNext() {
+		return m_Childs.Count > 0 ? m_Childs[0] : GetNextSiblingUp();
+	}
+
+	internal PolyNode GetNextSiblingUp() {
+		if (m_Parent == null)
+			return null;
+		return m_Index == m_Parent.m_Childs.Count - 1 ? m_Parent.GetNextSiblingUp() : m_Parent.m_Childs[m_Index + 1];
+	}
 }

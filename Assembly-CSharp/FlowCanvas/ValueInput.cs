@@ -1,39 +1,31 @@
 ﻿using System;
 using ParadoxNotion;
 
-namespace FlowCanvas
-{
-  public abstract class ValueInput : Port
-  {
-    public ValueInput()
-    {
-    }
+namespace FlowCanvas;
 
-    public ValueInput(FlowNode parent, string name, string ID)
-      : base(parent, name, ID)
-    {
-    }
+public abstract class ValueInput : Port {
+	public ValueInput() { }
 
-    public static ValueInput CreateInstance(Type t, FlowNode parent, string name, string ID)
-    {
-      return (ValueInput) Activator.CreateInstance(typeof (ValueInput<>).RTMakeGenericType(new Type[1]
-      {
-        t
-      }), parent, name, ID);
-    }
+	public ValueInput(FlowNode parent, string name, string ID)
+		: base(parent, name, ID) { }
 
-    public object value => GetValue();
+	public static ValueInput CreateInstance(Type t, FlowNode parent, string name, string ID) {
+		return (ValueInput)Activator.CreateInstance(typeof(ValueInput<>).RTMakeGenericType(new Type[1] {
+			t
+		}), parent, name, ID);
+	}
 
-    public abstract void BindTo(ValueOutput target);
+	public object value => GetValue();
 
-    public abstract void UnBind();
+	public abstract void BindTo(ValueOutput target);
 
-    public abstract object GetValue();
+	public abstract void UnBind();
 
-    public abstract object serializedValue { get; set; }
+	public abstract object GetValue();
 
-    public abstract bool isDefaultValue { get; }
+	public abstract object serializedValue { get; set; }
 
-    public abstract override Type type { get; }
-  }
+	public abstract bool isDefaultValue { get; }
+
+	public abstract override Type type { get; }
 }

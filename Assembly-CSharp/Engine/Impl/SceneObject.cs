@@ -6,44 +6,37 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Commons;
 using Inspectors;
 
-namespace Engine.Impl
-{
-  [Factory(typeof (IScene))]
-  [GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class SceneObject : EngineObject, IScene, IObject
-  {
-    [DataReadProxy]
-    [DataWriteProxy()]
-    [Inspected]
-    public List<SceneObjectItem> Items = new List<SceneObjectItem>();
+namespace Engine.Impl;
 
-    public void Sort() => Sort(Items);
+[Factory(typeof(IScene))]
+[GenerateProxy(TypeEnum.Copyable | TypeEnum.EngineCloneable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class SceneObject : EngineObject, IScene, IObject {
+	[DataReadProxy] [DataWriteProxy()] [Inspected]
+	public List<SceneObjectItem> Items = new();
 
-    private void Sort(List<SceneObjectItem> items)
-    {
-      items.Sort((a, b) => a.Id.CompareTo(b.Id));
-      foreach (SceneObjectItem sceneObjectItem in items)
-        Sort(sceneObjectItem.Items);
-    }
+	public void Sort() {
+		Sort(Items);
+	}
 
-    public IEnumerable<SceneObjectItem> GetChilds()
-    {
-      foreach (SceneObjectItem child in Items)
-      {
-        yield return child;
-        foreach (SceneObjectItem child2 in GetChilds(child))
-          yield return child2;
-      }
-    }
+	private void Sort(List<SceneObjectItem> items) {
+		items.Sort((a, b) => a.Id.CompareTo(b.Id));
+		foreach (var sceneObjectItem in items)
+			Sort(sceneObjectItem.Items);
+	}
 
-    private static IEnumerable<SceneObjectItem> GetChilds(SceneObjectItem item)
-    {
-      foreach (SceneObjectItem child in item.Items)
-      {
-        yield return child;
-        foreach (SceneObjectItem child2 in GetChilds(child))
-          yield return child2;
-      }
-    }
-  }
+	public IEnumerable<SceneObjectItem> GetChilds() {
+		foreach (var child in Items) {
+			yield return child;
+			foreach (var child2 in GetChilds(child))
+				yield return child2;
+		}
+	}
+
+	private static IEnumerable<SceneObjectItem> GetChilds(SceneObjectItem item) {
+		foreach (var child in item.Items) {
+			yield return child;
+			foreach (var child2 in GetChilds(child))
+				yield return child2;
+		}
+	}
 }

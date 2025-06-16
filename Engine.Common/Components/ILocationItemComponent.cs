@@ -1,17 +1,15 @@
 ﻿using System;
 
-namespace Engine.Common.Components
-{
-  public interface ILocationItemComponent : IComponent
-  {
-    bool IsHibernation { get; }
+namespace Engine.Common.Components;
 
-    ILocationComponent LogicLocation { get; }
+public interface ILocationItemComponent : IComponent {
+	bool IsHibernation { get; }
 
-    bool IsIndoor { get; }
+	ILocationComponent LogicLocation { get; }
 
-    event Action<ILocationItemComponent> OnHibernationChanged;
+	bool IsIndoor { get; }
 
-    event Action<ILocationItemComponent, ILocationComponent> OnChangeLocation;
-  }
+	event Action<ILocationItemComponent> OnHibernationChanged;
+
+	event Action<ILocationItemComponent, ILocationComponent> OnChangeLocation;
 }

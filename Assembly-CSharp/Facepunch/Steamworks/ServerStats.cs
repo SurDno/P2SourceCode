@@ -1,56 +1,51 @@
 ﻿using System;
 using SteamNative;
 
-namespace Facepunch.Steamworks
-{
-  public class ServerStats
-  {
-    internal Server server;
+namespace Facepunch.Steamworks;
 
-    internal ServerStats(Server s) => server = s;
+public class ServerStats {
+	internal Server server;
 
-    public void Refresh(ulong steamid, Action<ulong, bool> Callback = null)
-    {
-      if (Callback == null)
-        server.native.gameServerStats.RequestUserStats(steamid);
-      else
-        server.native.gameServerStats.RequestUserStats(steamid, (o, failed) => Callback(steamid, o.Result == Result.OK && !failed));
-    }
+	internal ServerStats(Server s) {
+		server = s;
+	}
 
-    public void Commit(ulong steamid, Action<ulong, bool> Callback = null)
-    {
-      if (Callback == null)
-        server.native.gameServerStats.StoreUserStats(steamid);
-      else
-        server.native.gameServerStats.StoreUserStats(steamid, (o, failed) => Callback(steamid, o.Result == Result.OK && !failed));
-    }
+	public void Refresh(ulong steamid, Action<ulong, bool> Callback = null) {
+		if (Callback == null)
+			server.native.gameServerStats.RequestUserStats(steamid);
+		else
+			server.native.gameServerStats.RequestUserStats(steamid,
+				(o, failed) => Callback(steamid, o.Result == Result.OK && !failed));
+	}
 
-    public bool SetInt(ulong steamid, string name, int stat)
-    {
-      return server.native.gameServerStats.SetUserStat(steamid, name, stat);
-    }
+	public void Commit(ulong steamid, Action<ulong, bool> Callback = null) {
+		if (Callback == null)
+			server.native.gameServerStats.StoreUserStats(steamid);
+		else
+			server.native.gameServerStats.StoreUserStats(steamid,
+				(o, failed) => Callback(steamid, o.Result == Result.OK && !failed));
+	}
 
-    public bool SetFloat(ulong steamid, string name, float stat)
-    {
-      return server.native.gameServerStats.SetUserStat0(steamid, name, stat);
-    }
+	public bool SetInt(ulong steamid, string name, int stat) {
+		return server.native.gameServerStats.SetUserStat(steamid, name, stat);
+	}
 
-    public int GetInt(ulong steamid, string name, int defaultValue = 0)
-    {
-      int pData = defaultValue;
-      return !server.native.gameServerStats.GetUserStat(steamid, name, out pData) ? defaultValue : pData;
-    }
+	public bool SetFloat(ulong steamid, string name, float stat) {
+		return server.native.gameServerStats.SetUserStat0(steamid, name, stat);
+	}
 
-    public float GetFloat(ulong steamid, string name, float defaultValue = 0.0f)
-    {
-      float pData = defaultValue;
-      return !server.native.gameServerStats.GetUserStat0(steamid, name, out pData) ? defaultValue : pData;
-    }
+	public int GetInt(ulong steamid, string name, int defaultValue = 0) {
+		var pData = defaultValue;
+		return !server.native.gameServerStats.GetUserStat(steamid, name, out pData) ? defaultValue : pData;
+	}
 
-    public struct StatsReceived
-    {
-      public int Result;
-      public ulong SteamId;
-    }
-  }
+	public float GetFloat(ulong steamid, string name, float defaultValue = 0.0f) {
+		var pData = defaultValue;
+		return !server.native.gameServerStats.GetUserStat0(steamid, name, out pData) ? defaultValue : pData;
+	}
+
+	public struct StatsReceived {
+		public int Result;
+		public ulong SteamId;
+	}
 }

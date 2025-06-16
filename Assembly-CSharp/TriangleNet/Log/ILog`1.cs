@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace TriangleNet.Log
-{
-  public interface ILog<T> where T : ILogItem
-  {
-    IList<T> Data { get; }
+namespace TriangleNet.Log;
 
-    LogLevel Level { get; }
+public interface ILog<T> where T : ILogItem {
+	IList<T> Data { get; }
 
-    void Add(T item);
+	LogLevel Level { get; }
 
-    void Clear();
+	void Add(T item);
 
-    void Info(string message);
+	void Clear();
 
-    void Error(string message, string info);
+	void Info(string message);
 
-    void Warning(string message, string info);
-  }
+	void Error(string message, string info);
+
+	void Warning(string message, string info);
 }

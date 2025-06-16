@@ -2,48 +2,38 @@
 using Engine.Source.Commons.Effects;
 using Inspectors;
 
-namespace Expressions
-{
-  public abstract class BinaryOperation<T, TResult> : IValue<TResult>
-    where T : struct
-    where TResult : struct
-  {
-    [DataReadProxy(Name = "Left")]
-    [DataWriteProxy(Name = "Left")]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Name = "a", Mutable = true, Mode = ExecuteMode.Edit)]
-    protected IValue<T> a;
-    [DataReadProxy(Name = "Right")]
-    [DataWriteProxy(Name = "Right")]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Name = "b", Mutable = true, Mode = ExecuteMode.Edit)]
-    protected IValue<T> b;
+namespace Expressions;
 
-    protected abstract TResult Compute(T a, T b);
+public abstract class BinaryOperation<T, TResult> : IValue<TResult>
+	where T : struct
+	where TResult : struct {
+	[DataReadProxy(Name = "Left")]
+	[DataWriteProxy(Name = "Left")]
+	[CopyableProxy]
+	[Inspected]
+	[Inspected(Name = "a", Mutable = true, Mode = ExecuteMode.Edit)]
+	protected IValue<T> a;
 
-    protected virtual string OperatorView() => "???";
+	[DataReadProxy(Name = "Right")]
+	[DataWriteProxy(Name = "Right")]
+	[CopyableProxy()]
+	[Inspected]
+	[Inspected(Name = "b", Mutable = true, Mode = ExecuteMode.Edit)]
+	protected IValue<T> b;
 
-    public TResult GetValue(IEffect context)
-    {
-      return a != null && b != null ? Compute(a.GetValue(context), b.GetValue(context)) : default (TResult);
-    }
+	protected abstract TResult Compute(T a, T b);
 
-    public virtual string ValueView
-    {
-      get
-      {
-        return "(" + (a != null ? a.ValueView : "null") + " " + OperatorView() + " " + (b != null ? b.ValueView : "null") + ")";
-      }
-    }
+	protected virtual string OperatorView() {
+		return "???";
+	}
 
-    public virtual string TypeView
-    {
-      get
-      {
-        return "(" + (a != null ? a.TypeView : "null") + " " + OperatorView() + " " + (b != null ? b.TypeView : "null") + ")";
-      }
-    }
-  }
+	public TResult GetValue(IEffect context) {
+		return a != null && b != null ? Compute(a.GetValue(context), b.GetValue(context)) : default;
+	}
+
+	public virtual string ValueView => "(" + (a != null ? a.ValueView : "null") + " " + OperatorView() + " " +
+	                                   (b != null ? b.ValueView : "null") + ")";
+
+	public virtual string TypeView => "(" + (a != null ? a.TypeView : "null") + " " + OperatorView() + " " +
+	                                  (b != null ? b.TypeView : "null") + ")";
 }

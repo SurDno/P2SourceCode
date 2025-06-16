@@ -14,147 +14,126 @@ using Engine.Source.Services;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (ICrowdPointsComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class CrowdPointsComponent : EngineComponent, ICrowdPointsComponent, IComponent
-  {
-    [Inspected]
-    private HashSet<CrowdPointInfo> points = new HashSet<CrowdPointInfo>();
-    private static List<CrowdPoint> crowdPointsTempList = new List<CrowdPoint>();
-    [FromThis]
-    private RegionComponent region;
-    private ILocationComponent location;
+namespace Engine.Source.Components;
 
-    public event Action<ICrowdPointsComponent, bool> ChangePointsEvent;
+[Factory(typeof(ICrowdPointsComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class CrowdPointsComponent : EngineComponent, ICrowdPointsComponent, IComponent {
+	[Inspected] private HashSet<CrowdPointInfo> points = new();
+	private static List<CrowdPoint> crowdPointsTempList = new();
+	[FromThis] private RegionComponent region;
+	private ILocationComponent location;
 
-    public IEnumerable<CrowdPointInfo> Points => points;
+	public event Action<ICrowdPointsComponent, bool> ChangePointsEvent;
 
-    [Inspected]
-    public bool PointsReady { get; private set; }
+	public IEnumerable<CrowdPointInfo> Points => points;
 
-    public void GetEnabledPoints(AreaEnum area, int count, List<CrowdPointInfo> result)
-    {
-      if (area == AreaEnum.Unknown)
-        return;
-      if (area < AreaEnum.__EndMasks)
-      {
-        if (region == null || !(region.RegionMesh != null))
-          return;
-        for (int index = 0; index < count; ++index)
-          result.Add(new CrowdPointInfo {
-            GameObject = null,
-            Rotation = Quaternion.identity,
-            Area = area,
-            NotReady = true
-          });
-      }
-      else
-      {
-        if (area <= AreaEnum.__EndMasks)
-          return;
-        foreach (CrowdPointInfo point in points)
-        {
-          if (area == point.Area && point.GameObject != null && point.GameObject.activeInHierarchy)
-            result.Add(point);
-        }
-      }
-    }
+	[Inspected] public bool PointsReady { get; private set; }
 
-    public bool TryFindPoint(out int radius, out Vector3 center, out Vector3 point, AreaEnum area)
-    {
-      int mask = area.ToMask();
-      radius = 0;
-      center = Vector3.zero;
-      point = Vector3.zero;
-      point = region.RegionMesh.GetRandomPoint();
-      center = point;
-      NavMeshUtility.SamplePosition(ref point, mask, out radius, 32);
-      return RegionUtility.GetRegionByPosition(point) == region;
-    }
+	public void GetEnabledPoints(AreaEnum area, int count, List<CrowdPointInfo> result) {
+		if (area == AreaEnum.Unknown)
+			return;
+		if (area < AreaEnum.__EndMasks) {
+			if (region == null || !(region.RegionMesh != null))
+				return;
+			for (var index = 0; index < count; ++index)
+				result.Add(new CrowdPointInfo {
+					GameObject = null,
+					Rotation = Quaternion.identity,
+					Area = area,
+					NotReady = true
+				});
+		} else {
+			if (area <= AreaEnum.__EndMasks)
+				return;
+			foreach (var point in points)
+				if (area == point.Area && point.GameObject != null && point.GameObject.activeInHierarchy)
+					result.Add(point);
+		}
+	}
 
-    private void FindPoint(out int radius, out Vector3 center, out Vector3 point, AreaEnum area)
-    {
-      int mask = area.ToMask();
-      radius = 0;
-      center = Vector3.zero;
-      point = Vector3.zero;
-      for (int index = 0; index < 5; ++index)
-      {
-        point = region.RegionMesh.GetRandomPoint();
-        center = point;
-        NavMeshUtility.SamplePosition(ref point, mask, out radius, 32);
-        if (RegionUtility.GetRegionByPosition(point) == region)
-          return;
-      }
-      Debug.LogError("Nav mesh point not found , region : " + region.Owner.GetInfo() + " , area : " + area);
-    }
+	public bool TryFindPoint(out int radius, out Vector3 center, out Vector3 point, AreaEnum area) {
+		var mask = area.ToMask();
+		radius = 0;
+		center = Vector3.zero;
+		point = Vector3.zero;
+		point = region.RegionMesh.GetRandomPoint();
+		center = point;
+		NavMeshUtility.SamplePosition(ref point, mask, out radius, 32);
+		return RegionUtility.GetRegionByPosition(point) == region;
+	}
 
-    public override void OnAdded()
-    {
-      base.OnAdded();
-      location = LocationItemUtility.FindParentComponent<ILocationComponent>(Owner);
-      if (location == null)
-        return;
-      location.OnHibernationChanged += OnChangeHibernation;
-      OnChangeHibernation(location);
-    }
+	private void FindPoint(out int radius, out Vector3 center, out Vector3 point, AreaEnum area) {
+		var mask = area.ToMask();
+		radius = 0;
+		center = Vector3.zero;
+		point = Vector3.zero;
+		for (var index = 0; index < 5; ++index) {
+			point = region.RegionMesh.GetRandomPoint();
+			center = point;
+			NavMeshUtility.SamplePosition(ref point, mask, out radius, 32);
+			if (RegionUtility.GetRegionByPosition(point) == region)
+				return;
+		}
 
-    public override void OnRemoved()
-    {
-      if (location != null)
-        location.OnHibernationChanged -= OnChangeHibernation;
-      base.OnRemoved();
-    }
+		Debug.LogError("Nav mesh point not found , region : " + region.Owner.GetInfo() + " , area : " + area);
+	}
 
-    private void OnChangeHibernation(ILocationComponent sender)
-    {
-      points.Clear();
-      PointsReady = false;
-      if (!location.IsHibernation)
-      {
-        StaticModelComponent component = Owner.GetComponent<StaticModelComponent>();
-        if (component != null)
-        {
-          SceneAsset sceneAsset = component.SceneAsset;
-          if (sceneAsset != null)
-          {
-            foreach (GameObject rootGameObject in sceneAsset.Scene.GetRootGameObjects())
-              ComputeGameObject(rootGameObject);
-          }
-        }
-        else
-        {
-          GameObject gameObject = ((IEntityView) Owner).GameObject;
-          if (gameObject != null)
-            ComputeGameObject(gameObject);
-        }
-        PointsReady = true;
-      }
-      Action<ICrowdPointsComponent, bool> changePointsEvent = ChangePointsEvent;
-      if (changePointsEvent == null)
-        return;
-      changePointsEvent(this, PointsReady);
-    }
+	public override void OnAdded() {
+		base.OnAdded();
+		location = LocationItemUtility.FindParentComponent<ILocationComponent>(Owner);
+		if (location == null)
+			return;
+		location.OnHibernationChanged += OnChangeHibernation;
+		OnChangeHibernation(location);
+	}
 
-    private void ComputeGameObject(GameObject go)
-    {
-      crowdPointsTempList.Clear();
-      Transform transform = go.transform;
-      go.GetComponentsInChildren(crowdPointsTempList);
-      foreach (CrowdPoint crowdPointsTemp in crowdPointsTempList)
-        points.Add(new CrowdPointInfo {
-          GameObject = crowdPointsTemp.gameObject,
-          Radius = 0,
-          CenterPoint = crowdPointsTemp.gameObject.transform.position,
-          Position = crowdPointsTemp.gameObject.transform.position,
-          Rotation = crowdPointsTemp.gameObject.transform.rotation,
-          Area = crowdPointsTemp.Area,
-          OnNavMesh = crowdPointsTemp.OnNavMesh,
-          EntityPoint = LocationItemUtility.GetFirstEngineObject(crowdPointsTemp.gameObject.transform)
-        });
-      crowdPointsTempList.Clear();
-    }
-  }
+	public override void OnRemoved() {
+		if (location != null)
+			location.OnHibernationChanged -= OnChangeHibernation;
+		base.OnRemoved();
+	}
+
+	private void OnChangeHibernation(ILocationComponent sender) {
+		points.Clear();
+		PointsReady = false;
+		if (!location.IsHibernation) {
+			var component = Owner.GetComponent<StaticModelComponent>();
+			if (component != null) {
+				var sceneAsset = component.SceneAsset;
+				if (sceneAsset != null)
+					foreach (var rootGameObject in sceneAsset.Scene.GetRootGameObjects())
+						ComputeGameObject(rootGameObject);
+			} else {
+				var gameObject = ((IEntityView)Owner).GameObject;
+				if (gameObject != null)
+					ComputeGameObject(gameObject);
+			}
+
+			PointsReady = true;
+		}
+
+		var changePointsEvent = ChangePointsEvent;
+		if (changePointsEvent == null)
+			return;
+		changePointsEvent(this, PointsReady);
+	}
+
+	private void ComputeGameObject(GameObject go) {
+		crowdPointsTempList.Clear();
+		var transform = go.transform;
+		go.GetComponentsInChildren(crowdPointsTempList);
+		foreach (var crowdPointsTemp in crowdPointsTempList)
+			points.Add(new CrowdPointInfo {
+				GameObject = crowdPointsTemp.gameObject,
+				Radius = 0,
+				CenterPoint = crowdPointsTemp.gameObject.transform.position,
+				Position = crowdPointsTemp.gameObject.transform.position,
+				Rotation = crowdPointsTemp.gameObject.transform.rotation,
+				Area = crowdPointsTemp.Area,
+				OnNavMesh = crowdPointsTemp.OnNavMesh,
+				EntityPoint = LocationItemUtility.GetFirstEngineObject(crowdPointsTemp.gameObject.transform)
+			});
+		crowdPointsTempList.Clear();
+	}
 }

@@ -5,32 +5,29 @@ using Engine.Source.Commons.Effects;
 using Expressions;
 using Inspectors;
 
-namespace Engine.Source.Effects.Values
-{
-  public abstract class EffectAbilityValue<T> : IValue<T> where T : struct
-  {
-    [DataReadProxy(Name = "AbilityValueName")]
-    [DataWriteProxy(Name = "AbilityValueName")]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected AbilityValueNameEnum valueName;
+namespace Engine.Source.Effects.Values;
 
-    public AbilityValueNameEnum ParameterName => valueName;
+public abstract class EffectAbilityValue<T> : IValue<T> where T : struct {
+	[DataReadProxy(Name = "AbilityValueName")]
+	[DataWriteProxy(Name = "AbilityValueName")]
+	[CopyableProxy()]
+	[Inspected]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected AbilityValueNameEnum valueName;
 
-    public T GetValue(IEffect context)
-    {
-      if (context.AbilityItem.AbilityController is IAbilityValueContainer abilityController)
-      {
-        IAbilityValue<T> abilityValue = abilityController.GetAbilityValue<T>(valueName);
-        if (abilityValue != null)
-          return abilityValue.Value;
-      }
-      return default (T);
-    }
+	public AbilityValueNameEnum ParameterName => valueName;
 
-    public string ValueView => valueName.ToString();
+	public T GetValue(IEffect context) {
+		if (context.AbilityItem.AbilityController is IAbilityValueContainer abilityController) {
+			var abilityValue = abilityController.GetAbilityValue<T>(valueName);
+			if (abilityValue != null)
+				return abilityValue.Value;
+		}
 
-    public string TypeView => TypeUtility.GetTypeName(GetType());
-  }
+		return default;
+	}
+
+	public string ValueView => valueName.ToString();
+
+	public string TypeView => TypeUtility.GetTypeName(GetType());
 }

@@ -1,11 +1,9 @@
-﻿namespace ClipperLib
-{
-  public enum EndType
-  {
-    etClosedPolygon,
-    etClosedLine,
-    etOpenButt,
-    etOpenSquare,
-    etOpenRound,
-  }
+﻿namespace ClipperLib;
+
+public enum EndType {
+	etClosedPolygon,
+	etClosedLine,
+	etOpenButt,
+	etOpenSquare,
+	etOpenRound
 }

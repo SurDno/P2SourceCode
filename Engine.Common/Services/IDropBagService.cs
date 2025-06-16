@@ -1,15 +1,13 @@
 ﻿using System;
 
-namespace Engine.Common.Services
-{
-  public interface IDropBagService
-  {
-    void AddEntity(IEntity entity);
+namespace Engine.Common.Services;
 
-    void Reset();
+public interface IDropBagService {
+	void AddEntity(IEntity entity);
 
-    event Action<IEntity> OnCreateEntity;
+	void Reset();
 
-    event Action<IEntity> OnDeleteEntity;
-  }
+	event Action<IEntity> OnCreateEntity;
+
+	event Action<IEntity> OnDeleteEntity;
 }

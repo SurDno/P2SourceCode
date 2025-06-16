@@ -8,56 +8,49 @@ using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [TaskCategory("Pathologic/Fight/Temp/Parameters")]
-  [TaskDescription("Выставить время Stagger")]
-  [TaskIcon("Pathologic_InstantIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (FightParameterStaggerTime))]
-  public class FightParameterStaggerTime : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public SharedFloat StaggerTime = 5f;
-    private NPCEnemy owner;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public override TaskStatus OnUpdate()
-    {
-      if (owner == null)
-      {
-        owner = GetComponent<NPCEnemy>();
-        if (owner == null)
-        {
-          Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof (NPCEnemy).Name + " engine component", gameObject);
-          return TaskStatus.Failure;
-        }
-      }
-      owner.StaggerTime = StaggerTime.Value;
-      return TaskStatus.Success;
-    }
+[TaskCategory("Pathologic/Fight/Temp/Parameters")]
+[TaskDescription("Выставить время Stagger")]
+[TaskIcon("Pathologic_InstantIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(FightParameterStaggerTime))]
+public class FightParameterStaggerTime : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedFloat StaggerTime = 5f;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      BehaviorTreeDataWriteUtility.WriteShared(writer, "StaggerTime", StaggerTime);
-    }
+	private NPCEnemy owner;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      StaggerTime = BehaviorTreeDataReadUtility.ReadShared(reader, "StaggerTime", StaggerTime);
-    }
-  }
+	public override TaskStatus OnUpdate() {
+		if (owner == null) {
+			owner = GetComponent<NPCEnemy>();
+			if (owner == null) {
+				Debug.LogWarning(gameObject.name + ": doesn't contain " + typeof(NPCEnemy).Name + " engine component",
+					gameObject);
+				return TaskStatus.Failure;
+			}
+		}
+
+		owner.StaggerTime = StaggerTime.Value;
+		return TaskStatus.Success;
+	}
+
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "StaggerTime", StaggerTime);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		StaggerTime = BehaviorTreeDataReadUtility.ReadShared(reader, "StaggerTime", StaggerTime);
+	}
 }

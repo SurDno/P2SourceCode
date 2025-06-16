@@ -1,20 +1,19 @@
 ﻿using System;
 using Engine.Impl.UI.Menu.Main;
 
-namespace Engine.Source.UI.Menu.Main
-{
-  public class StartLoadGameWindow : 
-    CancelableSimpleWindow,
-    IStartLoadGameWindow,
-    IWindow,
-    IMainMenu,
-    IPauseMenu
-  {
-    protected override void RegisterLayer()
-    {
-      RegisterLayer<IStartLoadGameWindow>(this);
-    }
+namespace Engine.Source.UI.Menu.Main;
 
-    public override Type GetWindowType() => typeof (IStartLoadGameWindow);
-  }
+public class StartLoadGameWindow :
+	CancelableSimpleWindow,
+	IStartLoadGameWindow,
+	IWindow,
+	IMainMenu,
+	IPauseMenu {
+	protected override void RegisterLayer() {
+		RegisterLayer<IStartLoadGameWindow>(this);
+	}
+
+	public override Type GetWindowType() {
+		return typeof(IStartLoadGameWindow);
+	}
 }

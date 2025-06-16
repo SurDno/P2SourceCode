@@ -1,6 +1,5 @@
-﻿public enum Gender
-{
-  None,
-  Male,
-  Female,
+﻿public enum Gender {
+	None,
+	Male,
+	Female
 }

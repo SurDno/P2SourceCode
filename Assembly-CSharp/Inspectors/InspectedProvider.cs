@@ -4,94 +4,85 @@ using System.Reflection;
 using Cofe.Meta;
 using UnityEngine;
 
-namespace Inspectors
-{
-  public class InspectedProvider : IInspectedProvider, IExpandedProvider
-  {
-    private static HashSet<string> expanded = new HashSet<string>();
-    private IInspectedDrawer drawer;
+namespace Inspectors;
 
-    public InspectedProvider(IInspectedDrawer drawer) => this.drawer = drawer;
+public class InspectedProvider : IInspectedProvider, IExpandedProvider {
+	private static HashSet<string> expanded = new();
+	private IInspectedDrawer drawer;
 
-    public void DrawInspected(
-      string name,
-      Type type,
-      object value,
-      bool mutable,
-      object target,
-      MemberInfo member,
-      Action<object> setter)
-    {
-      GUI.enabled = mutable;
-      InspectedDrawerService.DrawerHandle drawer1 = InspectedDrawerService.GetDrawer(type);
-      if (drawer1 != null)
-      {
-        drawer1(name, type, value, mutable, this, drawer, target, member, setter);
-      }
-      else
-      {
-        if (type.IsGenericType)
-        {
-          drawer1 = InspectedDrawerService.GetDrawer(type.GetGenericTypeDefinition());
-          if (drawer1 != null)
-            drawer1(name, type, value, mutable, this, drawer, target, member, setter);
-        }
-        if (drawer1 == null)
-        {
-          InspectedDrawerService.DrawerHandle drawer2 = InspectedDrawerService.GetDrawer(typeof (object));
-          if (drawer2 != null)
-            drawer2(name, type, value, mutable, this, drawer, target, member, setter);
-        }
-      }
-      GUI.enabled = true;
-    }
+	public InspectedProvider(IInspectedDrawer drawer) {
+		this.drawer = drawer;
+	}
 
-    public void Draw(object target, Action<object> setter)
-    {
-      drawer.IndentLevel = 0;
-      DeepName = "";
-      MetaService.Compute(target, DrawId, new InspectedContext {
-        Provider = this,
-        Setter = setter
-      });
-    }
+	public void DrawInspected(
+		string name,
+		Type type,
+		object value,
+		bool mutable,
+		object target,
+		MemberInfo member,
+		Action<object> setter) {
+		GUI.enabled = mutable;
+		var drawer1 = InspectedDrawerService.GetDrawer(type);
+		if (drawer1 != null)
+			drawer1(name, type, value, mutable, this, drawer, target, member, setter);
+		else {
+			if (type.IsGenericType) {
+				drawer1 = InspectedDrawerService.GetDrawer(type.GetGenericTypeDefinition());
+				if (drawer1 != null)
+					drawer1(name, type, value, mutable, this, drawer, target, member, setter);
+			}
 
-    public void SetHeader(string name)
-    {
-      if (string.IsNullOrEmpty(ElementName))
-        ElementName = name;
-      else
-        ElementName = ElementName + " | " + name;
-    }
+			if (drawer1 == null) {
+				var drawer2 = InspectedDrawerService.GetDrawer(typeof(object));
+				if (drawer2 != null)
+					drawer2(name, type, value, mutable, this, drawer, target, member, setter);
+			}
+		}
 
-    public void SetExpanded(string name, bool value)
-    {
-      if (value)
-        expanded.Add(name);
-      else
-        expanded.Remove(name);
-    }
+		GUI.enabled = true;
+	}
 
-    public bool GetExpanded(string name) => expanded.Contains(name);
+	public void Draw(object target, Action<object> setter) {
+		drawer.IndentLevel = 0;
+		DeepName = "";
+		MetaService.Compute(target, DrawId, new InspectedContext {
+			Provider = this,
+			Setter = setter
+		});
+	}
 
-    public string DeepName { get; set; }
+	public void SetHeader(string name) {
+		if (string.IsNullOrEmpty(ElementName))
+			ElementName = name;
+		else
+			ElementName = ElementName + " | " + name;
+	}
 
-    public object ContextObject { get; set; }
+	public void SetExpanded(string name, bool value) {
+		if (value)
+			expanded.Add(name);
+		else
+			expanded.Remove(name);
+	}
 
-    public string ElementName { get; set; }
+	public bool GetExpanded(string name) {
+		return expanded.Contains(name);
+	}
 
-    public Guid DrawId
-    {
-      get
-      {
-        return Application.isPlaying ? InspectedAttribute.DrawRuntimeInspectedId : InspectedAttribute.DrawEditInspectedId;
-      }
-    }
+	public string DeepName { get; set; }
 
-    public Guid NameId => InspectedAttribute.HeaderInspectedId;
+	public object ContextObject { get; set; }
 
-    public int ContextIndex { get; set; }
+	public string ElementName { get; set; }
 
-    public Action ContextItemMenu { get; set; }
-  }
+	public Guid DrawId => Application.isPlaying
+		? InspectedAttribute.DrawRuntimeInspectedId
+		: InspectedAttribute.DrawEditInspectedId;
+
+	public Guid NameId => InspectedAttribute.HeaderInspectedId;
+
+	public int ContextIndex { get; set; }
+
+	public Action ContextItemMenu { get; set; }
 }

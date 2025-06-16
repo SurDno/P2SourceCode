@@ -8,127 +8,104 @@ using Engine.Common.Services;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons.Parameters
-{
-  public abstract class PriorityParameter<T> : 
-    ParameterListener,
-    IParameter<T>,
-    IParameter,
-    IComputeParameter,
-    INeedSave
-    where T : struct
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [CopyableProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterNameEnum name;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected PriorityContainer<T> container = ProxyFactory.Create<PriorityContainer<T>>();
-    private T storedValue;
-    private bool mutableChecked;
+namespace Engine.Source.Commons.Parameters;
 
-    [Inspected(Header = true)]
-    public ParameterNameEnum Name => name;
+public abstract class PriorityParameter<T> :
+	ParameterListener,
+	IParameter<T>,
+	IParameter,
+	IComputeParameter,
+	INeedSave
+	where T : struct {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[CopyableProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterNameEnum name;
 
-    [Inspected(Header = true)]
-    public T Value
-    {
-      get => container.Value;
-      set
-      {
-        CheckMutable();
-        container.Value = value;
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy()]
+	[Inspected]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected PriorityContainer<T> container = ProxyFactory.Create<PriorityContainer<T>>();
 
-    [Inspected]
-    public T BaseValue
-    {
-      get => default (T);
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	private T storedValue;
+	private bool mutableChecked;
 
-    [Inspected]
-    public T MinValue
-    {
-      get => default (T);
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	[Inspected(Header = true)] public ParameterNameEnum Name => name;
 
-    [Inspected]
-    public T MaxValue
-    {
-      get => default (T);
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	[Inspected(Header = true)]
+	public T Value {
+		get => container.Value;
+		set {
+			CheckMutable();
+			container.Value = value;
+		}
+	}
 
-    [Inspected]
-    public bool Resetable => false;
+	[Inspected]
+	public T BaseValue {
+		get => default;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    [Inspected]
-    public bool NeedSave => container.NeedSave;
+	[Inspected]
+	public T MinValue {
+		get => default;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    public object ValueData => Value;
+	[Inspected]
+	public T MaxValue {
+		get => default;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    public void SetValue(PriorityParameterEnum priority, T value)
-    {
-      CheckMutable();
-      container.SetValue(priority, value);
-    }
+	[Inspected] public bool Resetable => false;
 
-    public bool TryGetValue(PriorityParameterEnum priority, out T result)
-    {
-      return container.TryGetValue(priority, out result);
-    }
+	[Inspected] public bool NeedSave => container.NeedSave;
 
-    public void ResetValue(PriorityParameterEnum priority)
-    {
-      CheckMutable();
-      container.ResetValue(priority);
-    }
+	public object ValueData => Value;
 
-    private void CheckMutable()
-    {
-      if (mutableChecked)
-        return;
-      mutableChecked = true;
-      storedValue = Value;
-      ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
-    }
+	public void SetValue(PriorityParameterEnum priority, T value) {
+		CheckMutable();
+		container.SetValue(priority, value);
+	}
 
-    protected abstract bool Compare(T a, T b);
+	public bool TryGetValue(PriorityParameterEnum priority, out T result) {
+		return container.TryGetValue(priority, out result);
+	}
 
-    void IComputeParameter.ResetResetable()
-    {
-    }
+	public void ResetValue(PriorityParameterEnum priority) {
+		CheckMutable();
+		container.ResetValue(priority);
+	}
 
-    void IComputeParameter.CorrectValue()
-    {
-    }
+	private void CheckMutable() {
+		if (mutableChecked)
+			return;
+		mutableChecked = true;
+		storedValue = Value;
+		ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
+	}
 
-    void IComputeParameter.ComputeEvent()
-    {
-      mutableChecked = false;
-      if (Compare(storedValue, Value))
-        return;
-      ChangeParameterInvoke(this);
-    }
-  }
+	protected abstract bool Compare(T a, T b);
+
+	void IComputeParameter.ResetResetable() { }
+
+	void IComputeParameter.CorrectValue() { }
+
+	void IComputeParameter.ComputeEvent() {
+		mutableChecked = false;
+		if (Compare(storedValue, Value))
+			return;
+		ChangeParameterInvoke(this);
+	}
 }

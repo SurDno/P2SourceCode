@@ -1,7 +1,5 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IParented
-  {
-    IObject Parent { get; }
-  }
+﻿namespace PLVirtualMachine.Common;
+
+public interface IParented {
+	IObject Parent { get; }
 }

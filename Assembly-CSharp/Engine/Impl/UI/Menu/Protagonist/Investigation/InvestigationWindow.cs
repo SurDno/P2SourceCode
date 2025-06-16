@@ -16,73 +16,71 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Menu.Protagonist.Investigation
-{
-  public class InvestigationWindow : UIWindow, IInvestigationWindow, IWindow, IPauseMenu
-  {
-    [SerializeField]
-    [FormerlySerializedAs("_Image")]
-    private Image image;
-    private CameraKindEnum lastCameraKind;
-    [SerializeField]
-    [FormerlySerializedAs("_TextInformation")]
-    private StringView textInformation;
-    [SerializeField]
-    [FormerlySerializedAs("_TextTitle")]
-    private StringView textTitle;
+namespace Engine.Impl.UI.Menu.Protagonist.Investigation;
 
-    public IStorageComponent Actor { get; set; }
+public class InvestigationWindow : UIWindow, IInvestigationWindow, IWindow, IPauseMenu {
+	[SerializeField] [FormerlySerializedAs("_Image")]
+	private Image image;
 
-    public IStorableComponent Target { get; set; }
+	private CameraKindEnum lastCameraKind;
 
-    protected void UI_Cancel_Click_Handler() => ServiceLocator.GetService<UIService>().Pop();
+	[SerializeField] [FormerlySerializedAs("_TextInformation")]
+	private StringView textInformation;
 
-    private void Clear()
-    {
-      image.sprite = null;
-      textTitle.StringValue = null;
-      textInformation.StringValue = null;
-    }
+	[SerializeField] [FormerlySerializedAs("_TextTitle")]
+	private StringView textTitle;
 
-    protected override void OnEnable()
-    {
-      base.OnEnable();
-      lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
-      ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
-      CursorService.Instance.Free = CursorService.Instance.Visible = true;
-      ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
-      PlayerUtility.ShowPlayerHands(false);
-      InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
-      Clear();
-      if (Target == null || Target.IsDisposed)
-        return;
-      LocalizationService service = ServiceLocator.GetService<LocalizationService>();
-      service.GetText(Target.Title);
-      textTitle.StringValue = service.GetText(Target.Title);
-      textInformation.StringValue = service.GetText(Target.Description);
-      Sprite sprite = null;
-      if (((StorableComponent) Target).Placeholder != null)
-        sprite = ((StorableComponent) Target).Placeholder.ImageInformation.Value;
-      image.sprite = sprite;
-      ServiceLocator.GetService<LogicEventService>().FireEntityEvent("Investigation", (IEntity) Target.Owner.Template);
-    }
+	public IStorageComponent Actor { get; set; }
 
-    protected override void OnDisable()
-    {
-      Clear();
-      ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
-      ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
-      InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
-      PlayerUtility.ShowPlayerHands(true);
-      base.OnDisable();
-    }
+	public IStorableComponent Target { get; set; }
 
-    public override void Initialize()
-    {
-      RegisterLayer<IInvestigationWindow>(this);
-      base.Initialize();
-    }
+	protected void UI_Cancel_Click_Handler() {
+		ServiceLocator.GetService<UIService>().Pop();
+	}
 
-    public override Type GetWindowType() => typeof (IInvestigationWindow);
-  }
+	private void Clear() {
+		image.sprite = null;
+		textTitle.StringValue = null;
+		textInformation.StringValue = null;
+	}
+
+	protected override void OnEnable() {
+		base.OnEnable();
+		lastCameraKind = ServiceLocator.GetService<CameraService>().Kind;
+		ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Unknown;
+		CursorService.Instance.Free = CursorService.Instance.Visible = true;
+		ServiceLocator.GetService<GameActionService>().AddListener(GameActionType.Cancel, CancelListener);
+		PlayerUtility.ShowPlayerHands(false);
+		InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
+		Clear();
+		if (Target == null || Target.IsDisposed)
+			return;
+		var service = ServiceLocator.GetService<LocalizationService>();
+		service.GetText(Target.Title);
+		textTitle.StringValue = service.GetText(Target.Title);
+		textInformation.StringValue = service.GetText(Target.Description);
+		Sprite sprite = null;
+		if (((StorableComponent)Target).Placeholder != null)
+			sprite = ((StorableComponent)Target).Placeholder.ImageInformation.Value;
+		image.sprite = sprite;
+		ServiceLocator.GetService<LogicEventService>().FireEntityEvent("Investigation", (IEntity)Target.Owner.Template);
+	}
+
+	protected override void OnDisable() {
+		Clear();
+		ServiceLocator.GetService<CameraService>().Kind = lastCameraKind;
+		ServiceLocator.GetService<GameActionService>().RemoveListener(GameActionType.Cancel, CancelListener);
+		InstanceByRequest<EngineApplication>.Instance.IsPaused = false;
+		PlayerUtility.ShowPlayerHands(true);
+		base.OnDisable();
+	}
+
+	public override void Initialize() {
+		RegisterLayer<IInvestigationWindow>(this);
+		base.Initialize();
+	}
+
+	public override Type GetWindowType() {
+		return typeof(IInvestigationWindow);
+	}
 }

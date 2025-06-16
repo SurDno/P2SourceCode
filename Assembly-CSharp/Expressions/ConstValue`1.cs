@@ -3,21 +3,21 @@ using Engine.Common.Generator;
 using Engine.Source.Commons.Effects;
 using Inspectors;
 
-namespace Expressions
-{
-  public abstract class ConstValue<T> : IValue<T> where T : struct
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected(Header = true)]
-    [Inspected(Name = "value", Mutable = true, Mode = ExecuteMode.Edit)]
-    protected T value;
+namespace Expressions;
 
-    public T GetValue(IEffect context) => value;
+public abstract class ConstValue<T> : IValue<T> where T : struct {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy()]
+	[Inspected(Header = true)]
+	[Inspected(Name = "value", Mutable = true, Mode = ExecuteMode.Edit)]
+	protected T value;
 
-    public string ValueView => value.ToString();
+	public T GetValue(IEffect context) {
+		return value;
+	}
 
-    public string TypeView => TypeUtility.GetTypeName(GetType());
-  }
+	public string ValueView => value.ToString();
+
+	public string TypeView => TypeUtility.GetTypeName(GetType());
 }

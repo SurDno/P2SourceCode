@@ -3,28 +3,26 @@ using Engine.Common.Commons;
 using Engine.Common.Components.Parameters;
 using Engine.Common.Types;
 
-namespace Engine.Common.Components
-{
-  public interface IBoundCharacterComponent : IComponent
-  {
-    IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
+namespace Engine.Common.Components;
 
-    bool Discovered { get; set; }
+public interface IBoundCharacterComponent : IComponent {
+	IParameterValue<BoundHealthStateEnum> BoundHealthState { get; }
 
-    BoundCharacterGroup Group { get; set; }
+	bool Discovered { get; set; }
 
-    IEntity HomeRegion { get; set; }
+	BoundCharacterGroup Group { get; set; }
 
-    bool IsEnabled { get; set; }
+	IEntity HomeRegion { get; set; }
 
-    LocalizedText Name { get; set; }
+	bool IsEnabled { get; set; }
 
-    IParameterValue<float> RandomRoll { get; }
+	LocalizedText Name { get; set; }
 
-    IBoundCharacterPlaceholder Resource { get; set; }
+	IParameterValue<float> RandomRoll { get; }
 
-    int SortOrder { get; set; }
+	IBoundCharacterPlaceholder Resource { get; set; }
 
-    void StorePreRollState();
-  }
+	int SortOrder { get; set; }
+
+	void StorePreRollState();
 }

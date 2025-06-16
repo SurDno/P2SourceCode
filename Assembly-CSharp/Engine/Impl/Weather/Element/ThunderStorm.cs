@@ -2,48 +2,38 @@
 using Engine.Common.Generator;
 using Engine.Source.Blenders;
 
-namespace Engine.Impl.Weather.Element
-{
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class ThunderStorm : IBlendable<ThunderStorm>
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    protected float distanceFrom;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    protected float distanceTo;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    protected float frequency;
+namespace Engine.Impl.Weather.Element;
 
-    public float Frequency
-    {
-      get => frequency;
-      set => frequency = value;
-    }
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class ThunderStorm : IBlendable<ThunderStorm> {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy]
+	protected float distanceFrom;
 
-    public float DistanceTo
-    {
-      get => distanceTo;
-      set => distanceTo = value;
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy]
+	protected float distanceTo;
 
-    public float DistanceFrom
-    {
-      get => distanceFrom;
-      set => distanceFrom = value;
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()]
+	protected float frequency;
 
-    public void Blend(ThunderStorm a, ThunderStorm b, IPureBlendOperation opp)
-    {
-      IBlendOperation blendOperation = (IBlendOperation) opp;
-      Frequency = blendOperation.Blend(a.Frequency, b.Frequency);
-      DistanceFrom = blendOperation.Blend(a.DistanceFrom, b.DistanceFrom);
-      DistanceTo = blendOperation.Blend(a.DistanceTo, b.DistanceTo);
-    }
-  }
+	public float Frequency {
+		get => frequency;
+		set => frequency = value;
+	}
+
+	public float DistanceTo {
+		get => distanceTo;
+		set => distanceTo = value;
+	}
+
+	public float DistanceFrom {
+		get => distanceFrom;
+		set => distanceFrom = value;
+	}
+
+	public void Blend(ThunderStorm a, ThunderStorm b, IPureBlendOperation opp) {
+		var blendOperation = (IBlendOperation)opp;
+		Frequency = blendOperation.Blend(a.Frequency, b.Frequency);
+		DistanceFrom = blendOperation.Blend(a.DistanceFrom, b.DistanceFrom);
+		DistanceTo = blendOperation.Blend(a.DistanceTo, b.DistanceTo);
+	}
 }

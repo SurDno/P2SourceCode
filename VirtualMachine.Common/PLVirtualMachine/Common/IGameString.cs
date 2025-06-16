@@ -1,6 +1,3 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IGameString : IObject, IEditorBaseTemplate
-  {
-  }
-}
+﻿namespace PLVirtualMachine.Common;
+
+public interface IGameString : IObject, IEditorBaseTemplate { }

@@ -1,15 +1,12 @@
-﻿namespace Engine.Source.Components.Interactable
-{
-  public struct ValidateResult
-  {
-    public ValidateResult(bool result, string reason = "")
-    {
-      Result = result;
-      Reason = reason;
-    }
+﻿namespace Engine.Source.Components.Interactable;
 
-    public bool Result { get; private set; }
+public struct ValidateResult {
+	public ValidateResult(bool result, string reason = "") {
+		Result = result;
+		Reason = reason;
+	}
 
-    public string Reason { get; private set; }
-  }
+	public bool Result { get; private set; }
+
+	public string Reason { get; private set; }
 }

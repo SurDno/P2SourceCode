@@ -1,7 +1,5 @@
-﻿namespace NodeCanvas.Framework
-{
-  public interface IUpdatable
-  {
-    void Update();
-  }
+﻿namespace NodeCanvas.Framework;
+
+public interface IUpdatable {
+	void Update();
 }

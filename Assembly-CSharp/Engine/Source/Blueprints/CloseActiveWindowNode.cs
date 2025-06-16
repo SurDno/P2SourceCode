@@ -6,28 +6,24 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class CloseActiveWindowNode : FlowControlNode
-  {
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      FlowOutput output = AddFlowOutput("Out");
-      AddFlowInput("In", () => CoroutineService.Instance.Route(Route(output)));
-    }
+namespace Engine.Source.Blueprints;
 
-    private IEnumerator Route(FlowOutput output)
-    {
-      UIService uiService = ServiceLocator.GetService<UIService>();
-      while (uiService.Active != null && !(uiService.Active is IHudWindow) && !(uiService.Active is IDialogWindow))
-      {
-        uiService.Pop();
-        while (uiService.IsTransition)
-          yield return null;
-      }
-      output.Call();
-    }
-  }
+[Category("Engine")]
+public class CloseActiveWindowNode : FlowControlNode {
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		var output = AddFlowOutput("Out");
+		AddFlowInput("In", () => CoroutineService.Instance.Route(Route(output)));
+	}
+
+	private IEnumerator Route(FlowOutput output) {
+		var uiService = ServiceLocator.GetService<UIService>();
+		while (uiService.Active != null && !(uiService.Active is IHudWindow) && !(uiService.Active is IDialogWindow)) {
+			uiService.Pop();
+			while (uiService.IsTransition)
+				yield return null;
+		}
+
+		output.Call();
+	}
 }

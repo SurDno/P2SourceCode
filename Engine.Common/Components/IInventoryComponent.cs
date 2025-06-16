@@ -1,16 +1,14 @@
 ﻿using Engine.Common.Components.Parameters;
 using Engine.Common.Components.Storable;
 
-namespace Engine.Common.Components
-{
-  public interface IInventoryComponent : IComponent
-  {
-    IParameter<bool> Enabled { get; }
+namespace Engine.Common.Components;
 
-    IParameter<bool> Available { get; }
+public interface IInventoryComponent : IComponent {
+	IParameter<bool> Enabled { get; }
 
-    IParameter<float> Disease { get; }
+	IParameter<bool> Available { get; }
 
-    IParameter<ContainerOpenStateEnum> OpenState { get; }
-  }
+	IParameter<float> Disease { get; }
+
+	IParameter<ContainerOpenStateEnum> OpenState { get; }
 }

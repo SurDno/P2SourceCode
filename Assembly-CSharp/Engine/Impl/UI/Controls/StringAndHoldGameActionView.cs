@@ -2,36 +2,28 @@
 using InputServices;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class StringAndHoldGameActionView : GameActionViewBase
-  {
-    [SerializeField]
-    private GameObject holdObject;
-    [SerializeField]
-    private KeyCodeStringView keyCodeStringView;
+namespace Engine.Impl.UI.Controls;
 
-    private void OnEnable()
-    {
-      InputService.Instance.onJoystickUsedChanged += SetCodeView;
-      ApplyValue(true);
-    }
+public class StringAndHoldGameActionView : GameActionViewBase {
+	[SerializeField] private GameObject holdObject;
+	[SerializeField] private KeyCodeStringView keyCodeStringView;
 
-    private void OnDisable()
-    {
-      InputService.Instance.onJoystickUsedChanged -= SetCodeView;
-    }
+	private void OnEnable() {
+		InputService.Instance.onJoystickUsedChanged += SetCodeView;
+		ApplyValue(true);
+	}
 
-    protected override void ApplyValue(bool instant)
-    {
-      SetCodeView(InputService.Instance.JoystickUsed);
-    }
+	private void OnDisable() {
+		InputService.Instance.onJoystickUsedChanged -= SetCodeView;
+	}
 
-    private void SetCodeView(bool joystick)
-    {
-      bool hold;
-      keyCodeStringView.StringValue = InputUtility.GetHotKeyByAction(GetValue(), joystick, out hold);
-      holdObject.SetActive(hold);
-    }
-  }
+	protected override void ApplyValue(bool instant) {
+		SetCodeView(InputService.Instance.JoystickUsed);
+	}
+
+	private void SetCodeView(bool joystick) {
+		bool hold;
+		keyCodeStringView.StringValue = InputUtility.GetHotKeyByAction(GetValue(), joystick, out hold);
+		holdObject.SetActive(hold);
+	}
 }

@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class MapNullRegionView : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler
-{
-  [SerializeField]
-  private MapRegionInfoWindow regionInfoWindow;
+public class MapNullRegionView : MonoBehaviour, IPointerEnterHandler, IEventSystemHandler {
+	[SerializeField] private MapRegionInfoWindow regionInfoWindow;
 
-  public void OnPointerEnter(PointerEventData eventData) => regionInfoWindow.Hide();
+	public void OnPointerEnter(PointerEventData eventData) {
+		regionInfoWindow.Hide();
+	}
 }

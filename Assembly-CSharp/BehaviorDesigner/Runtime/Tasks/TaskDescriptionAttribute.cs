@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [AttributeUsage(AttributeTargets.Class, Inherited = false)]
-  public class TaskDescriptionAttribute : Attribute
-  {
-    private readonly string mDescription;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public string Description => mDescription;
+[AttributeUsage(AttributeTargets.Class, Inherited = false)]
+public class TaskDescriptionAttribute : Attribute {
+	private readonly string mDescription;
 
-    public TaskDescriptionAttribute(string description) => mDescription = description;
-  }
+	public string Description => mDescription;
+
+	public TaskDescriptionAttribute(string description) {
+		mDescription = description;
+	}
 }

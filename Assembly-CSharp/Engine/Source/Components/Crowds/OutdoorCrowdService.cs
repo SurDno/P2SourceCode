@@ -4,53 +4,43 @@ using Engine.Source.Settings.External;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components.Crowds
-{
-  [GameService(typeof (OutdoorCrowdService))]
-  public class OutdoorCrowdService
-  {
-    [Inspected]
-    private int entityCount;
-    [Inspected]
-    private int limitEntityCount;
+namespace Engine.Source.Components.Crowds;
 
-    [Inspected]
-    private int MaxLimitEntityCount
-    {
-      get
-      {
-        return ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MaxOutdoorCrowdEntityCount;
-      }
-    }
+[GameService(typeof(OutdoorCrowdService))]
+public class OutdoorCrowdService {
+	[Inspected] private int entityCount;
+	[Inspected] private int limitEntityCount;
 
-    private bool IsLimit(AreaEnum area)
-    {
-      return ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.LimitOutdoorAreaCrowdEntity.Contains(area);
-    }
+	[Inspected]
+	private int MaxLimitEntityCount =>
+		ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.MaxOutdoorCrowdEntityCount;
 
-    private int GetMaxEntities(AreaEnum area)
-    {
-      return IsLimit(area) ? MaxLimitEntityCount : int.MaxValue;
-    }
+	private bool IsLimit(AreaEnum area) {
+		return ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.LimitOutdoorAreaCrowdEntity
+			.Contains(area);
+	}
 
-    public bool CanCreateEntity(AreaEnum area) => limitEntityCount < GetMaxEntities(area);
+	private int GetMaxEntities(AreaEnum area) {
+		return IsLimit(area) ? MaxLimitEntityCount : int.MaxValue;
+	}
 
-    public void OnCreateEntity(AreaEnum area)
-    {
-      if (!CanCreateEntity(area))
-        Debug.LogError("Error crowd entity count, context : Outdoor");
-      if (IsLimit(area))
-        ++limitEntityCount;
-      else
-        ++entityCount;
-    }
+	public bool CanCreateEntity(AreaEnum area) {
+		return limitEntityCount < GetMaxEntities(area);
+	}
 
-    public void OnDestroyEntity(AreaEnum area)
-    {
-      if (IsLimit(area))
-        --limitEntityCount;
-      else
-        --entityCount;
-    }
-  }
+	public void OnCreateEntity(AreaEnum area) {
+		if (!CanCreateEntity(area))
+			Debug.LogError("Error crowd entity count, context : Outdoor");
+		if (IsLimit(area))
+			++limitEntityCount;
+		else
+			++entityCount;
+	}
+
+	public void OnDestroyEntity(AreaEnum area) {
+		if (IsLimit(area))
+			--limitEntityCount;
+		else
+			--entityCount;
+	}
 }

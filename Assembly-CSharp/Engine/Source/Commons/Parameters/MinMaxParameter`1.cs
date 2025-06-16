@@ -6,127 +6,114 @@ using Engine.Common.Services;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Commons.Parameters
-{
-  public abstract class MinMaxParameter<T> : 
-    ParameterListener,
-    IParameter<T>,
-    IParameter,
-    IComputeParameter
-    where T : struct
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [CopyableProxy]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterNameEnum name;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected T value;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected T minValue;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [CopyableProxy()]
-    [NeedSaveProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected T maxValue;
-    private T storedValue;
-    private bool mutableChecked;
+namespace Engine.Source.Commons.Parameters;
 
-    [Inspected(Header = true)]
-    public ParameterNameEnum Name => name;
+public abstract class MinMaxParameter<T> :
+	ParameterListener,
+	IParameter<T>,
+	IParameter,
+	IComputeParameter
+	where T : struct {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[CopyableProxy]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterNameEnum name;
 
-    [Inspected(Header = true, Mutable = true)]
-    public T Value
-    {
-      get => value;
-      set
-      {
-        CheckMutable();
-        this.value = value;
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected T value;
 
-    [Inspected]
-    public T BaseValue
-    {
-      get => value;
-      set
-      {
-        Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) + " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected T minValue;
 
-    [Inspected]
-    public T MinValue
-    {
-      get => minValue;
-      set
-      {
-        CheckMutable();
-        minValue = value;
-      }
-    }
+	[DataReadProxy]
+	[DataWriteProxy]
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[CopyableProxy()]
+	[NeedSaveProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected T maxValue;
 
-    [Inspected]
-    public T MaxValue
-    {
-      get => maxValue;
-      set
-      {
-        CheckMutable();
-        maxValue = value;
-      }
-    }
+	private T storedValue;
+	private bool mutableChecked;
 
-    [Inspected]
-    public bool Resetable => false;
+	[Inspected(Header = true)] public ParameterNameEnum Name => name;
 
-    public object ValueData => Value;
+	[Inspected(Header = true, Mutable = true)]
+	public T Value {
+		get => value;
+		set {
+			CheckMutable();
+			this.value = value;
+		}
+	}
 
-    private void CheckMutable()
-    {
-      if (mutableChecked)
-        return;
-      mutableChecked = true;
-      storedValue = value;
-      ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
-    }
+	[Inspected]
+	public T BaseValue {
+		get => value;
+		set => Debug.LogError("Parameter : " + name + " , type : " + TypeUtility.GetTypeName(GetType()) +
+		                      " , property : " + MethodBase.GetCurrentMethod().Name + " not supported setter");
+	}
 
-    protected abstract bool Compare(T a, T b);
+	[Inspected]
+	public T MinValue {
+		get => minValue;
+		set {
+			CheckMutable();
+			minValue = value;
+		}
+	}
 
-    protected virtual void Correct()
-    {
-    }
+	[Inspected]
+	public T MaxValue {
+		get => maxValue;
+		set {
+			CheckMutable();
+			maxValue = value;
+		}
+	}
 
-    void IComputeParameter.ResetResetable()
-    {
-    }
+	[Inspected] public bool Resetable => false;
 
-    void IComputeParameter.CorrectValue() => Correct();
+	public object ValueData => Value;
 
-    void IComputeParameter.ComputeEvent()
-    {
-      mutableChecked = false;
-      if (Compare(storedValue, value))
-        return;
-      ChangeParameterInvoke(this);
-    }
-  }
+	private void CheckMutable() {
+		if (mutableChecked)
+			return;
+		mutableChecked = true;
+		storedValue = value;
+		ServiceLocator.GetService<ParametersUpdater>().AddParameter(this);
+	}
+
+	protected abstract bool Compare(T a, T b);
+
+	protected virtual void Correct() { }
+
+	void IComputeParameter.ResetResetable() { }
+
+	void IComputeParameter.CorrectValue() {
+		Correct();
+	}
+
+	void IComputeParameter.ComputeEvent() {
+		mutableChecked = false;
+		if (Compare(storedValue, value))
+			return;
+		ChangeParameterInvoke(this);
+	}
 }

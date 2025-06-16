@@ -1,6 +1,3 @@
-﻿namespace Engine.Source.VisualEffects
-{
-  public interface IParameter
-  {
-  }
-}
+﻿namespace Engine.Source.VisualEffects;
+
+public interface IParameter { }

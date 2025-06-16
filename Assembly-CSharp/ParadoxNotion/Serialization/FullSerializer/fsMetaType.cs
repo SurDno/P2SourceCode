@@ -8,206 +8,181 @@ using System.Runtime.Serialization;
 using ParadoxNotion.Serialization.FullSerializer.Internal;
 using UnityEngine;
 
-namespace ParadoxNotion.Serialization.FullSerializer
-{
-  public class fsMetaType
-  {
-    private static Dictionary<fsConfig, Dictionary<Type, fsMetaType>> _configMetaTypes = new Dictionary<fsConfig, Dictionary<Type, fsMetaType>>();
-    private Func<object> Generator;
-    public Type ReflectedType;
-    private bool _hasEmittedAotData;
-    private bool? _hasDefaultConstructorCache;
-    private bool _isDefaultConstructorPublic;
+namespace ParadoxNotion.Serialization.FullSerializer;
 
-    public static fsMetaType Get(fsConfig config, Type type)
-    {
-      Dictionary<Type, fsMetaType> dictionary;
-      if (!_configMetaTypes.TryGetValue(config, out dictionary))
-        dictionary = _configMetaTypes[config] = new Dictionary<Type, fsMetaType>();
-      fsMetaType fsMetaType;
-      if (!dictionary.TryGetValue(type, out fsMetaType))
-      {
-        fsMetaType = new fsMetaType(config, type);
-        dictionary[type] = fsMetaType;
-      }
-      return fsMetaType;
-    }
+public class fsMetaType {
+	private static Dictionary<fsConfig, Dictionary<Type, fsMetaType>> _configMetaTypes = new();
+	private Func<object> Generator;
+	public Type ReflectedType;
+	private bool _hasEmittedAotData;
+	private bool? _hasDefaultConstructorCache;
+	private bool _isDefaultConstructorPublic;
 
-    public static void ClearCache()
-    {
-      _configMetaTypes = new Dictionary<fsConfig, Dictionary<Type, fsMetaType>>();
-    }
+	public static fsMetaType Get(fsConfig config, Type type) {
+		Dictionary<Type, fsMetaType> dictionary;
+		if (!_configMetaTypes.TryGetValue(config, out dictionary))
+			dictionary = _configMetaTypes[config] = new Dictionary<Type, fsMetaType>();
+		fsMetaType fsMetaType;
+		if (!dictionary.TryGetValue(type, out fsMetaType)) {
+			fsMetaType = new fsMetaType(config, type);
+			dictionary[type] = fsMetaType;
+		}
 
-    private fsMetaType(fsConfig config, Type reflectedType)
-    {
-      ReflectedType = reflectedType;
-      List<fsMetaProperty> properties = new List<fsMetaProperty>();
-      CollectProperties(config, properties, reflectedType);
-      Properties = properties.ToArray();
-      try
-      {
-        if (ReflectedType.Resolve().IsValueType || !(ReflectedType.GetDeclaredConstructor(fsPortableReflection.EmptyTypes) != null))
-          return;
-        Generator = ((Expression<Func<object>>) (() => Expression.New(reflectedType))).Compile();
-      }
-      catch
-      {
-        Generator = null;
-      }
-    }
+		return fsMetaType;
+	}
 
-    private static void CollectProperties(
-      fsConfig config,
-      List<fsMetaProperty> properties,
-      Type reflectedType)
-    {
-      bool flag = config.DefaultMemberSerialization == fsMemberSerialization.OptIn;
-      bool annotationFreeValue = config.DefaultMemberSerialization == fsMemberSerialization.OptOut;
-      fsObjectAttribute attribute = fsPortableReflection.GetAttribute<fsObjectAttribute>(reflectedType);
-      if (attribute != null)
-      {
-        flag = attribute.MemberSerialization == fsMemberSerialization.OptIn;
-        annotationFreeValue = attribute.MemberSerialization == fsMemberSerialization.OptOut;
-      }
-      MemberInfo[] declaredMembers = reflectedType.GetDeclaredMembers();
-      foreach (MemberInfo memberInfo in declaredMembers)
-      {
-        MemberInfo member = memberInfo;
-        if (!config.IgnoreSerializeAttributes.Any(t => fsPortableReflection.HasAttribute(member, t)))
-        {
-          PropertyInfo property = member as PropertyInfo;
-          FieldInfo field = member as FieldInfo;
-          if ((!(property == null) || !(field == null)) && (!flag || config.SerializeAttributes.Any(t => fsPortableReflection.HasAttribute(member, t))) && (!annotationFreeValue || !config.IgnoreSerializeAttributes.Any(t => fsPortableReflection.HasAttribute(member, t))))
-          {
-            if (property != null)
-            {
-              if (CanSerializeProperty(config, property, declaredMembers, annotationFreeValue))
-                properties.Add(new fsMetaProperty(config, property));
-            }
-            else if (field != null && CanSerializeField(config, field, annotationFreeValue))
-              properties.Add(new fsMetaProperty(config, field));
-          }
-        }
-      }
-      if (!(reflectedType.Resolve().BaseType != null))
-        return;
-      CollectProperties(config, properties, reflectedType.Resolve().BaseType);
-    }
+	public static void ClearCache() {
+		_configMetaTypes = new Dictionary<fsConfig, Dictionary<Type, fsMetaType>>();
+	}
 
-    private static bool IsAutoProperty(PropertyInfo property, MemberInfo[] members)
-    {
-      if (!property.CanWrite || !property.CanRead)
-        return false;
-      string str = "<" + property.Name + ">k__BackingField";
-      for (int index = 0; index < members.Length; ++index)
-      {
-        if (members[index].Name == str)
-          return true;
-      }
-      return false;
-    }
+	private fsMetaType(fsConfig config, Type reflectedType) {
+		ReflectedType = reflectedType;
+		var properties = new List<fsMetaProperty>();
+		CollectProperties(config, properties, reflectedType);
+		Properties = properties.ToArray();
+		try {
+			if (ReflectedType.Resolve().IsValueType ||
+			    !(ReflectedType.GetDeclaredConstructor(fsPortableReflection.EmptyTypes) != null))
+				return;
+			Generator = ((Expression<Func<object>>)(() => Expression.New(reflectedType))).Compile();
+		} catch {
+			Generator = null;
+		}
+	}
 
-    private static bool CanSerializeProperty(
-      fsConfig config,
-      PropertyInfo property,
-      MemberInfo[] members,
-      bool annotationFreeValue)
-    {
-      if (typeof (Delegate).IsAssignableFrom(property.PropertyType))
-        return false;
-      MethodInfo getMethod = property.GetGetMethod(false);
-      MethodInfo setMethod = property.GetSetMethod(false);
-      if (getMethod != null && getMethod.IsStatic || setMethod != null && setMethod.IsStatic || property.GetIndexParameters().Length != 0)
-        return false;
-      if (config.SerializeAttributes.Any(t => fsPortableReflection.HasAttribute(property, t)))
-        return true;
-      if (!property.CanRead || !property.CanWrite)
-        return false;
-      return (config.SerializeNonAutoProperties || IsAutoProperty(property, members)) && getMethod != null && (config.SerializeNonPublicSetProperties || setMethod != null) || annotationFreeValue;
-    }
+	private static void CollectProperties(
+		fsConfig config,
+		List<fsMetaProperty> properties,
+		Type reflectedType) {
+		var flag = config.DefaultMemberSerialization == fsMemberSerialization.OptIn;
+		var annotationFreeValue = config.DefaultMemberSerialization == fsMemberSerialization.OptOut;
+		var attribute = fsPortableReflection.GetAttribute<fsObjectAttribute>(reflectedType);
+		if (attribute != null) {
+			flag = attribute.MemberSerialization == fsMemberSerialization.OptIn;
+			annotationFreeValue = attribute.MemberSerialization == fsMemberSerialization.OptOut;
+		}
 
-    private static bool CanSerializeField(
-      fsConfig config,
-      FieldInfo field,
-      bool annotationFreeValue)
-    {
-      return !typeof (Delegate).IsAssignableFrom(field.FieldType) && !field.IsDefined(typeof (CompilerGeneratedAttribute), false) && !field.IsStatic && (config.SerializeAttributes.Any(t => fsPortableReflection.HasAttribute(field, t)) || annotationFreeValue || field.IsPublic);
-    }
+		var declaredMembers = reflectedType.GetDeclaredMembers();
+		foreach (var memberInfo in declaredMembers) {
+			var member = memberInfo;
+			if (!config.IgnoreSerializeAttributes.Any(t => fsPortableReflection.HasAttribute(member, t))) {
+				var property = member as PropertyInfo;
+				var field = member as FieldInfo;
+				if ((!(property == null) || !(field == null)) &&
+				    (!flag || config.SerializeAttributes.Any(t => fsPortableReflection.HasAttribute(member, t))) &&
+				    (!annotationFreeValue ||
+				     !config.IgnoreSerializeAttributes.Any(t => fsPortableReflection.HasAttribute(member, t)))) {
+					if (property != null) {
+						if (CanSerializeProperty(config, property, declaredMembers, annotationFreeValue))
+							properties.Add(new fsMetaProperty(config, property));
+					} else if (field != null && CanSerializeField(config, field, annotationFreeValue))
+						properties.Add(new fsMetaProperty(config, field));
+				}
+			}
+		}
 
-    public bool EmitAotData()
-    {
-      if (_hasEmittedAotData)
-        return false;
-      _hasEmittedAotData = true;
-      for (int index = 0; index < Properties.Length; ++index)
-      {
-        if (!Properties[index].IsPublic)
-          return false;
-      }
-      if (!HasDefaultConstructor)
-        return false;
-      fsAotCompilationManager.AddAotCompilation(ReflectedType, Properties, _isDefaultConstructorPublic);
-      return true;
-    }
+		if (!(reflectedType.Resolve().BaseType != null))
+			return;
+		CollectProperties(config, properties, reflectedType.Resolve().BaseType);
+	}
 
-    public fsMetaProperty[] Properties { get; private set; }
+	private static bool IsAutoProperty(PropertyInfo property, MemberInfo[] members) {
+		if (!property.CanWrite || !property.CanRead)
+			return false;
+		var str = "<" + property.Name + ">k__BackingField";
+		for (var index = 0; index < members.Length; ++index)
+			if (members[index].Name == str)
+				return true;
+		return false;
+	}
 
-    public bool HasDefaultConstructor
-    {
-      get
-      {
-        if (!_hasDefaultConstructorCache.HasValue)
-        {
-          if (ReflectedType.Resolve().IsArray)
-          {
-            _hasDefaultConstructorCache = true;
-            _isDefaultConstructorPublic = true;
-          }
-          else if (ReflectedType.Resolve().IsValueType)
-          {
-            _hasDefaultConstructorCache = true;
-            _isDefaultConstructorPublic = true;
-          }
-          else
-          {
-            ConstructorInfo declaredConstructor = ReflectedType.GetDeclaredConstructor(fsPortableReflection.EmptyTypes);
-            _hasDefaultConstructorCache = declaredConstructor != null;
-            if (declaredConstructor != null)
-              _isDefaultConstructorPublic = declaredConstructor.IsPublic;
-          }
-        }
-        return _hasDefaultConstructorCache.Value;
-      }
-    }
+	private static bool CanSerializeProperty(
+		fsConfig config,
+		PropertyInfo property,
+		MemberInfo[] members,
+		bool annotationFreeValue) {
+		if (typeof(Delegate).IsAssignableFrom(property.PropertyType))
+			return false;
+		var getMethod = property.GetGetMethod(false);
+		var setMethod = property.GetSetMethod(false);
+		if ((getMethod != null && getMethod.IsStatic) || (setMethod != null && setMethod.IsStatic) ||
+		    property.GetIndexParameters().Length != 0)
+			return false;
+		if (config.SerializeAttributes.Any(t => fsPortableReflection.HasAttribute(property, t)))
+			return true;
+		if (!property.CanRead || !property.CanWrite)
+			return false;
+		return ((config.SerializeNonAutoProperties || IsAutoProperty(property, members)) && getMethod != null &&
+		        (config.SerializeNonPublicSetProperties || setMethod != null)) || annotationFreeValue;
+	}
 
-    public object CreateInstance()
-    {
-      if (ReflectedType.Resolve().IsInterface || ReflectedType.Resolve().IsAbstract)
-        throw new Exception("Cannot create an instance of an interface or abstract type for " + ReflectedType);
-      if (typeof (ScriptableObject).IsAssignableFrom(ReflectedType))
-        return ScriptableObject.CreateInstance(ReflectedType);
-      if (typeof (string) == ReflectedType)
-        return string.Empty;
-      if (!HasDefaultConstructor)
-        return FormatterServices.GetSafeUninitializedObject(ReflectedType);
-      if (ReflectedType.Resolve().IsArray)
-        return Array.CreateInstance(ReflectedType.GetElementType(), 0);
-      try
-      {
-        return Generator != null ? Generator() : Activator.CreateInstance(ReflectedType, true);
-      }
-      catch (MissingMethodException ex)
-      {
-        throw new InvalidOperationException("Unable to create instance of " + ReflectedType + "; there is no default constructor", ex);
-      }
-      catch (TargetInvocationException ex)
-      {
-        throw new InvalidOperationException("Constructor of " + ReflectedType + " threw an exception when creating an instance", ex);
-      }
-      catch (MemberAccessException ex)
-      {
-        throw new InvalidOperationException("Unable to access constructor of " + ReflectedType, ex);
-      }
-    }
-  }
+	private static bool CanSerializeField(
+		fsConfig config,
+		FieldInfo field,
+		bool annotationFreeValue) {
+		return !typeof(Delegate).IsAssignableFrom(field.FieldType) &&
+		       !field.IsDefined(typeof(CompilerGeneratedAttribute), false) && !field.IsStatic &&
+		       (config.SerializeAttributes.Any(t => fsPortableReflection.HasAttribute(field, t)) ||
+		        annotationFreeValue || field.IsPublic);
+	}
+
+	public bool EmitAotData() {
+		if (_hasEmittedAotData)
+			return false;
+		_hasEmittedAotData = true;
+		for (var index = 0; index < Properties.Length; ++index)
+			if (!Properties[index].IsPublic)
+				return false;
+		if (!HasDefaultConstructor)
+			return false;
+		fsAotCompilationManager.AddAotCompilation(ReflectedType, Properties, _isDefaultConstructorPublic);
+		return true;
+	}
+
+	public fsMetaProperty[] Properties { get; private set; }
+
+	public bool HasDefaultConstructor {
+		get {
+			if (!_hasDefaultConstructorCache.HasValue) {
+				if (ReflectedType.Resolve().IsArray) {
+					_hasDefaultConstructorCache = true;
+					_isDefaultConstructorPublic = true;
+				} else if (ReflectedType.Resolve().IsValueType) {
+					_hasDefaultConstructorCache = true;
+					_isDefaultConstructorPublic = true;
+				} else {
+					var declaredConstructor = ReflectedType.GetDeclaredConstructor(fsPortableReflection.EmptyTypes);
+					_hasDefaultConstructorCache = declaredConstructor != null;
+					if (declaredConstructor != null)
+						_isDefaultConstructorPublic = declaredConstructor.IsPublic;
+				}
+			}
+
+			return _hasDefaultConstructorCache.Value;
+		}
+	}
+
+	public object CreateInstance() {
+		if (ReflectedType.Resolve().IsInterface || ReflectedType.Resolve().IsAbstract)
+			throw new Exception("Cannot create an instance of an interface or abstract type for " + ReflectedType);
+		if (typeof(ScriptableObject).IsAssignableFrom(ReflectedType))
+			return ScriptableObject.CreateInstance(ReflectedType);
+		if (typeof(string) == ReflectedType)
+			return string.Empty;
+		if (!HasDefaultConstructor)
+			return FormatterServices.GetSafeUninitializedObject(ReflectedType);
+		if (ReflectedType.Resolve().IsArray)
+			return Array.CreateInstance(ReflectedType.GetElementType(), 0);
+		try {
+			return Generator != null ? Generator() : Activator.CreateInstance(ReflectedType, true);
+		} catch (MissingMethodException ex) {
+			throw new InvalidOperationException(
+				"Unable to create instance of " + ReflectedType + "; there is no default constructor", ex);
+		} catch (TargetInvocationException ex) {
+			throw new InvalidOperationException(
+				"Constructor of " + ReflectedType + " threw an exception when creating an instance", ex);
+		} catch (MemberAccessException ex) {
+			throw new InvalidOperationException("Unable to access constructor of " + ReflectedType, ex);
+		}
+	}
 }

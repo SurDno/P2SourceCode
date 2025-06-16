@@ -1,30 +1,28 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface ISpeech : 
-    IState,
-    IGraphObject,
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable,
-    ILocalContext
-  {
-    IGameString Text { get; }
+namespace PLVirtualMachine.Common;
 
-    IParam TextParam { get; }
+public interface ISpeech :
+	IState,
+	IGraphObject,
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable,
+	ILocalContext {
+	IGameString Text { get; }
 
-    bool OnlyOnce { get; }
+	IParam TextParam { get; }
 
-    bool IsTrade { get; }
+	bool OnlyOnce { get; }
 
-    List<ISpeechReply> Replies { get; }
+	bool IsTrade { get; }
 
-    IObjRef Author { get; }
+	List<ISpeechReply> Replies { get; }
 
-    IActionLine ActionLine { get; }
-  }
+	IObjRef Author { get; }
+
+	IActionLine ActionLine { get; }
 }

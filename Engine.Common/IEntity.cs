@@ -1,30 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Engine.Common
-{
-  public interface IEntity : IObject, IDisposable
-  {
-    string Context { get; set; }
+namespace Engine.Common;
 
-    bool IsDisposed { get; }
+public interface IEntity : IObject, IDisposable {
+	string Context { get; set; }
 
-    bool IsEnabled { get; set; }
+	bool IsDisposed { get; }
 
-    bool IsEnabledInHierarchy { get; }
+	bool IsEnabled { get; set; }
 
-    bool DontSave { get; }
+	bool IsEnabledInHierarchy { get; }
 
-    string HierarchyPath { get; }
+	bool DontSave { get; }
 
-    IEnumerable<IComponent> Components { get; }
+	string HierarchyPath { get; }
 
-    T GetComponent<T>() where T : class, IComponent;
+	IEnumerable<IComponent> Components { get; }
 
-    IComponent GetComponent(Type type);
+	T GetComponent<T>() where T : class, IComponent;
 
-    IEntity Parent { get; }
+	IComponent GetComponent(Type type);
 
-    IEnumerable<IEntity> Childs { get; }
-  }
+	IEntity Parent { get; }
+
+	IEnumerable<IEntity> Childs { get; }
 }

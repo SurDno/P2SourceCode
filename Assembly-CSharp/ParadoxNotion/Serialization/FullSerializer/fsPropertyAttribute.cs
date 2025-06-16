@@ -1,18 +1,16 @@
 ﻿using System;
 
-namespace ParadoxNotion.Serialization.FullSerializer
-{
-  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
-  public sealed class fsPropertyAttribute : Attribute
-  {
-    public string Name;
-    public Type Converter;
+namespace ParadoxNotion.Serialization.FullSerializer;
 
-    public fsPropertyAttribute()
-      : this(string.Empty)
-    {
-    }
+[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
+public sealed class fsPropertyAttribute : Attribute {
+	public string Name;
+	public Type Converter;
 
-    public fsPropertyAttribute(string name) => Name = name;
-  }
+	public fsPropertyAttribute()
+		: this(string.Empty) { }
+
+	public fsPropertyAttribute(string name) {
+		Name = name;
+	}
 }

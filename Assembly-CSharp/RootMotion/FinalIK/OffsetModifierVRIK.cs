@@ -1,46 +1,44 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace RootMotion.FinalIK
-{
-  public abstract class OffsetModifierVRIK : MonoBehaviour
-  {
-    [Tooltip("The master weight")]
-    public float weight = 1f;
-    [Tooltip("Reference to the VRIK component")]
-    public VRIK ik;
-    private float lastTime;
+namespace RootMotion.FinalIK;
 
-    protected float deltaTime => Time.time - lastTime;
+public abstract class OffsetModifierVRIK : MonoBehaviour {
+	[Tooltip("The master weight")] public float weight = 1f;
 
-    protected abstract void OnModifyOffset();
+	[Tooltip("Reference to the VRIK component")]
+	public VRIK ik;
 
-    protected virtual void Start() => StartCoroutine(Initiate());
+	private float lastTime;
 
-    private IEnumerator Initiate()
-    {
-      while (ik == null)
-        yield return null;
-      IKSolverVR solver = ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate + ModifyOffset;
-      lastTime = Time.time;
-    }
+	protected float deltaTime => Time.time - lastTime;
 
-    private void ModifyOffset()
-    {
-      if (!enabled || weight <= 0.0 || deltaTime <= 0.0 || ik == null)
-        return;
-      weight = Mathf.Clamp(weight, 0.0f, 1f);
-      OnModifyOffset();
-      lastTime = Time.time;
-    }
+	protected abstract void OnModifyOffset();
 
-    protected virtual void OnDestroy()
-    {
-      if (!(ik != null))
-        return;
-      IKSolverVR solver = ik.solver;
-      solver.OnPreUpdate = solver.OnPreUpdate - ModifyOffset;
-    }
-  }
+	protected virtual void Start() {
+		StartCoroutine(Initiate());
+	}
+
+	private IEnumerator Initiate() {
+		while (ik == null)
+			yield return null;
+		var solver = ik.solver;
+		solver.OnPreUpdate = solver.OnPreUpdate + ModifyOffset;
+		lastTime = Time.time;
+	}
+
+	private void ModifyOffset() {
+		if (!enabled || weight <= 0.0 || deltaTime <= 0.0 || ik == null)
+			return;
+		weight = Mathf.Clamp(weight, 0.0f, 1f);
+		OnModifyOffset();
+		lastTime = Time.time;
+	}
+
+	protected virtual void OnDestroy() {
+		if (!(ik != null))
+			return;
+		var solver = ik.solver;
+		solver.OnPreUpdate = solver.OnPreUpdate - ModifyOffset;
+	}
 }

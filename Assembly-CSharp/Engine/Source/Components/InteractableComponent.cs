@@ -20,136 +20,121 @@ using Engine.Source.Settings.External;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (IInteractableComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave | TypeEnum.StateLoad)]
-  public class InteractableComponent : EngineComponent, IInteractableComponent, IComponent, INeedSave
-  {
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [DataReadProxy]
-    [DataWriteProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy]
-    protected bool isEnabled = true;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy()]
-    protected List<InteractItem> items = new List<InteractItem>();
-    private static List<GameActionType> occupiedTypes = new List<GameActionType>();
-    private Coroutine showSmallLoadingCoroutine;
-    private bool gameWasPausedAtBeginInteract;
+namespace Engine.Source.Components;
 
-    [Inspected(Mutable = true)]
-    public bool IsEnabled
-    {
-      get => isEnabled;
-      set
-      {
-        isEnabled = value;
-        OnChangeEnabled();
-      }
-    }
+[Factory(typeof(IInteractableComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite | TypeEnum.StateSave |
+               TypeEnum.StateLoad)]
+public class InteractableComponent : EngineComponent, IInteractableComponent, IComponent, INeedSave {
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[DataReadProxy]
+	[DataWriteProxy]
+	[Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	[CopyableProxy]
+	protected bool isEnabled = true;
 
-    [StateSaveProxy]
-    [StateLoadProxy]
-    [Inspected]
-    public LocalizedText Title { get; set; }
+	[DataReadProxy] [DataWriteProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)] [CopyableProxy()]
+	protected List<InteractItem> items = new();
 
-    public List<InteractItem> Items => items;
+	private static List<GameActionType> occupiedTypes = new();
+	private Coroutine showSmallLoadingCoroutine;
+	private bool gameWasPausedAtBeginInteract;
 
-    public bool NeedSave
-    {
-      get
-      {
-        if (!(Owner.Template is IEntity template))
-        {
-          Debug.LogError("Template not found, owner : " + Owner.GetInfo());
-          return true;
-        }
-        InteractableComponent component = template.GetComponent<InteractableComponent>();
-        if (component == null)
-        {
-          Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
-          return true;
-        }
-        return isEnabled != component.isEnabled || Title != component.Title;
-      }
-    }
+	[Inspected(Mutable = true)]
+	public bool IsEnabled {
+		get => isEnabled;
+		set {
+			isEnabled = value;
+			OnChangeEnabled();
+		}
+	}
 
-    public event Action<IEntity, IInteractableComponent, IInteractItem> BeginInteractEvent;
+	[StateSaveProxy]
+	[StateLoadProxy]
+	[Inspected]
+	public LocalizedText Title { get; set; }
 
-    public event Action<IEntity, IInteractableComponent, IInteractItem> EndInteractEvent;
+	public List<InteractItem> Items => items;
 
-    public IEnumerable<InteractItemInfo> GetValidateItems(IEntity owner)
-    {
-      IEntity player = ServiceLocator.GetService<ISimulation>().Player;
-      ILocationItemComponent playerLocationItem = player.GetComponent<ILocationItemComponent>();
-      ILocationItemComponent thisLocationItem = Owner.GetComponent<ILocationItemComponent>();
-      foreach (InteractItem item in items)
-      {
-        ValidateResult result = InteractValidationService.Validate(this, item);
-        yield return new InteractItemInfo {
-          Item = item,
-          Invalid = !result.Result,
-          Reason = result.Reason,
-          Crime = PlayerInteractableComponentUtility.GetInteractCriminal(this, item)
-        };
-        result = new ValidateResult();
-      }
-    }
+	public bool NeedSave {
+		get {
+			if (!(Owner.Template is IEntity template)) {
+				Debug.LogError("Template not found, owner : " + Owner.GetInfo());
+				return true;
+			}
 
-    private IEnumerator ShowSmallLoading()
-    {
-      yield return new WaitForSeconds(0.05f);
-      ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(true);
-      showSmallLoadingCoroutine = null;
-    }
+			var component = template.GetComponent<InteractableComponent>();
+			if (component == null) {
+				Debug.LogError(GetType().Name + " not found, owner : " + Owner.GetInfo());
+				return true;
+			}
 
-    public void BeginInteract(IEntity player, InteractType type)
-    {
-      InteractItem item = items.FirstOrDefault(o => o.Type == type);
-      if (item == null)
-        return;
-      FireBeginInteract(player, item);
-      UnityAsset<GameObject> blueprint = item.Blueprint;
-      if (item.Blueprint.Id == Guid.Empty)
-        FireEndInteract(player, item);
-      else if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.InteractableAsyncBlueprintStart)
-      {
-        showSmallLoadingCoroutine = CoroutineService.Instance.StartCoroutine(ShowSmallLoading());
-        gameWasPausedAtBeginInteract = InstanceByRequest<EngineApplication>.Instance.IsPaused;
-        InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
-        BlueprintServiceUtility.StartAsync(item.Blueprint, Owner, (Action) (() =>
-        {
-          if (showSmallLoadingCoroutine != null)
-            CoroutineService.Instance.StopCoroutine(showSmallLoadingCoroutine);
-          else
-            ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(false);
-          InstanceByRequest<EngineApplication>.Instance.IsPaused = gameWasPausedAtBeginInteract;
-        }), (Action) (() => FireEndInteract(player, item)), true, Owner.GetInfo());
-      }
-      else
-        BlueprintServiceUtility.Start(item.Blueprint.Value, Owner, (Action) (() => FireEndInteract(player, item)), Owner.GetInfo());
-    }
+			return isEnabled != component.isEnabled || Title != component.Title;
+		}
+	}
 
-    private void FireBeginInteract(IEntity player, InteractItem item)
-    {
-      Action<IEntity, IInteractableComponent, IInteractItem> beginInteractEvent = BeginInteractEvent;
-      if (beginInteractEvent != null)
-        beginInteractEvent(player, this, item);
-      player.GetComponent<ControllerComponent>()?.FireBeginInteract(this, item);
-    }
+	public event Action<IEntity, IInteractableComponent, IInteractItem> BeginInteractEvent;
 
-    private void FireEndInteract(IEntity player, InteractItem item)
-    {
-      Action<IEntity, IInteractableComponent, IInteractItem> endInteractEvent = EndInteractEvent;
-      if (endInteractEvent != null)
-        endInteractEvent(player, this, item);
-      player.GetComponent<ControllerComponent>()?.FireEndInteract(this, item);
-    }
-  }
+	public event Action<IEntity, IInteractableComponent, IInteractItem> EndInteractEvent;
+
+	public IEnumerable<InteractItemInfo> GetValidateItems(IEntity owner) {
+		var player = ServiceLocator.GetService<ISimulation>().Player;
+		var playerLocationItem = player.GetComponent<ILocationItemComponent>();
+		var thisLocationItem = Owner.GetComponent<ILocationItemComponent>();
+		foreach (var item in items) {
+			var result = InteractValidationService.Validate(this, item);
+			yield return new InteractItemInfo {
+				Item = item,
+				Invalid = !result.Result,
+				Reason = result.Reason,
+				Crime = PlayerInteractableComponentUtility.GetInteractCriminal(this, item)
+			};
+			result = new ValidateResult();
+		}
+	}
+
+	private IEnumerator ShowSmallLoading() {
+		yield return new WaitForSeconds(0.05f);
+		ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(true);
+		showSmallLoadingCoroutine = null;
+	}
+
+	public void BeginInteract(IEntity player, InteractType type) {
+		var item = items.FirstOrDefault(o => o.Type == type);
+		if (item == null)
+			return;
+		FireBeginInteract(player, item);
+		var blueprint = item.Blueprint;
+		if (item.Blueprint.Id == Guid.Empty)
+			FireEndInteract(player, item);
+		else if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.InteractableAsyncBlueprintStart) {
+			showSmallLoadingCoroutine = CoroutineService.Instance.StartCoroutine(ShowSmallLoading());
+			gameWasPausedAtBeginInteract = InstanceByRequest<EngineApplication>.Instance.IsPaused;
+			InstanceByRequest<EngineApplication>.Instance.IsPaused = true;
+			BlueprintServiceUtility.StartAsync(item.Blueprint, Owner, (Action)(() => {
+				if (showSmallLoadingCoroutine != null)
+					CoroutineService.Instance.StopCoroutine(showSmallLoadingCoroutine);
+				else
+					ServiceLocator.GetService<UIService>().SmallLoading.gameObject.SetActive(false);
+				InstanceByRequest<EngineApplication>.Instance.IsPaused = gameWasPausedAtBeginInteract;
+			}), (Action)(() => FireEndInteract(player, item)), true, Owner.GetInfo());
+		} else
+			BlueprintServiceUtility.Start(item.Blueprint.Value, Owner, (Action)(() => FireEndInteract(player, item)),
+				Owner.GetInfo());
+	}
+
+	private void FireBeginInteract(IEntity player, InteractItem item) {
+		var beginInteractEvent = BeginInteractEvent;
+		if (beginInteractEvent != null)
+			beginInteractEvent(player, this, item);
+		player.GetComponent<ControllerComponent>()?.FireBeginInteract(this, item);
+	}
+
+	private void FireEndInteract(IEntity player, InteractItem item) {
+		var endInteractEvent = EndInteractEvent;
+		if (endInteractEvent != null)
+			endInteractEvent(player, this, item);
+		player.GetComponent<ControllerComponent>()?.FireEndInteract(this, item);
+	}
 }

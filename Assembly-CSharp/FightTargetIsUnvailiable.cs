@@ -20,85 +20,73 @@ using UnityEngine;
 [TaskCategory("Pathologic")]
 [Factory]
 [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-[FactoryProxy(typeof (FightTargetIsUnvailiable))]
-public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead
-{
-  [DataReadProxy]
-  [DataWriteProxy]
-  [CopyableProxy()]
-  [SerializeField]
-  public SharedTransform Target;
-  protected DetectorComponent detector;
-  protected IEntity entity;
+[FactoryProxy(typeof(FightTargetIsUnvailiable))]
+public class FightTargetIsUnvailiable : Conditional, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public SharedTransform Target;
 
-  public override void OnAwake()
-  {
-    entity = EntityUtility.GetEntity(gameObject);
-    if (entity == null)
-    {
-      Debug.LogWarning(gameObject.name + " : entity not found, method : " + GetType().Name + ":" + MethodBase.GetCurrentMethod().Name, gameObject);
-    }
-    else
-    {
-      detector = entity.GetComponent<DetectorComponent>();
-      if (detector != null)
-        return;
-      Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", gameObject.name, typeof (IDetectorComponent).Name);
-    }
-  }
+	protected DetectorComponent detector;
+	protected IEntity entity;
 
-  public override TaskStatus OnUpdate()
-  {
-    if (Target.Value == null)
-      return TaskStatus.Success;
-    if (entity == null || detector == null)
-      return TaskStatus.Failure;
-    if (Target.Value == gameObject.transform || !Target.Value.gameObject.activeSelf)
-      return TaskStatus.Success;
-    if (gameObject.GetComponent<EnemyBase>().IsFaint)
-      return TaskStatus.Failure;
-    List<IEntity> entityList = new List<IEntity>();
-    foreach (IDetectableComponent detectable in detector.Visible)
-    {
-      if (DetectableIsTarget(detectable))
-        return TaskStatus.Failure;
-    }
-    foreach (IDetectableComponent detectable in detector.Hearing)
-    {
-      if (DetectableIsTarget(detectable))
-        return TaskStatus.Failure;
-    }
-    return TaskStatus.Success;
-  }
+	public override void OnAwake() {
+		entity = EntityUtility.GetEntity(gameObject);
+		if (entity == null)
+			Debug.LogWarning(
+				gameObject.name + " : entity not found, method : " + GetType().Name + ":" +
+				MethodBase.GetCurrentMethod().Name, gameObject);
+		else {
+			detector = entity.GetComponent<DetectorComponent>();
+			if (detector != null)
+				return;
+			Debug.LogWarningFormat("{0}: doesn't contain {1} engine component", gameObject.name,
+				typeof(IDetectorComponent).Name);
+		}
+	}
 
-  private bool DetectableIsTarget(IDetectableComponent detectable)
-  {
-    if (detectable == null || detectable.IsDisposed)
-      return false;
-    IEntity owner = detectable.Owner;
-    if (owner == null)
-      return false;
-    GameObject gameObject = ((IEntityView) owner).GameObject;
-    return !(gameObject == null) && gameObject.transform == Target.Value;
-  }
+	public override TaskStatus OnUpdate() {
+		if (Target.Value == null)
+			return TaskStatus.Success;
+		if (entity == null || detector == null)
+			return TaskStatus.Failure;
+		if (Target.Value == gameObject.transform || !Target.Value.gameObject.activeSelf)
+			return TaskStatus.Success;
+		if (gameObject.GetComponent<EnemyBase>().IsFaint)
+			return TaskStatus.Failure;
+		var entityList = new List<IEntity>();
+		foreach (var detectable in detector.Visible)
+			if (DetectableIsTarget(detectable))
+				return TaskStatus.Failure;
+		foreach (var detectable in detector.Hearing)
+			if (DetectableIsTarget(detectable))
+				return TaskStatus.Failure;
+		return TaskStatus.Success;
+	}
 
-  public void DataWrite(IDataWriter writer)
-  {
-    DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-    DefaultDataWriteUtility.Write(writer, "Id", id);
-    DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-    DefaultDataWriteUtility.Write(writer, "Instant", instant);
-    DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-    BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
-  }
+	private bool DetectableIsTarget(IDetectableComponent detectable) {
+		if (detectable == null || detectable.IsDisposed)
+			return false;
+		var owner = detectable.Owner;
+		if (owner == null)
+			return false;
+		var gameObject = ((IEntityView)owner).GameObject;
+		return !(gameObject == null) && gameObject.transform == Target.Value;
+	}
 
-  public void DataRead(IDataReader reader, Type type)
-  {
-    nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-    id = DefaultDataReadUtility.Read(reader, "Id", id);
-    friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-    instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-    disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-    Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		BehaviorTreeDataWriteUtility.WriteShared(writer, "Target", Target);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		Target = BehaviorTreeDataReadUtility.ReadShared(reader, "Target", Target);
+	}
 }

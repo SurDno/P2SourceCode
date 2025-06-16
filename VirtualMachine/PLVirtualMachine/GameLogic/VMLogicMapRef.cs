@@ -3,33 +3,28 @@ using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.Data;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.GameLogic
-{
-  [VMType("ILogicMapRef")]
-  [VMFactory(typeof (ILogicMapRef))]
-  public class VMLogicMapRef : BaseRef, ILogicMapRef, IRef, IVariable, INamed, IVMStringSerializable
-  {
-    public void Initialize(ILogicMap logicMap) => LoadStaticInstance(logicMap);
+namespace PLVirtualMachine.GameLogic;
 
-    public override EContextVariableCategory Category
-    {
-      get => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOGIC_MAP;
-    }
+[VMType("ILogicMapRef")]
+[VMFactory(typeof(ILogicMapRef))]
+public class VMLogicMapRef : BaseRef, ILogicMapRef, IRef, IVariable, INamed, IVMStringSerializable {
+	public void Initialize(ILogicMap logicMap) {
+		LoadStaticInstance(logicMap);
+	}
 
-    public override VMType Type => new VMType(typeof (ILogicMapRef));
+	public override EContextVariableCategory Category => EContextVariableCategory.CONTEXT_VARIABLE_CATEGORY_LOGIC_MAP;
 
-    public ILogicMap LogicMap
-    {
-      get
-      {
-        if (StaticInstance == null && BaseGuid > 0UL)
-          LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
-        return (ILogicMap) StaticInstance;
-      }
-    }
+	public override VMType Type => new(typeof(ILogicMapRef));
 
-    public override bool Empty => LogicMap == null && base.Empty;
+	public ILogicMap LogicMap {
+		get {
+			if (StaticInstance == null && BaseGuid > 0UL)
+				LoadStaticInstance(IStaticDataContainer.StaticDataContainer.GetObjectByGuid(BaseGuid));
+			return (ILogicMap)StaticInstance;
+		}
+	}
 
-    protected override Type NeedInstanceType => typeof (ILogicMap);
-  }
+	public override bool Empty => LogicMap == null && base.Empty;
+
+	protected override Type NeedInstanceType => typeof(ILogicMap);
 }

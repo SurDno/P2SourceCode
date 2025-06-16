@@ -1,40 +1,35 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Controls
-{
-  public class HideableViewEvents : HideableView
-  {
-    [SerializeField]
-    private EventView trueEvent;
-    [SerializeField]
-    private EventView falseEvent;
-    private Coroutine coroutine;
+namespace Engine.Impl.UI.Controls;
 
-    protected override void ApplyVisibility()
-    {
-      Cancel();
-      if (!gameObject.activeInHierarchy)
-        return;
-      coroutine = StartCoroutine(InvokeEvent(Visible));
-    }
+public class HideableViewEvents : HideableView {
+	[SerializeField] private EventView trueEvent;
+	[SerializeField] private EventView falseEvent;
+	private Coroutine coroutine;
 
-    private void Cancel()
-    {
-      if (coroutine == null)
-        return;
-      StopCoroutine(coroutine);
-    }
+	protected override void ApplyVisibility() {
+		Cancel();
+		if (!gameObject.activeInHierarchy)
+			return;
+		coroutine = StartCoroutine(InvokeEvent(Visible));
+	}
 
-    private IEnumerator InvokeEvent(bool value)
-    {
-      yield return new WaitForEndOfFrame();
-      if (value)
-        trueEvent?.Invoke();
-      else
-        falseEvent?.Invoke();
-    }
+	private void Cancel() {
+		if (coroutine == null)
+			return;
+		StopCoroutine(coroutine);
+	}
 
-    public override void SkipAnimation() => Cancel();
-  }
+	private IEnumerator InvokeEvent(bool value) {
+		yield return new WaitForEndOfFrame();
+		if (value)
+			trueEvent?.Invoke();
+		else
+			falseEvent?.Invoke();
+	}
+
+	public override void SkipAnimation() {
+		Cancel();
+	}
 }

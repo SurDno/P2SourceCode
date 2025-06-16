@@ -1,11 +1,9 @@
 ﻿using Engine.Common;
 
-namespace Engine.Source.Inventory
-{
-  public interface IInventoryGridBase : IObject
-  {
-    int Rows { get; set; }
+namespace Engine.Source.Inventory;
 
-    int Columns { get; set; }
-  }
+public interface IInventoryGridBase : IObject {
+	int Rows { get; set; }
+
+	int Columns { get; set; }
 }

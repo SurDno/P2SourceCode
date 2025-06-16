@@ -1,9 +1,6 @@
 ﻿using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class FloatParameterNode : ParameterNode<float>
-  {
-  }
-}
+namespace Engine.Source.Blueprints;
+
+[Category("Engine")]
+public class FloatParameterNode : ParameterNode<float> { }

@@ -1,32 +1,30 @@
 ﻿using System.Collections.Generic;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IBlueprint : 
-    IGameObjectContext,
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable,
-    IContext,
-    ILogicObject
-  {
-    List<IBlueprint> BaseBlueprints { get; }
+namespace PLVirtualMachine.Common;
 
-    List<BaseFunction> Functions { get; }
+public interface IBlueprint :
+	IGameObjectContext,
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable,
+	IContext,
+	ILogicObject {
+	List<IBlueprint> BaseBlueprints { get; }
 
-    IFiniteStateMachine StateGraph { get; }
+	List<BaseFunction> Functions { get; }
 
-    Dictionary<string, IFunctionalComponent> FunctionalComponents { get; }
+	IFiniteStateMachine StateGraph { get; }
 
-    bool TryGetProperty(string name, out IParam param);
+	Dictionary<string, IFunctionalComponent> FunctionalComponents { get; }
 
-    IParam GetProperty(string componentName, string propertyName);
+	bool TryGetProperty(string name, out IParam param);
 
-    bool IsDerivedFrom(ulong blueprintGuid, bool withSelf = false);
+	IParam GetProperty(string componentName, string propertyName);
 
-    new IVariable GetSelf();
-  }
+	bool IsDerivedFrom(ulong blueprintGuid, bool withSelf = false);
+
+	new IVariable GetSelf();
 }

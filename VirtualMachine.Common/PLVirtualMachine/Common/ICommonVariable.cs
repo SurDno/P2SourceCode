@@ -1,42 +1,40 @@
 ﻿using System.Collections.Generic;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  public interface ICommonVariable
-  {
-    void Initialise(string contextData, string variableData);
+namespace PLVirtualMachine.Common;
 
-    void Initialise(object value);
+public interface ICommonVariable {
+	void Initialise(string contextData, string variableData);
 
-    EContextVariableCategory Category { get; }
+	void Initialise(object value);
 
-    IContext Context { get; }
+	EContextVariableCategory Category { get; }
 
-    object Variable { get; }
+	IContext Context { get; }
 
-    IEnumerable<IVariable> GetContextVariables(EContextVariableCategory contextVarCategory);
+	object Variable { get; }
 
-    string Write();
+	IEnumerable<IVariable> GetContextVariables(EContextVariableCategory contextVarCategory);
 
-    void Read(string data);
+	string Write();
 
-    bool IsSelf { get; }
+	void Read(string data);
 
-    bool IsNull { get; }
+	bool IsSelf { get; }
 
-    bool IsBinded { get; }
+	bool IsNull { get; }
 
-    ECommonVariableType CommonVariableType { get; }
+	bool IsBinded { get; }
 
-    void Bind(
-      IContext ownerContext,
-      VMType needType = null,
-      ILocalContext localContext = null,
-      IContextElement contextElement = null);
+	ECommonVariableType CommonVariableType { get; }
 
-    IVariable GetContextVariable(string variableName);
+	void Bind(
+		IContext ownerContext,
+		VMType needType = null,
+		ILocalContext localContext = null,
+		IContextElement contextElement = null);
 
-    IContext VariableContext { get; }
-  }
+	IVariable GetContextVariable(string variableName);
+
+	IContext VariableContext { get; }
 }

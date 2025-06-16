@@ -1,15 +1,13 @@
 ﻿using System;
 
-namespace Engine.Common.Components.Parameters
-{
-  public interface IParameterValue<T> where T : struct
-  {
-    T Value { get; set; }
+namespace Engine.Common.Components.Parameters;
 
-    T MinValue { get; set; }
+public interface IParameterValue<T> where T : struct {
+	T Value { get; set; }
 
-    T MaxValue { get; set; }
+	T MinValue { get; set; }
 
-    event Action<T> ChangeValueEvent;
-  }
+	T MaxValue { get; set; }
+
+	event Action<T> ChangeValueEvent;
 }

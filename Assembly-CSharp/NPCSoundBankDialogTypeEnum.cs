@@ -1,9 +1,8 @@
-﻿public enum NPCSoundBankDialogTypeEnum
-{
-  Unknown,
-  MaleToMale,
-  MaleToFemale,
-  FemaleToFemale,
-  AdultToChild,
-  ChildToAnyone,
+﻿public enum NPCSoundBankDialogTypeEnum {
+	Unknown,
+	MaleToMale,
+	MaleToFemale,
+	FemaleToFemale,
+	AdultToChild,
+	ChildToAnyone
 }

@@ -2,45 +2,48 @@
 using System.Linq.Expressions;
 using Engine.Source.Settings;
 
-namespace Engine.Source.Debugs
-{
-  public struct BoolPlayerProperty
-  {
-    private string name;
-    private bool defaultValue;
-    private bool value;
+namespace Engine.Source.Debugs;
 
-    public BoolPlayerProperty(string name, bool defaultValue = false)
-    {
-      this.name = name;
-      this.defaultValue = defaultValue;
-      value = PlayerSettings.Instance.GetBool(name, defaultValue);
-    }
+public struct BoolPlayerProperty {
+	private string name;
+	private bool defaultValue;
+	private bool value;
 
-    public static BoolPlayerProperty Create<T>(
-      Expression<Func<T>> propertyLambda,
-      bool defaultValue = false)
-    {
-      if (!(propertyLambda.Body is MemberExpression body))
-        throw new ArgumentException("You must pass a lambda of the form: '() => Class.Property' or '() => object.Property'");
-      return new BoolPlayerProperty(typeof (BoolPlayerProperty).Name + "_" + body.Member.DeclaringType.Name + "_" + body.Member.Name, defaultValue);
-    }
+	public BoolPlayerProperty(string name, bool defaultValue = false) {
+		this.name = name;
+		this.defaultValue = defaultValue;
+		value = PlayerSettings.Instance.GetBool(name, defaultValue);
+	}
 
-    public bool Value
-    {
-      get => value;
-      set
-      {
-        this.value = value;
-        PlayerSettings.Instance.SetBool(name, value);
-        PlayerSettings.Instance.Save();
-      }
-    }
+	public static BoolPlayerProperty Create<T>(
+		Expression<Func<T>> propertyLambda,
+		bool defaultValue = false) {
+		if (!(propertyLambda.Body is MemberExpression body))
+			throw new ArgumentException(
+				"You must pass a lambda of the form: '() => Class.Property' or '() => object.Property'");
+		return new BoolPlayerProperty(
+			typeof(BoolPlayerProperty).Name + "_" + body.Member.DeclaringType.Name + "_" + body.Member.Name,
+			defaultValue);
+	}
 
-    public static implicit operator bool(BoolPlayerProperty property) => property.value;
+	public bool Value {
+		get => value;
+		set {
+			this.value = value;
+			PlayerSettings.Instance.SetBool(name, value);
+			PlayerSettings.Instance.Save();
+		}
+	}
 
-    public override string ToString() => value.ToString();
+	public static implicit operator bool(BoolPlayerProperty property) {
+		return property.value;
+	}
 
-    public override int GetHashCode() => value.GetHashCode();
-  }
+	public override string ToString() {
+		return value.ToString();
+	}
+
+	public override int GetHashCode() {
+		return value.GetHashCode();
+	}
 }

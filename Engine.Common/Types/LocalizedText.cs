@@ -1,23 +1,28 @@
-﻿namespace Engine.Common.Types
-{
-  public struct LocalizedText
-  {
-    public static readonly LocalizedText Empty;
-    private readonly ulong id;
+﻿namespace Engine.Common.Types;
 
-    public LocalizedText(ulong id) => this.id = id;
+public struct LocalizedText {
+	public static readonly LocalizedText Empty;
+	private readonly ulong id;
 
-    public ulong Id => id;
+	public LocalizedText(ulong id) {
+		this.id = id;
+	}
 
-    public override int GetHashCode() => Id.GetHashCode();
+	public ulong Id => id;
 
-    public override bool Equals(object a)
-    {
-      return a is LocalizedText localizedText && this == localizedText;
-    }
+	public override int GetHashCode() {
+		return Id.GetHashCode();
+	}
 
-    public static bool operator ==(LocalizedText a, LocalizedText b) => (long) a.Id == (long) b.Id;
+	public override bool Equals(object a) {
+		return a is LocalizedText localizedText && this == localizedText;
+	}
 
-    public static bool operator !=(LocalizedText a, LocalizedText b) => !(a == b);
-  }
+	public static bool operator ==(LocalizedText a, LocalizedText b) {
+		return (long)a.Id == (long)b.Id;
+	}
+
+	public static bool operator !=(LocalizedText a, LocalizedText b) {
+		return !(a == b);
+	}
 }

@@ -5,33 +5,30 @@ using Engine.Common.Commons.Cloneable;
 using Engine.Common.Commons.Converters;
 using Expressions;
 
-namespace Engine.Source.Proxies
-{
-  [FactoryProxy(typeof (BlockTypeValue))]
-  public class BlockTypeValue_Generated : 
-    BlockTypeValue,
-    ICloneable,
-    ICopyable,
-    ISerializeDataWrite,
-    ISerializeDataRead
-  {
-    public object Clone()
-    {
-      BlockTypeValue_Generated instance = Activator.CreateInstance<BlockTypeValue_Generated>();
-      CopyTo(instance);
-      return instance;
-    }
+namespace Engine.Source.Proxies;
 
-    public void CopyTo(object target2) => ((BlockTypeValue_Generated) target2).value = value;
+[FactoryProxy(typeof(BlockTypeValue))]
+public class BlockTypeValue_Generated :
+	BlockTypeValue,
+	ICloneable,
+	ICopyable,
+	ISerializeDataWrite,
+	ISerializeDataRead {
+	public object Clone() {
+		var instance = Activator.CreateInstance<BlockTypeValue_Generated>();
+		CopyTo(instance);
+		return instance;
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
-    }
+	public void CopyTo(object target2) {
+		((BlockTypeValue_Generated)target2).value = value;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      value = DefaultDataReadUtility.ReadEnum<BlockTypeEnum>(reader, "Value");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteEnum(writer, "Value", value);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		value = DefaultDataReadUtility.ReadEnum<BlockTypeEnum>(reader, "Value");
+	}
 }

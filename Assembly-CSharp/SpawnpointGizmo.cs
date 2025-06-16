@@ -1,5 +1,3 @@
 ﻿using UnityEngine;
 
-public class SpawnpointGizmo : MonoBehaviour
-{
-}
+public class SpawnpointGizmo : MonoBehaviour { }

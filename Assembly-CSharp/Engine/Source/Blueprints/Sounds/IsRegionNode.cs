@@ -6,31 +6,25 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Sounds
-{
-  [Category("Sounds")]
-  public class IsRegionNode : FlowControlNode
-  {
-    [FromLocator]
-    private ISimulation simulation;
-    [Port("Region")]
-    private ValueInput<RegionEnum> regionInput;
+namespace Engine.Source.Blueprints.Sounds;
 
-    [Port("Value")]
-    private bool Value()
-    {
-      IEntity player = simulation.Player;
-      if (player != null)
-      {
-        NavigationComponent component = player.GetComponent<NavigationComponent>();
-        if (component != null)
-        {
-          RegionComponent region = (RegionComponent) component.Region;
-          if (region != null)
-            return region.Region == regionInput.value;
-        }
-      }
-      return false;
-    }
-  }
+[Category("Sounds")]
+public class IsRegionNode : FlowControlNode {
+	[FromLocator] private ISimulation simulation;
+	[Port("Region")] private ValueInput<RegionEnum> regionInput;
+
+	[Port("Value")]
+	private bool Value() {
+		var player = simulation.Player;
+		if (player != null) {
+			var component = player.GetComponent<NavigationComponent>();
+			if (component != null) {
+				var region = (RegionComponent)component.Region;
+				if (region != null)
+					return region.Region == regionInput.value;
+			}
+		}
+
+		return false;
+	}
 }

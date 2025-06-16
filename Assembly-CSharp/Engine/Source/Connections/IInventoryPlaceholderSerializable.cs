@@ -5,53 +5,46 @@ using Engine.Common.Weather;
 using Engine.Source.Inventory;
 using UnityEngine;
 
-namespace Engine.Source.Connections
-{
-  [Serializable]
-  public struct IInventoryPlaceholderSerializable : IEngineSerializable
-  {
-    [SerializeField]
-    private string id;
+namespace Engine.Source.Connections;
 
-    public Guid Id
-    {
-      get => DefaultConverter.ParseGuid(id);
-      set => id = value != Guid.Empty ? value.ToString() : "";
-    }
+[Serializable]
+public struct IInventoryPlaceholderSerializable : IEngineSerializable {
+	[SerializeField] private string id;
 
-    public Type Type => typeof (IWeatherSnapshot);
+	public Guid Id {
+		get => DefaultConverter.ParseGuid(id);
+		set => id = value != Guid.Empty ? value.ToString() : "";
+	}
 
-    public IInventoryPlaceholder Value
-    {
-      get => TemplateUtility.GetTemplate<IInventoryPlaceholder>(Id);
-      set => Id = value != null ? value.Id : Guid.Empty;
-    }
+	public Type Type => typeof(IWeatherSnapshot);
 
-    public override int GetHashCode() => string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
+	public IInventoryPlaceholder Value {
+		get => TemplateUtility.GetTemplate<IInventoryPlaceholder>(Id);
+		set => Id = value != null ? value.Id : Guid.Empty;
+	}
 
-    public override bool Equals(object a)
-    {
-      return a is IWeatherSnapshotSerializable && this == (IInventoryPlaceholderSerializable) a;
-    }
+	public override int GetHashCode() {
+		return string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
+	}
 
-    public static bool operator ==(
-      IInventoryPlaceholderSerializable a,
-      IInventoryPlaceholderSerializable b)
-    {
-      return a.id == b.id;
-    }
+	public override bool Equals(object a) {
+		return a is IWeatherSnapshotSerializable && this == (IInventoryPlaceholderSerializable)a;
+	}
 
-    public static bool operator !=(
-      IInventoryPlaceholderSerializable a,
-      IInventoryPlaceholderSerializable b)
-    {
-      return !(a == b);
-    }
+	public static bool operator ==(
+		IInventoryPlaceholderSerializable a,
+		IInventoryPlaceholderSerializable b) {
+		return a.id == b.id;
+	}
 
-    public override string ToString()
-    {
-      IInventoryPlaceholder inventoryPlaceholder = Value;
-      return inventoryPlaceholder != null ? Path.GetFileNameWithoutExtension(inventoryPlaceholder.Source) : "";
-    }
-  }
+	public static bool operator !=(
+		IInventoryPlaceholderSerializable a,
+		IInventoryPlaceholderSerializable b) {
+		return !(a == b);
+	}
+
+	public override string ToString() {
+		var inventoryPlaceholder = Value;
+		return inventoryPlaceholder != null ? Path.GetFileNameWithoutExtension(inventoryPlaceholder.Source) : "";
+	}
 }

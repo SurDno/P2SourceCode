@@ -8,48 +8,42 @@ using Engine.Source.Components;
 using Inspectors;
 using Rain;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class RainEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    private IParameter<float> rainParameter;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class RainEffect : IEffect {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	private IParameter<float> rainParameter;
 
-    public IEntity Target { get; set; }
+	public string Name => GetType().Name;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime)
-    {
-      rainParameter = Target.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Rain);
-      return true;
-    }
+	public IEntity Target { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      RainManager instance = RainManager.Instance;
-      if (instance == null || rainParameter == null)
-        return false;
-      if (rainParameter.Value != (double) instance.rainIntensity)
-      {
-        rainParameter.BaseValue = instance.rainIntensity;
-        rainParameter.Value = instance.rainIntensity;
-      }
-      return true;
-    }
+	public ParameterEffectQueueEnum Queue => queue;
 
-    public void Cleanup() => rainParameter = null;
-  }
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		rainParameter = Target.GetComponent<ParametersComponent>().GetByName<float>(ParameterNameEnum.Rain);
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		var instance = RainManager.Instance;
+		if (instance == null || rainParameter == null)
+			return false;
+		if (rainParameter.Value != (double)instance.rainIntensity) {
+			rainParameter.BaseValue = instance.rainIntensity;
+			rainParameter.Value = instance.rainIntensity;
+		}
+
+		return true;
+	}
+
+	public void Cleanup() {
+		rainParameter = null;
+	}
 }

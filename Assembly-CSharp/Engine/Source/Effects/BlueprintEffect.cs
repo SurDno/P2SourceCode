@@ -8,49 +8,40 @@ using Engine.Source.Services;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class BlueprintEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
-    protected string name = "";
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected UnityAsset<GameObject> blueprint;
+namespace Engine.Source.Effects;
 
-    public string Name => name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class BlueprintEffect : IEffect {
+	[DataReadProxy]
+	[DataWriteProxy]
+	[CopyableProxy]
+	[Inspected(Header = true, Mutable = true, Mode = ExecuteMode.EditAndRuntime)]
+	protected string name = "";
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    public IEntity Target { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected UnityAsset<GameObject> blueprint;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	public string Name => name;
 
-    public void Cleanup()
-    {
-    }
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Prepare(float currentRealTime, float currentGameTime) => true;
+	public IEntity Target { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      BlueprintServiceUtility.StartAsync(blueprint, AbilityItem.AbilityController as IAbilityValueContainer, Target, null, null, false);
-      return false;
-    }
-  }
+	public ParameterEffectQueueEnum Queue => queue;
+
+	public void Cleanup() { }
+
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		BlueprintServiceUtility.StartAsync(blueprint, AbilityItem.AbilityController as IAbilityValueContainer, Target,
+			null, null, false);
+		return false;
+	}
 }

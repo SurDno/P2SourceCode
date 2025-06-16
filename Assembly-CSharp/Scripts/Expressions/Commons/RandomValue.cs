@@ -5,16 +5,16 @@ using Expressions;
 using Inspectors;
 using UnityEngine;
 
-namespace Scripts.Expressions.Commons
-{
-  [TypeName(TypeName = "[random] : float", MenuItem = "random/float")]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class RandomValue : IValue<float>
-  {
-    public float GetValue(IEffect context) => Random.value;
+namespace Scripts.Expressions.Commons;
 
-    public string ValueView => "random";
+[TypeName(TypeName = "[random] : float", MenuItem = "random/float")]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class RandomValue : IValue<float> {
+	public float GetValue(IEffect context) {
+		return Random.value;
+	}
 
-    public string TypeView => TypeUtility.GetTypeName(GetType());
-  }
+	public string ValueView => "random";
+
+	public string TypeView => TypeUtility.GetTypeName(GetType());
 }

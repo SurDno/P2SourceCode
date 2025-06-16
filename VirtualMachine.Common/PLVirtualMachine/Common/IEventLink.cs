@@ -1,31 +1,29 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface IEventLink : 
-    ILink,
-    IContainer,
-    IObject,
-    IEditorBaseTemplate,
-    INamedElement,
-    INamed,
-    IStaticUpdateable,
-    ILocalContext
-  {
-    IState SourceState { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    int SourceExitPoint { get; }
+public interface IEventLink :
+	ILink,
+	IContainer,
+	IObject,
+	IEditorBaseTemplate,
+	INamedElement,
+	INamed,
+	IStaticUpdateable,
+	ILocalContext {
+	IState SourceState { get; }
 
-    IState DestState { get; }
+	int SourceExitPoint { get; }
 
-    int DestEntryPoint { get; }
+	IState DestState { get; }
 
-    EventInfo Event { get; }
+	int DestEntryPoint { get; }
 
-    ELinkExitType LinkExitType { get; }
+	EventInfo Event { get; }
 
-    bool ExitFromSubGraph { get; }
+	ELinkExitType LinkExitType { get; }
 
-    bool Enabled { get; }
+	bool ExitFromSubGraph { get; }
 
-    bool IsInitial();
-  }
+	bool Enabled { get; }
+
+	bool IsInitial();
 }

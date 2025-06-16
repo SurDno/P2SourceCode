@@ -1,17 +1,15 @@
 ﻿using TriangleNet.Data;
 
-namespace TriangleNet.Geometry
-{
-  public interface ISegment
-  {
-    int P0 { get; }
+namespace TriangleNet.Geometry;
 
-    int P1 { get; }
+public interface ISegment {
+	int P0 { get; }
 
-    int Boundary { get; }
+	int P1 { get; }
 
-    Vertex GetVertex(int index);
+	int Boundary { get; }
 
-    ITriangle GetTriangle(int index);
-  }
+	Vertex GetVertex(int index);
+
+	ITriangle GetTriangle(int index);
 }

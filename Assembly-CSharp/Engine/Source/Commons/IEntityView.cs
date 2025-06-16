@@ -1,18 +1,16 @@
 ﻿using System;
 using UnityEngine;
 
-namespace Engine.Source.Commons
-{
-  public interface IEntityView
-  {
-    GameObject GameObject { get; }
+namespace Engine.Source.Commons;
 
-    bool IsAttached { get; }
+public interface IEntityView {
+	GameObject GameObject { get; }
 
-    Vector3 Position { get; set; }
+	bool IsAttached { get; }
 
-    Quaternion Rotation { get; set; }
+	Vector3 Position { get; set; }
 
-    event Action OnGameObjectChangedEvent;
-  }
+	Quaternion Rotation { get; set; }
+
+	event Action OnGameObjectChangedEvent;
 }

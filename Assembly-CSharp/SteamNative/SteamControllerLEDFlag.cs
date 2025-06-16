@@ -1,8 +1,6 @@
-﻿namespace SteamNative
-{
-  internal enum SteamControllerLEDFlag
-  {
-    SetColor,
-    RestoreUserDefault,
-  }
+﻿namespace SteamNative;
+
+internal enum SteamControllerLEDFlag {
+	SetColor,
+	RestoreUserDefault
 }

@@ -3,18 +3,14 @@ using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 using UnityEngine;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Engine")]
-  public class OpenUrlNode : FlowControlNode
-  {
-    [Port("Url")]
-    private ValueInput<string> urlInput;
+namespace Engine.Source.Blueprints.Effects;
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      AddFlowInput("In", () => Application.OpenURL(urlInput.value));
-    }
-  }
+[Category("Engine")]
+public class OpenUrlNode : FlowControlNode {
+	[Port("Url")] private ValueInput<string> urlInput;
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		AddFlowInput("In", () => Application.OpenURL(urlInput.value));
+	}
 }

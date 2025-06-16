@@ -1,27 +1,25 @@
 ﻿using System;
 
-namespace SRDebugger.Services
-{
-  public interface IDebugService
-  {
-    Settings Settings { get; }
+namespace SRDebugger.Services;
 
-    bool IsDebugging { get; set; }
+public interface IDebugService {
+	Settings Settings { get; }
 
-    event Action OnDebuggingChanged;
+	bool IsDebugging { get; set; }
 
-    bool IsDebugPanelVisible { get; }
+	event Action OnDebuggingChanged;
 
-    bool IsProfilerDocked { get; set; }
+	bool IsDebugPanelVisible { get; }
 
-    void ShowDebugPanel();
+	bool IsProfilerDocked { get; set; }
 
-    void ShowDebugPanel(DefaultTabs tab);
+	void ShowDebugPanel();
 
-    void HideDebugPanel();
+	void ShowDebugPanel(DefaultTabs tab);
 
-    void DestroyDebugPanel();
+	void HideDebugPanel();
 
-    event VisibilityChangedDelegate PanelVisibilityChanged;
-  }
+	void DestroyDebugPanel();
+
+	event VisibilityChangedDelegate PanelVisibilityChanged;
 }

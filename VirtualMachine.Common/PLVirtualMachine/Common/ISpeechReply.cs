@@ -1,17 +1,15 @@
-﻿namespace PLVirtualMachine.Common
-{
-  public interface ISpeechReply : IObject, IEditorBaseTemplate, IOrderedChild
-  {
-    IGameString Text { get; }
+﻿namespace PLVirtualMachine.Common;
 
-    bool OnlyOnce { get; }
+public interface ISpeechReply : IObject, IEditorBaseTemplate, IOrderedChild {
+	IGameString Text { get; }
 
-    bool OnlyOneReply { get; }
+	bool OnlyOnce { get; }
 
-    bool IsDefault { get; }
+	bool OnlyOneReply { get; }
 
-    ICondition EnableCondition { get; }
+	bool IsDefault { get; }
 
-    IActionLine ActionLine { get; }
-  }
+	ICondition EnableCondition { get; }
+
+	IActionLine ActionLine { get; }
 }

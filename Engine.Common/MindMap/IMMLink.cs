@@ -1,11 +1,9 @@
-﻿namespace Engine.Common.MindMap
-{
-  public interface IMMLink
-  {
-    IMMNode Origin { get; set; }
+﻿namespace Engine.Common.MindMap;
 
-    IMMNode Target { get; set; }
+public interface IMMLink {
+	IMMNode Origin { get; set; }
 
-    MMLinkKind Kind { get; set; }
-  }
+	IMMNode Target { get; set; }
+
+	MMLinkKind Kind { get; set; }
 }

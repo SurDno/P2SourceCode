@@ -1,27 +1,22 @@
 ﻿using UnityEngine;
 
-namespace SoundPropagation
-{
-  public class SPFieldPoint : MonoBehaviour
-  {
-    [SerializeField]
-    private SPFieldSource sourcePrefab;
+namespace SoundPropagation;
 
-    public Vector3 Position { get; private set; }
+public class SPFieldPoint : MonoBehaviour {
+	[SerializeField] private SPFieldSource sourcePrefab;
 
-    private void OnEnable()
-    {
-      if (sourcePrefab == null)
-        return;
-      Position = transform.position;
-      SPFieldSource.AddPoint(sourcePrefab, this);
-    }
+	public Vector3 Position { get; private set; }
 
-    private void OnDisable()
-    {
-      if (sourcePrefab == null)
-        return;
-      SPFieldSource.RemovePoint(sourcePrefab, this);
-    }
-  }
+	private void OnEnable() {
+		if (sourcePrefab == null)
+			return;
+		Position = transform.position;
+		SPFieldSource.AddPoint(sourcePrefab, this);
+	}
+
+	private void OnDisable() {
+		if (sourcePrefab == null)
+			return;
+		SPFieldSource.RemovePoint(sourcePrefab, this);
+	}
 }

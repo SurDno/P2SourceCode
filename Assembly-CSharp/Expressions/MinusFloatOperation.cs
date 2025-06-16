@@ -1,14 +1,16 @@
 ﻿using Engine.Common.Generator;
 using Inspectors;
 
-namespace Expressions
-{
-  [TypeName(TypeName = "[a - b] : float", MenuItem = "a - b/float")]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class MinusFloatOperation : BinaryOperation<float>
-  {
-    protected override float Compute(float a, float b) => a - b;
+namespace Expressions;
 
-    protected override string OperatorView() => "-";
-  }
+[TypeName(TypeName = "[a - b] : float", MenuItem = "a - b/float")]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class MinusFloatOperation : BinaryOperation<float> {
+	protected override float Compute(float a, float b) {
+		return a - b;
+	}
+
+	protected override string OperatorView() {
+		return "-";
+	}
 }

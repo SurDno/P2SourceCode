@@ -1,14 +1,14 @@
 ﻿using System;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [AttributeUsage(AttributeTargets.Field)]
-  public class TooltipAttribute : Attribute
-  {
-    private readonly string mTooltip;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public string Tooltip => mTooltip;
+[AttributeUsage(AttributeTargets.Field)]
+public class TooltipAttribute : Attribute {
+	private readonly string mTooltip;
 
-    public TooltipAttribute(string tooltip) => mTooltip = tooltip;
-  }
+	public string Tooltip => mTooltip;
+
+	public TooltipAttribute(string tooltip) {
+		mTooltip = tooltip;
+	}
 }

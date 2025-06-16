@@ -1,10 +1,8 @@
-﻿namespace SteamNative
-{
-  internal enum P2PSend
-  {
-    Unreliable,
-    UnreliableNoDelay,
-    Reliable,
-    ReliableWithBuffering,
-  }
+﻿namespace SteamNative;
+
+internal enum P2PSend {
+	Unreliable,
+	UnreliableNoDelay,
+	Reliable,
+	ReliableWithBuffering
 }

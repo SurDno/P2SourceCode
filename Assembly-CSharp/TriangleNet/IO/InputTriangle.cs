@@ -1,51 +1,52 @@
 ﻿using TriangleNet.Data;
 using TriangleNet.Geometry;
 
-namespace TriangleNet.IO
-{
-  public class InputTriangle : ITriangle
-  {
-    internal double area;
-    internal int region;
-    internal int[] vertices;
+namespace TriangleNet.IO;
 
-    public InputTriangle(int p0, int p1, int p2)
-    {
-      vertices = new int[3]{ p0, p1, p2 };
-    }
+public class InputTriangle : ITriangle {
+	internal double area;
+	internal int region;
+	internal int[] vertices;
 
-    public int ID => 0;
+	public InputTriangle(int p0, int p1, int p2) {
+		vertices = new int[3] { p0, p1, p2 };
+	}
 
-    public int P0 => vertices[0];
+	public int ID => 0;
 
-    public int P1 => vertices[1];
+	public int P0 => vertices[0];
 
-    public int P2 => vertices[2];
+	public int P1 => vertices[1];
 
-    public Vertex GetVertex(int index) => null;
+	public int P2 => vertices[2];
 
-    public bool SupportsNeighbors => false;
+	public Vertex GetVertex(int index) {
+		return null;
+	}
 
-    public int N0 => -1;
+	public bool SupportsNeighbors => false;
 
-    public int N1 => -1;
+	public int N0 => -1;
 
-    public int N2 => -1;
+	public int N1 => -1;
 
-    public ITriangle GetNeighbor(int index) => null;
+	public int N2 => -1;
 
-    public ISegment GetSegment(int index) => null;
+	public ITriangle GetNeighbor(int index) {
+		return null;
+	}
 
-    public double Area
-    {
-      get => area;
-      set => area = value;
-    }
+	public ISegment GetSegment(int index) {
+		return null;
+	}
 
-    public int Region
-    {
-      get => region;
-      set => region = value;
-    }
-  }
+	public double Area {
+		get => area;
+		set => area = value;
+	}
+
+	public int Region {
+		get => region;
+		set => region = value;
+	}
 }

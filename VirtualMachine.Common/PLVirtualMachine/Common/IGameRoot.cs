@@ -1,19 +1,17 @@
 ﻿using System;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IGameRoot : IEditorBaseTemplate, IContext, INamed
-  {
-    Guid GetEngineTemplateGuidByBaseGuid(ulong baseGuid);
+namespace PLVirtualMachine.Common;
 
-    ulong GetBaseGuidByEngineTemplateGuid(Guid engGuid);
+public interface IGameRoot : IEditorBaseTemplate, IContext, INamed {
+	Guid GetEngineTemplateGuidByBaseGuid(ulong baseGuid);
 
-    IBlueprint GetBlueprintByGuid(ulong bpGuid);
+	ulong GetBaseGuidByEngineTemplateGuid(Guid engGuid);
 
-    HierarchyGuid GetHierarchyGuidByHierarchyPath(string path);
+	IBlueprint GetBlueprintByGuid(ulong bpGuid);
 
-    IWorldBlueprint GetEngineTemplateByGuid(ulong editorTemplateGuid);
+	HierarchyGuid GetHierarchyGuidByHierarchyPath(string path);
 
-    IWorldHierarchyObject GetWorldHierarhyObjectByGuid(HierarchyGuid hGuid);
-  }
+	IWorldBlueprint GetEngineTemplateByGuid(ulong editorTemplateGuid);
+
+	IWorldHierarchyObject GetWorldHierarhyObjectByGuid(HierarchyGuid hGuid);
 }

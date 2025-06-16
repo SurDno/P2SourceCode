@@ -1,37 +1,28 @@
 ﻿using Engine.Common.Generator;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime
-{
-  public abstract class SharedVariable
-  {
-    [DataReadProxy(Name = "IsShared")]
-    [DataWriteProxy(Name = "IsShared")]
-    [CopyableProxy]
-    [SerializeField]
-    protected bool mIsShared;
-    [DataReadProxy(Name = "Name")]
-    [DataWriteProxy(Name = "Name")]
-    [CopyableProxy()]
-    [SerializeField]
-    protected string mName;
+namespace BehaviorDesigner.Runtime;
 
-    public bool IsShared
-    {
-      get => mIsShared;
-      set => mIsShared = value;
-    }
+public abstract class SharedVariable {
+	[DataReadProxy(Name = "IsShared")] [DataWriteProxy(Name = "IsShared")] [CopyableProxy] [SerializeField]
+	protected bool mIsShared;
 
-    public string Name
-    {
-      get => mName;
-      set => mName = value;
-    }
+	[DataReadProxy(Name = "Name")] [DataWriteProxy(Name = "Name")] [CopyableProxy()] [SerializeField]
+	protected string mName;
 
-    public bool IsNone => mIsShared && string.IsNullOrEmpty(mName);
+	public bool IsShared {
+		get => mIsShared;
+		set => mIsShared = value;
+	}
 
-    public abstract object GetValue();
+	public string Name {
+		get => mName;
+		set => mName = value;
+	}
 
-    public abstract void SetValue(object value);
-  }
+	public bool IsNone => mIsShared && string.IsNullOrEmpty(mName);
+
+	public abstract object GetValue();
+
+	public abstract void SetValue(object value);
 }

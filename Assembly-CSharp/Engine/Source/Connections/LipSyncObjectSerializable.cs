@@ -4,49 +4,42 @@ using Cofe.Serializations.Converters;
 using Engine.Source.Commons;
 using UnityEngine;
 
-namespace Engine.Source.Connections
-{
-  [Serializable]
-  public struct LipSyncObjectSerializable : IEngineSerializable
-  {
-    [SerializeField]
-    private string id;
+namespace Engine.Source.Connections;
 
-    public Guid Id
-    {
-      get => DefaultConverter.ParseGuid(id);
-      set => id = value != Guid.Empty ? value.ToString() : "";
-    }
+[Serializable]
+public struct LipSyncObjectSerializable : IEngineSerializable {
+	[SerializeField] private string id;
 
-    public Type Type => typeof (LipSyncObject);
+	public Guid Id {
+		get => DefaultConverter.ParseGuid(id);
+		set => id = value != Guid.Empty ? value.ToString() : "";
+	}
 
-    public LipSyncObject Value
-    {
-      get => TemplateUtility.GetTemplate<LipSyncObject>(Id);
-      set => Id = value != null ? value.Id : Guid.Empty;
-    }
+	public Type Type => typeof(LipSyncObject);
 
-    public override int GetHashCode() => string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
+	public LipSyncObject Value {
+		get => TemplateUtility.GetTemplate<LipSyncObject>(Id);
+		set => Id = value != null ? value.Id : Guid.Empty;
+	}
 
-    public override bool Equals(object a)
-    {
-      return a is LipSyncObjectSerializable objectSerializable && this == objectSerializable;
-    }
+	public override int GetHashCode() {
+		return string.IsNullOrEmpty(id) ? 0 : id.GetHashCode();
+	}
 
-    public static bool operator ==(LipSyncObjectSerializable a, LipSyncObjectSerializable b)
-    {
-      return a.id == b.id;
-    }
+	public override bool Equals(object a) {
+		return a is LipSyncObjectSerializable objectSerializable && this == objectSerializable;
+	}
 
-    public static bool operator !=(LipSyncObjectSerializable a, LipSyncObjectSerializable b)
-    {
-      return !(a == b);
-    }
+	public static bool operator ==(LipSyncObjectSerializable a, LipSyncObjectSerializable b) {
+		return a.id == b.id;
+	}
 
-    public override string ToString()
-    {
-      LipSyncObject lipSyncObject = Value;
-      return lipSyncObject != null ? Path.GetFileNameWithoutExtension(lipSyncObject.Source) : "";
-    }
-  }
+	public static bool operator !=(LipSyncObjectSerializable a, LipSyncObjectSerializable b) {
+		return !(a == b);
+	}
+
+	public override string ToString() {
+		var lipSyncObject = Value;
+		return lipSyncObject != null ? Path.GetFileNameWithoutExtension(lipSyncObject.Source) : "";
+	}
 }

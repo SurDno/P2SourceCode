@@ -5,28 +5,24 @@ using Engine.Common.Commons;
 using Engine.Impl.Services.Factories;
 using Engine.Source.Settings.External;
 
-namespace Engine.Source.Commons
-{
-  [Factory(typeof (IBehaviorObject))]
-  public class BehaviorObject : EngineObject, IBehaviorObject, IObject, IFactoryProduct
-  {
-    private ExternalBehaviorTree externalBehaviorTree;
+namespace Engine.Source.Commons;
 
-    public ExternalBehaviorTree ExternalBehaviorTree
-    {
-      get
-      {
-        if (externalBehaviorTree == null)
-          externalBehaviorTree = AssetDatabaseService.Instance.Load<ExternalBehaviorTree>(AssetDatabaseService.Instance.GetPath(Id));
-        return externalBehaviorTree;
-      }
-    }
+[Factory(typeof(IBehaviorObject))]
+public class BehaviorObject : EngineObject, IBehaviorObject, IObject, IFactoryProduct {
+	private ExternalBehaviorTree externalBehaviorTree;
 
-    public void ConstructComplete()
-    {
-      if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadBehaviors)
-        return;
-      XmlDeserializationCache.GetOrCreateData(ExternalBehaviorTree.BehaviorSource.TaskData.XmlData);
-    }
-  }
+	public ExternalBehaviorTree ExternalBehaviorTree {
+		get {
+			if (externalBehaviorTree == null)
+				externalBehaviorTree =
+					AssetDatabaseService.Instance.Load<ExternalBehaviorTree>(AssetDatabaseService.Instance.GetPath(Id));
+			return externalBehaviorTree;
+		}
+	}
+
+	public void ConstructComplete() {
+		if (!ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.PreloadBehaviors)
+			return;
+		XmlDeserializationCache.GetOrCreateData(ExternalBehaviorTree.BehaviorSource.TaskData.XmlData);
+	}
 }

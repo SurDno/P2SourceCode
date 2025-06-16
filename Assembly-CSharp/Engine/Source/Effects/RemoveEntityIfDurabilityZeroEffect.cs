@@ -13,69 +13,56 @@ using UnityEngine;
 using UnityEngine.Audio;
 using Object = UnityEngine.Object;
 
-namespace Engine.Source.Effects
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class RemoveEntityIfDurabilityZeroEffect : IEffect
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected UnityAsset<AudioClip> removeSound;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [Inspected]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    protected UnitySubAsset<AudioMixerGroup> removeSoundMixer;
+namespace Engine.Source.Effects;
 
-    public string Name => GetType().Name;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class RemoveEntityIfDurabilityZeroEffect : IEffect {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected ParameterEffectQueueEnum queue = ParameterEffectQueueEnum.None;
 
-    [Inspected]
-    public AbilityItem AbilityItem { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected UnityAsset<AudioClip> removeSound;
 
-    public IEntity Target { get; set; }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [Inspected] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
+	protected UnitySubAsset<AudioMixerGroup> removeSoundMixer;
 
-    public ParameterEffectQueueEnum Queue => queue;
+	public string Name => GetType().Name;
 
-    public bool Prepare(float currentRealTime, float currentGameTime) => true;
+	[Inspected] public AbilityItem AbilityItem { get; set; }
 
-    public bool Compute(float currentRealTime, float currentGameTime)
-    {
-      IEntity item = AbilityItem.Item;
-      ParametersComponent component = item.GetComponent<ParametersComponent>();
-      if (component == null)
-      {
-        Debug.LogWarning(string.Format("{0} has no {1}", typeof (RemoveEntityIfDurabilityZeroEffect), typeof (ParametersComponent).Name));
-        return false;
-      }
-      IParameter<float> byName = component.GetByName<float>(ParameterNameEnum.Durability);
-      if (byName == null)
-      {
-        Debug.LogWarning(string.Format("{0} has no durability parameter", typeof (RemoveEntityIfDurabilityZeroEffect)));
-        return false;
-      }
-      if (byName.Value <= 0.0)
-        CoroutineService.Instance.WaitFrame((Action) (() =>
-        {
-          if ((bool) (Object) removeSound.Value)
-            SoundUtility.PlayAudioClip2D(removeSound.Value, removeSoundMixer.Value, 1f, 0.0f);
-          item.Dispose();
-        }));
-      return false;
-    }
+	public IEntity Target { get; set; }
 
-    public void Cleanup()
-    {
-    }
-  }
+	public ParameterEffectQueueEnum Queue => queue;
+
+	public bool Prepare(float currentRealTime, float currentGameTime) {
+		return true;
+	}
+
+	public bool Compute(float currentRealTime, float currentGameTime) {
+		var item = AbilityItem.Item;
+		var component = item.GetComponent<ParametersComponent>();
+		if (component == null) {
+			Debug.LogWarning(string.Format("{0} has no {1}", typeof(RemoveEntityIfDurabilityZeroEffect),
+				typeof(ParametersComponent).Name));
+			return false;
+		}
+
+		var byName = component.GetByName<float>(ParameterNameEnum.Durability);
+		if (byName == null) {
+			Debug.LogWarning(string.Format("{0} has no durability parameter",
+				typeof(RemoveEntityIfDurabilityZeroEffect)));
+			return false;
+		}
+
+		if (byName.Value <= 0.0)
+			CoroutineService.Instance.WaitFrame((Action)(() => {
+				if ((bool)(Object)removeSound.Value)
+					SoundUtility.PlayAudioClip2D(removeSound.Value, removeSoundMixer.Value, 1f, 0.0f);
+				item.Dispose();
+			}));
+		return false;
+	}
+
+	public void Cleanup() { }
 }

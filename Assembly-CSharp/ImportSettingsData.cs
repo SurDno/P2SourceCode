@@ -1,4 +1,3 @@
-﻿public class ImportSettingsData : ScriptableObjectInstance<ImportSettingsData>
-{
-  public string DefaultOutdoorCrowdItemName;
+﻿public class ImportSettingsData : ScriptableObjectInstance<ImportSettingsData> {
+	public string DefaultOutdoorCrowdItemName;
 }

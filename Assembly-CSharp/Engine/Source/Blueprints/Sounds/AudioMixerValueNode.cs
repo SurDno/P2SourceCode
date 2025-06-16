@@ -6,53 +6,37 @@ using Inspectors;
 using ParadoxNotion.Design;
 using UnityEngine.Audio;
 
-namespace Engine.Source.Blueprints.Sounds
-{
-  [Category("Sounds")]
-  public class AudioMixerValueNode : FlowControlNode
-  {
-    [Port("Value")]
-    private ValueInput<float> valueInput;
-    [Port("Mixer")]
-    private ValueInput<AudioMixerGroup> mixerInput;
-    [Port("Name")]
-    private ValueInput<string> nameInput;
-    [Port("Min value")]
-    private ValueInput<float> minValueInput;
-    [Port("Max value")]
-    private ValueInput<float> maxValueInput;
+namespace Engine.Source.Blueprints.Sounds;
 
-    [Inspected]
-    public float Value => valueInput.value;
+[Category("Sounds")]
+public class AudioMixerValueNode : FlowControlNode {
+	[Port("Value")] private ValueInput<float> valueInput;
+	[Port("Mixer")] private ValueInput<AudioMixerGroup> mixerInput;
+	[Port("Name")] private ValueInput<string> nameInput;
+	[Port("Min value")] private ValueInput<float> minValueInput;
+	[Port("Max value")] private ValueInput<float> maxValueInput;
 
-    [Inspected]
-    public AudioMixerGroup Mixer => mixerInput.value;
+	[Inspected] public float Value => valueInput.value;
 
-    [Inspected]
-    public string Name => nameInput.value;
+	[Inspected] public AudioMixerGroup Mixer => mixerInput.value;
 
-    [Inspected]
-    public float MinValue => minValueInput.value;
+	[Inspected] public string Name => nameInput.value;
 
-    [Inspected]
-    public float MaxValue => maxValueInput.value;
+	[Inspected] public float MinValue => minValueInput.value;
 
-    [Inspected]
-    public FlowScriptController Agent => graph.agent;
+	[Inspected] public float MaxValue => maxValueInput.value;
 
-    [Inspected]
-    public bool Failed { get; set; }
+	[Inspected] public FlowScriptController Agent => graph.agent;
 
-    public override void OnGraphStarted()
-    {
-      base.OnGraphStarted();
-      ServiceLocator.GetService<AudioMixerValueService>().AddNode(this);
-    }
+	[Inspected] public bool Failed { get; set; }
 
-    public override void OnGraphStoped()
-    {
-      ServiceLocator.GetService<AudioMixerValueService>().RemoveNode(this);
-      base.OnGraphStoped();
-    }
-  }
+	public override void OnGraphStarted() {
+		base.OnGraphStarted();
+		ServiceLocator.GetService<AudioMixerValueService>().AddNode(this);
+	}
+
+	public override void OnGraphStoped() {
+		ServiceLocator.GetService<AudioMixerValueService>().RemoveNode(this);
+		base.OnGraphStoped();
+	}
 }

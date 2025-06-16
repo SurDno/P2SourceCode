@@ -2,39 +2,37 @@
 using System.Collections.Generic;
 using Engine.Common.Components.Parameters;
 
-namespace Engine.Common.Components
-{
-  public interface IStorageComponent : IComponent
-  {
-    string Tag { get; }
+namespace Engine.Common.Components;
 
-    IParameterValue<bool> IsFree { get; }
+public interface IStorageComponent : IComponent {
+	string Tag { get; }
 
-    IEnumerable<IStorableComponent> Items { get; }
+	IParameterValue<bool> IsFree { get; }
 
-    IEnumerable<IInventoryComponent> Containers { get; }
+	IEnumerable<IStorableComponent> Items { get; }
 
-    IEnumerable<IEntity> InventoryTemplates { get; }
+	IEnumerable<IInventoryComponent> Containers { get; }
 
-    event Action<IStorableComponent, IInventoryComponent> OnAddItemEvent;
+	IEnumerable<IEntity> InventoryTemplates { get; }
 
-    event Action<IStorableComponent, IInventoryComponent> OnRemoveItemEvent;
+	event Action<IStorableComponent, IInventoryComponent> OnAddItemEvent;
 
-    event Action<IStorableComponent, IInventoryComponent> OnChangeItemEvent;
+	event Action<IStorableComponent, IInventoryComponent> OnRemoveItemEvent;
 
-    void AddItemOrDrop(IStorableComponent item, IInventoryComponent container);
+	event Action<IStorableComponent, IInventoryComponent> OnChangeItemEvent;
 
-    bool AddItem(IStorableComponent item, IInventoryComponent container);
+	void AddItemOrDrop(IStorableComponent item, IInventoryComponent container);
 
-    bool MoveItem(
-      IStorableComponent item,
-      IStorageComponent storage,
-      IInventoryComponent container);
+	bool AddItem(IStorableComponent item, IInventoryComponent container);
 
-    bool RemoveItem(IStorableComponent item);
+	bool MoveItem(
+		IStorableComponent item,
+		IStorageComponent storage,
+		IInventoryComponent container);
 
-    void ClearItems(IInventoryComponent inventory);
+	bool RemoveItem(IStorableComponent item);
 
-    void ClearItems();
-  }
+	void ClearItems(IInventoryComponent inventory);
+
+	void ClearItems();
 }

@@ -2,31 +2,26 @@
 using Cofe.Serializations.Converters;
 using UnityEngine;
 
-namespace Engine.Source.Connections
-{
-  [Serializable]
-  public struct TimeSpanField : ISerializationCallbackReceiver
-  {
-    [SerializeField]
-    private string data;
+namespace Engine.Source.Connections;
 
-    public TimeSpan Value { get; set; }
+[Serializable]
+public struct TimeSpanField : ISerializationCallbackReceiver {
+	[SerializeField] private string data;
 
-    public void OnAfterDeserialize()
-    {
-      TimeSpan result;
-      if (data != null && DefaultConverter.TryParseTimeSpan(data, out result))
-        Value = result;
-      else
-        Value = TimeSpan.Zero;
-    }
+	public TimeSpan Value { get; set; }
 
-    public void OnBeforeSerialize()
-    {
-      if (Value != TimeSpan.Zero)
-        data = DefaultConverter.ToString(Value);
-      else
-        data = "";
-    }
-  }
+	public void OnAfterDeserialize() {
+		TimeSpan result;
+		if (data != null && DefaultConverter.TryParseTimeSpan(data, out result))
+			Value = result;
+		else
+			Value = TimeSpan.Zero;
+	}
+
+	public void OnBeforeSerialize() {
+		if (Value != TimeSpan.Zero)
+			data = DefaultConverter.ToString(Value);
+		else
+			data = "";
+	}
 }

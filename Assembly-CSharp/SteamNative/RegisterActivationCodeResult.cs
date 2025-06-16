@@ -1,11 +1,9 @@
-﻿namespace SteamNative
-{
-  internal enum RegisterActivationCodeResult
-  {
-    ResultOK,
-    ResultFail,
-    ResultAlreadyRegistered,
-    ResultTimeout,
-    AlreadyOwned,
-  }
+﻿namespace SteamNative;
+
+internal enum RegisterActivationCodeResult {
+	ResultOK,
+	ResultFail,
+	ResultAlreadyRegistered,
+	ResultTimeout,
+	AlreadyOwned
 }

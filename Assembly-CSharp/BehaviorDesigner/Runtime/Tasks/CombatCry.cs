@@ -9,52 +9,46 @@ using Engine.Impl.Services.Factories;
 using Engine.Source.Services;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime.Tasks
-{
-  [TaskCategory("Pathologic/GroupBehaviour")]
-  [TaskIcon("{SkinColor}SequenceIcon.png")]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [FactoryProxy(typeof (CombatCry))]
-  public class CombatCry : Action, IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    public CombatCryEnum cryType;
+namespace BehaviorDesigner.Runtime.Tasks;
 
-    public override void OnStart()
-    {
-      CombatService service = ServiceLocator.GetService<CombatService>();
-      if (service == null || Owner == null)
-        return;
-      EnemyBase component = Owner.GetComponent<EnemyBase>();
-      if (component == null)
-        return;
-      service.CharacterCry(component, cryType);
-    }
+[TaskCategory("Pathologic/GroupBehaviour")]
+[TaskIcon("{SkinColor}SequenceIcon.png")]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[FactoryProxy(typeof(CombatCry))]
+public class CombatCry : Action, IStub, ISerializeDataWrite, ISerializeDataRead {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	public CombatCryEnum cryType;
 
-    public override TaskStatus OnUpdate() => TaskStatus.Success;
+	public override void OnStart() {
+		var service = ServiceLocator.GetService<CombatService>();
+		if (service == null || Owner == null)
+			return;
+		var component = Owner.GetComponent<EnemyBase>();
+		if (component == null)
+			return;
+		service.CharacterCry(component, cryType);
+	}
 
-    public void DataWrite(IDataWriter writer)
-    {
-      DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
-      DefaultDataWriteUtility.Write(writer, "Id", id);
-      DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
-      DefaultDataWriteUtility.Write(writer, "Instant", instant);
-      DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
-      DefaultDataWriteUtility.WriteEnum(writer, "CryType", cryType);
-    }
+	public override TaskStatus OnUpdate() {
+		return TaskStatus.Success;
+	}
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
-      id = DefaultDataReadUtility.Read(reader, "Id", id);
-      friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
-      instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
-      disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
-      cryType = DefaultDataReadUtility.ReadEnum<CombatCryEnum>(reader, "CryType");
-    }
-  }
+	public void DataWrite(IDataWriter writer) {
+		DefaultDataWriteUtility.WriteSerialize(writer, "NodeData", nodeData);
+		DefaultDataWriteUtility.Write(writer, "Id", id);
+		DefaultDataWriteUtility.Write(writer, "FriendlyName", friendlyName);
+		DefaultDataWriteUtility.Write(writer, "Instant", instant);
+		DefaultDataWriteUtility.Write(writer, "Disabled", disabled);
+		DefaultDataWriteUtility.WriteEnum(writer, "CryType", cryType);
+	}
+
+	public void DataRead(IDataReader reader, Type type) {
+		nodeData = DefaultDataReadUtility.ReadSerialize<NodeData>(reader, "NodeData");
+		id = DefaultDataReadUtility.Read(reader, "Id", id);
+		friendlyName = DefaultDataReadUtility.Read(reader, "FriendlyName", friendlyName);
+		instant = DefaultDataReadUtility.Read(reader, "Instant", instant);
+		disabled = DefaultDataReadUtility.Read(reader, "Disabled", disabled);
+		cryType = DefaultDataReadUtility.ReadEnum<CombatCryEnum>(reader, "CryType");
+	}
 }

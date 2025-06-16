@@ -3,70 +3,62 @@ using Engine.Common;
 using Engine.Common.Components;
 using PLVirtualMachine.Common.EngineAPI.VMECS.VMAttributes;
 
-namespace PLVirtualMachine.Common.EngineAPI.VMECS
-{
-  [Info("Detector", typeof (IDetectorComponent))]
-  public class VMDetector : VMEngineComponent<IDetectorComponent>
-  {
-    public const string ComponentName = "Detector";
+namespace PLVirtualMachine.Common.EngineAPI.VMECS;
 
-    public override void Clear()
-    {
-      if (!InstanceValid)
-        return;
-      Component.OnSee -= FireOnSee;
-      Component.OnStopSee -= FireOnStopSee;
-      Component.OnHear -= FireHear;
-      base.Clear();
-    }
+[Info("Detector", typeof(IDetectorComponent))]
+public class VMDetector : VMEngineComponent<IDetectorComponent> {
+	public const string ComponentName = "Detector";
 
-    protected override void Init()
-    {
-      if (IsTemplate)
-        return;
-      Component.OnSee += FireOnSee;
-      Component.OnStopSee += FireOnStopSee;
-      Component.OnHear += FireHear;
-    }
+	public override void Clear() {
+		if (!InstanceValid)
+			return;
+		Component.OnSee -= FireOnSee;
+		Component.OnStopSee -= FireOnStopSee;
+		Component.OnHear -= FireHear;
+		base.Clear();
+	}
 
-    private void FireOnSee(IDetectableComponent target)
-    {
-      Action<IEntity> onSee = OnSee;
-      if (onSee == null)
-        return;
-      onSee(target.Owner);
-    }
+	protected override void Init() {
+		if (IsTemplate)
+			return;
+		Component.OnSee += FireOnSee;
+		Component.OnStopSee += FireOnStopSee;
+		Component.OnHear += FireHear;
+	}
 
-    private void FireOnStopSee(IDetectableComponent target)
-    {
-      Action<IEntity> onStopSee = OnStopSee;
-      if (onStopSee == null)
-        return;
-      onStopSee(target.Owner);
-    }
+	private void FireOnSee(IDetectableComponent target) {
+		var onSee = OnSee;
+		if (onSee == null)
+			return;
+		onSee(target.Owner);
+	}
 
-    private void FireHear(IDetectableComponent target)
-    {
-      Action<IEntity> onHear = OnHear;
-      if (onHear == null)
-        return;
-      onHear(target.Owner);
-    }
+	private void FireOnStopSee(IDetectableComponent target) {
+		var onStopSee = OnStopSee;
+		if (onStopSee == null)
+			return;
+		onStopSee(target.Owner);
+	}
 
-    [Event("OnSee", "detected object:Detectable")]
-    public event Action<IEntity> OnSee;
+	private void FireHear(IDetectableComponent target) {
+		var onHear = OnHear;
+		if (onHear == null)
+			return;
+		onHear(target.Owner);
+	}
 
-    [Event("OnStopSee", "detected object:Detectable")]
-    public event Action<IEntity> OnStopSee;
+	[Event("OnSee", "detected object:Detectable")]
+	public event Action<IEntity> OnSee;
 
-    [Event("OnHear", "detected object:Detectable")]
-    public event Action<IEntity> OnHear;
+	[Event("OnStopSee", "detected object:Detectable")]
+	public event Action<IEntity> OnStopSee;
 
-    [Property("Enabled", "", false, true, false)]
-    public bool DetectorEnabled
-    {
-      get => Component.IsEnabled;
-      set => Component.IsEnabled = value;
-    }
-  }
+	[Event("OnHear", "detected object:Detectable")]
+	public event Action<IEntity> OnHear;
+
+	[Property("Enabled", "", false, true, false)]
+	public bool DetectorEnabled {
+		get => Component.IsEnabled;
+		set => Component.IsEnabled = value;
+	}
 }

@@ -1,278 +1,215 @@
 ﻿using System;
 
-namespace UnityEngine.PostProcessing
-{
-  [Serializable]
-  public class ColorGradingModel : PostProcessingModel
-  {
-    [SerializeField]
-    private Settings m_Settings = Settings.defaultSettings;
+namespace UnityEngine.PostProcessing;
 
-    public Settings settings
-    {
-      get => m_Settings;
-      set
-      {
-        m_Settings = value;
-        OnValidate();
-      }
-    }
+[Serializable]
+public class ColorGradingModel : PostProcessingModel {
+	[SerializeField] private Settings m_Settings = Settings.defaultSettings;
 
-    public bool isDirty { get; internal set; }
+	public Settings settings {
+		get => m_Settings;
+		set {
+			m_Settings = value;
+			OnValidate();
+		}
+	}
 
-    public RenderTexture bakedLut { get; internal set; }
+	public bool isDirty { get; internal set; }
 
-    public override void Reset()
-    {
-      m_Settings = Settings.defaultSettings;
-      OnValidate();
-    }
+	public RenderTexture bakedLut { get; internal set; }
 
-    public override void OnValidate() => isDirty = true;
+	public override void Reset() {
+		m_Settings = Settings.defaultSettings;
+		OnValidate();
+	}
 
-    public enum Tonemapper
-    {
-      None,
-      ACES,
-      Neutral,
-    }
+	public override void OnValidate() {
+		isDirty = true;
+	}
 
-    [Serializable]
-    public struct TonemappingSettings
-    {
-      [Tooltip("Tonemapping algorithm to use at the end of the color grading process. Use \"Neutral\" if you need a customizable tonemapper or \"Filmic\" to give a standard filmic look to your scenes.")]
-      public Tonemapper tonemapper;
-      [Range(-0.1f, 0.1f)]
-      public float neutralBlackIn;
-      [Range(1f, 20f)]
-      public float neutralWhiteIn;
-      [Range(-0.09f, 0.1f)]
-      public float neutralBlackOut;
-      [Range(1f, 19f)]
-      public float neutralWhiteOut;
-      [Range(0.1f, 20f)]
-      public float neutralWhiteLevel;
-      [Range(1f, 10f)]
-      public float neutralWhiteClip;
+	public enum Tonemapper {
+		None,
+		ACES,
+		Neutral
+	}
 
-      public static TonemappingSettings defaultSettings
-      {
-        get
-        {
-          return new TonemappingSettings {
-            tonemapper = Tonemapper.Neutral,
-            neutralBlackIn = 0.02f,
-            neutralWhiteIn = 10f,
-            neutralBlackOut = 0.0f,
-            neutralWhiteOut = 10f,
-            neutralWhiteLevel = 5.3f,
-            neutralWhiteClip = 10f
-          };
-        }
-      }
-    }
+	[Serializable]
+	public struct TonemappingSettings {
+		[Tooltip(
+			"Tonemapping algorithm to use at the end of the color grading process. Use \"Neutral\" if you need a customizable tonemapper or \"Filmic\" to give a standard filmic look to your scenes.")]
+		public Tonemapper tonemapper;
 
-    [Serializable]
-    public struct BasicSettings
-    {
-      [Tooltip("Adjusts the overall exposure of the scene in EV units. This is applied after HDR effect and right before tonemapping so it won't affect previous effects in the chain.")]
-      public float postExposure;
-      [Range(-100f, 100f)]
-      [Tooltip("Sets the white balance to a custom color temperature.")]
-      public float temperature;
-      [Range(-100f, 100f)]
-      [Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
-      public float tint;
-      [Range(-180f, 180f)]
-      [Tooltip("Shift the hue of all colors.")]
-      public float hueShift;
-      [Range(0.0f, 2f)]
-      [Tooltip("Pushes the intensity of all colors.")]
-      public float saturation;
-      [Range(0.0f, 2f)]
-      [Tooltip("Expands or shrinks the overall range of tonal values.")]
-      public float contrast;
+		[Range(-0.1f, 0.1f)] public float neutralBlackIn;
+		[Range(1f, 20f)] public float neutralWhiteIn;
+		[Range(-0.09f, 0.1f)] public float neutralBlackOut;
+		[Range(1f, 19f)] public float neutralWhiteOut;
+		[Range(0.1f, 20f)] public float neutralWhiteLevel;
+		[Range(1f, 10f)] public float neutralWhiteClip;
 
-      public static BasicSettings defaultSettings
-      {
-        get
-        {
-          return new BasicSettings {
-            postExposure = 0.0f,
-            temperature = 0.0f,
-            tint = 0.0f,
-            hueShift = 0.0f,
-            saturation = 1f,
-            contrast = 1f
-          };
-        }
-      }
-    }
+		public static TonemappingSettings defaultSettings =>
+			new() {
+				tonemapper = Tonemapper.Neutral,
+				neutralBlackIn = 0.02f,
+				neutralWhiteIn = 10f,
+				neutralBlackOut = 0.0f,
+				neutralWhiteOut = 10f,
+				neutralWhiteLevel = 5.3f,
+				neutralWhiteClip = 10f
+			};
+	}
 
-    [Serializable]
-    public struct ChannelMixerSettings
-    {
-      public Vector3 red;
-      public Vector3 green;
-      public Vector3 blue;
-      [HideInInspector]
-      public int currentEditingChannel;
+	[Serializable]
+	public struct BasicSettings {
+		[Tooltip(
+			"Adjusts the overall exposure of the scene in EV units. This is applied after HDR effect and right before tonemapping so it won't affect previous effects in the chain.")]
+		public float postExposure;
 
-      public static ChannelMixerSettings defaultSettings
-      {
-        get
-        {
-          return new ChannelMixerSettings {
-            red = new Vector3(1f, 0.0f, 0.0f),
-            green = new Vector3(0.0f, 1f, 0.0f),
-            blue = new Vector3(0.0f, 0.0f, 1f),
-            currentEditingChannel = 0
-          };
-        }
-      }
-    }
+		[Range(-100f, 100f)] [Tooltip("Sets the white balance to a custom color temperature.")]
+		public float temperature;
 
-    [Serializable]
-    public struct LogWheelsSettings
-    {
-      [Trackball("GetSlopeValue")]
-      public Color slope;
-      [Trackball("GetPowerValue")]
-      public Color power;
-      [Trackball("GetOffsetValue")]
-      public Color offset;
+		[Range(-100f, 100f)] [Tooltip("Sets the white balance to compensate for a green or magenta tint.")]
+		public float tint;
 
-      public static LogWheelsSettings defaultSettings
-      {
-        get
-        {
-          return new LogWheelsSettings {
-            slope = Color.clear,
-            power = Color.clear,
-            offset = Color.clear
-          };
-        }
-      }
-    }
+		[Range(-180f, 180f)] [Tooltip("Shift the hue of all colors.")]
+		public float hueShift;
 
-    [Serializable]
-    public struct LinearWheelsSettings
-    {
-      [Trackball("GetLiftValue")]
-      public Color lift;
-      [Trackball("GetGammaValue")]
-      public Color gamma;
-      [Trackball("GetGainValue")]
-      public Color gain;
+		[Range(0.0f, 2f)] [Tooltip("Pushes the intensity of all colors.")]
+		public float saturation;
 
-      public static LinearWheelsSettings defaultSettings
-      {
-        get
-        {
-          return new LinearWheelsSettings {
-            lift = Color.clear,
-            gamma = Color.clear,
-            gain = Color.clear
-          };
-        }
-      }
-    }
+		[Range(0.0f, 2f)] [Tooltip("Expands or shrinks the overall range of tonal values.")]
+		public float contrast;
 
-    public enum ColorWheelMode
-    {
-      Linear,
-      Log,
-    }
+		public static BasicSettings defaultSettings =>
+			new() {
+				postExposure = 0.0f,
+				temperature = 0.0f,
+				tint = 0.0f,
+				hueShift = 0.0f,
+				saturation = 1f,
+				contrast = 1f
+			};
+	}
 
-    [Serializable]
-    public struct ColorWheelsSettings
-    {
-      public ColorWheelMode mode;
-      [TrackballGroup]
-      public LogWheelsSettings log;
-      [TrackballGroup]
-      public LinearWheelsSettings linear;
+	[Serializable]
+	public struct ChannelMixerSettings {
+		public Vector3 red;
+		public Vector3 green;
+		public Vector3 blue;
+		[HideInInspector] public int currentEditingChannel;
 
-      public static ColorWheelsSettings defaultSettings
-      {
-        get
-        {
-          return new ColorWheelsSettings {
-            mode = ColorWheelMode.Log,
-            log = LogWheelsSettings.defaultSettings,
-            linear = LinearWheelsSettings.defaultSettings
-          };
-        }
-      }
-    }
+		public static ChannelMixerSettings defaultSettings =>
+			new() {
+				red = new Vector3(1f, 0.0f, 0.0f),
+				green = new Vector3(0.0f, 1f, 0.0f),
+				blue = new Vector3(0.0f, 0.0f, 1f),
+				currentEditingChannel = 0
+			};
+	}
 
-    [Serializable]
-    public struct CurvesSettings
-    {
-      public ColorGradingCurve master;
-      public ColorGradingCurve red;
-      public ColorGradingCurve green;
-      public ColorGradingCurve blue;
-      public ColorGradingCurve hueVShue;
-      public ColorGradingCurve hueVSsat;
-      public ColorGradingCurve satVSsat;
-      public ColorGradingCurve lumVSsat;
-      [HideInInspector]
-      public int e_CurrentEditingCurve;
-      [HideInInspector]
-      public bool e_CurveY;
-      [HideInInspector]
-      public bool e_CurveR;
-      [HideInInspector]
-      public bool e_CurveG;
-      [HideInInspector]
-      public bool e_CurveB;
+	[Serializable]
+	public struct LogWheelsSettings {
+		[Trackball("GetSlopeValue")] public Color slope;
+		[Trackball("GetPowerValue")] public Color power;
+		[Trackball("GetOffsetValue")] public Color offset;
 
-      public static CurvesSettings defaultSettings
-      {
-        get
-        {
-          return new CurvesSettings {
-            master = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            red = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            green = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            blue = new ColorGradingCurve(new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false, new Vector2(0.0f, 1f)),
-            hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
-            hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
-            satVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
-            lumVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
-            e_CurrentEditingCurve = 0,
-            e_CurveY = true,
-            e_CurveR = false,
-            e_CurveG = false,
-            e_CurveB = false
-          };
-        }
-      }
-    }
+		public static LogWheelsSettings defaultSettings =>
+			new() {
+				slope = Color.clear,
+				power = Color.clear,
+				offset = Color.clear
+			};
+	}
 
-    [Serializable]
-    public struct Settings
-    {
-      public TonemappingSettings tonemapping;
-      public BasicSettings basic;
-      public ChannelMixerSettings channelMixer;
-      public ColorWheelsSettings colorWheels;
-      public CurvesSettings curves;
+	[Serializable]
+	public struct LinearWheelsSettings {
+		[Trackball("GetLiftValue")] public Color lift;
+		[Trackball("GetGammaValue")] public Color gamma;
+		[Trackball("GetGainValue")] public Color gain;
 
-      public static Settings defaultSettings
-      {
-        get
-        {
-          return new Settings {
-            tonemapping = TonemappingSettings.defaultSettings,
-            basic = BasicSettings.defaultSettings,
-            channelMixer = ChannelMixerSettings.defaultSettings,
-            colorWheels = ColorWheelsSettings.defaultSettings,
-            curves = CurvesSettings.defaultSettings
-          };
-        }
-      }
-    }
-  }
+		public static LinearWheelsSettings defaultSettings =>
+			new() {
+				lift = Color.clear,
+				gamma = Color.clear,
+				gain = Color.clear
+			};
+	}
+
+	public enum ColorWheelMode {
+		Linear,
+		Log
+	}
+
+	[Serializable]
+	public struct ColorWheelsSettings {
+		public ColorWheelMode mode;
+		[TrackballGroup] public LogWheelsSettings log;
+		[TrackballGroup] public LinearWheelsSettings linear;
+
+		public static ColorWheelsSettings defaultSettings =>
+			new() {
+				mode = ColorWheelMode.Log,
+				log = LogWheelsSettings.defaultSettings,
+				linear = LinearWheelsSettings.defaultSettings
+			};
+	}
+
+	[Serializable]
+	public struct CurvesSettings {
+		public ColorGradingCurve master;
+		public ColorGradingCurve red;
+		public ColorGradingCurve green;
+		public ColorGradingCurve blue;
+		public ColorGradingCurve hueVShue;
+		public ColorGradingCurve hueVSsat;
+		public ColorGradingCurve satVSsat;
+		public ColorGradingCurve lumVSsat;
+		[HideInInspector] public int e_CurrentEditingCurve;
+		[HideInInspector] public bool e_CurveY;
+		[HideInInspector] public bool e_CurveR;
+		[HideInInspector] public bool e_CurveG;
+		[HideInInspector] public bool e_CurveB;
+
+		public static CurvesSettings defaultSettings =>
+			new() {
+				master = new ColorGradingCurve(
+					new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false,
+					new Vector2(0.0f, 1f)),
+				red = new ColorGradingCurve(
+					new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false,
+					new Vector2(0.0f, 1f)),
+				green = new ColorGradingCurve(
+					new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false,
+					new Vector2(0.0f, 1f)),
+				blue = new ColorGradingCurve(
+					new AnimationCurve(new Keyframe(0.0f, 0.0f, 1f, 1f), new Keyframe(1f, 1f, 1f, 1f)), 0.0f, false,
+					new Vector2(0.0f, 1f)),
+				hueVShue = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
+				hueVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, true, new Vector2(0.0f, 1f)),
+				satVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
+				lumVSsat = new ColorGradingCurve(new AnimationCurve(), 0.5f, false, new Vector2(0.0f, 1f)),
+				e_CurrentEditingCurve = 0,
+				e_CurveY = true,
+				e_CurveR = false,
+				e_CurveG = false,
+				e_CurveB = false
+			};
+	}
+
+	[Serializable]
+	public struct Settings {
+		public TonemappingSettings tonemapping;
+		public BasicSettings basic;
+		public ChannelMixerSettings channelMixer;
+		public ColorWheelsSettings colorWheels;
+		public CurvesSettings curves;
+
+		public static Settings defaultSettings =>
+			new() {
+				tonemapping = TonemappingSettings.defaultSettings,
+				basic = BasicSettings.defaultSettings,
+				channelMixer = ChannelMixerSettings.defaultSettings,
+				colorWheels = ColorWheelsSettings.defaultSettings,
+				curves = CurvesSettings.defaultSettings
+			};
+	}
 }

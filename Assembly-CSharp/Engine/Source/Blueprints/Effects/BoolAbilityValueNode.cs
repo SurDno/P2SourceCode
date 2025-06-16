@@ -1,9 +1,6 @@
 ﻿using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints.Effects
-{
-  [Category("Effects")]
-  public class BoolAbilityValueNode : AbilityValueNode<bool>
-  {
-  }
-}
+namespace Engine.Source.Blueprints.Effects;
+
+[Category("Effects")]
+public class BoolAbilityValueNode : AbilityValueNode<bool> { }

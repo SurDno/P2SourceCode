@@ -1,21 +1,19 @@
 ﻿using System;
 using UnityEngine;
 
-namespace SoundPropagation
-{
-  [Serializable]
-  public struct Filtering
-  {
-    [Tooltip("High frequency loss")]
-    public float Occlusion;
+namespace SoundPropagation;
 
-    public void AddFiltering(Filtering filteringPerMeter, float distance)
-    {
-      Occlusion += filteringPerMeter.Occlusion;
-    }
+[Serializable]
+public struct Filtering {
+	[Tooltip("High frequency loss")] public float Occlusion;
 
-    public void AddOcclusion(float occlusion) => Occlusion += occlusion;
+	public void AddFiltering(Filtering filteringPerMeter, float distance) {
+		Occlusion += filteringPerMeter.Occlusion;
+	}
 
-    public float Loss => Occlusion;
-  }
+	public void AddOcclusion(float occlusion) {
+		Occlusion += occlusion;
+	}
+
+	public float Loss => Occlusion;
 }

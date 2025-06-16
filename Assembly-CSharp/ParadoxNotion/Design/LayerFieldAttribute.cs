@@ -1,9 +1,6 @@
 ﻿using System;
 
-namespace ParadoxNotion.Design
-{
-  [AttributeUsage(AttributeTargets.Field)]
-  public class LayerFieldAttribute : Attribute
-  {
-  }
-}
+namespace ParadoxNotion.Design;
+
+[AttributeUsage(AttributeTargets.Field)]
+public class LayerFieldAttribute : Attribute { }

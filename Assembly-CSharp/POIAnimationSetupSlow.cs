@@ -3,16 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
-public class POIAnimationSetupSlow : POIAnimationSetupBase
-{
-  [SerializeField]
-  public List<POIAnimationSetupElementSlow> ElementsNew = new List<POIAnimationSetupElementSlow>();
+public class POIAnimationSetupSlow : POIAnimationSetupBase {
+	[SerializeField] public List<POIAnimationSetupElementSlow> ElementsNew = new();
 
-  public override List<POIAnimationSetupElementBase> Elements
-  {
-    get
-    {
-      return new List<POIAnimationSetupElementBase>(ElementsNew);
-    }
-  }
+	public override List<POIAnimationSetupElementBase> Elements => new(ElementsNew);
 }

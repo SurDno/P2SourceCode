@@ -10,204 +10,176 @@ using Engine.Impl.Services.Factories;
 using Scripts.Tools.Serializations.Converters;
 using UnityEngine;
 
-namespace BehaviorDesigner.Runtime
-{
-  [FactoryProxy(typeof (NodeData))]
-  [Factory]
-  [GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  [Serializable]
-  public class NodeData : IStub, ISerializeDataWrite, ISerializeDataRead
-  {
-    private object nodeDesigner;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    [SerializeField]
-    private Vector2 offset;
-    private string friendlyName = "";
-    private string comment = "";
-    private bool isBreakpoint;
-    private Texture icon;
-    private Color color;
-    private bool collapsed;
-    private int colorIndex;
-    private List<string> watchedFieldNames;
-    private List<FieldInfo> watchedFields;
-    private float pushTime = -1f;
-    private float popTime = -1f;
-    private float interruptTime = -1f;
-    private bool isReevaluating;
-    private TaskStatus executionStatus = TaskStatus.Inactive;
+namespace BehaviorDesigner.Runtime;
 
-    public void DataWrite(IDataWriter writer)
-    {
-      BehaviorTreeDataWriteUtility.WriteUnity(writer, "Offset", offset);
-    }
+[FactoryProxy(typeof(NodeData))]
+[Factory]
+[GeneratePartial(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+[Serializable]
+public class NodeData : IStub, ISerializeDataWrite, ISerializeDataRead {
+	private object nodeDesigner;
 
-    public void DataRead(IDataReader reader, Type type)
-    {
-      offset = BehaviorTreeDataReadUtility.ReadUnity(reader, "Offset", offset);
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()] [SerializeField]
+	private Vector2 offset;
 
-    public object NodeDesigner
-    {
-      get => nodeDesigner;
-      set => nodeDesigner = value;
-    }
+	private string friendlyName = "";
+	private string comment = "";
+	private bool isBreakpoint;
+	private Texture icon;
+	private Color color;
+	private bool collapsed;
+	private int colorIndex;
+	private List<string> watchedFieldNames;
+	private List<FieldInfo> watchedFields;
+	private float pushTime = -1f;
+	private float popTime = -1f;
+	private float interruptTime = -1f;
+	private bool isReevaluating;
+	private TaskStatus executionStatus = TaskStatus.Inactive;
 
-    public Vector2 Offset
-    {
-      get => offset;
-      set => offset = value;
-    }
+	public void DataWrite(IDataWriter writer) {
+		BehaviorTreeDataWriteUtility.WriteUnity(writer, "Offset", offset);
+	}
 
-    public string FriendlyName
-    {
-      get => friendlyName;
-      set => friendlyName = value;
-    }
+	public void DataRead(IDataReader reader, Type type) {
+		offset = BehaviorTreeDataReadUtility.ReadUnity(reader, "Offset", offset);
+	}
 
-    public string Comment
-    {
-      get => comment;
-      set => comment = value;
-    }
+	public object NodeDesigner {
+		get => nodeDesigner;
+		set => nodeDesigner = value;
+	}
 
-    public bool IsBreakpoint
-    {
-      get => isBreakpoint;
-      set => isBreakpoint = value;
-    }
+	public Vector2 Offset {
+		get => offset;
+		set => offset = value;
+	}
 
-    public Texture Icon
-    {
-      get => icon;
-      set => icon = value;
-    }
+	public string FriendlyName {
+		get => friendlyName;
+		set => friendlyName = value;
+	}
 
-    public Color Color
-    {
-      get => color;
-      set => color = value;
-    }
+	public string Comment {
+		get => comment;
+		set => comment = value;
+	}
 
-    public bool Collapsed
-    {
-      get => collapsed;
-      set => collapsed = value;
-    }
+	public bool IsBreakpoint {
+		get => isBreakpoint;
+		set => isBreakpoint = value;
+	}
 
-    public int ColorIndex
-    {
-      get => colorIndex;
-      set => colorIndex = value;
-    }
+	public Texture Icon {
+		get => icon;
+		set => icon = value;
+	}
 
-    public List<string> WatchedFieldNames
-    {
-      get => watchedFieldNames;
-      set => watchedFieldNames = value;
-    }
+	public Color Color {
+		get => color;
+		set => color = value;
+	}
 
-    public List<FieldInfo> WatchedFields
-    {
-      get => watchedFields;
-      set => watchedFields = value;
-    }
+	public bool Collapsed {
+		get => collapsed;
+		set => collapsed = value;
+	}
 
-    public float PushTime
-    {
-      get => pushTime;
-      set => pushTime = value;
-    }
+	public int ColorIndex {
+		get => colorIndex;
+		set => colorIndex = value;
+	}
 
-    public float PopTime
-    {
-      get => popTime;
-      set => popTime = value;
-    }
+	public List<string> WatchedFieldNames {
+		get => watchedFieldNames;
+		set => watchedFieldNames = value;
+	}
 
-    public float InterruptTime
-    {
-      get => interruptTime;
-      set => interruptTime = value;
-    }
+	public List<FieldInfo> WatchedFields {
+		get => watchedFields;
+		set => watchedFields = value;
+	}
 
-    public bool IsReevaluating
-    {
-      get => isReevaluating;
-      set => isReevaluating = value;
-    }
+	public float PushTime {
+		get => pushTime;
+		set => pushTime = value;
+	}
 
-    public TaskStatus ExecutionStatus
-    {
-      get => executionStatus;
-      set => executionStatus = value;
-    }
+	public float PopTime {
+		get => popTime;
+		set => popTime = value;
+	}
 
-    public void InitWatchedFields(Task task)
-    {
-      if (watchedFieldNames == null || watchedFieldNames.Count <= 0)
-        return;
-      watchedFields = new List<FieldInfo>();
-      for (int index = 0; index < watchedFieldNames.Count; ++index)
-      {
-        FieldInfo field = task.GetType().GetField(watchedFieldNames[index], BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        if (field != null)
-          watchedFields.Add(field);
-      }
-    }
+	public float InterruptTime {
+		get => interruptTime;
+		set => interruptTime = value;
+	}
 
-    public void CopyFrom(NodeData nodeData, Task task)
-    {
-      nodeDesigner = nodeData.NodeDesigner;
-      offset = nodeData.Offset;
-      comment = nodeData.Comment;
-      isBreakpoint = nodeData.IsBreakpoint;
-      collapsed = nodeData.Collapsed;
-      if (nodeData.WatchedFields == null || nodeData.WatchedFields.Count <= 0)
-        return;
-      watchedFields = new List<FieldInfo>();
-      watchedFieldNames = new List<string>();
-      for (int index = 0; index < nodeData.watchedFields.Count; ++index)
-      {
-        FieldInfo field = task.GetType().GetField(nodeData.WatchedFields[index].Name, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-        if (field != null)
-        {
-          watchedFields.Add(field);
-          watchedFieldNames.Add(field.Name);
-        }
-      }
-    }
+	public bool IsReevaluating {
+		get => isReevaluating;
+		set => isReevaluating = value;
+	}
 
-    public bool ContainsWatchedField(FieldInfo field)
-    {
-      return watchedFields != null && watchedFields.Contains(field);
-    }
+	public TaskStatus ExecutionStatus {
+		get => executionStatus;
+		set => executionStatus = value;
+	}
 
-    public void AddWatchedField(FieldInfo field)
-    {
-      if (watchedFields == null)
-      {
-        watchedFields = new List<FieldInfo>();
-        watchedFieldNames = new List<string>();
-      }
-      watchedFields.Add(field);
-      watchedFieldNames.Add(field.Name);
-    }
+	public void InitWatchedFields(Task task) {
+		if (watchedFieldNames == null || watchedFieldNames.Count <= 0)
+			return;
+		watchedFields = new List<FieldInfo>();
+		for (var index = 0; index < watchedFieldNames.Count; ++index) {
+			var field = task.GetType().GetField(watchedFieldNames[index],
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (field != null)
+				watchedFields.Add(field);
+		}
+	}
 
-    public void RemoveWatchedField(FieldInfo field)
-    {
-      if (watchedFields == null)
-        return;
-      watchedFields.Remove(field);
-      watchedFieldNames.Remove(field.Name);
-    }
+	public void CopyFrom(NodeData nodeData, Task task) {
+		nodeDesigner = nodeData.NodeDesigner;
+		offset = nodeData.Offset;
+		comment = nodeData.Comment;
+		isBreakpoint = nodeData.IsBreakpoint;
+		collapsed = nodeData.Collapsed;
+		if (nodeData.WatchedFields == null || nodeData.WatchedFields.Count <= 0)
+			return;
+		watchedFields = new List<FieldInfo>();
+		watchedFieldNames = new List<string>();
+		for (var index = 0; index < nodeData.watchedFields.Count; ++index) {
+			var field = task.GetType().GetField(nodeData.WatchedFields[index].Name,
+				BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+			if (field != null) {
+				watchedFields.Add(field);
+				watchedFieldNames.Add(field.Name);
+			}
+		}
+	}
 
-    private static Vector2 StringToVector2(string vector2String)
-    {
-      string[] strArray = vector2String.Substring(1, vector2String.Length - 2).Split(',');
-      return new Vector3(float.Parse(strArray[0]), float.Parse(strArray[1]));
-    }
-  }
+	public bool ContainsWatchedField(FieldInfo field) {
+		return watchedFields != null && watchedFields.Contains(field);
+	}
+
+	public void AddWatchedField(FieldInfo field) {
+		if (watchedFields == null) {
+			watchedFields = new List<FieldInfo>();
+			watchedFieldNames = new List<string>();
+		}
+
+		watchedFields.Add(field);
+		watchedFieldNames.Add(field.Name);
+	}
+
+	public void RemoveWatchedField(FieldInfo field) {
+		if (watchedFields == null)
+			return;
+		watchedFields.Remove(field);
+		watchedFieldNames.Remove(field.Name);
+	}
+
+	private static Vector2 StringToVector2(string vector2String) {
+		var strArray = vector2String.Substring(1, vector2String.Length - 2).Split(',');
+		return new Vector3(float.Parse(strArray[0]), float.Parse(strArray[1]));
+	}
 }

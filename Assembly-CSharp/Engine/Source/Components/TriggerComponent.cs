@@ -8,100 +8,97 @@ using Engine.Source.Commons;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Source.Components
-{
-  [Factory(typeof (ITriggerComponent))]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class TriggerComponent : EngineComponent, ITriggerComponent, IComponent
-  {
-    [Inspected]
-    private HashSet<IEntity> entities = new HashSet<IEntity>();
+namespace Engine.Source.Components;
 
-    public event TriggerHandler EntityEnterEvent;
+[Factory(typeof(ITriggerComponent))]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class TriggerComponent : EngineComponent, ITriggerComponent, IComponent {
+	[Inspected] private HashSet<IEntity> entities = new();
 
-    public event TriggerHandler EntityExitEvent;
+	public event TriggerHandler EntityEnterEvent;
 
-    public bool Contains(IEntity entity) => entities.Contains(entity);
+	public event TriggerHandler EntityExitEvent;
 
-    public override void OnAdded() => base.OnAdded();
+	public bool Contains(IEntity entity) {
+		return entities.Contains(entity);
+	}
 
-    public override void OnRemoved()
-    {
-      Clear();
-      base.OnRemoved();
-    }
+	public override void OnAdded() {
+		base.OnAdded();
+	}
 
-    public void Enter(GameObject go)
-    {
-      if (go == null)
-        return;
-      IEntity entity = EntityUtility.GetEntity(go);
-      if (entity == null || !entities.Add(entity))
-        return;
-      Debug.Log(ObjectInfoUtility.GetStream().Append("Enter trigger, actor : ").GetInfo(entity).Append(" , trigger : ").GetInfo(Owner));
-      EventArgument<IEntity, ITriggerComponent> eventArguments = new EventArgument<IEntity, ITriggerComponent> {
-        Actor = entity,
-        Target = this
-      };
-      TriggerHandler entityEnterEvent = EntityEnterEvent;
-      if (entityEnterEvent == null)
-        return;
-      entityEnterEvent(ref eventArguments);
-    }
+	public override void OnRemoved() {
+		Clear();
+		base.OnRemoved();
+	}
 
-    public void Exit(GameObject go)
-    {
-      if (go == null)
-        return;
-      IEntity entity = EntityUtility.GetEntity(go);
-      if (entity == null)
-        return;
-      Exit(entity);
-    }
+	public void Enter(GameObject go) {
+		if (go == null)
+			return;
+		var entity = EntityUtility.GetEntity(go);
+		if (entity == null || !entities.Add(entity))
+			return;
+		Debug.Log(ObjectInfoUtility.GetStream().Append("Enter trigger, actor : ").GetInfo(entity)
+			.Append(" , trigger : ").GetInfo(Owner));
+		var eventArguments = new EventArgument<IEntity, ITriggerComponent> {
+			Actor = entity,
+			Target = this
+		};
+		var entityEnterEvent = EntityEnterEvent;
+		if (entityEnterEvent == null)
+			return;
+		entityEnterEvent(ref eventArguments);
+	}
 
-    private void Exit(IEntity entity)
-    {
-      if (!entities.Remove(entity))
-        return;
-      Debug.Log(ObjectInfoUtility.GetStream().Append("Exit trigger, actor : ").GetInfo(entity).Append(" , trigger : ").GetInfo(Owner));
-      EventArgument<IEntity, ITriggerComponent> eventArguments = new EventArgument<IEntity, ITriggerComponent> {
-        Actor = entity,
-        Target = this
-      };
-      TriggerHandler entityExitEvent = EntityExitEvent;
-      if (entityExitEvent == null)
-        return;
-      entityExitEvent(ref eventArguments);
-    }
+	public void Exit(GameObject go) {
+		if (go == null)
+			return;
+		var entity = EntityUtility.GetEntity(go);
+		if (entity == null)
+			return;
+		Exit(entity);
+	}
 
-    public override void OnChangeEnabled()
-    {
-      base.OnChangeEnabled();
-      if (Owner.IsEnabledInHierarchy)
-        return;
-      while (entities.Count != 0)
-        Exit(entities.First());
-    }
+	private void Exit(IEntity entity) {
+		if (!entities.Remove(entity))
+			return;
+		Debug.Log(ObjectInfoUtility.GetStream().Append("Exit trigger, actor : ").GetInfo(entity).Append(" , trigger : ")
+			.GetInfo(Owner));
+		var eventArguments = new EventArgument<IEntity, ITriggerComponent> {
+			Actor = entity,
+			Target = this
+		};
+		var entityExitEvent = EntityExitEvent;
+		if (entityExitEvent == null)
+			return;
+		entityExitEvent(ref eventArguments);
+	}
 
-    public void Clear()
-    {
-      foreach (IEntity entity in entities)
-      {
-        EventArgument<IEntity, ITriggerComponent> eventArguments = new EventArgument<IEntity, ITriggerComponent> {
-          Actor = entity,
-          Target = this
-        };
-        TriggerHandler entityExitEvent = EntityExitEvent;
-        if (entityExitEvent != null)
-          entityExitEvent(ref eventArguments);
-      }
-      entities.Clear();
-    }
+	public override void OnChangeEnabled() {
+		base.OnChangeEnabled();
+		if (Owner.IsEnabledInHierarchy)
+			return;
+		while (entities.Count != 0)
+			Exit(entities.First());
+	}
 
-    public void Attach()
-    {
-    }
+	public void Clear() {
+		foreach (var entity in entities) {
+			var eventArguments = new EventArgument<IEntity, ITriggerComponent> {
+				Actor = entity,
+				Target = this
+			};
+			var entityExitEvent = EntityExitEvent;
+			if (entityExitEvent != null)
+				entityExitEvent(ref eventArguments);
+		}
 
-    public void Detach() => Clear();
-  }
+		entities.Clear();
+	}
+
+	public void Attach() { }
+
+	public void Detach() {
+		Clear();
+	}
 }

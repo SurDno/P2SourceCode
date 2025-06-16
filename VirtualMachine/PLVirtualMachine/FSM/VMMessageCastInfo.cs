@@ -1,27 +1,23 @@
 ﻿using PLVirtualMachine.Common;
 using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.FSM
-{
-  public class VMMessageCastInfo
-  {
-    public ContextVariable message;
-    public VMType type;
+namespace PLVirtualMachine.FSM;
 
-    public VMMessageCastInfo()
-    {
-      message = null;
-      type = null;
-    }
+public class VMMessageCastInfo {
+	public ContextVariable message;
+	public VMType type;
 
-    public VMMessageCastInfo(ContextVariable message, VMType type)
-    {
-      this.message = message;
-      this.type = type;
-    }
+	public VMMessageCastInfo() {
+		message = null;
+		type = null;
+	}
 
-    public ContextVariable Message => message;
+	public VMMessageCastInfo(ContextVariable message, VMType type) {
+		this.message = message;
+		this.type = type;
+	}
 
-    public VMType CastType => type;
-  }
+	public ContextVariable Message => message;
+
+	public VMType CastType => type;
 }

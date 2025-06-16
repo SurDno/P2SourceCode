@@ -4,73 +4,62 @@ using Engine.Common.Components.MessangerStationary;
 using Inspectors;
 using UnityEngine;
 
-public class NpcStateMoveFollowTeleportStationary : INpcState
-{
-  private bool inited;
-  private bool failed;
-  private Pivot pivot;
-  private NpcState npcState;
-  private bool wasRestartBehaviourAfterTeleport;
+public class NpcStateMoveFollowTeleportStationary : INpcState {
+	private bool inited;
+	private bool failed;
+	private Pivot pivot;
+	private NpcState npcState;
+	private bool wasRestartBehaviourAfterTeleport;
 
-  public GameObject GameObject { get; private set; }
+	public GameObject GameObject { get; private set; }
 
-  [Inspected]
-  public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
+	[Inspected] public NpcStateStatusEnum Status => NpcStateStatusEnum.Running;
 
-  private bool TryInit()
-  {
-    if (inited)
-      return true;
-    failed = false;
-    inited = true;
-    return true;
-  }
+	private bool TryInit() {
+		if (inited)
+			return true;
+		failed = false;
+		inited = true;
+		return true;
+	}
 
-  public NpcStateMoveFollowTeleportStationary(NpcState npcState, Pivot pivot)
-  {
-    GameObject = npcState.gameObject;
-    this.npcState = npcState;
-    this.pivot = pivot;
-  }
+	public NpcStateMoveFollowTeleportStationary(NpcState npcState, Pivot pivot) {
+		GameObject = npcState.gameObject;
+		this.npcState = npcState;
+		this.pivot = pivot;
+	}
 
-  public void Activate(float trialTime, SpawnpointKindEnum spawnpointKind)
-  {
-    if (!TryInit())
-      return;
-    wasRestartBehaviourAfterTeleport = npcState.RestartBehaviourAfterTeleport;
-    Animator animator = pivot.GetAnimator();
-    if (!(animator != null))
-      return;
-    AnimatorState45 animatorState = AnimatorState45.GetAnimatorState(animator);
-    if (animatorState != null)
-      animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
-  }
+	public void Activate(float trialTime, SpawnpointKindEnum spawnpointKind) {
+		if (!TryInit())
+			return;
+		wasRestartBehaviourAfterTeleport = npcState.RestartBehaviourAfterTeleport;
+		var animator = pivot.GetAnimator();
+		if (!(animator != null))
+			return;
+		var animatorState = AnimatorState45.GetAnimatorState(animator);
+		if (animatorState != null)
+			animatorState.ControlMovableState = AnimatorState45.MovableState45.Idle;
+	}
 
-  public void Shutdown()
-  {
-    if (!failed)
-      ;
-  }
+	public void Shutdown() {
+		if (!failed)
+			;
+	}
 
-  public void Update()
-  {
-    if (!failed)
-      ;
-  }
+	public void Update() {
+		if (!failed)
+			;
+	}
 
-  public void OnAnimatorMove()
-  {
-    if (!failed)
-      ;
-  }
+	public void OnAnimatorMove() {
+		if (!failed)
+			;
+	}
 
-  public void OnAnimatorEventEvent(string obj)
-  {
-    if (!failed)
-      ;
-  }
+	public void OnAnimatorEventEvent(string obj) {
+		if (!failed)
+			;
+	}
 
-  public void OnLodStateChanged(bool enabled)
-  {
-  }
+	public void OnLodStateChanged(bool enabled) { }
 }

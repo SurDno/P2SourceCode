@@ -1,23 +1,21 @@
 ﻿using PLVirtualMachine.Common.EngineAPI;
 
-namespace PLVirtualMachine.Common
-{
-  public interface IExpression : IObject, IEditorBaseTemplate, IFunctionalPoint, IStaticUpdateable
-  {
-    bool IsValid { get; }
+namespace PLVirtualMachine.Common;
 
-    ExpressionType Type { get; }
+public interface IExpression : IObject, IEditorBaseTemplate, IFunctionalPoint, IStaticUpdateable {
+	bool IsValid { get; }
 
-    VMType ResultType { get; }
+	ExpressionType Type { get; }
 
-    bool Inversion { get; }
+	VMType ResultType { get; }
 
-    IParam TargetConstant { get; }
+	bool Inversion { get; }
 
-    int ChildExpressionsCount { get; }
+	IParam TargetConstant { get; }
 
-    IExpression GetChildExpression(int childIndex);
+	int ChildExpressionsCount { get; }
 
-    FormulaOperation GetChildOperations(int childIndex);
-  }
+	IExpression GetChildExpression(int childIndex);
+
+	FormulaOperation GetChildOperations(int childIndex);
 }

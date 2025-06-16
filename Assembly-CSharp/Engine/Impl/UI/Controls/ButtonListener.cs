@@ -1,19 +1,17 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 
-namespace Engine.Impl.UI.Controls
-{
-  [RequireComponent(typeof (Button))]
-  public class ButtonListener : MonoBehaviour
-  {
-    [SerializeField]
-    private EventView view;
+namespace Engine.Impl.UI.Controls;
 
-    private void Awake()
-    {
-      GetComponent<Button>().onClick.AddListener(OnClick);
-    }
+[RequireComponent(typeof(Button))]
+public class ButtonListener : MonoBehaviour {
+	[SerializeField] private EventView view;
 
-    private void OnClick() => view?.Invoke();
-  }
+	private void Awake() {
+		GetComponent<Button>().onClick.AddListener(OnClick);
+	}
+
+	private void OnClick() {
+		view?.Invoke();
+	}
 }

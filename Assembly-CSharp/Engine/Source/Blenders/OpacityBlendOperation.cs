@@ -1,24 +1,24 @@
 ﻿using Engine.Common.Blenders;
 using UnityEngine;
 
-namespace Engine.Source.Blenders
-{
-  public class OpacityBlendOperation : IBlendOperation, IPureBlendOperation
-  {
-    public float Opacity { get; set; }
+namespace Engine.Source.Blenders;
 
-    public Color Blend(Color a, Color b) => a * (1f - Opacity) + b * Opacity;
+public class OpacityBlendOperation : IBlendOperation, IPureBlendOperation {
+	public float Opacity { get; set; }
 
-    public Vector2 Blend(Vector2 a, Vector2 b) => a * (1f - Opacity) + b * Opacity;
+	public Color Blend(Color a, Color b) {
+		return a * (1f - Opacity) + b * Opacity;
+	}
 
-    public int Blend(int a, int b)
-    {
-      return (int) (a * (1.0 - Opacity) + b * (double) Opacity);
-    }
+	public Vector2 Blend(Vector2 a, Vector2 b) {
+		return a * (1f - Opacity) + b * Opacity;
+	}
 
-    public float Blend(float a, float b)
-    {
-      return (float) (a * (1.0 - Opacity) + b * (double) Opacity);
-    }
-  }
+	public int Blend(int a, int b) {
+		return (int)(a * (1.0 - Opacity) + b * (double)Opacity);
+	}
+
+	public float Blend(float a, float b) {
+		return (float)(a * (1.0 - Opacity) + b * (double)Opacity);
+	}
 }

@@ -3,27 +3,18 @@ using Engine.Common.Generator;
 using Engine.Impl.Services.Factories;
 using Inspectors;
 
-namespace Engine.Source.Components.Repairing
-{
-  [Factory]
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class RepairableLevel
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy]
-    protected float maxDurability;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [Inspected(Mutable = true, Mode = ExecuteMode.Edit)]
-    [CopyableProxy()]
-    protected List<RepairableCostItem> cost = new List<RepairableCostItem>();
+namespace Engine.Source.Components.Repairing;
 
-    [Inspected]
-    public float MaxDurability => maxDurability;
+[Factory]
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class RepairableLevel {
+	[DataReadProxy] [DataWriteProxy] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)] [CopyableProxy]
+	protected float maxDurability;
 
-    [Inspected]
-    public List<RepairableCostItem> Сost => cost;
-  }
+	[DataReadProxy] [DataWriteProxy] [Inspected(Mutable = true, Mode = ExecuteMode.Edit)] [CopyableProxy()]
+	protected List<RepairableCostItem> cost = new();
+
+	[Inspected] public float MaxDurability => maxDurability;
+
+	[Inspected] public List<RepairableCostItem> Сost => cost;
 }

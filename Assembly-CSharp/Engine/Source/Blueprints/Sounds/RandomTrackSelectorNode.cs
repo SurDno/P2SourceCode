@@ -5,31 +5,28 @@ using ParadoxNotion.Design;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-namespace Engine.Source.Blueprints.Sounds
-{
-  [Category("Sounds")]
-  [ContextDefinedInputs(typeof (AudioClip))]
-  public class RandomTrackSelectorNode : FlowControlNode, IMultiPortNode
-  {
-    [SerializeField]
-    private int _portCount = 2;
-    private List<ValueInput<AudioClip>> inputs = new List<ValueInput<AudioClip>>();
+namespace Engine.Source.Blueprints.Sounds;
 
-    public int portCount
-    {
-      get => _portCount;
-      set => _portCount = value;
-    }
+[Category("Sounds")]
+[ContextDefinedInputs(typeof(AudioClip))]
+public class RandomTrackSelectorNode : FlowControlNode, IMultiPortNode {
+	[SerializeField] private int _portCount = 2;
+	private List<ValueInput<AudioClip>> inputs = new();
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      inputs.Clear();
-      for (int index = 0; index < _portCount; ++index)
-        inputs.Add(AddValueInput<AudioClip>((index + 1).ToString()));
-    }
+	public int portCount {
+		get => _portCount;
+		set => _portCount = value;
+	}
 
-    [Port("Value")]
-    private AudioClip Value() => inputs[Random.Range(0, inputs.Count)].value;
-  }
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		inputs.Clear();
+		for (var index = 0; index < _portCount; ++index)
+			inputs.Add(AddValueInput<AudioClip>((index + 1).ToString()));
+	}
+
+	[Port("Value")]
+	private AudioClip Value() {
+		return inputs[Random.Range(0, inputs.Count)].value;
+	}
 }

@@ -4,39 +4,33 @@ using FlowCanvas;
 using FlowCanvas.Nodes;
 using ParadoxNotion.Design;
 
-namespace Engine.Source.Blueprints
-{
-  [Category("Engine")]
-  public class StelthEventNode : EventNode<FlowScriptController>
-  {
-    private FlowOutput showOutput;
-    private FlowOutput hideOutput;
+namespace Engine.Source.Blueprints;
 
-    public override void OnGraphStarted()
-    {
-      base.OnGraphStarted();
-      ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged += OnVisibleChanged;
-    }
+[Category("Engine")]
+public class StelthEventNode : EventNode<FlowScriptController> {
+	private FlowOutput showOutput;
+	private FlowOutput hideOutput;
 
-    public override void OnGraphStoped()
-    {
-      ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged -= OnVisibleChanged;
-      base.OnGraphStoped();
-    }
+	public override void OnGraphStarted() {
+		base.OnGraphStarted();
+		ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged += OnVisibleChanged;
+	}
 
-    private void OnVisibleChanged(bool visible)
-    {
-      if (visible)
-        showOutput.Call();
-      else
-        hideOutput.Call();
-    }
+	public override void OnGraphStoped() {
+		ServiceLocator.GetService<StelthEnableListener>().OnVisibleChanged -= OnVisibleChanged;
+		base.OnGraphStoped();
+	}
 
-    protected override void RegisterPorts()
-    {
-      base.RegisterPorts();
-      showOutput = AddFlowOutput("Show");
-      hideOutput = AddFlowOutput("Hide");
-    }
-  }
+	private void OnVisibleChanged(bool visible) {
+		if (visible)
+			showOutput.Call();
+		else
+			hideOutput.Call();
+	}
+
+	protected override void RegisterPorts() {
+		base.RegisterPorts();
+		showOutput = AddFlowOutput("Show");
+		hideOutput = AddFlowOutput("Hide");
+	}
 }

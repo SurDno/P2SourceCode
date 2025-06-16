@@ -1,71 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace PLVirtualMachine.Dynamic.Components
-{
-  public class StorageCommandProcessor : IAssyncUpdateable
-  {
-    private bool isActive;
-    protected Queue<IStorageCommand> commandsQueue = new Queue<IStorageCommand>(1000);
-    private static float FINISH_INTERVAL = 1f;
-    private static float MAX_FRAME_INTERVAL = 0.1f;
-    private static int CommnadProcNum;
-    private const int CommandQueueSizeMax = 1000;
+namespace PLVirtualMachine.Dynamic.Components;
 
-    public void Update(TimeSpan timeDelta)
-    {
-      int num1 = 1;
-      if (timeDelta.TotalMilliseconds > 0.0)
-      {
-        double num2 = 1.0 / 1000.0 * timeDelta.TotalMilliseconds;
-        if (num2 > MAX_FRAME_INTERVAL)
-          num2 = MAX_FRAME_INTERVAL;
-        int num3 = commandsQueue.Count / (int) Math.Ceiling(FINISH_INTERVAL / num2);
-        if (num3 > 1)
-          num1 = num3;
-      }
-      for (int index = 0; index < num1 && commandsQueue.Count != 0; ++index)
-        ProcessCommand(commandsQueue.Dequeue());
-      if (commandsQueue.Count == 0)
-        isActive = false;
-      ++CommnadProcNum;
-    }
+public class StorageCommandProcessor : IAssyncUpdateable {
+	private bool isActive;
+	protected Queue<IStorageCommand> commandsQueue = new(1000);
+	private static float FINISH_INTERVAL = 1f;
+	private static float MAX_FRAME_INTERVAL = 0.1f;
+	private static int CommnadProcNum;
+	private const int CommandQueueSizeMax = 1000;
 
-    public bool IsStorageOperationsProcessing => commandsQueue.Count > 0;
+	public void Update(TimeSpan timeDelta) {
+		var num1 = 1;
+		if (timeDelta.TotalMilliseconds > 0.0) {
+			var num2 = 1.0 / 1000.0 * timeDelta.TotalMilliseconds;
+			if (num2 > MAX_FRAME_INTERVAL)
+				num2 = MAX_FRAME_INTERVAL;
+			var num3 = commandsQueue.Count / (int)Math.Ceiling(FINISH_INTERVAL / num2);
+			if (num3 > 1)
+				num1 = num3;
+		}
 
-    public virtual void Clear()
-    {
-      if (commandsQueue == null)
-        return;
-      int count = commandsQueue.Count;
-      for (int index = 0; index < count; ++index)
-        commandsQueue.Dequeue().Clear();
-      commandsQueue.Clear();
-      commandsQueue = null;
-    }
+		for (var index = 0; index < num1 && commandsQueue.Count != 0; ++index)
+			ProcessCommand(commandsQueue.Dequeue());
+		if (commandsQueue.Count == 0)
+			isActive = false;
+		++CommnadProcNum;
+	}
 
-    public bool Active
-    {
-      get => isActive;
-      protected set => isActive = value;
-    }
+	public bool IsStorageOperationsProcessing => commandsQueue.Count > 0;
 
-    public void MakeStorageCommand(IStorageCommand storageCommand, bool assyncProcess = false)
-    {
-      if (assyncProcess)
-        PushCommandToProcessQueue(storageCommand);
-      else
-        ProcessCommand(storageCommand);
-    }
+	public virtual void Clear() {
+		if (commandsQueue == null)
+			return;
+		var count = commandsQueue.Count;
+		for (var index = 0; index < count; ++index)
+			commandsQueue.Dequeue().Clear();
+		commandsQueue.Clear();
+		commandsQueue = null;
+	}
 
-    protected virtual void ProcessCommand(IStorageCommand storageCommand)
-    {
-    }
+	public bool Active {
+		get => isActive;
+		protected set => isActive = value;
+	}
 
-    private void PushCommandToProcessQueue(IStorageCommand storageCommand)
-    {
-      commandsQueue.Enqueue(storageCommand);
-      isActive = true;
-    }
-  }
+	public void MakeStorageCommand(IStorageCommand storageCommand, bool assyncProcess = false) {
+		if (assyncProcess)
+			PushCommandToProcessQueue(storageCommand);
+		else
+			ProcessCommand(storageCommand);
+	}
+
+	protected virtual void ProcessCommand(IStorageCommand storageCommand) { }
+
+	private void PushCommandToProcessQueue(IStorageCommand storageCommand) {
+		commandsQueue.Enqueue(storageCommand);
+		isActive = true;
+	}
 }

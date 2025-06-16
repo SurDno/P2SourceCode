@@ -1,12 +1,12 @@
 ﻿using System;
 
-namespace PLVirtualMachine.Common.VMSpecialAttributes
-{
-  [AttributeUsage(AttributeTargets.Property)]
-  public class SpecialPropertyAttribute : Attribute
-  {
-    public readonly ESpecialPropertyName Name;
+namespace PLVirtualMachine.Common.VMSpecialAttributes;
 
-    public SpecialPropertyAttribute(ESpecialPropertyName specialName) => Name = specialName;
-  }
+[AttributeUsage(AttributeTargets.Property)]
+public class SpecialPropertyAttribute : Attribute {
+	public readonly ESpecialPropertyName Name;
+
+	public SpecialPropertyAttribute(ESpecialPropertyName specialName) {
+		Name = specialName;
+	}
 }

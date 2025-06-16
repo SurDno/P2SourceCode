@@ -1,20 +1,26 @@
-﻿public class NocMarker
-{
-  public int msStart;
-  public int msEnd;
-  public int weight;
+﻿public class NocMarker {
+	public int msStart;
+	public int msEnd;
+	public int weight;
 
-  public NocMarker()
-  {
-    msStart = msEnd = 0;
-    weight = 50;
-  }
+	public NocMarker() {
+		msStart = msEnd = 0;
+		weight = 50;
+	}
 
-  public int getDuration() => msEnd - msStart;
+	public int getDuration() {
+		return msEnd - msStart;
+	}
 
-  public int getEndMs() => msEnd;
+	public int getEndMs() {
+		return msEnd;
+	}
 
-  public int getStartMs() => msStart;
+	public int getStartMs() {
+		return msStart;
+	}
 
-  public float getEnergy() => weight;
+	public float getEnergy() {
+		return weight;
+	}
 }

@@ -1,7 +1,4 @@
 ﻿using System.Runtime.CompilerServices;
 using UnityEngine;
 
-public class FlameTarget : MonoBehaviour, IFlamable
-{
-	
-}
+public class FlameTarget : MonoBehaviour, IFlamable { }

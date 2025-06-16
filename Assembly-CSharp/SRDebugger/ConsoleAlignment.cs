@@ -1,8 +1,6 @@
-﻿namespace SRDebugger
-{
-  public enum ConsoleAlignment
-  {
-    Top,
-    Bottom,
-  }
+﻿namespace SRDebugger;
+
+public enum ConsoleAlignment {
+	Top,
+	Bottom
 }

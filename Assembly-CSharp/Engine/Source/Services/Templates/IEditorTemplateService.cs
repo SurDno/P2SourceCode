@@ -1,24 +1,22 @@
 ﻿using System;
 using Engine.Common;
 
-namespace Engine.Source.Services.Templates
-{
-  public interface IEditorTemplateService
-  {
-    IObject GetTemplate(Type type, Guid id);
+namespace Engine.Source.Services.Templates;
 
-    T GetTemplate<T>(Guid id) where T : class, IObject;
+public interface IEditorTemplateService {
+	IObject GetTemplate(Type type, Guid id);
 
-    T CreateTemplate<T>(string path, Guid id) where T : class, IObject;
+	T GetTemplate<T>(Guid id) where T : class, IObject;
 
-    void DeleteTemplate(IObject template);
+	T CreateTemplate<T>(string path, Guid id) where T : class, IObject;
 
-    void SetDirty(IObject template);
+	void DeleteTemplate(IObject template);
 
-    void SaveTemplates();
+	void SetDirty(IObject template);
 
-    void SaveTemplate(IObject template);
+	void SaveTemplates();
 
-    void Cleanup();
-  }
+	void SaveTemplate(IObject template);
+
+	void Cleanup();
 }

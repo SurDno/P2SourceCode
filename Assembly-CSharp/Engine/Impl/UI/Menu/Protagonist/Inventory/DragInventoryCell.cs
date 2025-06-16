@@ -6,41 +6,30 @@ using Engine.Source.Inventory;
 using Inspectors;
 using UnityEngine;
 
-namespace Engine.Impl.UI.Menu.Protagonist.Inventory
-{
-  public class DragInventoryCell
-  {
-    [Inspected]
-    public HashSet<InventoryCellUI> ActionCells = new HashSet<InventoryCellUI>();
-    [Inspected]
-    public HashSet<InventoryCellUI> BaseCells = new HashSet<InventoryCellUI>();
-    [Inspected]
-    public bool IsEnabled;
-    [Inspected]
-    public Vector2 MouseOffset;
-    [Inspected]
-    public IStorageComponent Storage;
-    [Inspected]
-    public IInventoryComponent Container;
-    [Inspected]
-    public StorableComponent Storable;
-    [Inspected]
-    public Cell Cell;
+namespace Engine.Impl.UI.Menu.Protagonist.Inventory;
 
-    public void Reset()
-    {
-      IsEnabled = false;
-      Storable = null;
-      Storage = null;
-      Container = null;
-      Cell = null;
-      MouseOffset = Vector2.zero;
-      foreach (InventoryCellUI actionCell in ActionCells)
-        actionCell.State = CellState.Default;
-      ActionCells.Clear();
-      foreach (InventoryCellUI baseCell in BaseCells)
-        baseCell.State = CellState.Default;
-      BaseCells.Clear();
-    }
-  }
+public class DragInventoryCell {
+	[Inspected] public HashSet<InventoryCellUI> ActionCells = new();
+	[Inspected] public HashSet<InventoryCellUI> BaseCells = new();
+	[Inspected] public bool IsEnabled;
+	[Inspected] public Vector2 MouseOffset;
+	[Inspected] public IStorageComponent Storage;
+	[Inspected] public IInventoryComponent Container;
+	[Inspected] public StorableComponent Storable;
+	[Inspected] public Cell Cell;
+
+	public void Reset() {
+		IsEnabled = false;
+		Storable = null;
+		Storage = null;
+		Container = null;
+		Cell = null;
+		MouseOffset = Vector2.zero;
+		foreach (var actionCell in ActionCells)
+			actionCell.State = CellState.Default;
+		ActionCells.Clear();
+		foreach (var baseCell in BaseCells)
+			baseCell.State = CellState.Default;
+		BaseCells.Clear();
+	}
 }

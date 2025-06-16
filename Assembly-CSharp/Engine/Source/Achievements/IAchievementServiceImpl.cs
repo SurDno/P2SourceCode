@@ -1,21 +1,19 @@
 ﻿using System.Collections.Generic;
 
-namespace Engine.Source.Achievements
-{
-  public interface IAchievementServiceImpl
-  {
-    IEnumerable<string> Ids { get; }
+namespace Engine.Source.Achievements;
 
-    void Initialise();
+public interface IAchievementServiceImpl {
+	IEnumerable<string> Ids { get; }
 
-    void Shutdown();
+	void Initialise();
 
-    void Update();
+	void Shutdown();
 
-    void Unlock(string id);
+	void Update();
 
-    void Reset(string id);
+	void Unlock(string id);
 
-    bool IsUnlocked(string id);
-  }
+	void Reset(string id);
+
+	bool IsUnlocked(string id);
 }

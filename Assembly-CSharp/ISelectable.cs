@@ -1,4 +1,3 @@
-﻿public interface ISelectable
-{
-  bool Selected { get; set; }
+﻿public interface ISelectable {
+	bool Selected { get; set; }
 }

@@ -8,122 +8,101 @@ using Inspectors;
 using UnityEngine;
 using UnityEngine.Profiling;
 
-namespace ParadoxNotion.Services
-{
-  public class BlueprintManager : MonoBehaviour, IUpdateItem<Graph>, IUpdatable
-  {
-    private static bool isQuiting;
-    [NonSerialized]
-    public List<Graph> graphs = new List<Graph>();
-    [Inspected]
-    private ReduceUpdateProxy<Graph> updater;
-    private static BlueprintManager _current;
+namespace ParadoxNotion.Services;
 
-    public static UpdateMode updateMode
-    {
-      get
-      {
-        return current.enabled ? UpdateMode.Auto : UpdateMode.Manual;
-      }
-      set => current.enabled = value == UpdateMode.Auto;
-    }
+public class BlueprintManager : MonoBehaviour, IUpdateItem<Graph>, IUpdatable {
+	private static bool isQuiting;
+	[NonSerialized] public List<Graph> graphs = new();
+	[Inspected] private ReduceUpdateProxy<Graph> updater;
+	private static BlueprintManager _current;
 
-    public event Action onLateUpdate;
+	public static UpdateMode updateMode {
+		get => current.enabled ? UpdateMode.Auto : UpdateMode.Manual;
+		set => current.enabled = value == UpdateMode.Auto;
+	}
 
-    public event Action onFixedUpdate;
+	public event Action onLateUpdate;
 
-    public event Action onApplicationQuit;
+	public event Action onFixedUpdate;
 
-    public event Action<bool> onApplicationPause;
+	public event Action onApplicationQuit;
 
-    public static BlueprintManager current
-    {
-      get
-      {
-        if (_current == null && !isQuiting)
-        {
-          _current = FindObjectOfType<BlueprintManager>();
-          if (_current == null)
-            _current = UnityFactory.GetOrCreateGroup("[Blueprints]").AddComponent<BlueprintManager>();
-        }
-        return _current;
-      }
-    }
+	public event Action<bool> onApplicationPause;
 
-    private void OnApplicationQuit()
-    {
-      isQuiting = true;
-      Action onApplicationQuit = this.onApplicationQuit;
-      if (onApplicationQuit == null)
-        return;
-      onApplicationQuit();
-    }
+	public static BlueprintManager current {
+		get {
+			if (_current == null && !isQuiting) {
+				_current = FindObjectOfType<BlueprintManager>();
+				if (_current == null)
+					_current = UnityFactory.GetOrCreateGroup("[Blueprints]").AddComponent<BlueprintManager>();
+			}
 
-    private void OnApplicationPause(bool isPause)
-    {
-      Action<bool> applicationPause = onApplicationPause;
-      if (applicationPause == null)
-        return;
-      applicationPause(isPause);
-    }
+			return _current;
+		}
+	}
 
-    private void Awake()
-    {
-      updater = new ReduceUpdateProxy<Graph>(graphs, this, ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintUpdateDelay);
-      if (_current != null && _current != this)
-      {
-        DestroyImmediate(gameObject);
-      }
-      else
-      {
-        InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.AddUpdatable(this);
-        _current = this;
-      }
-    }
+	private void OnApplicationQuit() {
+		isQuiting = true;
+		var onApplicationQuit = this.onApplicationQuit;
+		if (onApplicationQuit == null)
+			return;
+		onApplicationQuit();
+	}
 
-    private void OnDestroy()
-    {
-      _current = null;
-      InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.RemoveUpdatable(this);
-    }
+	private void OnApplicationPause(bool isPause) {
+		var applicationPause = onApplicationPause;
+		if (applicationPause == null)
+			return;
+		applicationPause(isPause);
+	}
 
-    private void LateUpdate()
-    {
-      Action onLateUpdate = this.onLateUpdate;
-      if (onLateUpdate == null)
-        return;
-      onLateUpdate();
-    }
+	private void Awake() {
+		updater = new ReduceUpdateProxy<Graph>(graphs, this,
+			ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.BlueprintUpdateDelay);
+		if (_current != null && _current != this)
+			DestroyImmediate(gameObject);
+		else {
+			InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.AddUpdatable(this);
+			_current = this;
+		}
+	}
 
-    private void FixedUpdate()
-    {
-      Action onFixedUpdate = this.onFixedUpdate;
-      if (onFixedUpdate == null)
-        return;
-      onFixedUpdate();
-    }
+	private void OnDestroy() {
+		_current = null;
+		InstanceByRequest<UpdateService>.Instance.BlueprintUpdater.RemoveUpdatable(this);
+	}
 
-    public void ComputeUpdateItem(Graph item)
-    {
-      if (Profiler.enabled)
-        Profiler.BeginSample(item.agentName);
-      item.UpdateGraph();
-      if (!Profiler.enabled)
-        return;
-      Profiler.EndSample();
-    }
+	private void LateUpdate() {
+		var onLateUpdate = this.onLateUpdate;
+		if (onLateUpdate == null)
+			return;
+		onLateUpdate();
+	}
 
-    public void ComputeUpdate()
-    {
-      if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableBlueprints)
-        return;
-      updater.Update();
-    }
+	private void FixedUpdate() {
+		var onFixedUpdate = this.onFixedUpdate;
+		if (onFixedUpdate == null)
+			return;
+		onFixedUpdate();
+	}
 
-    public enum UpdateMode
-    {
-      Auto,
-      Manual,
-    }
-  }
+	public void ComputeUpdateItem(Graph item) {
+		if (Profiler.enabled)
+			Profiler.BeginSample(item.agentName);
+		item.UpdateGraph();
+		if (!Profiler.enabled)
+			return;
+		Profiler.EndSample();
+	}
+
+	public void ComputeUpdate() {
+		if (ExternalSettingsInstance<ExternalOptimizationSettings>.Instance.DisableBlueprints)
+			return;
+		updater.Update();
+	}
+
+	public enum UpdateMode {
+		Auto,
+		Manual
+	}
 }

@@ -2,48 +2,38 @@
 using Engine.Common.Generator;
 using Engine.Source.Blenders;
 
-namespace Engine.Impl.Weather.Element
-{
-  [GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
-  public class Moon : IBlendable<Moon>
-  {
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    protected float brightness;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy]
-    protected float contrast;
-    [DataReadProxy]
-    [DataWriteProxy]
-    [CopyableProxy()]
-    protected float size;
+namespace Engine.Impl.Weather.Element;
 
-    public float Size
-    {
-      get => size;
-      set => size = value;
-    }
+[GenerateProxy(TypeEnum.Cloneable | TypeEnum.Copyable | TypeEnum.DataRead | TypeEnum.DataWrite)]
+public class Moon : IBlendable<Moon> {
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy]
+	protected float brightness;
 
-    public float Brightness
-    {
-      get => brightness;
-      set => brightness = value;
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy]
+	protected float contrast;
 
-    public float Contrast
-    {
-      get => contrast;
-      set => contrast = value;
-    }
+	[DataReadProxy] [DataWriteProxy] [CopyableProxy()]
+	protected float size;
 
-    public void Blend(Moon a, Moon b, IPureBlendOperation opp)
-    {
-      IBlendOperation blendOperation = (IBlendOperation) opp;
-      Size = blendOperation.Blend(a.Size, b.Size);
-      Brightness = blendOperation.Blend(a.Brightness, b.Brightness);
-      Contrast = blendOperation.Blend(a.Contrast, b.Contrast);
-    }
-  }
+	public float Size {
+		get => size;
+		set => size = value;
+	}
+
+	public float Brightness {
+		get => brightness;
+		set => brightness = value;
+	}
+
+	public float Contrast {
+		get => contrast;
+		set => contrast = value;
+	}
+
+	public void Blend(Moon a, Moon b, IPureBlendOperation opp) {
+		var blendOperation = (IBlendOperation)opp;
+		Size = blendOperation.Blend(a.Size, b.Size);
+		Brightness = blendOperation.Blend(a.Brightness, b.Brightness);
+		Contrast = blendOperation.Blend(a.Contrast, b.Contrast);
+	}
 }

@@ -1,8 +1,6 @@
-﻿namespace SteamNative
-{
-  internal enum WorkshopVideoProvider
-  {
-    None,
-    Youtube,
-  }
+﻿namespace SteamNative;
+
+internal enum WorkshopVideoProvider {
+	None,
+	Youtube
 }

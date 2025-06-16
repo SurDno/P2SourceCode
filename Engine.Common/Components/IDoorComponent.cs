@@ -2,58 +2,56 @@
 using Engine.Common.Components.Gate;
 using Engine.Common.Components.Parameters;
 
-namespace Engine.Common.Components
-{
-  public interface IDoorComponent : IComponent
-  {
-    IPriorityParameterValue<bool> IsFree { get; }
+namespace Engine.Common.Components;
 
-    IPriorityParameterValue<bool> Opened { get; }
+public interface IDoorComponent : IComponent {
+	IPriorityParameterValue<bool> IsFree { get; }
 
-    IPriorityParameterValue<bool> Bolted { get; }
+	IPriorityParameterValue<bool> Opened { get; }
 
-    IPriorityParameterValue<bool> Marked { get; }
+	IPriorityParameterValue<bool> Bolted { get; }
 
-    IPriorityParameterValue<bool> SendEnterWithoutKnock { get; }
+	IPriorityParameterValue<bool> Marked { get; }
 
-    IPriorityParameterValue<LockState> LockState { get; }
+	IPriorityParameterValue<bool> SendEnterWithoutKnock { get; }
 
-    IParameterValue<bool> CanBeMarked { get; }
+	IPriorityParameterValue<LockState> LockState { get; }
 
-    IParameterValue<bool> Knockable { get; }
+	IParameterValue<bool> CanBeMarked { get; }
 
-    IParameterValue<bool> Pickable { get; }
+	IParameterValue<bool> Knockable { get; }
 
-    IParameterValue<int> Difficulty { get; }
+	IParameterValue<bool> Pickable { get; }
 
-    float MinReputation { get; set; }
+	IParameterValue<int> Difficulty { get; }
 
-    float MaxReputation { get; set; }
+	float MinReputation { get; set; }
 
-    bool IsOutdoor { get; }
+	float MaxReputation { get; set; }
 
-    IEnumerable<IEntity> Picklocks { get; }
+	bool IsOutdoor { get; }
 
-    void AddPicklock(IEntity item);
+	IEnumerable<IEntity> Picklocks { get; }
 
-    void RemovePicklock(IEntity item);
+	void AddPicklock(IEntity item);
 
-    void AddPicklock(PriorityParameterEnum priority, IEntity item);
+	void RemovePicklock(IEntity item);
 
-    void RemovePicklock(PriorityParameterEnum priority, IEntity item);
+	void AddPicklock(PriorityParameterEnum priority, IEntity item);
 
-    void ResetPicklocks(PriorityParameterEnum priority);
+	void RemovePicklock(PriorityParameterEnum priority, IEntity item);
 
-    IEnumerable<IEntity> Keys { get; }
+	void ResetPicklocks(PriorityParameterEnum priority);
 
-    void AddKey(IEntity item);
+	IEnumerable<IEntity> Keys { get; }
 
-    void RemoveKey(IEntity item);
+	void AddKey(IEntity item);
 
-    void AddKey(PriorityParameterEnum priority, IEntity item);
+	void RemoveKey(IEntity item);
 
-    void RemoveKey(PriorityParameterEnum priority, IEntity item);
+	void AddKey(PriorityParameterEnum priority, IEntity item);
 
-    void ResetKeys(PriorityParameterEnum priority);
-  }
+	void RemoveKey(PriorityParameterEnum priority, IEntity item);
+
+	void ResetKeys(PriorityParameterEnum priority);
 }
