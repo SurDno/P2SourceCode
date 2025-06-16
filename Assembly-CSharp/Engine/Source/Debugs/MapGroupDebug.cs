@@ -1,0 +1,177 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Source.Debugs.MapGroupDebug
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using Cofe.Meta;
+using Engine.Common;
+using Engine.Common.Components;
+using Engine.Common.Components.Movable;
+using Engine.Common.Components.Regions;
+using Engine.Common.Services;
+using Engine.Impl;
+using Engine.Impl.Services;
+using Engine.Impl.Services.HierarchyServices;
+using Engine.Source.Commons;
+using Engine.Source.Components;
+using Engine.Source.Components.Maps;
+using Engine.Source.Components.Regions;
+using Engine.Source.Components.Utilities;
+using Engine.Source.Services;
+using Engine.Source.Services.Gizmos;
+using Engine.Source.Utility;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+#nullable disable
+namespace Engine.Source.Debugs
+{
+  [Initialisable]
+  public static class MapGroupDebug
+  {
+    private static string name = "[Map]";
+    private static KeyCode key = KeyCode.M;
+    private static KeyModifficator modifficators = KeyModifficator.Control | KeyModifficator.Shift;
+    private static Color headerColor = Color.cyan;
+    private static Color bodyColor = Color.white;
+    private static Color trueColor = Color.white;
+    private static Color falseColor = ColorPreset.LightGray;
+    private static KeyCode teleportKey = KeyCode.Mouse0;
+    private static KeyModifficator teleportModifficator = KeyModifficator.Control;
+    private static KeyCode mapItemsKey = KeyCode.F1;
+    private static BoolPlayerProperty mapItemsVisible;
+
+    [Cofe.Meta.Initialise]
+    private static void Initialise()
+    {
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => GroupDebugService.RegisterGroup(MapGroupDebug.name, MapGroupDebug.key, MapGroupDebug.modifficators, new Action(MapGroupDebug.Update)));
+    }
+
+    private static void Update()
+    {
+      if (InputUtility.IsKeyDown(MapGroupDebug.mapItemsKey, KeyModifficator.Control))
+        MapGroupDebug.mapItemsVisible.Value = !(bool) MapGroupDebug.mapItemsVisible;
+      GizmoService service1 = ServiceLocator.GetService<GizmoService>();
+      string text1 = "\n" + MapGroupDebug.name + " (" + InputUtility.GetHotKeyText(MapGroupDebug.key, MapGroupDebug.modifficators) + ")";
+      service1.DrawText(text1, MapGroupDebug.headerColor);
+      string text2 = "  Teleport : (" + InputUtility.GetHotKeyText(MapGroupDebug.teleportKey, MapGroupDebug.teleportModifficator) + ")";
+      service1.DrawText(text2, MapGroupDebug.bodyColor);
+      string str = "\n  ";
+      MapService service2 = ServiceLocator.GetService<MapService>();
+      if (service2 == null)
+        return;
+      IEntity current = service2.Current;
+      string text3 = current == null ? str + "Selected is null" : str + current.GetInfo();
+      service1.DrawText(text3, MapGroupDebug.bodyColor);
+      if (InputUtility.IsKeyDown(MapGroupDebug.teleportKey, MapGroupDebug.teleportModifficator))
+        MapGroupDebug.ComputeTeleport();
+      MapGroupDebug.DrawMapItems();
+      MapGroupDebug.DrawHelp();
+    }
+
+    private static void DrawHelp()
+    {
+      string text1 = "\n[Gizmos]";
+      ServiceLocator.GetService<GizmoService>().DrawText(text1, MapGroupDebug.headerColor);
+      string text2 = "  MapItems " + ((bool) MapGroupDebug.mapItemsVisible ? (object) "True" : (object) "False") + " [Control + " + (object) MapGroupDebug.mapItemsKey + "]";
+      ServiceLocator.GetService<GizmoService>().DrawText(text2, (bool) MapGroupDebug.mapItemsVisible ? MapGroupDebug.trueColor : MapGroupDebug.falseColor);
+    }
+
+    private static void DrawMapItems()
+    {
+      if (!(bool) MapGroupDebug.mapItemsVisible)
+        return;
+      MapWindow active = ServiceLocator.GetService<UIService>().Active as MapWindow;
+      if ((UnityEngine.Object) active == (UnityEngine.Object) null)
+        return;
+      GizmoService service1 = ServiceLocator.GetService<GizmoService>();
+      ITemplateService service2 = ServiceLocator.GetService<ITemplateService>();
+      float distance = 2f / (24f / (float) Screen.height);
+      float num1 = 0.5f;
+      Vector3 detectorPosition = new Vector3(Input.mousePosition.x, 0.0f, (float) Screen.height - Input.mousePosition.y);
+      float num2 = 0.7f;
+      foreach (MapItemComponent mapItemComponent in MapItemComponent.Items)
+      {
+        Vector3 position = ((IEntityView) mapItemComponent.Owner).Position;
+        if (!(position == Vector3.zero))
+        {
+          Vector2 screenPosition = active.GetScreenPosition(position);
+          if (mapItemComponent.Region != null)
+          {
+            if ((double) active.Scroll < (double) num2)
+            {
+              RegionEnum region = mapItemComponent.Region.Region;
+              if (region != RegionEnum.Steppe)
+              {
+                string text = region.ToString();
+                service1.DrawText(screenPosition, text, TextCorner.None, Color.yellow);
+              }
+            }
+          }
+          else if ((double) active.Scroll >= (double) num2)
+          {
+            string text = mapItemComponent.Owner.Name;
+            if (text.EndsWith("_Loader"))
+            {
+              text = text.Substring(0, text.Length - "_Loader".Length);
+              int num3 = text.IndexOf("_");
+              if (num3 != -1)
+                text = text.Substring(num3 + 1);
+              IEnumerable<IEntity> childs1 = mapItemComponent.Owner.Childs;
+              IEntity entity1 = childs1 != null ? childs1.FirstOrDefault<IEntity>((Func<IEntity, bool>) (o => o.Name == "Indoor")) : (IEntity) null;
+              if (entity1 != null)
+              {
+                IEnumerable<IEntity> childs2 = entity1.Childs;
+                IEntity entity2 = childs2 != null ? childs2.FirstOrDefault<IEntity>((Func<IEntity, bool>) (o => o.Name == "Common")) : (IEntity) null;
+                if (entity2 != null)
+                {
+                  IEnumerable<IEntity> childs3 = entity2.Childs;
+                  IEntity entity3 = childs3 != null ? childs3.FirstOrDefault<IEntity>((Func<IEntity, bool>) (o => o.Name.StartsWith("Furniture") && o.IsEnabled)) : (IEntity) null;
+                  if (entity3 != null)
+                  {
+                    HierarchyItem hierarchyItem = ((IEntityHierarchy) entity3).HierarchyItem;
+                    if (hierarchyItem != null && hierarchyItem.Container != null)
+                    {
+                      HierarchyContainer container = hierarchyItem.Container;
+                      if (container != null)
+                      {
+                        SceneObject template = service2.GetTemplate<SceneObject>(container.Id);
+                        if (template != null)
+                          text = text + "\n" + template.Name;
+                      }
+                    }
+                  }
+                }
+              }
+            }
+            else if (text.EndsWith("_MapItem"))
+              text = text.Substring(0, text.Length - "_MapItem".Length);
+            Color green = Color.green;
+            if (!DetectorUtility.CheckRadiusDistance(detectorPosition, new Vector3(screenPosition.x, 0.0f, screenPosition.y), distance))
+              green.a = num1;
+            service1.DrawText(screenPosition, text, TextCorner.None, green);
+          }
+        }
+      }
+    }
+
+    private static void ComputeTeleport()
+    {
+      MapWindow active = ServiceLocator.GetService<UIService>().Active as MapWindow;
+      if ((UnityEngine.Object) active == (UnityEngine.Object) null)
+        return;
+      Vector3 point = active.GetWorldPosition(Input.mousePosition);
+      IEntity player = ServiceLocator.GetService<ISimulation>().Player;
+      LocationComponent component = RegionUtility.GetRegionByName(ScriptableObjectInstance<GameSettingsData>.Instance.DefaultRegionName).GetComponent<LocationComponent>();
+      point = new Vector3(point.x, 0.0f, point.y);
+      point.y = Terrain.activeTerrain.SampleHeight(point);
+      NavMeshUtility.SamplePosition(ref point, AreaEnum.All.ToMask());
+      Debug.Log((object) ObjectInfoUtility.GetStream().Append("Teleport to : ").Append((object) point));
+      player.GetComponent<NavigationComponent>().TeleportTo((ILocationComponent) component, point, Quaternion.identity);
+      ServiceLocator.GetService<UIService>().Pop();
+    }
+  }
+}

@@ -1,0 +1,104 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: SoundPropagation.Locator
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using System.Collections.Generic;
+using UnityEngine;
+
+#nullable disable
+namespace SoundPropagation
+{
+  public class Locator
+  {
+    private static Locator main;
+    private Pathfinder customPathfinder;
+    public List<PathPoint> path;
+    public float MaxTurnPerDistance = 2f;
+    public float OcclusionPerTurn = 0.5f;
+
+    public static Locator Main
+    {
+      get
+      {
+        if (Locator.main == null)
+          Locator.main = new Locator();
+        return Locator.main;
+      }
+      set => Locator.main = value;
+    }
+
+    public Pathfinder ActivePathfinder
+    {
+      get => this.customPathfinder == null ? Pathfinder.Main : this.customPathfinder;
+      set => this.customPathfinder = value;
+    }
+
+    public List<PathPoint> Path => this.path;
+
+    private Location LocationFromPath(List<PathPoint> path, Vector3 destDirectionality)
+    {
+      Location location = new Location()
+      {
+        Filtering = new Filtering(),
+        NearestCorner = path[path.Count - 1].Position,
+        PathLength = 0.0f,
+        PathFound = true
+      };
+      PathPoint pathPoint1 = path[0];
+      Vector3 rhs = location.NearestCorner - pathPoint1.Position;
+      rhs.Normalize();
+      for (int index = path.Count - 2; index >= 0; --index)
+      {
+        PathPoint pathPoint2 = path[index];
+        PathPoint pathPoint3 = path[index + 1];
+        location.PathLength += pathPoint2.StepLength;
+        if ((Object) pathPoint2.Cell != (Object) null)
+          location.Filtering.AddFiltering(pathPoint2.Cell.FilteringPerMeter, pathPoint2.StepLength);
+        if ((Object) pathPoint2.Portal != (Object) null)
+          location.Filtering.AddOcclusion(pathPoint2.Portal.Occlusion);
+        Vector3 vector3 = pathPoint2.Direction - pathPoint3.Direction;
+        location.Filtering.AddOcclusion(vector3.magnitude * this.OcclusionPerTurn);
+        if (index > 0)
+        {
+          Vector3 lhs = pathPoint2.Position - pathPoint1.Position;
+          lhs.Normalize();
+          if ((double) Vector3.Dot(lhs, rhs) < 0.999)
+          {
+            location.NearestCorner = pathPoint2.Position;
+            rhs = lhs;
+          }
+        }
+      }
+      float occlusion = Math.Normalize(ref destDirectionality) * (Vector3.Distance(destDirectionality, pathPoint1.Direction) * this.OcclusionPerTurn);
+      location.Filtering.AddOcclusion(occlusion);
+      return location;
+    }
+
+    public Locator(Pathfinder pathfinder = null)
+    {
+      this.customPathfinder = pathfinder;
+      this.path = new List<PathPoint>();
+    }
+
+    public Location GetLocation(
+      SPCell originCell,
+      Vector3 originPosition,
+      Vector3 originDirectionality,
+      SPCell destCell,
+      Vector3 destPosition,
+      Vector3 destDirectionality,
+      float roughMaxCost,
+      bool logPathfinding = false)
+    {
+      this.path.Clear();
+      Pathfinder activePathfinder = this.ActivePathfinder;
+      activePathfinder.MaxTurnPerDistance = this.MaxTurnPerDistance;
+      activePathfinder.LossPerTurn = this.OcclusionPerTurn;
+      if (activePathfinder.GetReversedPath(originCell, originPosition, originDirectionality, destCell, destPosition, destDirectionality, this.path, roughMaxCost, logPathfinding))
+        return this.LocationFromPath(this.path, destDirectionality);
+      return new Location() { PathFound = false };
+    }
+  }
+}

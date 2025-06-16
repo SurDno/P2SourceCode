@@ -1,0 +1,120 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Source.Blueprints.SwapItemsNode
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using Engine.Common;
+using Engine.Common.Commons;
+using Engine.Common.Components;
+using Engine.Common.Services;
+using Engine.Source.Components;
+using Engine.Source.Components.Utilities;
+using Engine.Source.Connections;
+using Engine.Source.Inventory;
+using Engine.Source.Services;
+using FlowCanvas;
+using FlowCanvas.Nodes;
+using ParadoxNotion.Design;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+#nullable disable
+namespace Engine.Source.Blueprints
+{
+  [Category("Engine")]
+  public class SwapItemsNode : FlowControlNode
+  {
+    private ValueInput<IEntitySerializable> removeItem;
+    private ValueInput<IEntitySerializable> addItem;
+    private ValueInput<int> amount;
+
+    protected override void RegisterPorts()
+    {
+      base.RegisterPorts();
+      FlowOutput output = this.AddFlowOutput("Out");
+      this.AddFlowInput("In", (FlowHandler) (() =>
+      {
+        IEntity player = ServiceLocator.GetService<ISimulation>().Player;
+        if (player != null)
+        {
+          StorageComponent component1 = player.GetComponent<StorageComponent>();
+          if (component1 != null)
+          {
+            StorageComponent storage = component1;
+            IEntitySerializable ientitySerializable = this.removeItem.value;
+            IEntity entity1 = ientitySerializable.Value;
+            int amount = this.amount.value;
+            int num = this.RemoveItemsAmount((IStorageComponent) storage, entity1, amount);
+            for (int index = 0; index < num; ++index)
+            {
+              IFactory service1 = ServiceLocator.GetService<IFactory>();
+              ientitySerializable = this.addItem.value;
+              IEntity template = ientitySerializable.Value;
+              IEntity entity2 = service1.Instantiate<IEntity>(template);
+              ServiceLocator.GetService<ISimulation>().Add(entity2, ServiceLocator.GetService<ISimulation>().Storables);
+              StorableComponent component2 = entity2.GetComponent<StorableComponent>();
+              Intersect intersect = StorageUtility.GetIntersect((IStorageComponent) component1, (IInventoryComponent) null, component2, (Cell) null);
+              if (entity2.IsDisposed)
+              {
+                NotificationService service2 = ServiceLocator.GetService<NotificationService>();
+                object[] objArray = new object[1];
+                ientitySerializable = this.addItem.value;
+                objArray[0] = (object) ientitySerializable.Value;
+                service2.AddNotify(NotificationEnum.ItemRecieve, objArray);
+              }
+              else if (intersect.IsAllowed)
+              {
+                component1.AddItem((IStorableComponent) component2, (IInventoryComponent) null);
+                NotificationService service3 = ServiceLocator.GetService<NotificationService>();
+                object[] objArray = new object[1];
+                ientitySerializable = this.addItem.value;
+                objArray[0] = (object) ientitySerializable.Value;
+                service3.AddNotify(NotificationEnum.ItemRecieve, objArray);
+              }
+              else
+                ServiceLocator.GetService<DropBagService>().DropBag((IStorableComponent) component2, component1.Owner);
+            }
+          }
+        }
+        output.Call();
+      }));
+      this.removeItem = this.AddValueInput<IEntitySerializable>("Remove Item");
+      this.addItem = this.AddValueInput<IEntitySerializable>("Add Item");
+      this.amount = this.AddValueInput<int>("Amount");
+    }
+
+    private int RemoveItemsAmount(IStorageComponent storage, IEntity item, int amount)
+    {
+      int num = amount;
+      List<KeyValuePair<IStorableComponent, int>> keyValuePairList = new List<KeyValuePair<IStorableComponent, int>>();
+      List<IStorableComponent> storableComponentList = new List<IStorableComponent>();
+      foreach (IStorableComponent storableComponent in storage.Items)
+      {
+        if (this.GetItemId(storableComponent.Owner) == this.GetItemId(item))
+          storableComponentList.Add(storableComponent);
+      }
+      storableComponentList.Sort((Comparison<IStorableComponent>) ((a, b) => a.Count.CompareTo(b.Count)));
+      foreach (IStorableComponent key in storableComponentList)
+      {
+        num -= Mathf.Min(key.Count, amount);
+        keyValuePairList.Add(new KeyValuePair<IStorableComponent, int>(key, key.Count - Mathf.Min(key.Count, amount)));
+        if (num <= 0)
+          break;
+      }
+      foreach (KeyValuePair<IStorableComponent, int> keyValuePair in keyValuePairList)
+      {
+        KeyValuePair<IStorableComponent, int> k = keyValuePair;
+        IStorableComponent storableComponent = storage.Items.First<IStorableComponent>((Func<IStorableComponent, bool>) (x => x.Equals((object) k.Key)));
+        storableComponent.Count = k.Value;
+        if (storableComponent.Count <= 0)
+          storableComponent.Owner.Dispose();
+      }
+      return amount - num;
+    }
+
+    private Guid GetItemId(IEntity item) => item.IsTemplate ? item.Id : item.TemplateId;
+  }
+}

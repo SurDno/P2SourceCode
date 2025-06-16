@@ -1,0 +1,53 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Externals.LipSync.PhonemeType
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+#nullable disable
+namespace Externals.LipSync
+{
+  public enum PhonemeType
+  {
+    x = 0,
+    AA = 1,
+    AH = 2,
+    h = 2,
+    AO = 3,
+    AW = 4,
+    OW = 4,
+    OY = 5,
+    UH = 5,
+    UW = 5,
+    AE = 6,
+    EH = 6,
+    AY = 7,
+    IH = 7,
+    EY = 8,
+    IY = 9,
+    y = 9,
+    ER = 10, // 0x0000000A
+    r = 10, // 0x0000000A
+    l = 11, // 0x0000000B
+    w = 12, // 0x0000000C
+    b = 13, // 0x0000000D
+    m = 13, // 0x0000000D
+    p = 13, // 0x0000000D
+    DH = 14, // 0x0000000E
+    NG = 14, // 0x0000000E
+    TH = 14, // 0x0000000E
+    ZH = 14, // 0x0000000E
+    d = 14, // 0x0000000E
+    g = 14, // 0x0000000E
+    k = 14, // 0x0000000E
+    n = 14, // 0x0000000E
+    s = 14, // 0x0000000E
+    t = 14, // 0x0000000E
+    z = 14, // 0x0000000E
+    CH = 15, // 0x0000000F
+    SH = 15, // 0x0000000F
+    j = 15, // 0x0000000F
+    f = 16, // 0x00000010
+    v = 16, // 0x00000010
+  }
+}

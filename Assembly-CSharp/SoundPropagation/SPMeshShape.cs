@@ -1,0 +1,266 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: SoundPropagation.SPMeshShape
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+
+#nullable disable
+namespace SoundPropagation
+{
+  public class SPMeshShape : Shape
+  {
+    public Vector3[] Vertices;
+    public SPMeshShape.IndexTuple[] Triangles;
+    private Matrix4x4[] world2planesMatrices;
+    private Matrix4x4[] planes2worldMatrices;
+
+    private Vector3 ClampToTriangle(Vector3 point)
+    {
+      if ((double) point.x <= 0.0)
+      {
+        point.x = 0.0f;
+        if ((double) point.y <= 0.0)
+          point.y = 0.0f;
+        else if ((double) point.y > 1.0)
+          point.y = 1f;
+      }
+      else if ((double) point.y <= 0.0)
+      {
+        point.y = 0.0f;
+        if ((double) point.x > 1.0)
+          point.x = 1f;
+      }
+      else if ((double) point.y - 1.0 >= (double) point.x)
+      {
+        point.y = 1f;
+        point.x = 0.0f;
+      }
+      else if ((double) point.x - 1.0 >= (double) point.y)
+      {
+        point.y = 0.0f;
+        point.x = 1f;
+      }
+      else
+      {
+        float num1 = point.x + point.y;
+        if ((double) num1 > 1.0)
+        {
+          float num2 = (float) (((double) num1 - 1.0) * 0.5);
+          point.x -= num2;
+          point.y -= num2;
+        }
+      }
+      return point;
+    }
+
+    protected override bool ClosestPointToSegmentInternal(
+      Vector3 pointA,
+      Vector3 pointB,
+      out Vector3 output)
+    {
+      if (this.world2planesMatrices.Length == 0)
+      {
+        output = pointA;
+        return false;
+      }
+      if (this.world2planesMatrices.Length == 1)
+      {
+        Vector3 triangle = this.ClampToTriangle(this.ClosestToSegmentOnPlane(this.world2planesMatrices[0], pointA, pointB));
+        output = this.planes2worldMatrices[0].MultiplyPoint3x4(triangle);
+        return true;
+      }
+      float num1 = float.MaxValue;
+      Vector3 vector3_1 = pointA;
+      for (int index = 0; index < this.world2planesMatrices.Length; ++index)
+      {
+        Vector3 triangle = this.ClampToTriangle(this.ClosestToSegmentOnPlane(this.world2planesMatrices[index], pointA, pointB));
+        Vector3 vector3_2 = this.planes2worldMatrices[index].MultiplyPoint3x4(triangle);
+        float num2 = Vector3.Distance(pointA, vector3_2) + Vector3.Distance(vector3_2, pointB);
+        if (index == 0 || (double) num2 < (double) num1)
+        {
+          vector3_1 = vector3_2;
+          num1 = num2;
+        }
+      }
+      output = vector3_1;
+      return true;
+    }
+
+    private Vector3 GetVertex(int index)
+    {
+      if (index < 0)
+        index = 0;
+      else if (index >= this.Vertices.Length)
+        index = this.Vertices.Length - 1;
+      return this.Vertices[index];
+    }
+
+    public void ImportMesh(Mesh mesh, float weldThreshold)
+    {
+      int[] triangles = mesh.triangles;
+      Vector3[] vertices = mesh.vertices;
+      List<SPMeshShape.IndexTuple> indexTupleList = new List<SPMeshShape.IndexTuple>(triangles.Length / 3);
+      List<Vector3> list = new List<Vector3>(vertices.Length);
+      int index1;
+      for (int index2 = 0; index2 < triangles.Length; index2 = index1 + 1)
+      {
+        Vector3 vertex1 = vertices[triangles[index2]];
+        int index3 = index2 + 1;
+        Vector3 vertex2 = vertices[triangles[index3]];
+        index1 = index3 + 1;
+        Vector3 vertex3 = vertices[triangles[index1]];
+        SPMeshShape.IndexTuple indexTuple = new SPMeshShape.IndexTuple();
+        indexTuple.A = this.AddVertex(list, vertex1, weldThreshold);
+        indexTuple.B = this.AddVertex(list, vertex2, weldThreshold);
+        indexTuple.C = this.AddVertex(list, vertex3, weldThreshold);
+        if (indexTuple.A != indexTuple.B && indexTuple.B != indexTuple.C && indexTuple.C != indexTuple.A)
+          indexTupleList.Add(indexTuple);
+      }
+      this.Triangles = indexTupleList.ToArray();
+      this.Vertices = list.ToArray();
+    }
+
+    protected override void Initialize()
+    {
+      if (this.Vertices.Length == 0)
+      {
+        this.world2planesMatrices = new Matrix4x4[0];
+        this.planes2worldMatrices = new Matrix4x4[0];
+      }
+      else
+      {
+        Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+        for (int index = 0; index < this.Vertices.Length; ++index)
+          this.Vertices[index] = localToWorldMatrix.MultiplyPoint3x4(this.Vertices[index]);
+        this.planes2worldMatrices = new Matrix4x4[this.Triangles.Length];
+        this.world2planesMatrices = new Matrix4x4[this.Triangles.Length];
+        for (int index = 0; index < this.Triangles.Length; ++index)
+        {
+          Vector3 vertex1 = this.GetVertex(this.Triangles[index].A);
+          Vector3 vertex2 = this.GetVertex(this.Triangles[index].B);
+          Vector3 vertex3 = this.GetVertex(this.Triangles[index].C);
+          Vector3 vector3_1 = vertex2 - vertex1;
+          Vector3 vector3_2 = vertex3 - vertex2;
+          Vector3 vector3_3 = vertex1 - vertex3;
+          float sqrMagnitude1 = vector3_1.sqrMagnitude;
+          float sqrMagnitude2 = vector3_2.sqrMagnitude;
+          float sqrMagnitude3 = vector3_3.sqrMagnitude;
+          Vector3 vector3_4;
+          Vector3 lhs;
+          Vector3 rhs;
+          if ((double) sqrMagnitude1 >= (double) sqrMagnitude2)
+          {
+            if ((double) sqrMagnitude1 >= (double) sqrMagnitude3)
+            {
+              vector3_4 = vertex3;
+              lhs = vector3_3;
+              rhs = -vector3_2;
+            }
+            else
+            {
+              vector3_4 = vertex2;
+              lhs = vector3_2;
+              rhs = -vector3_1;
+            }
+          }
+          else if ((double) sqrMagnitude2 >= (double) sqrMagnitude3)
+          {
+            vector3_4 = vertex1;
+            lhs = vector3_1;
+            rhs = -vector3_3;
+          }
+          else
+          {
+            vector3_4 = vertex2;
+            lhs = vector3_2;
+            rhs = -vector3_1;
+          }
+          Vector3 vector3_5 = Vector3.Cross(lhs, rhs);
+          Matrix4x4 matrix4x4 = new Matrix4x4();
+          matrix4x4.m00 = lhs.x;
+          matrix4x4.m10 = lhs.y;
+          matrix4x4.m20 = lhs.z;
+          matrix4x4.m01 = rhs.x;
+          matrix4x4.m11 = rhs.y;
+          matrix4x4.m21 = rhs.z;
+          matrix4x4.m02 = vector3_5.x;
+          matrix4x4.m12 = vector3_5.y;
+          matrix4x4.m22 = vector3_5.z;
+          matrix4x4.m03 = vector3_4.x;
+          matrix4x4.m13 = vector3_4.y;
+          matrix4x4.m23 = vector3_4.z;
+          matrix4x4.m33 = 1f;
+          this.planes2worldMatrices[index] = matrix4x4;
+          this.world2planesMatrices[index] = matrix4x4.inverse;
+        }
+      }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+      if (this.Vertices == null || this.Vertices.Length == 0)
+        return;
+      Gizmos.color = this.gizmoColor;
+      if (this.planes2worldMatrices != null && this.planes2worldMatrices.Length != 0)
+      {
+        for (int index = 0; index < this.planes2worldMatrices.Length; ++index)
+        {
+          Matrix4x4 planes2worldMatrix = this.planes2worldMatrices[index];
+          Vector3 vector3_1 = planes2worldMatrix.MultiplyPoint3x4(new Vector3(0.0f, 0.0f));
+          Vector3 vector3_2 = planes2worldMatrix.MultiplyPoint3x4(new Vector3(0.0f, 1f));
+          Vector3 vector3_3 = planes2worldMatrix.MultiplyPoint3x4(new Vector3(1f, 0.0f));
+          Gizmos.DrawLine(vector3_1, vector3_2);
+          Gizmos.DrawLine(vector3_2, vector3_3);
+          Gizmos.DrawLine(vector3_3, vector3_1);
+        }
+      }
+      else
+      {
+        if (this.Triangles == null || this.Triangles.Length == 0)
+          return;
+        Matrix4x4 localToWorldMatrix = this.transform.localToWorldMatrix;
+        for (int index = 0; index < this.Triangles.Length; ++index)
+        {
+          Vector3 vector3_4 = localToWorldMatrix.MultiplyPoint3x4(this.GetVertex(this.Triangles[index].A));
+          Vector3 vector3_5 = localToWorldMatrix.MultiplyPoint3x4(this.GetVertex(this.Triangles[index].B));
+          Vector3 vector3_6 = localToWorldMatrix.MultiplyPoint3x4(this.GetVertex(this.Triangles[index].C));
+          Gizmos.DrawLine(vector3_4, vector3_5);
+          Gizmos.DrawLine(vector3_5, vector3_6);
+          Gizmos.DrawLine(vector3_6, vector3_4);
+        }
+      }
+    }
+
+    private int AddVertex(List<Vector3> list, Vector3 vertex, float weldThreshold)
+    {
+      int num = -1;
+      for (int index = 0; index < list.Count; ++index)
+      {
+        if ((double) Vector3.Distance(list[index], vertex) <= (double) weldThreshold)
+        {
+          list[index] = (list[index] + vertex) * 0.5f;
+          num = index;
+          break;
+        }
+      }
+      if (num == -1)
+      {
+        num = list.Count;
+        list.Add(vertex);
+      }
+      return num;
+    }
+
+    [Serializable]
+    public struct IndexTuple
+    {
+      public int A;
+      public int B;
+      public int C;
+    }
+  }
+}

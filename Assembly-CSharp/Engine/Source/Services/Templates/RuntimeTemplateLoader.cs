@@ -1,0 +1,81 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Source.Services.Templates.RuntimeTemplateLoader
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using AssetDatabases;
+using Engine.Common;
+using Engine.Common.Services;
+using Engine.Source.Commons;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.IO;
+using UnityEngine;
+
+#nullable disable
+namespace Engine.Source.Services.Templates
+{
+  public class RuntimeTemplateLoader : ITemplateLoader
+  {
+    public int AsyncCount => AssetDatabaseService.Instance.GetAllAssetPathsCount();
+
+    public IEnumerator Load(Dictionary<Guid, IObject> items, Dictionary<Guid, string> names)
+    {
+      Stopwatch sw = new Stopwatch();
+      sw.Restart();
+      InitialiseEngineProgressService progressService = ServiceLocator.GetService<InitialiseEngineProgressService>();
+      int created = 0;
+      float delay = 1f;
+      float time = Time.realtimeSinceStartup;
+      IFactory factory = ServiceLocator.GetService<IFactory>();
+      IEnumerable<string> assets = AssetDatabaseService.Instance.GetAllAssetPaths();
+      foreach (string asset in assets)
+      {
+        ++progressService.Progress;
+        if ((double) time + (double) delay < (double) Time.realtimeSinceStartup)
+        {
+          time = Time.realtimeSinceStartup;
+          progressService.Update(nameof (RuntimeTemplateLoader), asset);
+          yield return (object) null;
+        }
+        IObject obj = (IObject) null;
+        if (asset.EndsWith(".bytes"))
+          obj = TemplateLoaderUtility.LoadObject(asset);
+        else if (asset.EndsWith("_AI.asset"))
+        {
+          Guid id = AssetDatabaseService.Instance.GetId(asset);
+          if (!(id == Guid.Empty))
+          {
+            obj = (IObject) factory.Create<BehaviorObject>(id);
+            ++created;
+            id = new Guid();
+          }
+          else
+            continue;
+        }
+        else if (asset.EndsWith("_Blueprint.prefab"))
+        {
+          Guid id = AssetDatabaseService.Instance.GetId(asset);
+          if (!(id == Guid.Empty))
+          {
+            obj = (IObject) factory.Create<BlueprintObject>(id);
+            ++created;
+            id = new Guid();
+          }
+          else
+            continue;
+        }
+        else
+          continue;
+        obj.Name = Path.GetFileNameWithoutExtension(asset);
+        TemplateLoaderUtility.AddTemplateImpl(obj, asset, items, names);
+        obj = (IObject) null;
+      }
+      sw.Stop();
+      UnityEngine.Debug.Log((object) ObjectInfoUtility.GetStream().Append(nameof (RuntimeTemplateLoader)).Append(" : ").Append(nameof (Load)).Append(" , elapsed : ").Append((object) sw.Elapsed).Append(" , created : ").Append(created));
+    }
+  }
+}

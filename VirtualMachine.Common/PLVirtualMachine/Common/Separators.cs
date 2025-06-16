@@ -1,0 +1,84 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: PLVirtualMachine.Common.Separators
+// Assembly: VirtualMachine.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: FE3F54BA-1089-4F0E-B049-A4D27F3D2E73
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\VirtualMachine.Common.dll
+
+#nullable disable
+namespace PLVirtualMachine.Common
+{
+  public static class Separators
+  {
+    public const string GroupStatusOperationsParamSeparator = "PARAM&VAL";
+    public const string TagInfoSeparator = "&=&";
+    public const string SourceParamsDataSeparator = "&VAR&INFO&";
+    public const string VarSourceParamsDataSeparator = "%";
+    public const string ActionDataStructPartsSeparator = "&ACTION&PART&";
+    public const string ParamsArraySeparator = "&NEXT&PAR&";
+    public const string ParamInfoPartSeparator = "&PARAM&INFO&PART&";
+    public const string OperationPathInfoPartSeparator = "&ROOT&PATH&VAR";
+    public const string TagsDistribPartsSeparator = "END&TAG";
+    public const string ComplexDistributionDataStart = "COMPLEX&DISTRIB";
+    public const string ComplexDistributionDataEnd = "END&DISTRIB";
+    public const string TagsDisrtribProcPostfix = "SUB&PERCENT";
+    public const string TagsDisrtribAbsPostfix = "IN&ABS";
+    public const string OperationMultiTagsInfoEnd = "&OP&AND&";
+    public const string ListObjectInfoDescStart = "value_";
+    public const string CommonListElemSeparator = "LIST&ELEM";
+    public const string ItemCombinationVariantPartSeparator = "END&PAR";
+    public const string ItemCombinationVariantSeparator = "END&VAR";
+    public const string ItemCombinationVariantProbabilityPreffix = "Probability_";
+    public const string ItemCombinationElementSeparator = "END&ELEM";
+    public const string ItemCombinationParamSeparator = "&CI&PARAMS&";
+    public const string ActionLoopParamConstPreffix = "const_";
+    public const string EventParamDescNamePreffix = "param_";
+    public const string VMTypesStringPreffix = "VM";
+    public const string PathListElemSeparator = "END&PATH";
+    public const string OperationRootInfoContextParamSeparator = "CONTEXT&PARAM";
+    public const string OperationTagsInfoParamSeparator = ";";
+    public const string AbstractVariableFunctionalNamePreffix = "I";
+    public const string HierarchyGuidSeparator = "H";
+    public const string CustomActionTargetPreffix = "group_";
+    public const string GlobalVariableNamePreffix = "global_";
+    public const string InstanceListGlobalVarCategoryName = "InstanceList";
+    public const string TemplateInstanceListGlobalVarCategoryName = "TemplateInstanceList";
+    public const string ClassInstanceListGlobalVarCategoryName = "ClassInstanceList";
+    public const string LocalVariableNamePreffix = "local_";
+    public const string MessageNameLabel = "_message_";
+    public const string InputVariableNameLabel = "_inputparam_";
+    public const string ObjRefTypeStrPreffix = "PLVirtualMaсhine.Common.IObjRef%";
+    public const string SelfName = "_Self";
+    public const string StateName = "_state";
+    public const string OperationPathStringPartSeparator = "/";
+    public const string CommonVariableNullRefData = "none";
+    public const string EventMessageDefaultName = "simple_mesage";
+    public const string LoopListLocalVarNameSeparator = "_Loop_List_";
+    public const string LoopListElementLocalVarNamePostfix = "_Element";
+    public const string LoopListIndexLocalVarNamePostfix = "_Loop_Index";
+    public const string AbstractActionDefaultName = "Abstract";
+    public const string EventParamDescTemplatePreffix = "template";
+    public const string MainGameTimeContextName = "common";
+    public const string StorableTitleTextParamName = "title";
+    public const string StorableDescriptionTextParamName = "description";
+    public const string StorableSpecialDescriptionTextParamName = "specialdescription";
+    public const string StorableTooltipTextParamName = "tooltip";
+    public const string CommonComponentDefaultTag = "Default";
+    public const string VMSpecTypePrefix = "cf_";
+    public const char GameTimePartSeparator = ':';
+    public const char TypeStringPartsSeparator = '.';
+    public const char CommonVariablePartSeparator = '%';
+    public const char MethodAttrInputTypesSpecInfoSeparator = ',';
+    public const char EventAttrMessTypesSpecInfoSeparator = ',';
+    public const char EventAttrMessParamDescSeparator = ':';
+    public const char MarketParamsDataSeparator = ';';
+    public const char VMTypePartSeparator = '%';
+    public const char VMTypeSpecialPartSeparator = '&';
+    public const char ActionDataStructSrcParamSeparator = ',';
+    public const char CommonListValueInfoPartSeparator = '_';
+    public const char GlobalVarNamePartsSeparator = '_';
+    public const char ParameterFunctionalNameSeparator = '.';
+    public const char EventFunctionalNameSeparator = '.';
+    public const char MethodFunctionalNameSeparator = '.';
+    public const char BoolStatusesParamInfoPartSeparator = ',';
+  }
+}

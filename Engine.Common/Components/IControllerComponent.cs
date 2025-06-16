@@ -1,0 +1,28 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Common.Components.IControllerComponent
+// Assembly: Engine.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 3568A167-18A7-4983-8BC2-C25824901591
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Engine.Common.dll
+
+using Engine.Common.Components.Interactable;
+using Engine.Common.Components.Parameters;
+using System;
+
+#nullable disable
+namespace Engine.Common.Components
+{
+  public interface IControllerComponent : IComponent
+  {
+    IParameterValue<bool> IsRun { get; }
+
+    IParameterValue<bool> IsWalk { get; }
+
+    IParameterValue<bool> IsStelth { get; }
+
+    IParameterValue<bool> IsFlashlight { get; }
+
+    event Action<IEntity, IInteractableComponent, IInteractItem> BeginInteractEvent;
+
+    event Action<IEntity, IInteractableComponent, IInteractItem> EndInteractEvent;
+  }
+}

@@ -1,0 +1,51 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Behaviours.Engines.Controllers.PlayerScalpelWeaponController
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using Engine.Common;
+using Engine.Common.Components.AttackerPlayer;
+using Engine.Common.Components.Parameters;
+using Engine.Source.Components;
+
+#nullable disable
+namespace Engine.Behaviours.Engines.Controllers
+{
+  public class PlayerScalpelWeaponController : PlayerUppercotWeaponControllerBase
+  {
+    protected override string Prefix => "Scalpel";
+
+    protected override void ApplyVisibility()
+    {
+      this.pivot.HandsGeometryVisible = this.geometryVisible;
+      this.pivot.ScalpelGeometryVisible = this.geometryVisible && this.weaponVisible;
+      this.ApplyLayerWeight(this.geometryVisible ? 1f : 0.0f);
+    }
+
+    protected override void ApplyLayerWeight(float layerWeight)
+    {
+      this.animatorState.ScalpelLayerWeight = layerWeight;
+      this.animatorState.ScalpelReactionLayerWeight = layerWeight;
+    }
+
+    public override void SetItem(IEntity item)
+    {
+      base.SetItem(item);
+      this.item = item;
+      int kind = 0;
+      ParametersComponent component = item.GetComponent<ParametersComponent>();
+      if (component != null)
+      {
+        IParameter<int> byName = component.GetByName<int>(ParameterNameEnum.Customization);
+        if (byName != null)
+          kind = byName.Value;
+      }
+      this.pivot.SetScalpelCustomGeometryVisible(kind);
+    }
+
+    protected override WeaponKind WeaponKind => WeaponKind.Scalpel;
+
+    protected override bool SupportsLowStaminaPunch => true;
+  }
+}

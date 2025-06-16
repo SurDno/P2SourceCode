@@ -1,0 +1,52 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Source.Proxies.ColorGradient_Generated
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using Cofe.Proxies;
+using Cofe.Serializations.Data;
+using Engine.Common.Commons.Cloneable;
+using Engine.Drawing.Gradient;
+using Scripts.Tools.Serializations.Converters;
+using System;
+using UnityEngine;
+
+#nullable disable
+namespace Engine.Source.Proxies
+{
+  [FactoryProxy(typeof (ColorGradient))]
+  public class ColorGradient_Generated : 
+    ColorGradient,
+    ICloneable,
+    ICopyable,
+    ISerializeDataWrite,
+    ISerializeDataRead
+  {
+    public object Clone()
+    {
+      ColorGradient_Generated instance = Activator.CreateInstance<ColorGradient_Generated>();
+      this.CopyTo((object) instance);
+      return (object) instance;
+    }
+
+    public void CopyTo(object target2)
+    {
+      ColorGradient_Generated gradientGenerated = (ColorGradient_Generated) target2;
+      CloneableObjectUtility.FillListTo<GradientAlphaKey>(gradientGenerated.alphaKeys, this.alphaKeys);
+      CloneableObjectUtility.FillListTo<GradientColorKey>(gradientGenerated.colorKeys, this.colorKeys);
+    }
+
+    public void DataWrite(IDataWriter writer)
+    {
+      UnityDataWriteUtility.WriteList(writer, "AlphaKeys", this.alphaKeys);
+      UnityDataWriteUtility.WriteList(writer, "ColorKeys", this.colorKeys);
+    }
+
+    public void DataRead(IDataReader reader, System.Type type)
+    {
+      this.alphaKeys = UnityDataReadUtility.ReadList(reader, "AlphaKeys", this.alphaKeys);
+      this.colorKeys = UnityDataReadUtility.ReadList(reader, "ColorKeys", this.colorKeys);
+    }
+  }
+}

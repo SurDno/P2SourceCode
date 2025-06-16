@@ -1,0 +1,57 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Cinemachine.NoiseSettings
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using System;
+using UnityEngine;
+
+#nullable disable
+namespace Cinemachine
+{
+  [DocumentationSorting(9f, DocumentationSortingAttribute.Level.UserRef)]
+  public sealed class NoiseSettings : ScriptableObject
+  {
+    [SerializeField]
+    [Tooltip("These are the noise channels for the virtual camera's position. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
+    private NoiseSettings.TransformNoiseParams[] m_Position = new NoiseSettings.TransformNoiseParams[0];
+    [SerializeField]
+    [Tooltip("These are the noise channels for the virtual camera's orientation. Convincing noise setups typically mix low, medium and high frequencies together, so start with a size of 3")]
+    private NoiseSettings.TransformNoiseParams[] m_Orientation = new NoiseSettings.TransformNoiseParams[0];
+
+    public NoiseSettings.TransformNoiseParams[] PositionNoise => this.m_Position;
+
+    public NoiseSettings.TransformNoiseParams[] OrientationNoise => this.m_Orientation;
+
+    public void CopyFrom(NoiseSettings other)
+    {
+      this.m_Position = new NoiseSettings.TransformNoiseParams[other.m_Position.Length];
+      other.m_Position.CopyTo((Array) this.m_Position, 0);
+      this.m_Orientation = new NoiseSettings.TransformNoiseParams[other.m_Orientation.Length];
+      other.m_Orientation.CopyTo((Array) this.m_Orientation, 0);
+    }
+
+    [DocumentationSorting(9.1f, DocumentationSortingAttribute.Level.UserRef)]
+    [Serializable]
+    public struct NoiseParams
+    {
+      [Tooltip("The amplitude of the noise for this channel.  Larger numbers vibrate higher.")]
+      public float Amplitude;
+      [Tooltip("The frequency of noise for this channel.  Higher magnitudes vibrate faster.")]
+      public float Frequency;
+    }
+
+    [DocumentationSorting(9.2f, DocumentationSortingAttribute.Level.UserRef)]
+    [Serializable]
+    public struct TransformNoiseParams
+    {
+      [Tooltip("Noise definition for X-axis")]
+      public NoiseSettings.NoiseParams X;
+      [Tooltip("Noise definition for Y-axis")]
+      public NoiseSettings.NoiseParams Y;
+      [Tooltip("Noise definition for Z-axis")]
+      public NoiseSettings.NoiseParams Z;
+    }
+  }
+}

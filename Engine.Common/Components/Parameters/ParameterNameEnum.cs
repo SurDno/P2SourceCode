@@ -1,0 +1,144 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Common.Components.Parameters.ParameterNameEnum
+// Assembly: Engine.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 3568A167-18A7-4983-8BC2-C25824901591
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Engine.Common.dll
+
+using Engine.Common.Binders;
+using System.ComponentModel;
+
+#nullable disable
+namespace Engine.Common.Components.Parameters
+{
+  [EnumType("ParameterName")]
+  public enum ParameterNameEnum
+  {
+    [Description("None")] None = 0,
+    [Description("Health\t(Жизни)")] Health = 1,
+    [Description("Immunity\t(Иммунитет)")] Immunity = 2,
+    [Description("Hunger\t(Голод)")] Hunger = 3,
+    [Description("Infection\t(Инфекция)")] Infection = 4,
+    [Description("Stamina\t(Выносливость)")] Stamina = 5,
+    [Description("Thirst\t(Жажда)")] Thirst = 6,
+    [Description("Fatigue\t(Усталость)")] Fatigue = 7,
+    [Description("Test\t(Для тестирования)")] Test = 8,
+    [Description("Collected\t(Собрано)")] Collected = 9,
+    [Description("NOT_USED_CollectedTime\t(Время сбора, не используется)")] NOT_USED_CollectedTime = 10, // 0x0000000A
+    [Description("Reputation\t(Репутация)")] Reputation = 11, // 0x0000000B
+    [Description("HearingDistance\t(Дистанция слуха)")] HearingDistance = 12, // 0x0000000C
+    [Description("EyeDistance\t(Дистанция зрения)")] EyeDistance = 13, // 0x0000000D
+    [Description("NoiseDistance\t(Дистанция шума)")] NoiseDistance = 14, // 0x0000000E
+    [Description("VisibleDistance\t(Дистанция видимости)")] VisibleDistance = 15, // 0x0000000F
+    [Description("Indoor\t(В доме)")] Indoor = 16, // 0x00000010
+    [Description("Outdoor\t(На улице)")] Outdoor = 17, // 0x00000011
+    [Description("Rain\t(Дождь)")] Rain = 18, // 0x00000012
+    [Description("Wet\t(Мокрый)")] Wet = 19, // 0x00000013
+    [Description("Stealth\t(Скрытный)")] Stealth = 20, // 0x00000014
+    [Description("EyeAngle\t(Угол зрения)")] EyeAngle = 21, // 0x00000015
+    [Description("VisibleDetectType\t(Тип видимости)")] VisibleDetectType = 22, // 0x00000016
+    [Description("NoiseDetectType\t(Тип шума)")] NoiseDetectType = 23, // 0x00000017
+    [Description("Dead\t(Смерть)")] Dead = 24, // 0x00000018
+    [Description("BallisticDamage\t(Баллистический урон)")] BallisticDamage = 25, // 0x00000019
+    [Description("FireDamage\t(Урон от огня)")] FireDamage = 26, // 0x0000001A
+    [Description("InfectionDamage\t(Урон от инфекции)")] InfectionDamage = 27, // 0x0000001B
+    [Description("Disease\t(Заражение)")] Disease = 28, // 0x0000001C
+    [Description("NOT_USED_Thug\t(Бандит, не используется)")] NOT_USED_Thug = 29, // 0x0000001D
+    [Description("CraftTime\t(Время крафта)")] CraftTime = 30, // 0x0000001E
+    [Description("Sleep\t(Сон)")] Sleep = 31, // 0x0000001F
+    [Description("Away\t(Далеко от персонажа)")] Away = 32, // 0x00000020
+    [Description("MeleeDamage\t(Урон от холодного оружия)")] MeleeDamage = 33, // 0x00000021
+    [Description("Immortal\t(Бессмертный)")] Immortal = 34, // 0x00000022
+    [Description("CanTrade\t(Способность торговать)")] CanTrade = 35, // 0x00000023
+    [Description("Visir")] Visir = 36, // 0x00000024
+    [Description("Walk")] Walk = 37, // 0x00000025
+    [Description("Run")] Run = 38, // 0x00000026
+    [Description("Flashlight")] Flashlight = 39, // 0x00000027
+    [Description("CanAutopsy\t(Способность вскрытия)")] CanAutopsy = 40, // 0x00000028
+    [Description("CanHeal\t(Способность лечения)")] CanHeal = 41, // 0x00000029
+    [Description("PreInfection\t(Опухоль)")] PreInfection = 42, // 0x0000002A
+    [Description("LowStamina\t(Низкая стамина)")] LowStamina = 43, // 0x0000002B
+    [Description("ForceTrade\t(Принудительная торговля)")] ForceTrade = 44, // 0x0000002C
+    [Description("Available\t(Доступность)")] Available = 45, // 0x0000002D
+    [Description("Enabled\t(Активность)")] Enabled = 46, // 0x0000002E
+    [Description("OpenState\t(Состояние контейнера)")] OpenState = 47, // 0x0000002F
+    [Description("Opened\t(Открытость)")] Opened = 48, // 0x00000030
+    [Description("LockState\t(Состояние двери)")] LockState = 49, // 0x00000031
+    [Description("Bolted\t(Заблокирована)")] Bolted = 50, // 0x00000032
+    [Description("Marked\t(Помечена)")] Marked = 51, // 0x00000033
+    [Description("SendEnterWithoutKnock\t(Херня какая то)")] SendEnterWithoutKnock = 52, // 0x00000034
+    [Description("IsFree\t(Ничейный)")] IsFree = 53, // 0x00000035
+    [Description("DiseaseLevel\t(Уровень заражения)")] DiseaseLevel = 54, // 0x00000036
+    [Description("CanBeMarked\t(Способность двери быть отмеченной крестом)")] CanBeMarked = 55, // 0x00000037
+    [Description("FallDamage\t(Урон от падения)")] FallDamage = 56, // 0x00000038
+    [Description("Durability\t(Прочность)")] Durability = 100, // 0x00000064
+    [Description("Customization\t(Кастомизация)")] Customization = 1001, // 0x000003E9
+    [Description("Model\t(Модель)")] Model = 1002, // 0x000003EA
+    [Description("Pain\t(Боль)")] Pain = 1003, // 0x000003EB
+    [Description("WeaponKind\t(Тип оружия)")] WeaponKind = 1004, // 0x000003EC
+    [Description("Block\t(Блок)")] Block = 1005, // 0x000003ED
+    [Description("BlockDisabled\t(Блок отключен)")] BlockDisabled = 1006, // 0x000003EE
+    [Description("MovementControlBlock\t(Блок самостоятельного передвижения)")] MovementControlBlock = 1007, // 0x000003EF
+    [Description("WalkSpeedModifier\t()")] WalkSpeedModifier = 1008, // 0x000003F0
+    [Description("CanFight\t(Может драться)")] CanFight = 1009, // 0x000003F1
+    [Description("Surrender\t(Сдаётся)")] Surrender = 1010, // 0x000003F2
+    [Description("WasAttackedByPlayer\t(Уже был атакован игроком)")] WasAttackedByPlayer = 1011, // 0x000003F3
+    [Description("StammKind\t(Тип штамма болезни)")] StammKind = 1012, // 0x000003F4
+    [Description("IsFighting\t(сражается прямо сейчас)")] IsFighting = 1013, // 0x000003F5
+    [Description("IsBurning\t(горит)")] IsBurning = 1014, // 0x000003F6
+    [Description("IsCombatIgnored\t(игнорируется всеми боевыми системами)")] IsCombatIgnored = 1015, // 0x000003F7
+    [Description("Fraction\t(фракция)")] Fraction = 1016, // 0x000003F8
+    [Description("IsOpen\t(открыто)")] IsOpen = 1017, // 0x000003F9
+    [Description("RunSpeedModifier\t(модификатор скорости бега)")] RunSpeedModifier = 1018, // 0x000003FA
+    [Description("UseMoneyInTrade\t(использует ли торговец деньги")] UseMoneyInTrade = 1019, // 0x000003FB
+    [Description("LinesVision\t(видение линий")] LinesVision = 1020, // 0x000003FC
+    [Description("Bullets\t(количество патронов")] Bullets = 1021, // 0x000003FD
+    [Description("CloudInfectionDamage\t(Урон заразой от облака)")] CloudInfectionDamage = 1022, // 0x000003FE
+    [Description("ContainerInfectionDamage\t(Урон заразой от контейнера)")] ContainerInfectionDamage = 1023, // 0x000003FF
+    [Description("DiseasedInfectionDamage\t(Урон заразой от заражённого)")] DiseasedInfectionDamage = 1024, // 0x00000400
+    [Description("WorkTime\t(Время работы)")] WorkTime = 1025, // 0x00000401
+    [Description("WorkEndTime\t(Время завершения работы)")] WorkEndTime = 1026, // 0x00000402
+    [Description("BlockType\t(Тип блока - обычный, быстры, отскок)")] BlockType = 1027, // 0x00000403
+    [Description("CombatStyle\t(Стиль ведения боя)")] CombatStyle = 1028, // 0x00000404
+    [Description("MeleeArmor\t(Броня против холодного оружия)")] MeleeArmor = 1029, // 0x00000405
+    [Description("BallisticArmor\t(Броня против стрелкового оружия)")] BallisticArmor = 1030, // 0x00000406
+    [Description("FireArmor\t(Броня против огня)")] FireArmor = 1031, // 0x00000407
+    [Description("BoundHealthState\t(Состояние здоровья приближенного)")] BoundHealthState = 1032, // 0x00000408
+    [Description("LiquidType\t(Тип жидкости, наливаемой источником воды)")] LiquidType = 1033, // 0x00000409
+    [Description("HealingAttempted\t(Флаг - уже давал антибиотик в этот день, или нет)")] HealingAttempted = 1034, // 0x0000040A
+    [Description("ImmuneBoostAttempted\t(Флаг - уже давал иммуник в этот день, или нет)")] ImmuneBoostAttempted = 1035, // 0x0000040B
+    [Description("HealingPower\t(Доля инфекции, которая остается после применения на больного)")] HealingPower = 1036, // 0x0000040C
+    [Description("ImmuneBoostPower\t(Увеличение иммунитета после применения на больного)")] ImmuneBoostPower = 1037, // 0x0000040D
+    [Description("Quality\t(Качество, устойчивость к поломке)")] Quality = 1038, // 0x0000040E
+    [Description("NoiseCoefficient\t(коэфициент шума)")] NoiseCoefficient = 1039, // 0x0000040F
+    [Description("MeleeAdsorbtion\t(адсорбция мили урона)")] MeleeAdsorbtion = 1040, // 0x00000410
+    [Description("BallisticAdsorbtion\t(адсорбция балистик урона)")] BallisticAdsorbtion = 1041, // 0x00000411
+    [Description("FireAdsorbtion\t(адсорбция огненного урона)")] FireAdsorbtion = 1042, // 0x00000412
+    [Description("InfectionAdsorbtion\t(адсорбция инфекционного урона)")] InfectionAdsorbtion = 1043, // 0x00000413
+    [Description("CloudInfectionAdsorbtion\t(адсорбция облачно-инфекционного урона)")] CloudInfectionAdsorbtion = 1044, // 0x00000414
+    [Description("ContainerInfectionAdsorbtion\t(адсорбция контейнерно-инфекционного урона)")] ContainerInfectionAdsorbtion = 1045, // 0x00000415
+    [Description("DiseasedInfectionAdsorbtion\t(адсорбция заражённо-инфекционного урона)")] DiseasedInfectionAdsorbtion = 1046, // 0x00000416
+    [Description("FistsAdsorbtion\t(адсорбция кулачного урона)")] FistsAdsorbtion = 1047, // 0x00000417
+    [Description("FistsDamage\t(кулачный урон)")] FistsDamage = 1048, // 0x00000418
+    [Description("FistsArmor\t(Броня против кулаков)")] FistsArmor = 1049, // 0x00000419
+    [Description("SavePointIcon\t(Флаг на карте - здесь можно сохраняться)")] SavePointIcon = 1050, // 0x0000041A
+    [Description("SleepIcon\t(Флаг на карте - здесь можно спать)")] SleepIcon = 1051, // 0x0000041B
+    [Description("CraftIcon\t(Флаг на карте - здесь есть аппараты для крафта)")] CraftIcon = 1052, // 0x0000041C
+    [Description("StorageIcon\t(Флаг на карте - здесь можно хранить вещи)")] StorageIcon = 1053, // 0x0000041D
+    [Description("MerchantIcon\t(Флаг на карте - здесь есть торговец)")] MerchantIcon = 1054, // 0x0000041E
+    [Description("FastTravelPrice\t(Цена фаст тревела в монетах)")] FastTravelPrice = 1055, // 0x0000041F
+    [Description("FastTravelPointIndex\t(Локация точки фаст тревела)")] FastTravelPointIndex = 1056, // 0x00000420
+    [Description("CanFastTravel\t(Способность возить игрока)")] CanFastTravel = 1057, // 0x00000421
+    [Description("DoorKnockable\t(DoorKnockable)")] DoorKnockable = 1058, // 0x00000422
+    [Description("DoorPickable\t(DoorPickable)")] DoorPickable = 1059, // 0x00000423
+    [Description("DoorDifficulty\t(DoorDifficulty)")] DoorDifficulty = 1060, // 0x00000424
+    [Description("HealingSuccessfull\t(HealingSuccessfull)")] HealingSuccessfull = 1061, // 0x00000425
+    [Description("ReputationForGifts\t(ReputationForGifts)")] ReputationForGifts = 1062, // 0x00000426
+    [Description("ReputationForGifts\t(SayReplicsInIdle)")] SayReplicsInIdle = 1063, // 0x00000427
+    [Description("FundEnabled\t(FundEnabled)")] FundEnabled = 1064, // 0x00000428
+    [Description("FundFinished\t(FundFinished)")] FundFinished = 1065, // 0x00000429
+    [Description("FundPoints\t(FundPoints)")] FundPoints = 1066, // 0x0000042A
+    [Description("RandomRoll\t(Сохранённое значение рандома)")] RandomRoll = 1067, // 0x0000042B
+    [Description("CanReceiveMail\t(Может ли получать почту)")] CanReceiveMail = 1068, // 0x0000042C
+    [Description("LootAsNPC\t(При луте считается за НПС)")] LootAsNPC = 1069, // 0x0000042D
+  }
+}

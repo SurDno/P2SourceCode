@@ -1,0 +1,225 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!--Project was exported from assembly: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Engine.Common.dll-->
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3BB622EA-5161-4875-B851-36D0E9AEC61F}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>Engine.Common</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <ApplicationVersion>1.0.0.0</ApplicationVersion>
+    <FileAlignment>512</FileAlignment>
+    <RootNamespace>Engine.Common</RootNamespace>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Cofe">
+      <HintPath>lib\Cofe.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="EngineRuntime.cs" />
+    <Compile Include="Paths.cs" />
+    <Compile Include="IFactoryProduct.cs" />
+    <Compile Include="EventArgument`1.cs" />
+    <Compile Include="EventArgument`2.cs" />
+    <Compile Include="IComponent.cs" />
+    <Compile Include="IEntity.cs" />
+    <Compile Include="IModel.cs" />
+    <Compile Include="IObject.cs" />
+    <Compile Include="IVirtualMachine.cs" />
+    <Compile Include="Weather\IWeatherLayerBlender.cs" />
+    <Compile Include="Weather\IWeatherLayerBlenderItem.cs" />
+    <Compile Include="Weather\IWeatherSmoothBlender.cs" />
+    <Compile Include="Weather\IWeatherSnapshot.cs" />
+    <Compile Include="Weather\WeatherLayer.cs" />
+    <Compile Include="Utility\StringUtility.cs" />
+    <Compile Include="Utility\XmlUtility.cs" />
+    <Compile Include="Types\LocalizedText.cs" />
+    <Compile Include="Types\Position.cs" />
+    <Compile Include="Threads\ThreadPoolUtility.cs" />
+    <Compile Include="Threads\ThreadState`2.cs" />
+    <Compile Include="DateTime\TimesOfDay.cs" />
+    <Compile Include="DateTime\TimesOfDayUtility.cs" />
+    <Compile Include="Services\FromLocatorAttribute.cs" />
+    <Compile Include="Services\IAchievementService.cs" />
+    <Compile Include="Services\IBackerUnlocksService.cs" />
+    <Compile Include="Services\IBlueprintService.cs" />
+    <Compile Include="Services\ICombatService.cs" />
+    <Compile Include="Services\IDropBagService.cs" />
+    <Compile Include="Services\IForcedDialogService.cs" />
+    <Compile Include="Services\IInterfaceBlockingService.cs" />
+    <Compile Include="Services\IJerboaService.cs" />
+    <Compile Include="Services\ILoadProgress.cs" />
+    <Compile Include="Services\ILogicEventService.cs" />
+    <Compile Include="Services\IMMService.cs" />
+    <Compile Include="Services\INotificationService.cs" />
+    <Compile Include="Services\IProfilesService.cs" />
+    <Compile Include="Services\ISimulation.cs" />
+    <Compile Include="Services\ISpreadingService.cs" />
+    <Compile Include="Services\ISteppeHerbService.cs" />
+    <Compile Include="Services\ITemplateService.cs" />
+    <Compile Include="Services\IFactory.cs" />
+    <Compile Include="Services\ITextContextService.cs" />
+    <Compile Include="Services\ITimeService.cs" />
+    <Compile Include="Services\IPlagueController.cs" />
+    <Compile Include="Services\IWeatherController.cs" />
+    <Compile Include="Services\JerboaColorEnum.cs" />
+    <Compile Include="Services\LanguageEnum.cs" />
+    <Compile Include="Services\IOptimizationService.cs" />
+    <Compile Include="Services\ServiceCache.cs" />
+    <Compile Include="Services\ServiceLocator.cs" />
+    <Compile Include="Services\Mails\MailStateEnum.cs" />
+    <Compile Include="MindMap\IMMContent.cs" />
+    <Compile Include="MindMap\IMMLink.cs" />
+    <Compile Include="MindMap\IMMNode.cs" />
+    <Compile Include="MindMap\IMMPage.cs" />
+    <Compile Include="MindMap\IMMPlaceholder.cs" />
+    <Compile Include="MindMap\MMContentKind.cs" />
+    <Compile Include="MindMap\MMLinkKind.cs" />
+    <Compile Include="MindMap\MMNodeKind.cs" />
+    <Compile Include="Maps\IMapPlaceholder.cs" />
+    <Compile Include="Components\IBlueprintComponent.cs" />
+    <Compile Include="Components\IBuildingComponent.cs" />
+    <Compile Include="Components\ICrowdItemComponent.cs" />
+    <Compile Include="Components\IHerbRootsComponent.cs" />
+    <Compile Include="Components\IIndoorCrowdComponent.cs" />
+    <Compile Include="Components\IInventoryComponent.cs" />
+    <Compile Include="Components\ILipSyncComponent.cs" />
+    <Compile Include="Components\IMailComponent.cs" />
+    <Compile Include="Components\IBoundCharacterComponent.cs" />
+    <Compile Include="Components\IMessangerComponent.cs" />
+    <Compile Include="Components\IMessangerStationaryComponent.cs" />
+    <Compile Include="Components\IOutdoorCrowdComponent.cs" />
+    <Compile Include="Components\IRepairableComponent.cs" />
+    <Compile Include="Components\IWaterSupplyControllerComponent.cs" />
+    <Compile Include="Components\EntityTagEnum.cs" />
+    <Compile Include="Components\IDetectableComponent.cs" />
+    <Compile Include="Components\IDetectorComponent.cs" />
+    <Compile Include="Components\IAttackerPlayerComponent.cs" />
+    <Compile Include="Components\IBehaviorComponent.cs" />
+    <Compile Include="Components\IDiseaseComponent.cs" />
+    <Compile Include="Components\IDynamicModelComponent.cs" />
+    <Compile Include="Components\IInteractableComponent.cs" />
+    <Compile Include="Components\ILocationComponent.cs" />
+    <Compile Include="Components\ILocationItemComponent.cs" />
+    <Compile Include="Components\IMapItemComponent.cs" />
+    <Compile Include="Components\INpcControllerComponent.cs" />
+    <Compile Include="Components\IPlayerControllerComponent.cs" />
+    <Compile Include="Components\AreaHandler.cs" />
+    <Compile Include="Components\RegionHandler.cs" />
+    <Compile Include="Components\BuildingHandler.cs" />
+    <Compile Include="Components\INavigationComponent.cs" />
+    <Compile Include="Components\ITagsComponent.cs" />
+    <Compile Include="Components\IControllerComponent.cs" />
+    <Compile Include="Components\IDoorComponent.cs" />
+    <Compile Include="Components\IMarketComponent.cs" />
+    <Compile Include="Components\ISpawnpointComponent.cs" />
+    <Compile Include="Components\IRegionComponent.cs" />
+    <Compile Include="Components\ISpeakingComponent.cs" />
+    <Compile Include="Components\IStorableComponent.cs" />
+    <Compile Include="Components\IStorageComponent.cs" />
+    <Compile Include="Components\TriggerHandler.cs" />
+    <Compile Include="Components\ITriggerComponent.cs" />
+    <Compile Include="Components\Prototype\Message.cs" />
+    <Compile Include="Components\Milestone\Kind.cs" />
+    <Compile Include="Components\Gate\LockState.cs" />
+    <Compile Include="Components\Storable\ContainerOpenStateEnum.cs" />
+    <Compile Include="Components\Storable\InventoryGroup.cs" />
+    <Compile Include="Components\Storable\StorableGroup.cs" />
+    <Compile Include="Components\Storable\Invoice.cs" />
+    <Compile Include="Components\Speaking\DialogString.cs" />
+    <Compile Include="Components\Speaking\DialogStringEnum.cs" />
+    <Compile Include="Components\Movable\AreaEnum.cs" />
+    <Compile Include="Components\Movable\AreaEnumUtility.cs" />
+    <Compile Include="Components\Locations\LocationType.cs" />
+    <Compile Include="Components\Interactable\IInteractItem.cs" />
+    <Compile Include="Components\Interactable\InteractType.cs" />
+    <Compile Include="Components\Detectors\DetectType.cs" />
+    <Compile Include="Components\Attacker\FinishKind.cs" />
+    <Compile Include="Components\Attacker\NPCAttackKind.cs" />
+    <Compile Include="Components\Attacker\PlayerAttackKind.cs" />
+    <Compile Include="Components\Attacker\AttackKind.cs" />
+    <Compile Include="Components\AttackerDiseased\PlayerPushesDiseasedKind.cs" />
+    <Compile Include="Components\Parameters\IChangeParameterListener.cs" />
+    <Compile Include="Components\Parameters\IParameter`1.cs" />
+    <Compile Include="Components\Parameters\IParameterValue`1.cs" />
+    <Compile Include="Components\Parameters\IPriorityParameterValue`1.cs" />
+    <Compile Include="Components\Parameters\PriorityParameterEnum.cs" />
+    <Compile Include="Components\Parameters\IParameter.cs" />
+    <Compile Include="Components\Parameters\ParameterNameEnum.cs" />
+    <Compile Include="Components\MessangerStationary\SpawnpointKindEnum.cs" />
+    <Compile Include="Components\Regions\IFastTravelComponent.cs" />
+    <Compile Include="Components\Regions\BuildingEnum.cs" />
+    <Compile Include="Components\Regions\FastTravelPointEnum.cs" />
+    <Compile Include="Components\Regions\RegionBehaviourEnum.cs" />
+    <Compile Include="Components\Regions\RegionEnum.cs" />
+    <Compile Include="Components\Crowds\OutdoorCrowdLayoutEnum.cs" />
+    <Compile Include="Components\AttackerPlayer\ReactionType.cs" />
+    <Compile Include="Components\AttackerPlayer\ShotType.cs" />
+    <Compile Include="Components\AttackerPlayer\WeaponKind.cs" />
+    <Compile Include="Components\AttackerPlayer\WeaponLayer.cs" />
+    <Compile Include="Comparers\GuidComparer.cs" />
+    <Compile Include="Comparers\IntComparer.cs" />
+    <Compile Include="Comparers\UlongComparer.cs" />
+    <Compile Include="Commons\CombatActionEnum.cs" />
+    <Compile Include="Commons\CombatStyleEnum.cs" />
+    <Compile Include="Commons\DiseasedUtility.cs" />
+    <Compile Include="Commons\FractionEnum.cs" />
+    <Compile Include="Commons\GroupAttribute.cs" />
+    <Compile Include="Commons\IBlueprintObject.cs" />
+    <Compile Include="Commons\Ids.cs" />
+    <Compile Include="Commons\ILipSyncObject.cs" />
+    <Compile Include="Commons\IMapTooltipResource.cs" />
+    <Compile Include="Commons\DiseasedStateEnum.cs" />
+    <Compile Include="Commons\BoundHealthStateEnum.cs" />
+    <Compile Include="Commons\IStub.cs" />
+    <Compile Include="Commons\LiquidTypeEnum.cs" />
+    <Compile Include="Commons\NotificationEnum.cs" />
+    <Compile Include="Commons\StammKind.cs" />
+    <Compile Include="Commons\IBehaviorObject.cs" />
+    <Compile Include="Commons\INeedSave.cs" />
+    <Compile Include="Commons\ActionEnum.cs" />
+    <Compile Include="Commons\Converters\DefaultDataReadUtility.cs" />
+    <Compile Include="Commons\Converters\DefaultDataWriteUtility.cs" />
+    <Compile Include="Commons\Converters\DefaultStateLoadUtility.cs" />
+    <Compile Include="Commons\Converters\DefaultStateSaveUtility.cs" />
+    <Compile Include="Commons\Converters\EngineDataReadUtility.cs" />
+    <Compile Include="Commons\Converters\EngineDataWriteUtility.cs" />
+    <Compile Include="Commons\Cloneable\CloneableObjectUtility.cs" />
+    <Compile Include="Commons\Cloneable\ICopyable.cs" />
+    <Compile Include="BoundCharacters\BoundCharacterGroup.cs" />
+    <Compile Include="BoundCharacters\IBoundCharacterPlaceholder.cs" />
+    <Compile Include="Blenders\IBlendable`1.cs" />
+    <Compile Include="Blenders\ILayerBlender`1.cs" />
+    <Compile Include="Blenders\ILayerBlenderItem`1.cs" />
+    <Compile Include="Blenders\IPureBlendOperation.cs" />
+    <Compile Include="Blenders\ISmoothBlender`1.cs" />
+    <Compile Include="Binders\EnumTypeAttribute.cs" />
+    <Compile Include="Binders\SampleAttribute.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

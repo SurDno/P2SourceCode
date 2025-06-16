@@ -1,0 +1,57 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Source.Debugs.CommonGroupDebug
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using Cofe.Meta;
+using Engine.Common;
+using Engine.Common.Services;
+using Engine.Impl.Services;
+using Engine.Source.Commons;
+using Engine.Source.Services.CameraServices;
+using Engine.Source.Services.Gizmos;
+using Engine.Source.Utility;
+using InputServices;
+using SRF;
+using System;
+using UnityEngine;
+
+#nullable disable
+namespace Engine.Source.Debugs
+{
+  [Initialisable]
+  public static class CommonGroupDebug
+  {
+    [Cofe.Meta.Initialise]
+    private static void Initialise()
+    {
+      InstanceByRequest<EngineApplication>.Instance.OnInitialized += (Action) (() => InstanceByRequest<UpdateService>.Instance.Updater.AddUpdatable((IUpdatable) new UpdatableProxy((Action) (() => CommonGroupDebug.Update()))));
+    }
+
+    private static void Update()
+    {
+      if (InputUtility.IsKeyDown(KeyCode.F12, KeyModifficator.Control))
+      {
+        bool visible = CursorService.Instance.Visible;
+        CursorService.Instance.Visible = !visible;
+        CursorService.Instance.Free = !visible;
+      }
+      if (InputUtility.IsKeyDown(KeyCode.F11, KeyModifficator.Control))
+      {
+        bool flag = !ServiceLocator.GetService<UIService>().Visible;
+        ServiceLocator.GetService<UIService>().Visible = flag;
+        Transform transform = Hierarchy.Get("SRDebugger/UI");
+        if ((UnityEngine.Object) transform != (UnityEngine.Object) null)
+          transform.gameObject.SetActive(flag);
+        ServiceLocator.GetService<GizmoService>().Visible = flag;
+      }
+      if (!InstanceByRequest<EngineApplication>.Instance.IsDebug || !InputUtility.IsKeyDown(KeyCode.Home))
+        return;
+      if (ServiceLocator.GetService<CameraService>().Kind == CameraKindEnum.Fly)
+        ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.FirstPerson_Controlling;
+      else
+        ServiceLocator.GetService<CameraService>().Kind = CameraKindEnum.Fly;
+    }
+  }
+}

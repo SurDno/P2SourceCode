@@ -1,0 +1,221 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: ParadoxNotion.Serialization.FullSerializer.Internal.fsPortableReflection
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+
+#nullable disable
+namespace ParadoxNotion.Serialization.FullSerializer.Internal
+{
+  public static class fsPortableReflection
+  {
+    public static Type[] EmptyTypes = new Type[0];
+    private static IDictionary<fsPortableReflection.AttributeQuery, Attribute> _cachedAttributeQueries = (IDictionary<fsPortableReflection.AttributeQuery, Attribute>) new Dictionary<fsPortableReflection.AttributeQuery, Attribute>((IEqualityComparer<fsPortableReflection.AttributeQuery>) new fsPortableReflection.AttributeQueryComparator());
+    private static BindingFlags DeclaredFlags = BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
+
+    public static bool HasAttribute(MemberInfo element, Type attributeType)
+    {
+      return fsPortableReflection.GetAttribute(element, attributeType, true) != null;
+    }
+
+    public static bool HasAttribute<TAttribute>(MemberInfo element)
+    {
+      return fsPortableReflection.HasAttribute(element, typeof (TAttribute));
+    }
+
+    public static Attribute GetAttribute(MemberInfo element, Type attributeType, bool shouldCache)
+    {
+      fsPortableReflection.AttributeQuery key = new fsPortableReflection.AttributeQuery()
+      {
+        MemberInfo = element,
+        AttributeType = attributeType
+      };
+      Attribute attribute;
+      if (!fsPortableReflection._cachedAttributeQueries.TryGetValue(key, out attribute))
+      {
+        attribute = (Attribute) ((IEnumerable<object>) element.GetCustomAttributes(attributeType, true)).FirstOrDefault<object>();
+        if (shouldCache)
+          fsPortableReflection._cachedAttributeQueries[key] = attribute;
+      }
+      return attribute;
+    }
+
+    public static TAttribute GetAttribute<TAttribute>(MemberInfo element, bool shouldCache) where TAttribute : Attribute
+    {
+      return (TAttribute) fsPortableReflection.GetAttribute(element, typeof (TAttribute), shouldCache);
+    }
+
+    public static TAttribute GetAttribute<TAttribute>(MemberInfo element) where TAttribute : Attribute
+    {
+      return fsPortableReflection.GetAttribute<TAttribute>(element, true);
+    }
+
+    public static PropertyInfo GetDeclaredProperty(this Type type, string propertyName)
+    {
+      PropertyInfo[] declaredProperties = type.GetDeclaredProperties();
+      for (int index = 0; index < declaredProperties.Length; ++index)
+      {
+        if (declaredProperties[index].Name == propertyName)
+          return declaredProperties[index];
+      }
+      return (PropertyInfo) null;
+    }
+
+    public static MethodInfo GetDeclaredMethod(this Type type, string methodName)
+    {
+      MethodInfo[] declaredMethods = type.GetDeclaredMethods();
+      for (int index = 0; index < declaredMethods.Length; ++index)
+      {
+        if (declaredMethods[index].Name == methodName)
+          return declaredMethods[index];
+      }
+      return (MethodInfo) null;
+    }
+
+    public static ConstructorInfo GetDeclaredConstructor(this Type type, Type[] parameters)
+    {
+      foreach (ConstructorInfo declaredConstructor in type.GetDeclaredConstructors())
+      {
+        ParameterInfo[] parameters1 = declaredConstructor.GetParameters();
+        if (parameters.Length == parameters1.Length)
+        {
+          for (int index = 0; index < parameters1.Length; ++index)
+          {
+            if (!(parameters1[index].ParameterType != parameters[index]))
+              ;
+          }
+          return declaredConstructor;
+        }
+      }
+      return (ConstructorInfo) null;
+    }
+
+    public static ConstructorInfo[] GetDeclaredConstructors(this Type type)
+    {
+      return type.GetConstructors(fsPortableReflection.DeclaredFlags);
+    }
+
+    public static MemberInfo[] GetFlattenedMember(this Type type, string memberName)
+    {
+      List<MemberInfo> memberInfoList = new List<MemberInfo>();
+      for (; type != (Type) null; type = type.Resolve().BaseType)
+      {
+        MemberInfo[] declaredMembers = type.GetDeclaredMembers();
+        for (int index = 0; index < declaredMembers.Length; ++index)
+        {
+          if (declaredMembers[index].Name == memberName)
+            memberInfoList.Add(declaredMembers[index]);
+        }
+      }
+      return memberInfoList.ToArray();
+    }
+
+    public static MethodInfo GetFlattenedMethod(this Type type, string methodName)
+    {
+      for (; type != (Type) null; type = type.Resolve().BaseType)
+      {
+        MethodInfo[] declaredMethods = type.GetDeclaredMethods();
+        for (int index = 0; index < declaredMethods.Length; ++index)
+        {
+          if (declaredMethods[index].Name == methodName)
+            return declaredMethods[index];
+        }
+      }
+      return (MethodInfo) null;
+    }
+
+    public static IEnumerable<MethodInfo> GetFlattenedMethods(this Type type, string methodName)
+    {
+      while (type != (Type) null)
+      {
+        MethodInfo[] methods = type.GetDeclaredMethods();
+        for (int i = 0; i < methods.Length; ++i)
+        {
+          if (methods[i].Name == methodName)
+            yield return methods[i];
+        }
+        type = type.Resolve().BaseType;
+        methods = (MethodInfo[]) null;
+      }
+    }
+
+    public static PropertyInfo GetFlattenedProperty(this Type type, string propertyName)
+    {
+      for (; type != (Type) null; type = type.Resolve().BaseType)
+      {
+        PropertyInfo[] declaredProperties = type.GetDeclaredProperties();
+        for (int index = 0; index < declaredProperties.Length; ++index)
+        {
+          if (declaredProperties[index].Name == propertyName)
+            return declaredProperties[index];
+        }
+      }
+      return (PropertyInfo) null;
+    }
+
+    public static MemberInfo GetDeclaredMember(this Type type, string memberName)
+    {
+      MemberInfo[] declaredMembers = type.GetDeclaredMembers();
+      for (int index = 0; index < declaredMembers.Length; ++index)
+      {
+        if (declaredMembers[index].Name == memberName)
+          return declaredMembers[index];
+      }
+      return (MemberInfo) null;
+    }
+
+    public static MethodInfo[] GetDeclaredMethods(this Type type)
+    {
+      return type.GetMethods(fsPortableReflection.DeclaredFlags);
+    }
+
+    public static PropertyInfo[] GetDeclaredProperties(this Type type)
+    {
+      return type.GetProperties(fsPortableReflection.DeclaredFlags);
+    }
+
+    public static FieldInfo[] GetDeclaredFields(this Type type)
+    {
+      return type.GetFields(fsPortableReflection.DeclaredFlags);
+    }
+
+    public static MemberInfo[] GetDeclaredMembers(this Type type)
+    {
+      return type.GetMembers(fsPortableReflection.DeclaredFlags);
+    }
+
+    public static MemberInfo AsMemberInfo(Type type) => (MemberInfo) type;
+
+    public static bool IsType(MemberInfo member) => member is Type;
+
+    public static Type AsType(MemberInfo member) => (Type) member;
+
+    public static Type Resolve(this Type type) => type;
+
+    private struct AttributeQuery
+    {
+      public MemberInfo MemberInfo;
+      public Type AttributeType;
+    }
+
+    private class AttributeQueryComparator : IEqualityComparer<fsPortableReflection.AttributeQuery>
+    {
+      public bool Equals(
+        fsPortableReflection.AttributeQuery x,
+        fsPortableReflection.AttributeQuery y)
+      {
+        return x.MemberInfo == y.MemberInfo && x.AttributeType == y.AttributeType;
+      }
+
+      public int GetHashCode(fsPortableReflection.AttributeQuery obj)
+      {
+        return obj.MemberInfo.GetHashCode() + 17 * obj.AttributeType.GetHashCode();
+      }
+    }
+  }
+}

@@ -1,0 +1,89 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: RootMotion.FinalIK.Amplifier
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using System;
+using UnityEngine;
+
+#nullable disable
+namespace RootMotion.FinalIK
+{
+  public class Amplifier : OffsetModifier
+  {
+    [Tooltip("The amplified bodies.")]
+    public Amplifier.Body[] bodies;
+
+    protected override void OnModifyOffset()
+    {
+      if (!this.ik.fixTransforms)
+      {
+        if (Warning.logged)
+          return;
+        Warning.Log("Amplifier needs the Fix Transforms option of the FBBIK to be set to true. Otherwise it might amplify to infinity, should the animator of the character stop because of culling.", this.transform);
+      }
+      else
+      {
+        foreach (Amplifier.Body body in this.bodies)
+          body.Update(this.ik.solver, this.weight, this.deltaTime);
+      }
+    }
+
+    [Serializable]
+    public class Body
+    {
+      [Tooltip("The Transform that's motion we are reading.")]
+      public Transform transform;
+      [Tooltip("Amplify the 'transform's' position relative to this Transform.")]
+      public Transform relativeTo;
+      [Tooltip("Linking the body to effectors. One Body can be used to offset more than one effector.")]
+      public Amplifier.Body.EffectorLink[] effectorLinks;
+      [Tooltip("Amplification magnitude along the up axis of the character.")]
+      public float verticalWeight = 1f;
+      [Tooltip("Amplification magnitude along the horizontal axes of the character.")]
+      public float horizontalWeight = 1f;
+      [Tooltip("Speed of the amplifier. 0 means instant.")]
+      public float speed = 3f;
+      private Vector3 lastRelativePos;
+      private Vector3 smoothDelta;
+      private bool firstUpdate;
+
+      public void Update(IKSolverFullBodyBiped solver, float w, float deltaTime)
+      {
+        if ((UnityEngine.Object) this.transform == (UnityEngine.Object) null || (UnityEngine.Object) this.relativeTo == (UnityEngine.Object) null)
+          return;
+        Vector3 vector3_1 = this.relativeTo.InverseTransformDirection(this.transform.position - this.relativeTo.position);
+        if (this.firstUpdate)
+        {
+          this.lastRelativePos = vector3_1;
+          this.firstUpdate = false;
+        }
+        Vector3 b = (vector3_1 - this.lastRelativePos) / deltaTime;
+        this.smoothDelta = (double) this.speed <= 0.0 ? b : Vector3.Lerp(this.smoothDelta, b, deltaTime * this.speed);
+        Vector3 v = this.relativeTo.TransformDirection(this.smoothDelta);
+        Vector3 vector3_2 = V3Tools.ExtractVertical(v, solver.GetRoot().up, this.verticalWeight) + V3Tools.ExtractHorizontal(v, solver.GetRoot().up, this.horizontalWeight);
+        for (int index = 0; index < this.effectorLinks.Length; ++index)
+          solver.GetEffector(this.effectorLinks[index].effector).positionOffset += vector3_2 * w * this.effectorLinks[index].weight;
+        this.lastRelativePos = vector3_1;
+      }
+
+      private static Vector3 Multiply(Vector3 v1, Vector3 v2)
+      {
+        v1.x *= v2.x;
+        v1.y *= v2.y;
+        v1.z *= v2.z;
+        return v1;
+      }
+
+      [Serializable]
+      public class EffectorLink
+      {
+        [Tooltip("Type of the FBBIK effector to use")]
+        public FullBodyBipedEffector effector;
+        [Tooltip("Weight of using this effector")]
+        public float weight;
+      }
+    }
+  }
+}

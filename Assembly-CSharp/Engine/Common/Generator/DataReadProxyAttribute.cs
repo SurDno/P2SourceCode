@@ -1,0 +1,21 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: Engine.Common.Generator.DataReadProxyAttribute
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using System;
+
+#nullable disable
+namespace Engine.Common.Generator
+{
+  [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+  public class DataReadProxyAttribute : Attribute
+  {
+    public string Name { get; set; }
+
+    public MemberEnum Detail { get; set; }
+
+    public DataReadProxyAttribute(MemberEnum detail = MemberEnum.None) => this.Detail = detail;
+  }
+}

@@ -1,0 +1,30 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: FlowCanvas.Nodes.PickValue`1
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using ParadoxNotion.Design;
+using System;
+using System.Collections.Generic;
+
+#nullable disable
+namespace FlowCanvas.Nodes
+{
+  [Obsolete]
+  [Category("Functions/Utility")]
+  public class PickValue<T> : PureFunctionNode<T, int, IList<T>>
+  {
+    public override T Invoke(int index, IList<T> values)
+    {
+      try
+      {
+        return values[index];
+      }
+      catch
+      {
+        return default (T);
+      }
+    }
+  }
+}

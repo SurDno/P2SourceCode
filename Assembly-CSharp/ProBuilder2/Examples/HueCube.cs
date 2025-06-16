@@ -1,0 +1,83 @@
+﻿// Decompiled with JetBrains decompiler
+// Type: ProBuilder2.Examples.HueCube
+// Assembly: Assembly-CSharp, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+// MVID: 4BDBC255-6935-43E6-AE4B-B6BF8667EAAF
+// Assembly location: C:\Program Files (x86)\Steam\steamapps\common\Pathologic\Pathologic_Data\Managed\Assembly-CSharp.dll
+
+using ProBuilder2.Common;
+using UnityEngine;
+
+#nullable disable
+namespace ProBuilder2.Examples
+{
+  public class HueCube : MonoBehaviour
+  {
+    private pb_Object pb;
+
+    private void Start()
+    {
+      this.pb = pb_ShapeGenerator.CubeGenerator(Vector3.one);
+      int length = this.pb.sharedIndices.Length;
+      Color[] colorArray = new Color[length];
+      for (int index = 0; index < length; ++index)
+        colorArray[index] = HueCube.HSVtoRGB((float) ((double) index / (double) length * 360.0), 1f, 1f);
+      Color[] colors = this.pb.colors;
+      for (int index1 = 0; index1 < this.pb.sharedIndices.Length; ++index1)
+      {
+        foreach (int index2 in this.pb.sharedIndices[index1].array)
+          colors[index2] = colorArray[index1];
+      }
+      this.pb.SetColors(colors);
+      this.pb.Refresh();
+    }
+
+    private static Color HSVtoRGB(float h, float s, float v)
+    {
+      if ((double) s == 0.0)
+        return new Color(v, v, v, 1f);
+      h /= 60f;
+      int num1 = (int) Mathf.Floor(h);
+      float num2 = h - (float) num1;
+      float num3 = v * (1f - s);
+      float num4 = v * (float) (1.0 - (double) s * (double) num2);
+      float num5 = v * (float) (1.0 - (double) s * (1.0 - (double) num2));
+      float r;
+      float g;
+      float b;
+      switch (num1)
+      {
+        case 0:
+          r = v;
+          g = num5;
+          b = num3;
+          break;
+        case 1:
+          r = num4;
+          g = v;
+          b = num3;
+          break;
+        case 2:
+          r = num3;
+          g = v;
+          b = num5;
+          break;
+        case 3:
+          r = num3;
+          g = num4;
+          b = v;
+          break;
+        case 4:
+          r = num5;
+          g = num3;
+          b = v;
+          break;
+        default:
+          r = v;
+          g = num3;
+          b = num4;
+          break;
+      }
+      return new Color(r, g, b, 1f);
+    }
+  }
+}
